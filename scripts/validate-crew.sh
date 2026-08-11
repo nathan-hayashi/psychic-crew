@@ -34,9 +34,12 @@ done
 
 echo "== no absolute machine paths in tracked files (§5.2.4) =="
 if [ -d .git ]; then
-  hits=$(git grep -l "/home/" -- ':!MASTER_FIFO_PLAN_CLAUDE.md' 2>/dev/null | tr '\n' ' ')
-  [ -z "$hits" ] && pass "no /home/ literals outside the execution authority" \
-                 || fail "/home/ literals in: $hits"
+  # Pattern is split so this validator does not match its own check. Excluding the
+  # file instead would blind the validator to the one file most worth checking.
+  HOMEPAT="/ho""me/"
+  hits=$(git grep -l "$HOMEPAT" -- ':!MASTER_FIFO_PLAN_CLAUDE.md' 2>/dev/null | tr '\n' ' ')
+  [ -z "$hits" ] && pass "no absolute ${HOMEPAT} literals outside the execution authority" \
+                 || fail "absolute ${HOMEPAT} literals in: $hits"
 else
   skip "git not initialized yet (F0 step 4)"
 fi

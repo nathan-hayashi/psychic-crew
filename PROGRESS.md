@@ -26,3 +26,9 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Current registry state:** 3 APPLIED (C-06/07/08, the EX-02 apply-models fixes) / 5 PENDING (C-01..C-04 owned by F2, C-05 by F3).
 - **Enforcement:** `./scripts/check-plan-corrections.sh F2` exits 1 today and will keep failing F2's gate until C-01..C-04 are applied; `F0` exits 0. Verified both.
 - **Next action:** unchanged — await `APPROVE GATE-F0`.
+
+## [F0|2026-08-11T04:19:39Z] checkpoint — validator self-match fixed
+- **Task:** repair `validate-crew.sh` flagging itself on §5.2.4.
+- **Workflow status:** validate-crew back to 7 PASS / 3 SKIP / 0 FAIL, exit 0, verified with a negative control. **G-F0 still open; F1 has NOT started.**
+- **Note:** G-F0's "no absolute paths" evidence was measured against an untracked `scripts/`; now genuinely covered. Recorded in Plan.md.
+- **Next action:** unchanged — await `APPROVE GATE-F0`.
