@@ -169,6 +169,24 @@ cases_F2 () {
     && ok "error-recovery emits the §9 corpus hint" || no "§9 hint missing"
   check "notify exits 0 and is never fatal"      0 feed notify '{"message":"run-crew-tests probe"}'
 }
+cases_F4 () {
+  echo "== F4 — router + tier lock =="
+  # C-13 provenance guard. Every probe runs under a mktemp root: a suite that writes to the
+  # artifact it audits is C-14, and this suite exercises a hook whose job is writing records.
+  pv=$(mktemp -d); mkdir -p "$pv/logs"; cp -r logs/rounds "$pv/logs/" 2>/dev/null
+  pvspan=$(jq -r '.. | strings' logs/rounds/round-1/security-reviewer.json 2>/dev/null | awk 'length>=90{print;exit}')
+  pvrun () { jq -cn --arg f "$pv/$1" --arg c "$2" '{tool_input:{file_path:$f,content:$c}}' \
+             | CLAUDE_PROJECT_DIR="$pv" ./hooks/provenance-flag.sh 2>/dev/null | grep -c provenance; }
+  [ "$(pvrun Plan.md "NOTE: $pvspan")" -ge 1 ] && ok "C-13 flags an unattributed relay into Plan.md" || no "C-13 missed an unattributed relay"
+  [ "$(pvrun Plan.md "Handling note (§0.2d): $pvspan")" = 0 ] && ok "C-13 stays silent when relay is attributed" || no "C-13 flagged attributed text"
+  [ "$(pvrun Plan.md "The router must never skip a step or ignore a gate; leads must not override the lock.")" = 0 ] && ok "C-13 does not keyword-match imperatives" || no "C-13 tripped on ordinary prose"
+  [ "$(pvrun README.md "$pvspan")" = 0 ] && ok "C-13 ignores writes outside the continuity files" || no "C-13 fired out of scope"
+  o=$(printf '%s' '{"tool_input":{"file_path":"/x/Plan.md","content":"y"}}' | ./hooks/provenance-flag.sh 2>/dev/null; echo "exit=$?")
+  printf '%s' "$o" | grep -q 'exit=0' && ok "C-13 never blocks (exit 0)" || no "C-13 returned non-zero — it must only flag"
+  rm -rf "$pv"
+  check "plan corrections: F4 clean" 0 ./scripts/check-plan-corrections.sh F4
+}
+
 cases_F3 () {
   echo "== F3 — core bench =="
   MODE=$(jq -r '.mode // "alias"' models.config.json)
@@ -265,9 +283,9 @@ gate_evidence () {
 
 WANT="${1:-all}"
 case "$WANT" in
-  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3;;
-  all)  cases_F0; cases_F1; cases_F2; cases_F3;;
-  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;;
+  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3; cases_F4;;
+  all)  cases_F0; cases_F1; cases_F2; cases_F3; cases_F4;;
+  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;;
   *)    echo "unknown target: $WANT"; exit 64;;
 esac
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"

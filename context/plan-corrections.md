@@ -162,3 +162,13 @@ Sixth instance of one family. The fixer's C-12 regression fixtures fed synthetic
 **Applied**: the fixer moved all six fixtures to a `mktemp -d` root. The four fabricated records were removed by the orchestrator and the removal was itself written to the trail as an `AuditRedaction` event — a redaction that is not recorded is indistinguishable from tampering. Genuine records were retained, including the mutation-test commands whose tokens are synthetic.
 
 **Verify**: no audit record carries a fixture-shaped `task_id`.
+
+**C-13 RESOLVED (F4, operator-directed: FLAG + PROVENANCE).** `hooks/provenance-flag.sh`, wired PostToolUse[Write|Edit], never blocks.
+
+Keywords were rejected on measurement, not principle: "ignore" occurs 7× in `Plan.md` and 6× in this file, "skip" 9/3/5 — a keyword guard would have fired ~35 times on legitimate prose and, inevitably, on the §0.2d rule text and on this entry. That would have been the seventh instance of a guard tripping on its own documentation.
+
+Provenance is implemented as **source correlation**: a ledger write is compared against the untrusted corpus on disk (`logs/rounds/`), and shared verbatim text means third-party material was relayed into a continuity file that later sessions read as authoritative. Attribution suppresses the flag, using the convention already in organic use at `Plan.md`'s "Handling note (§0.2d)" entry — the guard enforces a practice the build had already invented by hand.
+
+Two defects were found by testing rather than reasoning: matching whole *written* lines against the corpus found nothing, because relayed text arrives embedded in a sentence (the comparison direction was backwards); and matching whole field values let a partial paste evade it, which is the likelier relay. Spans are now split at sentence boundaries. Measured: 5/5 behavioural cases pass, 0 false positives across all five real ledger files.
+
+**Honest limits:** verbatim text only — paraphrase is not detected, because paraphrase already implies a judgement was applied. And it flags *after* the write, by design.
