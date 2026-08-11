@@ -85,7 +85,9 @@ else
   for h in hooks/*.sh; do
     [ -x "$h" ] || fail "$h not executable"
     bash -n "$h" 2>/dev/null || fail "$h fails syntax check"
-    grep -q '\[\[' "$h" && fail "$h uses non-POSIX [[ (§9 minimal-shell)" || pass "$h ok"
+    # `[[:space:]]` etc. are POSIX character classes, not bash conditionals — match `[[` only
+    # when NOT followed by ':'. Fifth instance of a check tripping on legitimate text.
+    grep -qE '\[\[[^:]' "$h" && fail "$h uses non-POSIX [[ (§9 minimal-shell)" || pass "$h ok"
   done
 fi
 

@@ -62,58 +62,100 @@
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/bash-blocker.sh'",
-        "description": "Deny destructive/forbidden commands incl. clone/npx/sudo (HC-5)"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/bash-blocker.sh\""
+          }
+        ]
       },
       {
         "matcher": "Write|Edit",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/model-guard.sh'",
-        "description": "HC-2: block any write introducing a forbidden model substring into config"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/model-guard.sh\""
+          }
+        ]
       },
       {
         "matcher": "Write|Edit",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/sensitive-guard.sh'",
-        "description": "Guard .env/secrets/.gitignore writes"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/sensitive-guard.sh\""
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "*",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/audit-logger.sh'",
-        "description": "Append tool-use record to logs/tooluse-audit.jsonl (SOC2-style evidence)"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/audit-logger.sh\""
+          }
+        ]
       },
       {
         "matcher": "Write|Edit",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/auto-format.sh'",
-        "description": "Prettier for supported types if available; no-op otherwise"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/auto-format.sh\""
+          }
+        ]
       }
     ],
-    "PostToolUseFail": [
+    "PostToolUseFailure": [
       {
-        "matcher": "*",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/error-recovery.sh'",
-        "description": "Log to build-errors.jsonl + emit recovery hint"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/error-recovery.sh\""
+          }
+        ]
       }
     ],
     "PreCompact": [
       {
         "matcher": "auto|manual",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/pre-compact-checkpoint.sh'",
-        "description": "R3: write emergency checkpoint block to PROGRESS.md before any compaction (pattern: neatcontext PreCompact, MIT, rebuilt natively file-based — no external companion)"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/pre-compact-checkpoint.sh\""
+          }
+        ]
       }
     ],
     "Notification": [
       {
-        "matcher": "*",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/notify.sh'",
-        "description": "Desktop toast (Q3-dependent)"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/notify.sh\""
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "matcher": "*",
-        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/stop.sh'",
-        "description": "Gate-ready toast"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/stop.sh\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/session-start.sh\""
+          }
+        ]
       }
     ]
   }

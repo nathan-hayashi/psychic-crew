@@ -33,16 +33,28 @@ if [ "$(jq -r '.hooks | has("PostToolUseFail")' "$S" 2>/dev/null)" = "false" ]; 
 else
   report C-02 F2 PENDING "event PostToolUseFail present; real name is PostToolUseFailure"; fi
 
+# C-03 is checked BEHAVIOURALLY: the deny contract lives in the shared hooks/_common.sh, so
+# grepping each guard for the string misses a correct implementation. Feed each guard a real
+# denial input and assert the JSON contract actually comes out.
 h=$(ls -1 hooks/*.sh 2>/dev/null | wc -l)
-if [ "$h" = 0 ]; then report C-03 F2 PENDING "hooks/ empty — F2 must emit hookSpecificOutput.permissionDecision, not bare exit 2"
+if [ "$h" = 0 ]; then
+  report C-03 F2 PENDING "hooks/ empty — F2 must emit hookSpecificOutput.permissionDecision, not bare exit 2"
 else
-  miss=""
-  for f in hooks/bash-blocker.sh hooks/model-guard.sh; do
-    [ -f "$f" ] || continue
-    grep -q 'permissionDecision' "$f" || miss="$miss $f"
+  # Payloads are passed as printf ARGUMENTS, never as the format string: printf interprets
+  # backslash escapes in the format, which silently corrupts JSON containing \" and makes a
+  # working guard look broken. That is exactly what happened on the first attempt here.
+  c3=1; c3why=""
+  j1='{"tool_input":{"command":"git clone https://example/x"}}'
+  j2='{"tool_input":{"file_path":"models.config.json","content":"  \"model\": \"claude-fable-5\""}}'
+  j3='{"tool_input":{"file_path":"/x/.env","content":"K=v"}}'
+  for pair in "bash-blocker:$j1" "model-guard:$j2" "sensitive-guard:$j3"; do
+    g=${pair%%:*}; j=${pair#*:}
+    o=$(printf '%s' "$j" | "./hooks/$g.sh" 2>/dev/null || true)
+    printf '%s' "$o" | grep -q '"permissionDecision":"deny"' || { c3=0; c3why="$c3why $g"; }
   done
-  [ -z "$miss" ] && report C-03 F2 APPLIED "PreToolUse guards emit permissionDecision" \
-                 || report C-03 F2 PENDING "missing permissionDecision in:$miss"; fi
+  if [ "$c3" = 1 ]; then report C-03 F2 APPLIED "all three PreToolUse guards emit permissionDecision:deny on a real trigger"
+  else report C-03 F2 PENDING "guards not denying via the JSON contract:$c3why"; fi
+fi
 
 if git check-ignore -q .claude/state/compact-pending 2>/dev/null; then
   report C-04 F2 APPLIED ".claude/state/ is gitignored"

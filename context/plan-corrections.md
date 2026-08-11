@@ -78,3 +78,11 @@ Consequence for every phase: **do not write the literal token in tracked prose**
 
 ## Working note — detectors must test code, not comments
 Four separate red gates in this build came from a check matching text that *documents* the thing being checked rather than the thing itself: the validator's own absolute-path pattern, a Plan.md sentence quoting it, the rule file documenting the fable prohibition, and this detector matching a stale comment in `apply-models.sh`. The lesson generalises: **any check that greps for a defect signature must strip comments and must not scan prose files.** A guard that trips on its own documentation trains people to ignore it, and a guard that goes green because its target moved into a comment is worse than none.
+
+## Working note — `set -o pipefail` and exit-2 guards
+Three separate failures in this build came from testing a pipeline's status when a stage legitimately exits nonzero:
+1. `apply-models.sh`'s HC-2 guard used `{ producers; } | grep -q .`; a non-matching inner producer exited 1, pipefail marked the pipeline failed, and the guard was skipped entirely while reporting clean.
+2. `check-plan-corrections.sh` passed JSON as printf's *format string*; `\"` escapes were eaten, the payload became invalid JSON, and a working guard looked broken.
+3. `run-crew-tests.sh`'s `denies()` piped into `grep -q`; the guard's deliberate `exit 2` poisoned the pipeline and every denial test reported failure.
+
+**Rule: capture into a variable, then test it.** Never branch on the exit status of a pipeline containing a stage whose nonzero exit is meaningful. And pass JSON payloads as printf *arguments* (`printf '%s' "$json"`), never as the format.

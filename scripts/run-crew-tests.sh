@@ -19,9 +19,12 @@ check () { d="$1"; e="$2"; shift 2; "$@" >/dev/null 2>&1; r=$?
 
 BAK=$(mktemp -d); trap 'cp -f "$BAK"/models.config.json models.config.json 2>/dev/null
                         cp -f "$BAK"/quality-reviewer.md .claude/agents/quality-reviewer.md 2>/dev/null
+                        cp -f "$BAK"/PROGRESS.md PROGRESS.md 2>/dev/null
+                        rm -f .claude/state/compact-pending 2>/dev/null
                         ./scripts/apply-models.sh >/dev/null 2>&1; rm -rf "$BAK"' EXIT
 cp models.config.json "$BAK"/
 cp .claude/agents/quality-reviewer.md "$BAK"/ 2>/dev/null || true
+cp PROGRESS.md "$BAK"/ 2>/dev/null || true
 
 cases_F0 () {
   echo "== F0 — scaffold integrity =="
@@ -69,7 +72,77 @@ cases_F1 () {
     && check "prose mention does not trip HC-2" 0 ./scripts/apply-models.sh
 }
 
-cases_F2 () { echo "== F2 — enforcement layer =="; echo "  (no cases registered yet — F2 appends here)"; }
+cases_F2 () {
+  echo "== F2 — enforcement layer =="
+  # Payloads are printf ARGUMENTS, never the format string — printf eats \" in a format and
+  # silently corrupts JSON, which once made a working guard look broken.
+  # Capture, THEN test. A denying hook exits 2, and under `set -o pipefail` that poisons the
+  # whole pipeline's status even when grep matched — so a piped form reports "not denied" for a
+  # guard that denied correctly. Third pipefail incident in this build; see the registry note.
+  denies () { o=$(printf '%s' "$2" | "./hooks/$1.sh" 2>/dev/null || true)
+              printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
+  allows () { o=$(printf '%s' "$2" | "./hooks/$1.sh" 2>/dev/null || true)
+              ! printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
+
+  denies bash-blocker '{"tool_input":{"command":"rm -rf ~"}}'                 && ok "denies rm -rf ~"        || no "rm -rf ~ not denied"
+  denies bash-blocker '{"tool_input":{"command":"git clone https://x/y"}}'    && ok "denies git clone"       || no "git clone not denied"
+  denies bash-blocker '{"tool_input":{"command":"npx cowsay"}}'               && ok "denies npx"             || no "npx not denied"
+  denies bash-blocker '{"tool_input":{"command":"sudo rm x"}}'                && ok "denies sudo"            || no "sudo not denied"
+  denies bash-blocker '{"tool_input":{"command":"codex exec x"}}'             && ok "denies codex (HC-7)"    || no "codex not denied"
+  allows bash-blocker '{"tool_input":{"command":"git status --short"}}'       && ok "allows benign git"      || no "benign git wrongly denied"
+  allows bash-blocker '{"tool_input":{"command":"ls -la"}}'                   && ok "allows benign ls"       || no "benign ls wrongly denied"
+
+  denies sensitive-guard '{"tool_input":{"file_path":"/x/.env","content":"K=v"}}'  && ok "denies .env write" || no ".env write not denied"
+  denies sensitive-guard '{"tool_input":{"file_path":"/x/.gitignore","content":"logs/\n"}}' && ok "denies .gitignore removal of protected entry" || no "gitignore removal not denied"
+  allows sensitive-guard '{"tool_input":{"file_path":"/x/.gitignore","content":".env\nlogs/\n.claude/state/\nextra/\n"}}' && ok "allows .gitignore append (C-04 must stay possible)" || no "gitignore append wrongly denied"
+
+  denies model-guard '{"tool_input":{"file_path":"models.config.json","content":"  \"model\": \"claude-fable-5\""}}' && ok "model-guard blocks fable write" || no "fable write not blocked"
+  allows model-guard '{"tool_input":{"file_path":"models.config.json","content":"  \"model\": \"claude-opus-5\""}}'  && ok "model-guard allows a clean model write" || no "clean model write wrongly denied"
+  allows model-guard '{"tool_input":{"file_path":"README.md","content":"the fable model is banned"}}' && ok "model-guard ignores prose outside the config surface" || no "prose wrongly denied"
+
+  n0=$( [ -f logs/tooluse-audit.jsonl ] && wc -l < logs/tooluse-audit.jsonl || echo 0 )
+  printf '%s' '{"tool_name":"Write","tool_input":{"file_path":"x.txt"}}' | ./hooks/audit-logger.sh >/dev/null 2>&1
+  n1=$( [ -f logs/tooluse-audit.jsonl ] && wc -l < logs/tooluse-audit.jsonl || echo 0 )
+  [ "$n1" -gt "$n0" ] && ok "audit line appended after a benign tool use" || no "no audit line appended"
+  tail -1 logs/tooluse-audit.jsonl 2>/dev/null | jq -e . >/dev/null 2>&1 && ok "audit line is valid JSON" || no "audit line malformed"
+
+  # ccs-01 (§15.7)
+  rm -f .claude/state/compact-pending
+  b=$(wc -l < PROGRESS.md)
+  printf '%s' '{"trigger":"auto"}' | ./hooks/pre-compact-checkpoint.sh >/dev/null 2>&1
+  r=$?
+  [ "$r" = 0 ] && ok "ccs-01 PreCompact exits 0" || no "ccs-01 PreCompact exit $r"
+  [ "$(wc -l < PROGRESS.md)" -gt "$b" ] && ok "ccs-01 PROGRESS.md gained a checkpoint block" || no "ccs-01 no checkpoint block"
+  [ -f .claude/state/compact-pending ] && ok "ccs-01 compact-pending flag armed" || no "ccs-01 flag not armed"
+  chmod 400 PROGRESS.md 2>/dev/null
+  printf '%s' '{"trigger":"auto"}' | ./hooks/pre-compact-checkpoint.sh >/dev/null 2>&1
+  r=$?; chmod 644 PROGRESS.md 2>/dev/null
+  [ "$r" = 0 ] && ok "ccs-01 exits 0 even with PROGRESS.md unwritable" || no "ccs-01 failed on unwritable PROGRESS.md (exit $r)"
+
+  # ccs-03 (§15.9)
+  snap=$(ls -1t .claude/state/checkpoints/ckpt-*.md 2>/dev/null | head -1)
+  if [ -n "$snap" ]; then
+    f=0
+    for sec in "PROGRESS.md (tail 40)" "GATES.md (tail)" "Plan.md open items" "## git" "declared next_action"; do
+      grep -qF "$sec" "$snap" || f=1
+    done
+    [ "$f" = 0 ] && ok "ccs-03 numbered snapshot has all five fields" || no "ccs-03 snapshot missing fields"
+  else no "ccs-03 no numbered snapshot produced"; fi
+  [ "$(ls -1 .claude/state/checkpoints/ckpt-*.md 2>/dev/null | wc -l)" -le 10 ] && ok "ccs-03 retention holds at 10" || no "ccs-03 retention exceeded"
+
+  # Stop: refreshes latest.md AND consumes the flag exactly once
+  o=$(printf '%s' '{}' | ./hooks/stop.sh 2>/dev/null || true)
+  printf '%s' "$o" | grep -q '"decision":"block"' && ok "Stop emits decision:block while the flag is armed" || no "Stop did not block on armed flag"
+  [ -f .claude/state/checkpoints/latest.md ] && ok "ccs-03 Stop refreshed latest.md" || no "latest.md not refreshed"
+  o=$(printf '%s' '{}' | ./hooks/stop.sh 2>/dev/null || true)
+  printf '%s' "$o" | grep -q '"decision":"block"' && no "Stop blocked twice — flag not consumed exactly once" || ok "flag consumed exactly once, no loop"
+
+  check "restore-context.sh latest exits 0" 0 ./scripts/restore-context.sh latest
+  ./scripts/restore-context.sh latest 2>/dev/null | grep -q 'RELOAD INSTRUCTION' && ok "restore-context prints the reload instruction" || no "reload instruction missing"
+
+  o=$(printf '%s' '{}' | ./hooks/session-start.sh 2>/dev/null || true)
+  printf '%s' "$o" | jq -e '.hookSpecificOutput.additionalContext' >/dev/null 2>&1 && ok "SessionStart emits additionalContext (§15.4)" || no "SessionStart output malformed"
+}
 cases_F3 () { echo "== F3 — core bench =="; echo "  (no cases registered yet — F3 appends here)"; }
 
 gate_evidence () {
