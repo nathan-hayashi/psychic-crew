@@ -131,3 +131,12 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Open, all logged:** C-13 (F4) · branch B's 4 verified-sound findings await round 2 re-emission · DIRECTORY_GUIDE drift needs an operator routing decision because EX-01 pins it · the arbiter holds Write but not Edit, so appending to an append-only log means rewriting it whole (transcription risk in the arbiter contract itself).
 - **In-flight changes:** none.
 - **Next action:** STOP. Await `APPROVE GATE-F3`.
+
+## [F3|2026-08-11T14:02:22Z] GATE G-F3 APPROVED — F4 opened
+- **Task:** F3 closed on the exact token `APPROVE GATE-F3`. Tag `crew-f3`. **F4 — Router + Tier Lock [8K] now active.**
+- **F4 steps (§6):** (1) write `.claude/skills/threshold-router/SKILL.md` per §5.3 — note QR-DG-3 found the map already lists this file while it is absent from disk, so F4 closes a live docs-drift finding as a side effect; (2) confirm the tier announcement across three probe prompts; (3) add a tier-announcement check to validate-crew (transcript sampling is manual-eyes at the gate).
+- **MUST ALSO RESOLVE — C-13 (F4-owned, gate-enforced):** no hook inspects content bound for Plan.md/PROGRESS.md/context/*, while the Navigation rule says append anomaly text there then act. `./scripts/check-plan-corrections.sh F4` exits 1 until it lands. **Two operator decisions are required before it can be implemented:** block-vs-flag (a denying check aimed at Plan.md would block the Fix Ledger entries that quote findings verbatim), and provenance-vs-keywords (a keyword list would trip on C-13's own registry entry and on the §0.2d rule text).
+- **Distilled:** `context/session-summary.md` refreshed per §15.6 — merged, superseded claims deleted, verified/proposed labels intact.
+- **Budget note:** F3 ran ~87 min against the 45-min Q5 ceiling, driven by three unplanned P0s (C-11, C-12, C-14). F4 is budgeted 8K and should be comfortably inside it.
+- **In-flight changes:** none.
+- **Next action:** F4 step 1 — write the threshold-router SKILL.md. Per §0.3 (one phase = one session) a fresh session is preferred; the SessionStart hook re-grounds automatically.
