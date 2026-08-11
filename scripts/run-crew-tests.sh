@@ -83,6 +83,7 @@ cases_F2 () {
               printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
   allows () { o=$(printf '%s' "$2" | "./hooks/$1.sh" 2>/dev/null || true)
               ! printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
+  feed   () { printf '%s' "$2" | "./hooks/$1.sh"; }
 
   denies bash-blocker '{"tool_input":{"command":"rm -rf ~"}}'                 && ok "denies rm -rf ~"        || no "rm -rf ~ not denied"
   denies bash-blocker '{"tool_input":{"command":"git clone https://x/y"}}'    && ok "denies git clone"       || no "git clone not denied"
@@ -142,6 +143,31 @@ cases_F2 () {
 
   o=$(printf '%s' '{}' | ./hooks/session-start.sh 2>/dev/null || true)
   printf '%s' "$o" | jq -e '.hookSpecificOutput.additionalContext' >/dev/null 2>&1 && ok "SessionStart emits additionalContext (§15.4)" || no "SessionStart output malformed"
+
+  # --- G-F2 gap closure (found by the live stress, not by the offline suite) ---
+  # A denial that leaves no record is a silent control. PostToolUse cannot cover it: the blocked
+  # tool never runs, so the guard has to write its own line. The first live stress produced six
+  # denials and zero audit entries, failing G-F2's "6 denies + 6 audit entries" as written.
+  n0=$(wc -l < logs/tooluse-audit.jsonl 2>/dev/null || echo 0)
+  denies bash-blocker '{"tool_name":"Bash","tool_input":{"command":"git clone https://x/y"}}' >/dev/null 2>&1
+  n1=$(wc -l < logs/tooluse-audit.jsonl 2>/dev/null || echo 0)
+  [ "$n1" -gt "$n0" ] && ok "denial writes an audit record" || no "denial left no audit record"
+  tail -1 logs/tooluse-audit.jsonl | jq -e '.event=="PreToolUse.deny" and (.reason|length)>0' >/dev/null 2>&1 \
+    && ok "denial record carries event + reason" || no "denial record malformed"
+
+  # auto-format, error-recovery and notify had no coverage at all until now.
+  # auto-format must format ordinary files yet NEVER touch a byte-pinned payload (EX-01 identity).
+  h0=$(sha256sum CLAUDE.md | cut -d' ' -f1)
+  printf '%s' '{"tool_input":{"file_path":"CLAUDE.md"}}' | ./hooks/auto-format.sh >/dev/null 2>&1
+  [ "$(sha256sum CLAUDE.md | cut -d' ' -f1)" = "$h0" ] && ok "auto-format refuses byte-pinned CLAUDE.md" \
+                                                       || no "auto-format mutated a byte-pinned seed"
+  check "auto-format exits 0 on a missing path"  0 feed auto-format '{"tool_input":{"file_path":"/nope/x.md"}}'
+  check "error-recovery exits 0"                 0 feed error-recovery '{"tool_name":"Bash","tool_response":{"error":"bash: foo: command not found"}}'
+  [ -f logs/build-errors.jsonl ] && ok "error-recovery wrote build-errors.jsonl" || no "no build-errors record"
+  printf '%s' '{"tool_name":"Bash","tool_response":{"error":"bash: foo: command not found"}}' \
+    | ./hooks/error-recovery.sh 2>/dev/null | grep -q 'minimal-shell' \
+    && ok "error-recovery emits the §9 corpus hint" || no "§9 hint missing"
+  check "notify exits 0 and is never fatal"      0 feed notify '{"message":"run-crew-tests probe"}'
 }
 cases_F3 () { echo "== F3 — core bench =="; echo "  (no cases registered yet — F3 appends here)"; }
 

@@ -64,3 +64,14 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Stress:** 6/6 denials · 6/6 audit entries · kill-switch removes hooks → validate-crew exit 1 (11 FAIL).
 - **Still required for G-F2:** live trigger of each hook, which needs a relaunch from `~/projects/psychic-crew`.
 - **Next action:** relaunch; the SessionStart hook will re-ground automatically, then run the live demo.
+
+## [F2|2026-08-11T05:39:31Z] checkpoint — G-F2 live demo + stress COMPLETE, gate ready
+- **Task:** G-F2 live evidence. The relaunch from the renamed path cleared F2's blocker; all ten hooks are confirmed dispatching through the platform, not just the harness.
+- **Workflow status:** validate-crew 19 PASS / 2 SKIP / 0 FAIL (both SKIPs correctly F3-owned) · run-crew-tests F2 35 PASS / 0 FAIL (was 27) · corrections F0/F1/F2 exit 0, F3 exit 1.
+- **Demo:** session-start, audit-logger and stop proved themselves unprompted during re-grounding; bash-blocker (6 ops), model-guard, sensitive-guard, error-recovery, auto-format and notify were triggered deliberately. PreCompact is not on-demand triggerable — covered by ccs-01 plus the existing numbered snapshots.
+- **Stress:** 6 forbidden ops → 6/6 denials with correct HC reasons → 6/6 audit records. Every probe was inert-if-unguarded by construction. Kill-switch closed earlier at 6591b34.
+- **Defect found and fixed:** denials were silent. `deny()` wrote no record and PostToolUse cannot fire for a blocked tool, so the first live stress produced 6 denials / 0 audit entries — failing G-F2's stress as written.
+- **Coverage gap closed:** auto-format, error-recovery and notify had zero harness cases; 8 new checks added.
+- **Docs corrected:** R2 closed with live evidence (engineered around at two layers, not a false alarm) plus new R7; `context/session-summary.md` was stale by two gates and is redistilled per §15.5.
+- **In-flight changes:** none.
+- **Next action:** STOP. Await `APPROVE GATE-F2`. On approval → F3 Core Bench, starting with C-05.
