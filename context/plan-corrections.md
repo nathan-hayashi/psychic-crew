@@ -98,3 +98,19 @@ Three separate failures in this build came from testing a pipeline's status when
 **Apply**: extract §5.2.1 verbatim to `.claude/rules/fallback-protocol.md`, Bash-only — the payload's numbered anti-skip items are prose-sensitive and a formatter pass would renumber or rewrap them.
 
 **Verify**: the file exists and carries the FALLBACK block schema.
+
+## C-11 — the broker pattern is unexecutable as specified (F3, P0, BLOCKING G-F3)
+**Plan says**: §5.1.1 (verbatim) grants the arbiter `tools: Read, Grep, Glob, Write`, and its body states "Leads send you DISPATCH blocks; you fan work out to specialists". §5.2.2 makes the arbiter the *sole* permitted dispatcher: "Leads MUST NOT invoke the Task tool on any specialist directly."
+
+**Reality**: no agent in `.claude/agents/` holds `Agent` or `Task` — measured, not assumed. The arbiter is contractually the only component allowed to dispatch and is provisioned with no tool capable of dispatching. Leads are forbidden from dispatching and also lack the tool. **Every hop of `lead → arbiter → specialist` has zero dispatch capability.**
+
+**Why it matters**: the broker is this build's central design bet — CLAUDE_DESIGN item 2 ("specialists' outputs are never consumed raw by leads") and the entire §5.4 discourse pipeline rest on it. As written, the crew can define agents but cannot route work through the architecture that justifies them. Nothing failed loudly through F0–F2 because no dispatch had ever been attempted.
+
+**Proven live at G-F3**: the arbiter received a well-formed DISPATCH, passed ORDER CHECK, then returned a FALLBACK at confidence 0.97 stating it could not execute the fan-out, and explicitly refused to fabricate specialist packets. It recorded the dispatch to `logs/arbiter-audit.jsonl` with `original_sha256: UNAVAILABLE(no-hash-tool…)` rather than inventing a plausible digest. The agent behaved exactly to contract; the contract is what is broken.
+
+**Apply (operator decision — this is a permission-boundary change)**: `.claude/rules/security.md` forbids widening a grant without a gate, and §5.1.1 is a verbatim payload, so a fix needs a logged exception in the EX-01 style. Option A: add `Agent` to the arbiter's tools line ONLY, leaving every lead and specialist without it — which converts the dispatch law from an assertion into a structural guarantee, since the arbiter would become the only component physically able to dispatch. Option B: the orchestrator performs fan-out and the arbiter normalises returned packets — proves normalisation and audit but NOT the interception boundary, and must be recorded as partial G-F3 evidence.
+
+**Verify**: `grep '^tools:.*Agent' .claude/agents/arbiter.md` matches, and no other agent file does.
+
+## Working note — the coverage check is live, and it caught the orchestrator
+The arbiter also reported that C-05's coverage check passes vacuously at `0 >= 0` because no agent can dispatch. That reasoning was sound but incomplete: it could only see crew agents. The **orchestrator session** dispatches too, and those calls are logged as `"tool":"Agent"` in `logs/tooluse-audit.jsonl`. Measured immediately after the G-F3 attempt the check reported `FAIL: 2 dispatches, 1 arbiter lines` — a true positive against the orchestrator, which had to bypass the arbiter precisely because C-11 makes arbiter-routed dispatch impossible. The check works. The vacuity risk is real only in the case where dispatch count is genuinely zero, and it should be re-examined once C-11 is resolved.

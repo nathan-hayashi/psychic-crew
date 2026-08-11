@@ -102,6 +102,17 @@ else
   report C-09 F1 PENDING "HC-2 is still a bare substring scan; F2 model-guard.sh cannot pass validation"
 fi
 
+# C-11: the broker pattern cannot execute. .claude/rules/arbiter-protocol.md makes the arbiter the
+# sole permitted dispatcher, but §5.1.1's verbatim frontmatter grants it Read/Grep/Glob/Write and no
+# Agent tool — and no other crew agent holds one either. Every hop of lead->arbiter->specialist has
+# zero dispatch capability, so the central design bet of this build (CLAUDE_DESIGN item 2) is
+# unexecutable as written. Proven live at G-F3: the arbiter returned a FALLBACK rather than fabricate.
+if grep -q '^tools:.*Agent' .claude/agents/arbiter.md 2>/dev/null; then
+  report C-11 F3 APPLIED "arbiter holds the Agent tool; the dispatch law is structurally enforceable"
+else
+  report C-11 F3 PENDING "arbiter is the sole permitted dispatcher yet holds no Agent/Task tool — fan-out unexecutable (G-F3 P0)"
+fi
+
 # C-10: CLAUDE.md binds every agent to .claude/rules/fallback-protocol.md, but no §6 phase step
 # writes it — F3 is assigned rules 5.2.2-5.2.4 only, and §5.2.1 sits in the F0 payload section that
 # F0's step list never reaches. A binding rule absent from disk is a dangling contract: agents are

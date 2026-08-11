@@ -100,3 +100,13 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **BLOCKED on operator authorisation:** G-F3's demo requires dispatching real subagents (lead → arbiter → both reviewers → arbiter merge → fixer verdict, then showing logs/arbiter-audit.jsonl). This session's operating instructions forbid invoking the Agent tool unless the operator asks. Not a technical blocker — an authorisation one.
 - **In-flight changes:** none.
 - **Next action:** obtain authorisation to spawn subagents, then run the G-F3 demo + stress (malformed packet quarantine; direct lead→specialist probe caught by coverage check), then tag crew-f3.
+
+## [F3|2026-08-11T06:21:10Z] checkpoint — G-F3 HALTED at a P0: the broker cannot dispatch
+- **Task:** G-F3 demo, authorised by the operator. Ran lead-planner → arbiter for real.
+- **Result:** demo BLOCKED. Verdict **ESCALATE** (§0.2c) — a gate cannot PASS with an open P0.
+- **C-11 (P0):** 0 of 8 agents hold Agent or Task. §5.1.1 grants the arbiter Read/Grep/Glob/Write; §5.2.2 makes it the sole permitted dispatcher. lead→arbiter→specialist has zero dispatch capability at every hop, so the broker pattern — this build's central design bet — is unexecutable as specified.
+- **Agent behaviour was correct:** lead-planner produced a rigorous DISPATCH and confirmed it holds no dispatch tool. The arbiter passed ORDER CHECK, refused to fabricate specialist packets, returned a FALLBACK at confidence 0.97, and wrote `original_sha256: UNAVAILABLE(no-hash-tool…)` rather than invent a digest. The contract is broken; the implementation of it is sound.
+- **Gates now blocking, both correctly:** `check-plan-corrections.sh F3` FAIL (C-11 pending) · `validate-crew.sh` 26 PASS / 0 SKIP / 1 FAIL (arbiter coverage: 2 dispatches, 1 arbiter line — a true positive against the orchestrator, which had to bypass the arbiter *because* of C-11). That FAIL also satisfies G-F3's stress requirement that a direct lead→specialist call be flagged at validate.
+- **NOT tagged:** crew-f3 is deliberately not created. The phase is not gate-ready.
+- **In-flight changes:** none.
+- **Next action:** operator decision on C-11 — Option A (grant the arbiter `Agent`, making it the only component able to dispatch and converting the dispatch law into a structural guarantee, under a logged exception) or Option B (orchestrator fans out, arbiter normalises; partial G-F3 evidence only). Then re-run the G-F3 demo.
