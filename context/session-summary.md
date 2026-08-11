@@ -15,6 +15,7 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 - **verified** — OQ-10: `Task` is now `Agent`; §5.2.2's bypass detection greps the old name and would pass while a bypass succeeds. F3.
 - **verified** — OQ-7: `.claude/state/` is not gitignored despite DIRECTORY_GUIDE saying it is. F2.
 - **proposed** — `SubagentStart`/`SubagentStop` hooks carry `agent_type`, which would make arbiter-bypass detection deterministic instead of audit-diff-based. Operator decision at F3.
+- **verified** — Every correction above is registered in `context/plan-corrections.md` and machine-checked by `scripts/check-plan-corrections.sh`; a phase gate can call it with its own phase id to hard-fail on unapplied corrections.
 - **proposed** — `PostCompact` exists and could strengthen §15.9, which currently concedes PreCompact cannot shape the compaction summary. F2.
 
 ## Next action

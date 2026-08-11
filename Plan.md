@@ -112,3 +112,23 @@ Post-rename hygiene: CR bytes 0/0, trailing newline present on both, line counts
 - `PostCompact` exists. §15.9(e) concedes PreCompact "cannot shape the compaction summary" and that recovery hinges on a forced re-read; PostCompact fires *after* compaction and can inject context directly. Candidate upgrade to the §15.9 workaround at F2.
 - `isolation: worktree` is native frontmatter — §14.1's peer-review lane gets worktree isolation for free.
 - Concurrent subagents cap at 20 by default (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`). Relevant to F3/F7 parallel dispatch; the §5.2.1 branch-floor rule stays within it.
+
+### Gate-adjacent — plan-corrections registry
+[F0|2026-08-11T04:18:21Z] Operator-directed after the G-F0 report and BEFORE gate approval; deliberately touches no F1/F2/F3 deliverable, so F0→F1 has not advanced. Problem addressed: OQ-7..OQ-10 existed only as prose in this file, while the execution authority still specifies the defective forms. Any phase that follows §4.6/§5.6/§5.2.2 faithfully would rebuild all four defects, and nothing would have caught it.
+
+Added `context/plan-corrections.md` (registry: plan location · what the plan says · what reality is · exact correction · owner · verification) and `scripts/check-plan-corrections.sh` (detector; `all` reports, `F<n>` exits nonzero on that phase's unapplied corrections).
+
+| ID | Owner | Status | Correction |
+|---|---|---|---|
+| C-01 | F2 | PENDING | 9 hook entries use `"hook":<string>`; schema wants `"hooks":[{type,command}]` |
+| C-02 | F2 | PENDING | `PostToolUseFail` → `PostToolUseFailure` |
+| C-03 | F2 | PENDING | PreToolUse deny needs `hookSpecificOutput.permissionDecision`, not bare exit 2 |
+| C-04 | F2 | PENDING | append `.claude/state/` to `.gitignore` |
+| C-05 | F3 | PENDING | match `Task\|Agent`; `arbiter-protocol.md` not yet written |
+| C-06/07/08 | F0 | APPLIED | the three EX-02 apply-models.sh fixes, verified in place |
+
+Correction to the G-F0 report: the §4.6 hook block has **nine** malformed entries, not eight — the detector counts them mechanically (PreToolUse 3, PostToolUse 2, PostToolUseFail 1, PreCompact 1, Notification 1, Stop 1).
+
+Discovery path deliberately avoids CLAUDE.md: it is a byte-pinned §4.1 seed under EX-01 and a pointer line would widen that exception. `PROGRESS.md` and `context/session-summary.md` point here instead, and CLAUDE.md's own continuity bullet already mandates reading both at session start.
+
+Gate simulations verified: `check-plan-corrections.sh F2` → exit 1 (blocks); `F0` → exit 0 (EX-02 confirmed applied).

@@ -18,3 +18,11 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **In-flight changes:** none. Everything committed and tagged.
 - **Closed avenues:** editing the execution authority · §14.5 literal byte-identity (EX-01) · §5.5 verbatim apply-models logic (EX-02, three defects corrected).
 - **Next action:** STOP. On `APPROVE GATE-F0` → F1 Model Routing Layer; F1's per-agent-effort probe is already resolved (supported) by step 6.
+
+## [F0|2026-08-11T04:18:21Z] checkpoint — plan-corrections registry added (gate-adjacent; does NOT advance to F1)
+- **Task:** operator-directed — make the four open plan defects mechanically fixable rather than prose-only.
+- **Workflow status:** F0 still complete and still gated. **G-F0 remains open; F1 has NOT started.**
+- **READ FIRST when implementing any phase:** `context/plan-corrections.md` — the authoritative plan-vs-reality registry. The execution authority is never edited, so a phase that trusts §4.6/§5.6/§5.2.2 verbatim will rebuild the known defects. Machine-checked by `scripts/check-plan-corrections.sh`.
+- **Current registry state:** 3 APPLIED (C-06/07/08, the EX-02 apply-models fixes) / 5 PENDING (C-01..C-04 owned by F2, C-05 by F3).
+- **Enforcement:** `./scripts/check-plan-corrections.sh F2` exits 1 today and will keep failing F2's gate until C-01..C-04 are applied; `F0` exits 0. Verified both.
+- **Next action:** unchanged — await `APPROVE GATE-F0`.

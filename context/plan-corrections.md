@@ -1,0 +1,61 @@
+# plan-corrections.md — authoritative plan-vs-reality registry
+`MASTER_FIFO_PLAN_CLAUDE.md` is never edited locally (standing operator decision: it stays identical to the PROJECT canonical copy). Every defect found in it is corrected **in the artifact this repo builds**, and recorded here.
+
+**Read this before implementing any phase.** Where this file and the plan disagree, this file wins for implementation; the plan remains the authority for objectives, ordering, and gates. Each entry is machine-checked by `scripts/check-plan-corrections.sh`.
+
+Discovery path (why this isn't pointed to from CLAUDE.md): CLAUDE.md is a byte-pinned §4.1 seed under EX-01 and adding a line would widen that exception. Instead, `PROGRESS.md` and `context/session-summary.md` both point here, and CLAUDE.md's own continuity bullet already mandates reading both at every session start.
+
+| ID | Plan location | Owner | Status source |
+|---|---|---|---|
+| C-01 | §4.6 hook entry shape | F2 | settings.json |
+| C-02 | §4.6 `PostToolUseFail` event name | F2 | settings.json |
+| C-03 | §5.6 PreToolUse deny mechanism | F2 | hooks/*.sh |
+| C-04 | §4.7 `.claude/state/` not ignored | F2 | .gitignore |
+| C-05 | §5.2.2 `Task`→`Agent` bypass detection | F3 | validate-crew.sh + arbiter-protocol.md |
+| C-06 | §5.5 apply-models HC-2 scan | F0 | scripts/apply-models.sh |
+| C-07 | §5.5 apply-models session-model jq | F0 | scripts/apply-models.sh |
+| C-08 | §5.5 apply-models subshell exit | F0 | scripts/apply-models.sh |
+
+---
+
+## C-01 — hook entries use a key that does not exist (F2, blocking)
+**Plan says** (§4.6): `{ "matcher": "Bash", "hook": "bash -c '...'", "description": "..." }`
+**Reality**: the key is `hooks`, an array of handler objects.
+**Apply**:
+```json
+{ "matcher": "Bash", "hooks": [ { "type": "command", "command": "$CLAUDE_PROJECT_DIR/hooks/bash-blocker.sh" } ] }
+```
+`description` is not part of the shape — keep the intent in the hook script's header comment instead. Affects all nine §4.6 entries (machine-counted). Evidence: current hooks reference, and the live working config in `~/.claude/settings.json`.
+**Verify**: no entry under `.hooks[][]` has a `hook` key.
+
+## C-02 — `PostToolUseFail` is not a real event (F2, blocking)
+**Plan says** (§4.6): `"PostToolUseFail"`. **Reality**: `PostToolUseFailure`.
+**Apply**: rename the key. **Verify**: `.hooks | has("PostToolUseFail")` is false.
+
+## C-03 — PreToolUse denial is not exit 2 (F2, blocking)
+**Plan says** (§5.6): `bash-blocker.sh` / `model-guard.sh` "print DENY reason, exit 2".
+**Reality**: PreToolUse denial is expressed as JSON on stdout; exit 2 is the mechanism for other events. A bare exit 2 would not block, so HC-5's clone/npx/sudo/destructive guards would not actually guard.
+**Apply** (the local working hook does both — copy that):
+```sh
+printf '%s' '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"REASON"}}'
+exit 2
+```
+**Verify**: every PreToolUse-wired script in `hooks/` contains `permissionDecision`.
+
+## C-04 — `.claude/state/` is tracked despite DIRECTORY_GUIDE (F2)
+**Plan says**: §4.7 `.gitignore` omits it; DIRECTORY_GUIDE states it is ignored.
+**Reality**: contradiction — snapshots would be committed every turn once §15.9 is wired.
+**Apply**: append `.claude/state/` to `.gitignore`. sensitive-guard permits appends (it blocks removals).
+**Verify**: `git check-ignore -q .claude/state/compact-pending`.
+
+## C-05 — bypass detection greps a renamed tool (F3, blocking)
+**Plan says** (§5.2.2): diff "tooluse-audit.jsonl Task calls" against arbiter coverage.
+**Reality**: `Task` was renamed `Agent` in v2.1.63 (`Task` survives only as an alias). A lead calling `Agent` directly yields zero matches, so the check passes while the bypass succeeds — defeating the plan's own declared weakest enforcement point.
+**Apply**: match `Task|Agent` everywhere bypass detection appears — `scripts/validate-crew.sh` (already done) and `.claude/rules/arbiter-protocol.md` (F3 writes it).
+**Upgrade available, operator decision**: `SubagentStart`/`SubagentStop` hooks receive the subagent's name as `agent_type` — the caller/callee attribution §5.2.2 assumed hooks "cannot reliably" provide. This would make bypass detection hook-enforced and deterministic rather than audit-diff-based.
+**Verify**: both names present wherever dispatch detection occurs.
+
+## C-06/C-07/C-08 — §5.5 apply-models.sh (F0, APPLIED as EX-02)
+- **C-06**: HC-2 scan piped `grep -ril` (filenames) into `grep -v forbidden_substrings`, so the filter tested the filename and never suppressed the legitimate declaration line — `[FAIL] HC-2`, exit 2, on a clean repo. Fixed: match lines, filter the declaration line.
+- **C-07**: session model used `.[$m=="pinned" and "pinned" or "aliases"]`. jq's `and`/`or` return booleans, so this errors with *Cannot index object with boolean*. Fixed: `if/then/else`, matching the idiom the per-agent line already used.
+- **C-08**: the agent loop ran as `jq ... | while read`, i.e. in a subshell, so its `exit 3` on malformed frontmatter could not stop the script — it would report success while violating HC-4. Fixed: iterate without the pipeline.
