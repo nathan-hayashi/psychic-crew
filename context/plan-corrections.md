@@ -66,3 +66,15 @@ exit 2
 `validate-crew.sh` substring-matches tracked files for an absolute home-directory prefix. It is high-recall and low-precision on purpose: it is a cheap guard against machine-specific paths leaking into a public repo, and narrowing it to "looks like a real path" would create exactly the gap it exists to close.
 
 Consequence for every phase: **do not write the literal token in tracked prose**, not even when documenting the check itself. Describe it ("an absolute home-directory prefix") or use `$HOME`. Two failures were caused this way at F0 — once by the validator's own grep pattern (fixed by splitting the string literal) and once by a Plan.md sentence describing the fix. Neither was a real violation; both cost a red gate.
+
+## C-09 — §5.5's HC-2 scan is a bare substring match (F0/F1, APPLIED as EX-03)
+**Plan says** (§5.5): grep the config surface for each forbidden substring; any hit fails.
+**Reality**: any *mention* trips it. `.claude/rules/model-policy.md` documents the prohibition and fails. Decisively, **F2's `model-guard.sh` must contain the string to guard against it**, so under the plan's scan that hook can never pass validation — the check makes its own enforcement mechanism unwriteable.
+**Apply**: match assignment positions only — model-bearing JSON values (`.aliases`, `.pinned`, `.session.model`, `.agents[].model`; `.model` in settings.json) plus lines that are model assignments under `.claude/`. Prose is not configuration.
+**Second-order trap, also fixed**: implement the check by capturing hits into a variable and testing it. Under `set -o pipefail`, a `{ producers; } | grep -q .` form is silently skipped whenever an inner producer matches nothing and exits 1 — the guard reports clean while doing nothing.
+**Verify**: five poison vectors each exit 2; a clean config exits 0; prose mentions do not trip it.
+
+**C-06 status note:** superseded by C-09. EX-02 fixed the filename-vs-line bug inside the old `grep -ril` form; EX-03 then replaced that form entirely with assignment-position matching, under which the bug cannot occur. The detector reports SUPERSEDED rather than PENDING — a correction whose detection pattern legitimately disappears when a better fix subsumes it must not read as regression.
+
+## Working note — detectors must test code, not comments
+Four separate red gates in this build came from a check matching text that *documents* the thing being checked rather than the thing itself: the validator's own absolute-path pattern, a Plan.md sentence quoting it, the rule file documenting the fable prohibition, and this detector matching a stale comment in `apply-models.sh`. The lesson generalises: **any check that greps for a defect signature must strip comments and must not scan prose files.** A guard that trips on its own documentation trains people to ignore it, and a guard that goes green because its target moved into a comment is worse than none.

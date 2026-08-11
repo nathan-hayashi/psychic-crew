@@ -6,13 +6,26 @@ cd "$(dirname "$0")/.."
 CFG="models.config.json"
 command -v jq >/dev/null || { echo "[FAIL] jq required"; exit 1; }
 
-# EX-02(a): §5.5 pipes `grep -ril` (FILENAMES) into `grep -v forbidden_substrings`, so the
-# filter tests the filename and never suppresses the legitimate declaration line — the check
-# exits 2 on a clean repo. Match lines instead, and filter the declaration line.
+# HC-2 guard. History: EX-02(a) first repaired §5.5's filename-vs-line bug in this check;
+# EX-03 then replaced the whole scan with assignment-position matching (below), under which
+# that bug is structurally impossible. Do not reintroduce a whole-file substring scan.
 for bad in $(jq -r '.forbidden_substrings[]' "$CFG"); do
-  if grep -ri --exclude-dir=logs --exclude-dir=.git --exclude="MASTER_FIFO_PLAN_CLAUDE.md" \
-       "$bad" .claude/ "$CFG" 2>/dev/null | grep -v '"forbidden_substrings"' | grep -q .; then
-    echo "[FAIL] HC-2: forbidden model substring '$bad' present in config surface"; exit 2
+  # EX-03: assignment positions only (a bare substring scan flags the rule file documenting the
+  # prohibition, and F2's model-guard.sh, which must contain the string to guard it).
+  # Captured into a variable rather than tested via pipeline status: under `set -o pipefail` a
+  # non-matching inner grep exits 1 and would mark the whole pipeline failed, silently skipping
+  # this guard entirely. Caught by the G-F1 stress test.
+  HITS=$( { jq -r --arg b "$bad" '
+              [ (.aliases // {} | to_entries[] | "aliases.\(.key)=\(.value)"),
+                (.pinned  // {} | to_entries[] | "pinned.\(.key)=\(.value)"),
+                ("session.model=" + (.session.model // "")),
+                (.agents  // {} | to_entries[] | "agents.\(.key).model=\(.value.model)") ]
+              | .[] | select(ascii_downcase | contains($b))' "$CFG" 2>/dev/null || true
+            grep -rniE "^[[:space:]]*[\"']?model[\"']?[[:space:]]*:[[:space:]]*[\"']?[^\"',}]*${bad}" \
+              .claude/ 2>/dev/null || true ; } | grep . || true )
+  if [ -n "$HITS" ]; then
+    echo "[FAIL] HC-2: forbidden model substring '$bad' assigned -> $(echo "$HITS" | tr '\n' ' ')"
+    exit 2
   fi
 done
 
@@ -43,9 +56,15 @@ for a in $(jq -r '.agents | keys[]' "$CFG"); do
   else
     echo "[FAIL] $F lacks a model: line in frontmatter"; exit 3
   fi
-  echo "[OK] $a -> $MODEL (effort:$(jq -r --arg a "$a" '.agents[$a].effort' "$CFG") recorded)"
+  # F1: per-agent effort support was confirmed at F0 step 6 (documented frontmatter field,
+  # low|medium|high|xhigh|max, overrides session effort). Stamp it alongside model.
+  EFFORT=$(jq -r --arg a "$a" '.agents[$a].effort' "$CFG")
+  if grep -q '^effort:' "$F"; then
+    sed -i.bak "s/^effort:.*/effort: $EFFORT/" "$F" && rm -f "$F.bak"
+  else
+    sed -i.bak "/^model:/a effort: $EFFORT" "$F" && rm -f "$F.bak"
+  fi
+  echo "[OK] $a -> model:$MODEL effort:$EFFORT"
 done
 echo "[OK] apply-models complete."
-echo "[NOTE] Per-agent effort support was CONFIRMED at F0 step 6 (frontmatter 'effort':"
-echo "       low|medium|high|xhigh|max, overrides session effort). F1 owns stamping it"
-echo "       alongside model; §5.5's session-level fallback note is now moot."
+echo "[OK] model and effort both stamped from the single source of truth (HC-4)."

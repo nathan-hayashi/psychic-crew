@@ -59,7 +59,19 @@ else
   [ "$v" = 0 ] && report C-05 F3 PENDING "validate-crew ok; .claude/rules/arbiter-protocol.md not written yet (F3)" \
                || report C-05 F3 PENDING "detection incomplete and rule not yet written"; fi
 
-for id in C-06:'HC-2 scan matches lines not filenames':'grep -v .\"forbidden_substrings\"' \
+# C-06 was EX-02's fix to the filename-vs-line bug inside the old `grep -ril` form. EX-03 replaced
+# that form entirely with assignment-position matching, under which the bug cannot occur — so its
+# detection pattern legitimately no longer exists. Superseded, not unfixed.
+CODE_AM=$(sed 's/#.*//' scripts/apply-models.sh 2>/dev/null)
+if printf '%s' "$CODE_AM" | grep -q 'grep -ril'; then
+  report C-06 F0 PENDING "HC-2 still uses grep -ril (filenames); the -v filter can never suppress"
+elif printf '%s' "$CODE_AM" | grep -q 'ascii_downcase | contains'; then
+  report C-06 F0 SUPERSEDED "subsumed by C-09; the grep -ril form no longer exists"
+else
+  report C-06 F0 PENDING "HC-2 implementation unrecognised — re-verify by hand"
+fi
+
+for id in \
           C-07:'session-model jq uses if/then/else':'if \$m=="pinned"' \
           C-08:'agent loop avoids the pipeline subshell':'for a in \$\(jq'; do
   i=${id%%:*}; rest=${id#*:}; desc=${rest%%:*}; pat=${rest##*:}
@@ -67,7 +79,18 @@ for id in C-06:'HC-2 scan matches lines not filenames':'grep -v .\"forbidden_sub
   else report "$i" F0 PENDING "$desc — EX-02 fix missing from apply-models.sh"; fi
 done
 
-printf '\n== %s APPLIED / %s PENDING ==\n' "$APPL" "$PEND"
+if sed 's/#.*//' scripts/validate-crew.sh 2>/dev/null | grep -q 'ascii_downcase | contains' \
+   && printf '%s' "$CODE_AM" | grep -q 'ascii_downcase | contains'; then
+  if grep -q 'HITS=' scripts/apply-models.sh 2>/dev/null; then
+    report C-09 F1 APPLIED "HC-2 matches assignment positions; guard captures hits (pipefail-safe)"
+  else
+    report C-09 F1 PENDING "HC-2 narrowed but the guard still tests pipeline status — silently skippable under pipefail"
+  fi
+else
+  report C-09 F1 PENDING "HC-2 is still a bare substring scan; F2 model-guard.sh cannot pass validation"
+fi
+
+printf '\n== %s APPLIED / %s PENDING / %s SUPERSEDED ==\n' "$APPL" "$PEND" "$NA"
 case "$WANT" in
   all) echo "(informational; run with a phase id, e.g. 'F2', to gate on it)"; exit 0;;
   *)   if [ "$GATE" = 1 ]; then echo "GATE $WANT: FAIL — corrections owned by $WANT are still pending"; exit 1

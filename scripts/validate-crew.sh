@@ -13,15 +13,26 @@ echo "== config parses =="
 jq -e . models.config.json    >/dev/null 2>&1 && pass "models.config.json parses" || fail "models.config.json does not parse"
 jq -e . .claude/settings.json >/dev/null 2>&1 && pass ".claude/settings.json parses" || fail ".claude/settings.json does not parse"
 
-echo "== HC-2 forbidden model substrings =="
+echo "== HC-2 forbidden models (assignment positions) =="
+# EX-03: a bare substring scan flags any mention, including the rule file that documents the
+# prohibition and F2's model-guard.sh, which must contain the string to guard it. HC-2 forbids a
+# forbidden model being ASSIGNED, so check assignment positions: model-bearing JSON values, and
+# lines that are model assignments. Prose mentions are not configuration.
 hc2=0
 for bad in $(jq -r '.forbidden_substrings[]' models.config.json 2>/dev/null); do
-  if grep -ri --exclude-dir=logs --exclude-dir=.git --exclude="MASTER_FIFO_PLAN_CLAUDE.md" \
-       "$bad" .claude/ models.config.json 2>/dev/null | grep -v '"forbidden_substrings"' | grep -q .; then
-    fail "HC-2: '$bad' present in the config surface"; hc2=1
-  fi
+  h=$( { jq -r --arg b "$bad" '
+          [ (.aliases // {} | to_entries[] | "aliases.\(.key)=\(.value)"),
+            (.pinned  // {} | to_entries[] | "pinned.\(.key)=\(.value)"),
+            ("session.model=" + (.session.model // "")),
+            (.agents  // {} | to_entries[] | "agents.\(.key).model=\(.value.model)") ]
+          | .[] | select(ascii_downcase | contains($b))' models.config.json 2>/dev/null
+        jq -r --arg b "$bad" '"settings.model=" + (.model // "") | select(ascii_downcase | contains($b))' \
+          .claude/settings.json 2>/dev/null
+        grep -rniE "^[[:space:]]*[\"']?model[\"']?[[:space:]]*:[[:space:]]*[\"']?[^\"',}]*${bad}" \
+          .claude/ 2>/dev/null ; } | grep . )
+  if [ -n "$h" ]; then fail "HC-2: '$bad' assigned as a model -> $(echo "$h" | tr '\n' ' ')"; hc2=1; fi
 done
-[ "$hc2" = 0 ] && pass "no forbidden model substrings outside the declaration"
+[ "$hc2" = 0 ] && pass "no forbidden model assigned anywhere in the config surface"
 
 echo "== tier lock =="
 [ "$(jq -r '.env.CREW_TIER_LOCK // empty' .claude/settings.json 2>/dev/null)" = "T3" ] \
@@ -50,13 +61,20 @@ if [ "$n" = 0 ]; then
   skip "no agent definitions yet (F3 owns .claude/agents/)"
 else
   MODE=$(jq -r '.mode // "alias"' models.config.json)
+  miss=0
   for a in $(jq -r '.agents | keys[]' models.config.json); do
     f=".claude/agents/$a.md"
-    [ -f "$f" ] || { fail "$f missing"; continue; }
+    # Not-yet-written agents are F3's, not a failure. Every agent that DOES exist must be
+    # correctly stamped; F3's own gate asserts the full roster is present.
+    [ -f "$f" ] || { miss=$((miss+1)); continue; }
     want=$(jq -r --arg m "$MODE" --arg a "$a" '.[if $m=="pinned" then "pinned" else "aliases" end][.agents[$a].model]' models.config.json)
     got=$(grep -m1 '^model:' "$f" | sed 's/^model:[[:space:]]*//')
-    [ "$got" = "$want" ] && pass "$a stamped $got" || fail "$a stamped '$got', config says '$want'"
+    wante=$(jq -r --arg a "$a" '.agents[$a].effort' models.config.json)
+    gote=$(grep -m1 '^effort:' "$f" | sed 's/^effort:[[:space:]]*//')
+    if [ "$got" = "$want" ] && [ "$gote" = "$wante" ]; then pass "$a stamped model:$got effort:$gote"
+    else fail "$a stamped model:'$got' effort:'$gote', config says model:'$want' effort:'$wante'"; fi
   done
+  [ "$miss" = 0 ] || skip "$miss of $(jq '.agents|length' models.config.json) agent definitions not yet written (F3)"
 fi
 
 echo "== hooks =="
