@@ -59,3 +59,8 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Workflow status:** validate-crew 19 PASS / 2 SKIP / 0 FAIL · run-crew-tests F2 27 PASS / 0 FAIL · corrections F0/F1/F2 all exit 0, F3 exit 1.
 - **BLOCKER for G-F2:** project hooks do not load in this session (bound to the pre-rename path). The live-trigger demo requires relaunching from `~/projects/psychic-crew`.
 - **Next action:** relaunch, then G-F2 demo (live trigger each hook) + stress (6 forbidden ops → 6 denies + 6 audit entries; kill-switch).
+
+## [F2|2026-08-11T05:11:41Z] checkpoint — kill-switch closed; G-F2 offline stress green
+- **Stress:** 6/6 denials · 6/6 audit entries · kill-switch removes hooks → validate-crew exit 1 (11 FAIL).
+- **Still required for G-F2:** live trigger of each hook, which needs a relaunch from `~/projects/psychic-crew`.
+- **Next action:** relaunch; the SessionStart hook will re-ground automatically, then run the live demo.

@@ -193,3 +193,7 @@ Gate simulations verified: `check-plan-corrections.sh F2` → exit 1 (blocks); `
 Standing rule now in the corrections registry: **capture into a variable, then test it**; never branch on a pipeline containing a stage whose nonzero exit is meaningful; pass JSON as printf arguments, never as the format.
 
 [F2|2026-08-11T05:10:43Z] NON-POSIX CHECK — validate-crew flagged `model-guard.sh` for `[[`, which was `[[:space:]]`, a POSIX character class → fix: match `\[\[[^:]`. Verified with a control: a genuine `[[ -f x ]]` is still caught. Fifth instance of a check tripping on legitimate text.
+
+[F2|2026-08-11T05:11:41Z] KILL-SWITCH — G-F2's stress requires that removing the hooks makes validate-crew fail, but the hooks section SKIPped whenever `hooks/` was empty, so deleting the entire enforcement layer would have passed silently. That SKIP was correct pre-F2 and became a hole the moment hooks were wired → fix: settings.json is the authority on what must exist — every hook referenced by a wired command must be present on disk, else FAIL. Verified: removing `hooks/` yields 11 FAIL and exit 1; restoring returns 0 FAIL.
+
+[F2|2026-08-11T05:11:41Z] G-F2 STRESS (offline portion) — six forbidden ops in sequence: **6/6 denied**, **6/6 audit entries** written. Kill-switch confirmed. Remaining and NOT satisfiable in this session: the live-trigger demo, because project hooks do not load here.

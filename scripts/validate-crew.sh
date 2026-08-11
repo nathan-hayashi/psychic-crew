@@ -78,9 +78,20 @@ else
 fi
 
 echo "== hooks =="
+# Kill-switch (G-F2 stress): the authority on what must exist is settings.json itself. If a hook
+# is WIRED, its script must be present and valid — otherwise deleting hooks/ would silently SKIP
+# and the enforcement layer could be removed without any check noticing.
+WIRED=$(jq -r '[.hooks[]?[]?.hooks[]?.command] | .[]' .claude/settings.json 2>/dev/null \
+        | grep -oE 'hooks/[a-z-]+\.sh' | sort -u)
+if [ -n "$WIRED" ]; then
+  for w in $WIRED; do
+    [ -f "$w" ] || fail "wired hook missing from disk: $w (kill-switch)"
+  done
+fi
 n=$(ls -1 hooks/*.sh 2>/dev/null | wc -l)
 if [ "$n" = 0 ]; then
-  skip "no hook scripts yet (F2 owns hooks/)"
+  if [ -n "$WIRED" ]; then fail "hooks/ is empty but settings.json wires $(printf '%s' "$WIRED" | wc -w) hooks (kill-switch)"
+  else skip "no hook scripts yet (F2 owns hooks/)"; fi
 else
   for h in hooks/*.sh; do
     [ -x "$h" ] || fail "$h not executable"
