@@ -3,4 +3,4 @@ Format per F5: gate · ISO · demo_result · stress_result · operator_token_lin
 
 | Gate | ISO (UTC) | Demo result | Stress result | Operator token line |
 |---|---|---|---|---|
-| G-F0 | (pending) | (pending) | (pending) | awaiting `APPROVE GATE-F0` |
+| G-F0 | 2026-08-11T04:02:53Z | tree + validate-crew 7 PASS / 3 SKIP / 0 FAIL + repo live | idempotency zero-diff across 12 files; HC-5 deny-list config shown (live hook test deferred to G-F2 per plan) | awaiting `APPROVE GATE-F0` |

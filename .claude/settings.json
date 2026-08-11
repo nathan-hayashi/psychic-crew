@@ -1,29 +1,120 @@
 {
-  "model": "claude-opus-5",
+  "model": "opus",
   "effortLevel": "max",
-  "env": { "CREW_TIER_LOCK": "T3" },
+  "env": {
+    "CREW_TIER_LOCK": "T3"
+  },
   "permissions": {
-    "allow": ["Read","Write","Edit","Glob","Grep",
-      "Bash(git status *)","Bash(git diff *)","Bash(git log *)","Bash(git add *)","Bash(git commit *)","Bash(git push *)","Bash(git pull *)","Bash(git checkout *)","Bash(git branch *)","Bash(git tag *)","Bash(git init *)","Bash(git remote *)",
-      "Bash(jq *)","Bash(node *)","Bash(npm run *)","Bash(npm test *)","Bash(bash scripts/*)","Bash(./scripts/*)","Bash(ls *)","Bash(cat *)","Bash(head *)","Bash(tail *)","Bash(wc *)","Bash(mkdir *)","Bash(cp *)","Bash(mv *)","Bash(chmod *)","Bash(gh repo *)","Bash(gh auth status *)"],
-    "deny": ["Read(.env*)","Read(**/secrets/**)",
-      "Bash(rm -rf /)","Bash(rm -rf /*)","Bash(rm -rf ~)","Bash(rm -rf $HOME)","Bash(:(){ :|:& };:)","Bash(dd if=*)",
-      "Bash(git clone *)","Bash(npx *)","Bash(npm install -g *)","Bash(sudo *)",
-      "Bash(terraform destroy *)","Bash(kubectl delete namespace *)"]
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(git tag *)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(jq *)",
+      "Bash(node *)",
+      "Bash(npm run *)",
+      "Bash(npm test *)",
+      "Bash(bash scripts/*)",
+      "Bash(./scripts/*)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(chmod *)",
+      "Bash(gh repo *)",
+      "Bash(gh auth status *)"
+    ],
+    "deny": [
+      "Read(.env*)",
+      "Read(**/secrets/**)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf $HOME)",
+      "Bash(:(){ :|:& };:)",
+      "Bash(dd if=*)",
+      "Bash(git clone *)",
+      "Bash(npx *)",
+      "Bash(npm install -g *)",
+      "Bash(sudo *)",
+      "Bash(terraform destroy *)",
+      "Bash(kubectl delete namespace *)"
+    ]
   },
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Bash", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/bash-blocker.sh'", "description": "Deny destructive/forbidden commands incl. clone/npx/sudo (HC-5)" },
-      { "matcher": "Write|Edit", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/model-guard.sh'", "description": "HC-2: block any write introducing a forbidden model substring into config" },
-      { "matcher": "Write|Edit", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/sensitive-guard.sh'", "description": "Guard .env/secrets/.gitignore writes" }
+      {
+        "matcher": "Bash",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/bash-blocker.sh'",
+        "description": "Deny destructive/forbidden commands incl. clone/npx/sudo (HC-5)"
+      },
+      {
+        "matcher": "Write|Edit",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/model-guard.sh'",
+        "description": "HC-2: block any write introducing a forbidden model substring into config"
+      },
+      {
+        "matcher": "Write|Edit",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/sensitive-guard.sh'",
+        "description": "Guard .env/secrets/.gitignore writes"
+      }
     ],
     "PostToolUse": [
-      { "matcher": "*", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/audit-logger.sh'", "description": "Append tool-use record to logs/tooluse-audit.jsonl (SOC2-style evidence)" },
-      { "matcher": "Write|Edit", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/auto-format.sh'", "description": "Prettier for supported types if available; no-op otherwise" }
+      {
+        "matcher": "*",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/audit-logger.sh'",
+        "description": "Append tool-use record to logs/tooluse-audit.jsonl (SOC2-style evidence)"
+      },
+      {
+        "matcher": "Write|Edit",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/auto-format.sh'",
+        "description": "Prettier for supported types if available; no-op otherwise"
+      }
     ],
-    "PostToolUseFail": [ { "matcher": "*", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/error-recovery.sh'", "description": "Log to build-errors.jsonl + emit recovery hint" } ],
-    "PreCompact": [ { "matcher": "auto|manual", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/pre-compact-checkpoint.sh'", "description": "R3: write emergency checkpoint block to PROGRESS.md before any compaction (pattern: neatcontext PreCompact, MIT, rebuilt natively file-based — no external companion)" } ],
-    "Notification": [ { "matcher": "*", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/notify.sh'", "description": "Desktop toast (Q3-dependent)" } ],
-    "Stop": [ { "matcher": "*", "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/stop.sh'", "description": "Gate-ready toast" } ]
+    "PostToolUseFail": [
+      {
+        "matcher": "*",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/error-recovery.sh'",
+        "description": "Log to build-errors.jsonl + emit recovery hint"
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto|manual",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/pre-compact-checkpoint.sh'",
+        "description": "R3: write emergency checkpoint block to PROGRESS.md before any compaction (pattern: neatcontext PreCompact, MIT, rebuilt natively file-based — no external companion)"
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "*",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/notify.sh'",
+        "description": "Desktop toast (Q3-dependent)"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hook": "bash -c '$CLAUDE_PROJECT_DIR/hooks/stop.sh'",
+        "description": "Gate-ready toast"
+      }
+    ]
   }
 }
