@@ -110,3 +110,14 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **NOT tagged:** crew-f3 is deliberately not created. The phase is not gate-ready.
 - **In-flight changes:** none.
 - **Next action:** operator decision on C-11 — Option A (grant the arbiter `Agent`, making it the only component able to dispatch and converting the dispatch law into a structural guarantee, under a logged exception) or Option B (orchestrator fans out, arbiter normalises; partial G-F3 evidence only). Then re-run the G-F3 demo.
+
+## [F3|2026-08-11T06:36:54Z] checkpoint — G-F3 re-run BLOCKED by a platform limit; two new P0s
+- **Task:** G-F3 demo re-run under EX-04.
+- **Result:** still blocked. Verdict remains **ESCALATE**. crew-f3 NOT tagged.
+- **C-11 reopened:** EX-04 is INERT. Runtime says "Agent is disabled for this session, in subagents as well as here" — the orchestrator can dispatch, a subagent cannot, at any depth. A frontmatter grant is a declaration, not a capability, and disk inspection cannot tell them apart. **Option A is not implementable in this environment**; no exception can lift a platform constraint.
+- **C-12 (new P0):** the bypass detector is satisfiable by the party it audits. validate-crew compares COUNTS of Agent calls vs arbiter audit lines without correlating identity. The arbiter's two failed dispatches logged nothing (PostToolUse cannot fire for a tool that never ran), its two truthful lines took c 1→3 against d=3, and a true-positive FAIL flipped to PASS with nothing remediated. validate-crew now reads 27 PASS / 0 FAIL and that green is NOT trustworthy.
+- **Self-inflicted, caught and fixed:** my first C-11 detector matched "RELEASE replaced by FALLBACK" and reported APPLIED for a failed fan-out. Now tests the mutation field via jq instead of grepping the file.
+- **Arbiter conduct:** two dispatches, two correct FALLBACKs, zero fabrication under direct pressure to produce a packet; it surfaced C-12 against its own interest rather than banking the clean result.
+- **Unresolved:** the global-vs-project shadowing of security-reviewer / quality-reviewer / fixer. Only a live dispatch settles it; for quality-reviewer the tool lists are identical, so vocabulary and effort are the only discriminators.
+- **In-flight changes:** none.
+- **Next action:** operator decision — Option A is off the table, so choose between Option B (orchestrator dispatches, arbiter normalises post-hoc) and a redesign; then fix C-12's correlation.

@@ -199,6 +199,12 @@ cases_F3 () {
     && ok "C-05: arbiter-protocol matches both tool names" || no "C-05: arbiter-protocol misses Task|Agent"
   grep -rq 'hiya-crew' .claude/agents .claude/rules 2>/dev/null \
     && no "EX-01: the pre-rename project name survives in .claude/" || ok "EX-01: no pre-rename name in agents or rules"
+  # EX-04: the arbiter is the ONLY component permitted a dispatch tool. Exclusivity is what turns
+  # §5.2.2 from a rule a lead could break into one it physically cannot, so assert exclusivity and
+  # not mere presence — a second grant silently re-opens the bypass this build's design rests on.
+  disp=$(grep -l '^tools:.*Agent' .claude/agents/*.md 2>/dev/null | xargs -n1 basename 2>/dev/null | tr '\n' ' ')
+  [ "$disp" = "arbiter.md " ] && ok "EX-04: arbiter holds the only dispatch tool" \
+                              || no "EX-04: dispatch tool held by [$disp], expected arbiter.md alone"
   check "plan corrections: F3 clean" 0 ./scripts/check-plan-corrections.sh F3
 }
 

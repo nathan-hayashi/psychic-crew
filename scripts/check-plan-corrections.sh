@@ -107,10 +107,33 @@ fi
 # Agent tool — and no other crew agent holds one either. Every hop of lead->arbiter->specialist has
 # zero dispatch capability, so the central design bet of this build (CLAUDE_DESIGN item 2) is
 # unexecutable as written. Proven live at G-F3: the arbiter returned a FALLBACK rather than fabricate.
-if grep -q '^tools:.*Agent' .claude/agents/arbiter.md 2>/dev/null; then
-  report C-11 F3 APPLIED "arbiter holds the Agent tool; the dispatch law is structurally enforceable"
+# A frontmatter grant is a DECLARATION, not a capability. EX-04 added Agent to arbiter.md and the
+# runtime still refused it ("Agent is disabled for this session, in subagents as well as here"), so
+# testing the tools line alone would report APPLIED for a fan-out that cannot happen. Require
+# evidence of a real RELEASE in the audit log instead of trusting the declaration.
+# First cut of this detector grepped the audit log for "RELEASE" and reported APPLIED against the
+# line "RELEASE replaced by FALLBACK" — matching prose that DOCUMENTS the failure as though it were
+# the success. That is the registry's own documented trap ("detectors must test code, not comments"),
+# so test the field, not the file: a mutation that claims a release AND disclaims failure.
+released=$(jq -r 'select((.mutation // "") | test("RELEASE"; "i"))
+                | select(((.mutation // "") | test("FAIL|FALLBACK|not-executed|quarantin"; "i")) | not)
+                | .task_id' logs/arbiter-audit.jsonl 2>/dev/null | head -1)
+if grep -q '^tools:.*Agent' .claude/agents/arbiter.md 2>/dev/null && [ -n "${released:-}" ]; then
+  report C-11 F3 APPLIED "arbiter holds Agent AND completed a real fan-out ending in RELEASE ($released)"
 else
-  report C-11 F3 PENDING "arbiter is the sole permitted dispatcher yet holds no Agent/Task tool — fan-out unexecutable (G-F3 P0)"
+  report C-11 F3 PENDING "fan-out still unproven: EX-04 granted Agent in frontmatter, but nested subagent dispatch is disabled at runtime, so the grant is inert (G-F3 P0)"
+fi
+
+# C-12: the bypass detector is satisfiable by the thing it audits. validate-crew compares the COUNT
+# of Agent calls against the COUNT of arbiter audit lines, never correlating which dispatch each line
+# covers — so the arbiter can turn the check green by writing any lines at all. Observed live at
+# G-F3: two failed Agent calls logged nothing (PostToolUse cannot fire for a tool that never ran),
+# the arbiter's two honest lines took c from 1 to 3 against d=3, and a true-positive FAIL flipped to
+# PASS with no bypass remediated. Third instance of this family after F2 deny() and the self-match.
+if grep -q 'task_id' scripts/validate-crew.sh 2>/dev/null; then
+  report C-12 F3 APPLIED "bypass coverage correlates dispatch identity, not raw line counts"
+else
+  report C-12 F3 PENDING "bypass coverage compares counts only — the arbiter can satisfy it by writing any lines (G-F3 P0)"
 fi
 
 # C-10: CLAUDE.md binds every agent to .claude/rules/fallback-protocol.md, but no §6 phase step

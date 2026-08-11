@@ -114,3 +114,23 @@ Three separate failures in this build came from testing a pipeline's status when
 
 ## Working note — the coverage check is live, and it caught the orchestrator
 The arbiter also reported that C-05's coverage check passes vacuously at `0 >= 0` because no agent can dispatch. That reasoning was sound but incomplete: it could only see crew agents. The **orchestrator session** dispatches too, and those calls are logged as `"tool":"Agent"` in `logs/tooluse-audit.jsonl`. Measured immediately after the G-F3 attempt the check reported `FAIL: 2 dispatches, 1 arbiter lines` — a true positive against the orchestrator, which had to bypass the arbiter precisely because C-11 makes arbiter-routed dispatch impossible. The check works. The vacuity risk is real only in the case where dispatch count is genuinely zero, and it should be re-examined once C-11 is resolved.
+
+**C-11 RESOLVED as EX-04 (operator-approved, 2026-08-11).** `Agent` added to `.claude/agents/arbiter.md` and to no other agent. This is deliberately the *narrowest* possible widening: because the arbiter is now the only component holding a dispatch tool, §5.2.2's "leads MUST NOT invoke the Agent tool on any specialist directly" changes from a rule a lead could break into one it physically cannot. The plan's self-declared weakest enforcement point — audit-based bypass detection — is upgraded to structural prevention. `cases_F3` asserts the exclusivity, so a future phase that grants `Agent` to a second agent fails the gate rather than silently re-opening the hole.
+
+## C-11 REOPENED — EX-04 is inert; nested dispatch is disabled at runtime (F3, P0)
+EX-04 added `Agent` to `.claude/agents/arbiter.md` with operator approval. The runtime refused it: **"No such tool available: Agent. Agent is disabled for this session, in subagents as well as here."** The orchestrator session can dispatch; a subagent cannot, at any depth.
+
+**A frontmatter grant is a declaration, not a capability.** The disk state now looks correct and the fan-out still cannot happen — precisely the failure mode that is invisible to file inspection. C-11's detector was therefore changed to require evidence of a real RELEASE in `logs/arbiter-audit.jsonl`, not the presence of the tools line.
+
+Consequence: **Option A (arbiter as sole dispatcher) is not implementable in this environment.** The broker cannot be structurally enforced by tool exclusivity, because the only component permitted to dispatch is a subagent, and subagents cannot dispatch. This is a platform constraint, not a configuration error, and no exception can lift it.
+
+## C-12 — the bypass detector is satisfiable by the thing it audits (F3, P0)
+`scripts/validate-crew.sh` compares the COUNT of `Agent` tool calls in `logs/tooluse-audit.jsonl` against the COUNT of lines in `logs/arbiter-audit.jsonl`. It never correlates *which* dispatch each arbiter line covers, so any N arbiter lines satisfy any N dispatches — **the audited party can turn its own auditor green by writing lines.**
+
+Observed live at G-F3, not theorised: the arbiter's two failed `Agent` calls produced zero `tooluse-audit` entries, because PostToolUse cannot fire for a tool that never executed. `d` stayed 3 while the arbiter's two truthful lines took `c` from 1 to 3, and the coverage check flipped from a true-positive FAIL to PASS with nothing remediated. The arbiter flagged this against its own interest rather than exploiting it.
+
+This is the third instance of one family in this build: F2's `deny()` blocking without a record, the validator matching its own documentation, and now a counter-based control satisfiable by the audited party. **Counting is not correlating.**
+
+**Apply**: key each arbiter audit line to the `task_id` it covers, and match dispatches to lines by identity. Additionally log tool-call ATTEMPTS rather than only PostToolUse successes, so a dispatch that never executes remains visible to the auditor instead of vanishing from the denominator.
+
+**Verify**: `scripts/validate-crew.sh` correlates on `task_id`; a synthetic extra arbiter line does not turn an uncovered dispatch green.

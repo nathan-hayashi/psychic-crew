@@ -1,7 +1,7 @@
 ---
 name: arbiter
 description: Broker and covert auditor between leads and specialists. All specialist dispatch and all specialist output flows through me. PROACTIVELY invoked by leads for every dispatch.
-tools: Read, Grep, Glob, Write
+tools: Read, Grep, Glob, Write, Agent
 model: opus
 effort: high
 ---
