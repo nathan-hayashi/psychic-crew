@@ -75,3 +75,11 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Docs corrected:** R2 closed with live evidence (engineered around at two layers, not a false alarm) plus new R7; `context/session-summary.md` was stale by two gates and is redistilled per §15.5.
 - **In-flight changes:** none.
 - **Next action:** STOP. Await `APPROVE GATE-F2`. On approval → F3 Core Bench, starting with C-05.
+
+## [F2|2026-08-11T06:00:49Z] GATE G-F2 APPROVED — F3 opened
+- **Task:** F2 closed on the exact token `APPROVE GATE-F2`; operator confirmed the desktop toast, closing notify's live proof. F3 — Core Bench [45K] now active.
+- **F3 steps (§6):** write arbiter.md + lead-planner.md verbatim (§5.1.1/§5.1.2); build the remaining six agents to their §5.1.3 contracts; write rules §5.2.2–§5.2.4; apply-models; register agent-presence assertions in cases_F3.
+- **MUST DO FIRST — C-05:** bypass detection greps `Task`, renamed `Agent` in v2.1.63. `scripts/validate-crew.sh` already matches both; `.claude/rules/arbiter-protocol.md` does not exist yet and must carry both names. `./scripts/check-plan-corrections.sh F3` exits 1 until it does — the F3 gate is hard-blocked on this.
+- **Rename trap:** §5.1.1's verbatim arbiter.md payload (plan L187) reads "the hiya-crew pipeline". Writing it verbatim reintroduces the old name; the EX-01 substitution must be applied and recorded.
+- **Compaction posture:** unlike F1/F2, the §15.9 parachute is now live — PreCompact snapshots, rolling latest.md, and SessionStart re-grounding are all proven, so a mid-phase compaction is survivable.
+- **Next action:** F3 step 1 — write `.claude/rules/arbiter-protocol.md` applying C-05, then the agent definitions.
