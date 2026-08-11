@@ -59,3 +59,10 @@ exit 2
 - **C-06**: HC-2 scan piped `grep -ril` (filenames) into `grep -v forbidden_substrings`, so the filter tested the filename and never suppressed the legitimate declaration line — `[FAIL] HC-2`, exit 2, on a clean repo. Fixed: match lines, filter the declaration line.
 - **C-07**: session model used `.[$m=="pinned" and "pinned" or "aliases"]`. jq's `and`/`or` return booleans, so this errors with *Cannot index object with boolean*. Fixed: `if/then/else`, matching the idiom the per-agent line already used.
 - **C-08**: the agent loop ran as `jq ... | while read`, i.e. in a subshell, so its `exit 3` on malformed frontmatter could not stop the script — it would report success while violating HC-4. Fixed: iterate without the pipeline.
+
+---
+
+## Working note — the §5.2.4 absolute-path check is blunt by design
+`validate-crew.sh` substring-matches tracked files for an absolute home-directory prefix. It is high-recall and low-precision on purpose: it is a cheap guard against machine-specific paths leaking into a public repo, and narrowing it to "looks like a real path" would create exactly the gap it exists to close.
+
+Consequence for every phase: **do not write the literal token in tracked prose**, not even when documenting the check itself. Describe it ("an absolute home-directory prefix") or use `$HOME`. Two failures were caused this way at F0 — once by the validator's own grep pattern (fixed by splitting the string literal) and once by a Plan.md sentence describing the fix. Neither was a real violation; both cost a red gate.
