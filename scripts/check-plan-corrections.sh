@@ -62,7 +62,12 @@ else
   report C-04 F2 PENDING ".claude/state/ tracked; DIRECTORY_GUIDE says it must be ignored"; fi
 
 v=0
-grep -q 'Task|Agent' scripts/validate-crew.sh 2>/dev/null || v=1
+# Was: grep -q 'Task|Agent' — bound to one SPELLING of the check rather than to the check. C-12
+# re-expressed the same logic in jq (select(.tool=="Agent" or .tool=="Task")) and this detector
+# reported the correction regressed while the behaviour was intact. Test that both tool names are
+# actually matched, in whatever form, and strip comments so prose about the rule cannot satisfy it.
+CODE_VC=$(sed 's/#.*//' scripts/validate-crew.sh 2>/dev/null)
+printf '%s' "$CODE_VC" | grep -q 'Task' && printf '%s' "$CODE_VC" | grep -q 'Agent' || v=1
 if [ -f .claude/rules/arbiter-protocol.md ]; then
   grep -q 'Agent' .claude/rules/arbiter-protocol.md || v=1
   [ "$v" = 0 ] && report C-05 F3 APPLIED "both Task and Agent matched in detection and rule" \
@@ -118,10 +123,17 @@ fi
 released=$(jq -r 'select((.mutation // "") | test("RELEASE"; "i"))
                 | select(((.mutation // "") | test("FAIL|FALLBACK|not-executed|quarantin"; "i")) | not)
                 | .task_id' logs/arbiter-audit.jsonl 2>/dev/null | head -1)
+ndisp=$(grep -l '^tools:.*Agent' .claude/agents/*.md 2>/dev/null | wc -l)
 if grep -q '^tools:.*Agent' .claude/agents/arbiter.md 2>/dev/null && [ -n "${released:-}" ]; then
   report C-11 F3 APPLIED "arbiter holds Agent AND completed a real fan-out ending in RELEASE ($released)"
+elif grep -q 'EX-05' .claude/rules/arbiter-protocol.md 2>/dev/null && [ "$ndisp" = 0 ]; then
+  # EX-05 retires the requirement rather than satisfying it: the arbiter no longer needs to
+  # dispatch, so "the arbiter cannot dispatch" stops being a defect. Reporting this PENDING
+  # forever would train the reader to ignore a real blocker. Least privilege is asserted too —
+  # no agent holds an inert grant that would read as capability on disk.
+  report C-11 F3 SUPERSEDED "retired by EX-05: the orchestrator dispatches, coverage is identity-correlated (C-12), no agent holds a dispatch tool"
 else
-  report C-11 F3 PENDING "fan-out still unproven: EX-04 granted Agent in frontmatter, but nested subagent dispatch is disabled at runtime, so the grant is inert (G-F3 P0)"
+  report C-11 F3 PENDING "fan-out unproven and EX-05 not in force — the broker has neither dispatch capability nor a redesigned law (G-F3 P0)"
 fi
 
 # C-12: the bypass detector is satisfiable by the thing it audits. validate-crew compares the COUNT

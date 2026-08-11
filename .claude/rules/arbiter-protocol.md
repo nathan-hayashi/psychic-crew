@@ -4,7 +4,7 @@ paths: ["**/*"]
 # Arbiter Protocol (binding)
 
 ## The dispatch law
-Leads MUST NOT invoke the `Agent` tool on any specialist directly. Every dispatch is a DISPATCH block sent to the `arbiter`:
+**EX-05 — stated in the form that can actually be enforced.** Nested dispatch does not exist: a subagent cannot invoke `Agent` at any depth, so the arbiter cannot fan out and no exception can lift that. The original law ("leads never SEE raw specialist output") asserted a property this runtime cannot provide. The enforceable law is: **no specialist output may be ACTED ON until the arbiter has released it.** The orchestrator dispatches; every dispatch carries a `task_id`; the arbiter must emit an audit line bearing that same `task_id` before its packet is consumed. Every dispatch is still expressed as a DISPATCH block:
 
 ```json
 {"task_id","phase","to":["<agent>"],"objective","inputs","expected_output","budget_tokens","deadline_steps","guardrail"}

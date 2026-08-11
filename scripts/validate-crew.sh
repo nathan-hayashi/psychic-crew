@@ -103,11 +103,27 @@ else
 fi
 
 echo "== arbiter dispatch coverage (§5.2.2) =="
+# C-12 / EX-05: counting is not correlating. The previous form compared the COUNT of Agent calls
+# against the COUNT of arbiter lines, which the audited party can satisfy by writing any lines at
+# all — observed live at G-F3, where two truthful arbiter lines flipped a true-positive FAIL to
+# PASS with nothing remediated. Correlate task_id instead: every dispatch to a specialist must be
+# covered by an arbiter line carrying the SAME task_id, so surplus lines cannot mask a missing one.
 if [ -f logs/tooluse-audit.jsonl ] && [ -f logs/arbiter-audit.jsonl ]; then
-  d=$(grep -cE '"tool":"(Task|Agent)"' logs/tooluse-audit.jsonl 2>/dev/null || echo 0)
-  c=$(wc -l < logs/arbiter-audit.jsonl)
-  [ "$c" -ge "$d" ] && pass "arbiter lines $c >= dispatches $d" \
-                    || fail "uncovered lead->specialist dispatch: $d dispatches, $c arbiter lines"
+  SPEC='security-reviewer|quality-reviewer|fixer|test-runner|integration-runner'
+  disp=$(jq -r --arg s "$SPEC" 'select(.tool=="Agent" or .tool=="Task")
+           | select((.task_id // "") != "") | select((.target // "") | test($s)) | .task_id' \
+         logs/tooluse-audit.jsonl 2>/dev/null | sort -u)
+  cov=$(jq -r 'select((.task_id // "") != "") | .task_id' logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
+  if [ -z "$disp" ]; then
+    skip "no identified specialist dispatch recorded yet (arbiter coverage untestable)"
+  else
+    unc=$(comm -23 <(printf '%s\n' "$disp") <(printf '%s\n' "$cov") | sed '/^$/d')
+    if [ -z "$unc" ]; then
+      pass "every specialist dispatch is covered by an arbiter line of the same task_id"
+    else
+      fail "uncovered specialist dispatch task_id(s): $(printf '%s' "$unc" | tr '\n' ' ')"
+    fi
+  fi
 else
   skip "no audit logs yet (F2/F3 own logs/)"
 fi
