@@ -121,3 +121,13 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Unresolved:** the global-vs-project shadowing of security-reviewer / quality-reviewer / fixer. Only a live dispatch settles it; for quality-reviewer the tool lists are identical, so vocabulary and effort are the only discriminators.
 - **In-flight changes:** none.
 - **Next action:** operator decision — Option A is off the table, so choose between Option B (orchestrator dispatches, arbiter normalises post-hoc) and a redesign; then fix C-12's correlation.
+
+## [F3|2026-08-11T07:27:26Z] checkpoint — F3 COMPLETE, G-F3 gate-ready
+- **Task:** F3 Core Bench. All five §6 steps plus the G-F3 demo and stress.
+- **Workflow status:** validate-crew 27 PASS / 0 SKIP / 0 FAIL · run-crew-tests 87 total · corrections 11 APPLIED / 1 PENDING (C-13, F4-owned) / 2 SUPERSEDED · gate sims F0-F3 exit 0, F4 exit 1.
+- **Demo:** lead-planner → orchestrator fan-out (EX-05) → security-reviewer ∥ quality-reviewer → arbiter normalise/recalibrate/quarantine/audit/release → fixer verdicts. 9 arbiter audit lines, 6 carrying the dispatch task_id.
+- **Stress:** malformed packet quarantined with a precise FALLBACK and nothing silently dropped; direct uncovered dispatch flagged by the identity-correlated coverage check (twice — once against the orchestrator, once against fabricated fixture records).
+- **Closed:** the global-vs-project shadowing question. Both reviewers reported PROJECT vocabularies via SELFCHECK. The same-named global agents do NOT shadow.
+- **Open, all logged:** C-13 (F4) · branch B's 4 verified-sound findings await round 2 re-emission · DIRECTORY_GUIDE drift needs an operator routing decision because EX-01 pins it · the arbiter holds Write but not Edit, so appending to an append-only log means rewriting it whole (transcription risk in the arbiter contract itself).
+- **In-flight changes:** none.
+- **Next action:** STOP. Await `APPROVE GATE-F3`.

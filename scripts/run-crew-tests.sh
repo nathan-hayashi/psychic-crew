@@ -206,6 +206,51 @@ cases_F3 () {
   [ "$disp" = "" ] && ok "EX-05: no agent holds an inert dispatch grant" \
                        || no "EX-05: dispatch tool held by [$disp]; nested dispatch does not work, so any grant is inert and misleading"
   check "plan corrections: F3 clean" 0 ./scripts/check-plan-corrections.sh F3
+
+  # --- SEC-DG-01 (arbiter-released, F3-D1) — audit-trail secret hygiene ---
+  # Both writers used to bound the target with `cut -c1-200`, which limits LENGTH and redacts
+  # nothing: a credential inside the first 200 bytes went into the trail verbatim, and that file is
+  # durable and is pasted into gate evidence. Bind the check to the artifact that would change if
+  # the defect were real — the written line — never to the presence of a scrub() call, which is a
+  # proxy the audited code satisfies merely by existing.
+  # Fixtures write into an ISOLATED root, never logs/tooluse-audit.jsonl: a synthetic Agent line in
+  # the real trail reads to validate-crew as an uncovered specialist dispatch and flips C-12's
+  # coverage check. A test that corrupts the artifact it audits is this build's oldest defect
+  # family, and here it cost fabricated dispatch records before it was caught. $CLAUDE_PROJECT_DIR
+  # is also exactly how R2 has every hook resolve ROOT, so the isolation exercises that path too.
+  SEC="ghp_EXAMPLEONLYNOTREAL1"
+  SCR=$(mktemp -d); SL="$SCR/logs/tooluse-audit.jsonl"
+  printf '%s' "{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"export MY_API_TOKEN=$SEC\"}}" \
+    | CLAUDE_PROJECT_DIR="$SCR" ./hooks/audit-logger.sh >/dev/null 2>&1
+  l=$(tail -1 "$SL" 2>/dev/null)
+  printf '%s' "$l" | grep -q "$SEC" && no "SEC-DG-01 audit-logger wrote a credential verbatim" \
+                                    || ok "SEC-DG-01 audit-logger redacts a credential-bearing command"
+  printf '%s' "$l" | grep -q 'REDACTED' && ok "SEC-DG-01 audit-logger leaves a redaction marker" \
+                                        || no "SEC-DG-01 audit-logger left no redaction marker"
+  printf '%s' "{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"/x/secrets/$SEC.pem\",\"content\":\"k\"}}" \
+    | CLAUDE_PROJECT_DIR="$SCR" ./hooks/sensitive-guard.sh >/dev/null 2>&1
+  l=$(tail -1 "$SL" 2>/dev/null)
+  printf '%s' "$l" | grep -q "$SEC" && no "SEC-DG-01 deny() wrote a credential verbatim" \
+                                    || ok "SEC-DG-01 deny() redacts the blocked target"
+  printf '%s' "$l" | jq -e '.event=="PreToolUse.deny" and (.reason|length)>0' >/dev/null 2>&1 \
+    && ok "SEC-DG-01 denial record still well-formed after scrub" || no "SEC-DG-01 denial record malformed"
+  # False-positive control. Five red gates in this build came from a check that also matched the
+  # benign text it was meant to spare; a scrubber that eats ordinary commands destroys the trail
+  # it exists to protect.
+  printf '%s' '{"tool_name":"Bash","tool_input":{"command":"git status --short"}}' \
+    | CLAUDE_PROJECT_DIR="$SCR" ./hooks/audit-logger.sh >/dev/null 2>&1
+  tail -1 "$SL" 2>/dev/null | jq -e '.target=="git status --short"' >/dev/null 2>&1 \
+    && ok "SEC-DG-01 benign command survives the scrubber unchanged" \
+    || no "SEC-DG-01 scrubber mangled a benign command"
+  # C-12 regression: identity-correlated coverage reads .target and .task_id from this same writer,
+  # so a scrubber that mangles a specialist name silently disarms the bypass detector.
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"security-reviewer","prompt":"{\"task_id\": \"scrub-regression\"}"}}' \
+    | CLAUDE_PROJECT_DIR="$SCR" ./hooks/audit-logger.sh >/dev/null 2>&1
+  tail -1 "$SL" 2>/dev/null \
+    | jq -e '.target=="security-reviewer" and .task_id=="scrub-regression"' >/dev/null 2>&1 \
+    && ok "SEC-DG-01 scrub preserves C-12 dispatch identity and task_id" \
+    || no "SEC-DG-01 scrub broke C-12 correlation"
+  rm -rf "$SCR"
 }
 
 gate_evidence () {

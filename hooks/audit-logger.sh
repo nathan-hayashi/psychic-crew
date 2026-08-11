@@ -13,7 +13,10 @@ set -uo pipefail
   ID=$(printf '%s' "$INPUT" | jq -r '.tool_input.prompt // ""' 2>/dev/null \
        | grep -oE '"task_id"[[:space:]]*:[[:space:]]*"[A-Za-z0-9._-]+"' | head -1 \
        | sed 's/.*"\([A-Za-z0-9._-]*\)"$/\1/' || true)
-  jq -cn --arg ts "$(now)" --arg t "$T" --arg g "$(printf '%s' "$G" | cut -c1-200)" \
+  # SEC-DG-01: scrub() redacts secret SHAPES and then truncates each line to 200. It replaces the bare
+  # `cut -c1-200` that used to sit here, which bounded the length of a leaked credential without
+  # preventing it. A Bash target is a whole command line — the single likeliest carrier of a key.
+  jq -cn --arg ts "$(now)" --arg t "$T" --arg g "$(scrub "$G")" \
          --arg i "${ID:-}" --arg p "$PHASE" \
      '{ts:$ts,event:"PostToolUse",tool:$t,target:$g,task_id:$i,phase:$p}' >> "$ROOT/logs/tooluse-audit.jsonl"
 } 2>/dev/null

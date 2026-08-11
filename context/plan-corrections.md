@@ -16,6 +16,7 @@ Discovery path (why this isn't pointed to from CLAUDE.md): CLAUDE.md is a byte-p
 | C-07 | §5.5 apply-models session-model jq | F0 | scripts/apply-models.sh |
 | C-08 | §5.5 apply-models subshell exit | F0 | scripts/apply-models.sh |
 | C-10 | §5.2.1 vs §6 phase steps | F3 | .claude/rules/fallback-protocol.md |
+| C-13 | DIRECTORY_GUIDE Navigation rule vs §0.2d | F4 | hooks/*.sh behaviour |
 
 ---
 
@@ -134,3 +135,30 @@ This is the third instance of one family in this build: F2's `deny()` blocking w
 **Apply**: key each arbiter audit line to the `task_id` it covers, and match dispatches to lines by identity. Additionally log tool-call ATTEMPTS rather than only PostToolUse successes, so a dispatch that never executes remains visible to the auditor instead of vanishing from the denominator.
 
 **Verify**: `scripts/validate-crew.sh` correlates on `task_id`; a synthetic extra arbiter line does not turn an uncovered dispatch green.
+
+## C-13 — nothing inspects CONTENT bound for the continuity files (F4, operator decision; DEFERRED from F3-D1)
+
+**Source**: SEC-DG-03, arbiter-released at F3-D1, severity `med` (§ security.md: untrusted input reaching a position where it can influence control flow, no demonstrated exploit). Deferred by the fixer, not rejected.
+
+**DIRECTORY_GUIDE.md says** (Navigation rule, L21): "any fix or anomaly -> append to Plan.md first (what/where/why/fix), then act."
+
+**Reality**: `Plan.md`, `PROGRESS.md` and `context/*` are re-read as authoritative continuity at every session start and every post-compaction turn (CLAUDE.md HC-8, §15.4). Text that arrives as *data* — a specialist packet, ETL source material, a build tool's error string, relayed cross-session output — is quoted into Plan.md by that rule and, on the next read, is indistinguishable from the build's own directives. `hooks/sensitive-guard.sh` is the only PreToolUse guard that looks at `tool_input` beyond the model surface, and it matches **path globs** (`*.env`, `*/secrets/*`, `*/.ssh/*`) plus three `.gitignore` removal strings. **No hook reads content bound for the continuity files.** §0.2d forbids treating such text as commands, but a rule is precisely what an injected imperative attacks, and this build's own standing lesson is that a control must bind to the artifact.
+
+**Why it is deferred rather than fixed at F3**: both available fix paths leave F3's scope.
+1. Annotating DIRECTORY_GUIDE.md is blocked by **EX-01**, which permits exactly one line of delta and is asserted by `cases_F0`. (The blocked second half of SEC-DG-01 — the `logs/` annotation — is blocked by the same rule and rides here.) Both belong to EX-01's retire path: a v2.4 re-export with the rename applied upstream.
+2. Adding or rewiring a PreToolUse hook in `.claude/settings.json` changes the enforcement layer mid-gate; `.claude/rules/security.md` makes that an operator decision at a gate, never a quiet commit.
+
+**Apply (operator decision at G-F4, two axes)**:
+- *Block or flag.* A denying check is the stronger control and the more dangerous one: an imperative-shaped-text rule aimed at Plan.md would block the Fix Ledger entries that quote findings verbatim, which is a self-inflicted outage on the live log. A flagging check that writes a `PreToolUse.flag` audit record preserves the trail and the append rule.
+- *Provenance or keywords.* A keyword list will trip on this very entry, on the arbiter's quarantine notes and on the §0.2d rule text — the sixth instance of the guard-trips-on-its-own-documentation family already recorded here. Prefer binding to structure: require quoted untrusted material to be fenced and attributed, and flag unfenced imperative text that arrives in the same write as a source citation.
+
+**Verify**: a Write payload aimed at `Plan.md` carrying an unfenced injected imperative produces a mechanical reaction from some wired Write|Edit guard — a deny JSON or an audit record. The detector asserts the reaction, not the presence of a scanner, so a scanner that exists and does nothing still reports PENDING.
+
+## C-14 — tests wrote to the artifact they audit (F3)
+Sixth instance of one family. The fixer's C-12 regression fixtures fed synthetic `Agent` payloads to `hooks/audit-logger.sh` with the **live** repo as `ROOT`, appending four fabricated dispatch records (`task_id: scrub-regression`) to `logs/tooluse-audit.jsonl`. Those records described dispatches that never happened, and the coverage check correctly failed on them — the guard was right, the data was fiction. Its mutation testing (reverting both writers to pre-fix bytes, re-running, restoring) additionally wrote unscrubbed synthetic tokens into the same live trail; the fixer disclosed the fabricated dispatches but not this second half.
+
+**Why it matters beyond tidiness:** an evidence trail containing invented events is worse than one with gaps, because every downstream check and every gate report treats it as ground truth. The same fixtures could equally have written *convenient* records.
+
+**Applied**: the fixer moved all six fixtures to a `mktemp -d` root. The four fabricated records were removed by the orchestrator and the removal was itself written to the trail as an `AuditRedaction` event — a redaction that is not recorded is indistinguishable from tampering. Genuine records were retained, including the mutation-test commands whose tokens are synthetic.
+
+**Verify**: no audit record carries a fixture-shaped `task_id`.
