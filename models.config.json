@@ -1,0 +1,19 @@
+{
+  "$schema_note": "Single source of truth. Edit here, then run ./scripts/apply-models.sh. Keys: model=alias, effort=low|medium|high|max, type=lead|broker|reviewer|worker.",
+  "mode": "alias",
+  "aliases": { "opus": "opus", "sonnet": "sonnet", "haiku": "haiku" },
+  "pinned":  { "opus": "claude-opus-5", "sonnet": "claude-sonnet-5", "haiku": "claude-haiku-4-5" },
+  "_mode_note": "alias mode uses Claude Code vendor-documented aliases that always track the latest generation (opus/sonnet/haiku) — structurally immune to dated-ID staleness [E: OCR shared/config models.ts, verified vs Claude Code 2.1.x: no model-listing subcommand exists; aliases are the documented enumeration]. Set mode:pinned to freeze exact IDs from .pinned for reproducibility runs. If a configured per-agent model cannot be applied, apply-models MUST emit a structured [WARN] — never silently ignore [E: OCR contract].",
+  "forbidden_substrings": ["fable"],
+  "session": { "model": "opus", "effort": "max" },
+  "agents": {
+    "lead-planner":       { "model": "opus",   "effort": "max",    "type": "lead" },
+    "lead-executor":      { "model": "opus",   "effort": "high",   "type": "lead" },
+    "arbiter":            { "model": "opus",   "effort": "high",   "type": "broker" },
+    "fixer":              { "model": "opus",   "effort": "high",   "type": "worker" },
+    "security-reviewer":  { "model": "sonnet", "effort": "high",   "type": "reviewer" },
+    "quality-reviewer":   { "model": "sonnet", "effort": "medium", "type": "reviewer" },
+    "test-runner":        { "model": "sonnet", "effort": "medium", "type": "worker" },
+    "integration-runner": { "model": "sonnet", "effort": "medium", "type": "worker" }
+  }
+}
