@@ -15,6 +15,7 @@ Discovery path (why this isn't pointed to from CLAUDE.md): CLAUDE.md is a byte-p
 | C-06 | §5.5 apply-models HC-2 scan | F0 | scripts/apply-models.sh |
 | C-07 | §5.5 apply-models session-model jq | F0 | scripts/apply-models.sh |
 | C-08 | §5.5 apply-models subshell exit | F0 | scripts/apply-models.sh |
+| C-10 | §5.2.1 vs §6 phase steps | F3 | .claude/rules/fallback-protocol.md |
 
 ---
 
@@ -86,3 +87,14 @@ Three separate failures in this build came from testing a pipeline's status when
 3. `run-crew-tests.sh`'s `denies()` piped into `grep -q`; the guard's deliberate `exit 2` poisoned the pipeline and every denial test reported failure.
 
 **Rule: capture into a variable, then test it.** Never branch on the exit status of a pipeline containing a stage whose nonzero exit is meaningful. And pass JSON payloads as printf *arguments* (`printf '%s' "$json"`), never as the format.
+
+## C-10 — a binding rule that no phase step ever writes (F3)
+**Plan says**: `CLAUDE.md` (§4.1, byte-pinned) declares "every agent obeys .claude/rules/fallback-protocol.md", and §5.2.1 supplies that file's payload verbatim.
+
+**Reality**: no step in §6 writes it. F0 step 3 writes the §4 payloads only; F3's step list is explicitly "rules 5.2.2–5.2.4". §5.2.1 falls between the two assignments and was never allocated to a phase, so the file did not exist through F0, F1 and F2 while CLAUDE.md and every agent contract referenced it as binding.
+
+**Why it matters**: a binding rule absent from disk is a dangling contract — agents are instructed to obey a file they cannot read, and the FALLBACK block, which is the mechanism this entire build uses *instead of guessing*, has no definition to point at. Nothing failed loudly only because no agent existed yet to dereference it. F3 is the first phase where that stops being true, which is why it is corrected here rather than deferred.
+
+**Apply**: extract §5.2.1 verbatim to `.claude/rules/fallback-protocol.md`, Bash-only — the payload's numbered anti-skip items are prose-sensitive and a formatter pass would renumber or rewrap them.
+
+**Verify**: the file exists and carries the FALLBACK block schema.

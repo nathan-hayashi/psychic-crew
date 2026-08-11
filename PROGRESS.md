@@ -83,3 +83,12 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Rename trap:** §5.1.1's verbatim arbiter.md payload (plan L187) reads "the hiya-crew pipeline". Writing it verbatim reintroduces the old name; the EX-01 substitution must be applied and recorded.
 - **Compaction posture:** unlike F1/F2, the §15.9 parachute is now live — PreCompact snapshots, rolling latest.md, and SessionStart re-grounding are all proven, so a mid-phase compaction is survivable.
 - **Next action:** F3 step 1 — write `.claude/rules/arbiter-protocol.md` applying C-05, then the agent definitions.
+
+## [F3|2026-08-11T06:05:46Z] checkpoint — F3 step 1: rules layer + the two verbatim agents
+- **Task:** F3 Core Bench, opened after `APPROVE GATE-F2`. C-05 applied first as mandated, then the rules layer, then the two verbatim agent payloads.
+- **Workflow status:** validate-crew 21 PASS / 2 SKIP / 0 FAIL · corrections 9 APPLIED / 0 PENDING / 1 SUPERSEDED · GATE F3 PASS · suite 53 PASS / 0 FAIL.
+- **Delivered:** `.claude/rules/arbiter-protocol.md` (C-05 — matches Task|Agent, `expected_output` required, reference-passing, weakness stated) · `.claude/rules/security.md` (§5.2.4 severity table + standing prohibitions) · `.claude/rules/fallback-protocol.md` (§5.2.1 verbatim, C-10) · `.claude/agents/arbiter.md` + `lead-planner.md` (verbatim, EX-01 rename applied) · apply-models stamped both (opus/high, opus/max).
+- **New defect registered — C-10:** CLAUDE.md binds every agent to fallback-protocol.md, but no §6 step ever writes it. Absent through F0/F1/F2; now written and machine-checked.
+- **Remaining for F3:** six agent bodies (lead-executor, security-reviewer, fixer, test-runner, integration-runner, plus quality-reviewer's F3-owned body) · cases_F3 agent-presence assertions · G-F3 demo + stress.
+- **In-flight changes:** none.
+- **Next action:** write the six agent bodies to their §5.1.3 contracts, then register cases_F3.

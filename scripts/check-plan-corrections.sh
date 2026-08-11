@@ -102,6 +102,16 @@ else
   report C-09 F1 PENDING "HC-2 is still a bare substring scan; F2 model-guard.sh cannot pass validation"
 fi
 
+# C-10: CLAUDE.md binds every agent to .claude/rules/fallback-protocol.md, but no §6 phase step
+# writes it — F3 is assigned rules 5.2.2-5.2.4 only, and §5.2.1 sits in the F0 payload section that
+# F0's step list never reaches. A binding rule absent from disk is a dangling contract: agents are
+# instructed to obey a file they cannot read, and every FALLBACK path silently loses its definition.
+if [ -f .claude/rules/fallback-protocol.md ] && grep -q 'FALLBACK' .claude/rules/fallback-protocol.md; then
+  report C-10 F3 APPLIED "fallback-protocol.md present; CLAUDE.md's binding reference resolves"
+else
+  report C-10 F3 PENDING "CLAUDE.md binds all agents to .claude/rules/fallback-protocol.md, which is absent"
+fi
+
 printf '\n== %s APPLIED / %s PENDING / %s SUPERSEDED ==\n' "$APPL" "$PEND" "$NA"
 case "$WANT" in
   all) echo "(informational; run with a phase id, e.g. 'F2', to gate on it)"; exit 0;;
