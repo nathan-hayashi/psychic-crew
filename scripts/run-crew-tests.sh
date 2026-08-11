@@ -169,7 +169,38 @@ cases_F2 () {
     && ok "error-recovery emits the §9 corpus hint" || no "§9 hint missing"
   check "notify exits 0 and is never fatal"      0 feed notify '{"message":"run-crew-tests probe"}'
 }
-cases_F3 () { echo "== F3 — core bench =="; echo "  (no cases registered yet — F3 appends here)"; }
+cases_F3 () {
+  echo "== F3 — core bench =="
+  MODE=$(jq -r '.mode // "alias"' models.config.json)
+  for a in arbiter lead-planner lead-executor security-reviewer quality-reviewer fixer test-runner integration-runner; do
+    f=".claude/agents/$a.md"
+    [ -f "$f" ] || { no "agent $a missing"; continue; }
+    want=$(jq -r --arg a "$a" --arg m "$MODE" 'if $m=="pinned" then .pinned[.agents[$a].model] else .aliases[.agents[$a].model] end' models.config.json)
+    weff=$(jq -r --arg a "$a" '.agents[$a].effort' models.config.json)
+    got=$(grep -m1 '^model:'  "$f" | sed 's/^model:[[:space:]]*//')
+    geff=$(grep -m1 '^effort:' "$f" | sed 's/^effort:[[:space:]]*//')
+    if [ "$got" = "$want" ] && [ "$geff" = "$weff" ]; then ok "agent $a stamped $got/$geff per HC-4"
+    else no "agent $a stamped '$got/$geff', config says '$want/$weff'"; fi
+    if grep -q "^name: $a\$" "$f" && grep -q '^description:' "$f" && grep -q '^tools:' "$f"; then
+      ok "agent $a frontmatter complete"; else no "agent $a frontmatter incomplete"; fi
+  done
+  grep -rq '{{APPLY}}' .claude/agents/ && no "an unstamped {{APPLY}} placeholder remains" \
+                                       || ok "no {{APPLY}} placeholders remain"
+  # §5.1.3: the read-only lenses must not hold mutating tools. A reviewer that can write is a
+  # reviewer that can quietly fix what it found, which destroys the finding trail.
+  for a in security-reviewer quality-reviewer lead-planner; do
+    grep -m1 '^tools:' ".claude/agents/$a.md" | grep -qE 'Write|Edit|Bash' \
+      && no "$a holds a mutating tool — read-only by contract" || ok "$a is read-only"
+  done
+  for r in fallback-protocol arbiter-protocol model-policy security; do
+    [ -f ".claude/rules/$r.md" ] && ok "rule $r.md present" || no "rule $r.md missing"
+  done
+  grep -q 'Task|Agent' .claude/rules/arbiter-protocol.md \
+    && ok "C-05: arbiter-protocol matches both tool names" || no "C-05: arbiter-protocol misses Task|Agent"
+  grep -rq 'hiya-crew' .claude/agents .claude/rules 2>/dev/null \
+    && no "EX-01: the pre-rename project name survives in .claude/" || ok "EX-01: no pre-rename name in agents or rules"
+  check "plan corrections: F3 clean" 0 ./scripts/check-plan-corrections.sh F3
+}
 
 gate_evidence () {
   echo "=== LIVE GATE EVIDENCE — generated $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="

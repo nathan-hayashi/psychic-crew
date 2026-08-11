@@ -92,3 +92,11 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Remaining for F3:** six agent bodies (lead-executor, security-reviewer, fixer, test-runner, integration-runner, plus quality-reviewer's F3-owned body) · cases_F3 agent-presence assertions · G-F3 demo + stress.
 - **In-flight changes:** none.
 - **Next action:** write the six agent bodies to their §5.1.3 contracts, then register cases_F3.
+
+## [F3|2026-08-11T06:09:36Z] checkpoint — F3 IMPLEMENTATION COMPLETE, G-F3 demo not yet run
+- **Task:** F3 Core Bench. All five §6 steps done.
+- **Workflow status:** validate-crew 26 PASS / 1 SKIP / 0 FAIL (the last SKIP is arbiter dispatch coverage, which needs a real dispatch — G-F3 owns it) · cases_F3 27 PASS / 0 FAIL · corrections 9 APPLIED / 0 PENDING / 1 SUPERSEDED · GATE F3 PASS.
+- **Delivered:** all 8 agents present and stamped from models.config.json — opus/max lead-planner · opus/high lead-executor, arbiter, fixer · sonnet/high security-reviewer · sonnet/medium quality-reviewer, test-runner, integration-runner (HC-3 exactly). Four rules complete. cases_F3 registers 27 assertions incl. stamp-vs-config drift, no surviving {{APPLY}}, read-only lenses holding no mutating tool, and EX-01 name hygiene.
+- **BLOCKED on operator authorisation:** G-F3's demo requires dispatching real subagents (lead → arbiter → both reviewers → arbiter merge → fixer verdict, then showing logs/arbiter-audit.jsonl). This session's operating instructions forbid invoking the Agent tool unless the operator asks. Not a technical blocker — an authorisation one.
+- **In-flight changes:** none.
+- **Next action:** obtain authorisation to spawn subagents, then run the G-F3 demo + stress (malformed packet quarantine; direct lead→specialist probe caught by coverage check), then tag crew-f3.
