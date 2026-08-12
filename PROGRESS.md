@@ -1,5 +1,31 @@
-# PROGRESS.md — Compaction-Safe Checkpoints
-Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint answers: task · workflow status · active artifact · open decisions · in-flight changes · closed avenues · next action.
+# PROGRESS.md — compaction-safe checkpoints
+
+## Checkpoint discipline (§6 F5, binding)
+
+Disk is canonical; a context window is a disposable cache (§15.1). Every checkpoint is written at
+the moment a decision is made, never deferred to the end of a turn.
+
+**Read order at every session start and every post-compaction turn (§15.4):** the tail of this
+file, then `GATES.md`, then `context/session-summary.md`, then `context/plan-corrections.md`.
+Then proceed strictly forward under §0.2b — never regress to a completed step, never re-run a step
+whose artifact exists. If recorded state and disk disagree, ESCALATE; do not guess which to trust.
+
+**Every checkpoint carries these fields**, so a cold reader can resume without the transcript:
+
+| Field | Why it is required |
+|---|---|
+| Task | what this phase/step is actually for |
+| Workflow status | validator, suite and correction counts — numbers, not adjectives |
+| Active artifact | the files currently being changed |
+| Open decisions | what is unresolved, and who owns it |
+| In-flight changes | uncommitted work, or explicitly "none" |
+| Closed avenues | what was tried and rejected, so it is not retried |
+| Next action | one concrete next step, in the imperative |
+
+A checkpoint that says "done" without numbers is not a checkpoint. Gate-readiness is recorded in
+`GATES.md`, which is the authority the Stop hook reads for its GATE READY toast — a checkpoint
+sentence alone cannot manufacture that alert.
+
 
 ## [F0|2026-08-11T03:54:36Z] checkpoint — step 3 complete
 - **Task:** F0 — Verify, Question, Scaffold. Budget 12K tokens (§6) / 45 min wall (Q5).
@@ -159,3 +185,23 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Also owed:** the Stop hook currently emits the gate-ledger decision-block but no "GATE READY" toast per §6 F5.
 - **In-flight changes:** none.
 - **Next action:** F5 step 1 — write `scripts/save-context.sh` (§15.5 distill-merge semantics), then the Stop-hook message, then the checkpoint-discipline section.
+
+## [F4|2026-08-12T03:15:59Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 6 file(s) uncommitted
+- **HEAD:** 9a8ce77
+- **Next action:** see the tail of Plan.md and the newest snapshot in .claude/state/checkpoints/
+
+## [F4|2026-08-12T03:17:30Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 8 file(s) uncommitted
+- **HEAD:** 9a8ce77
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** see the tail of Plan.md and the newest snapshot in .claude/state/checkpoints/
+
+## [F5|2026-08-12T03:18:24Z] checkpoint — F5 COMPLETE, G-F5 gate-ready
+- **Task:** F5 — Gate & Ledger Protocolization. All §6 steps done; the pre-existing ledger/checkpoint machinery was NOT re-created per §0.2b.
+- **Workflow status:** validate-crew 34 PASS / 0 SKIP / 0 FAIL · run-crew-tests 113 total · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED · gate sims F0-F5 all exit 0 · save-context check 11 PASS / 0 FAIL.
+- **Active artifact:** scripts/save-context.sh · hooks/stop.sh · hooks/pre-compact-checkpoint.sh · PROGRESS.md discipline section · cases_F5.
+- **Open decisions:** DIRECTORY_GUIDE drift still needs an operator routing decision (byte-pinned under EX-01); G-F3 round-2 re-emission of the quarantined branch is still owed.
+- **In-flight changes:** none.
+- **Closed avenues:** rewriting session-summary.md from a script — rejected, §15.5 requires the merge judgement stay in-session.
+- **Next action:** STOP. Await `APPROVE GATE-F5`. On approval → F6 Test Suite Consolidation (ETL lane §11.1; suite floor 28 incl. ccs-01/02/03).

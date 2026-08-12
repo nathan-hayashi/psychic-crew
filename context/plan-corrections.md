@@ -172,3 +172,8 @@ Provenance is implemented as **source correlation**: a ledger write is compared 
 Two defects were found by testing rather than reasoning: matching whole *written* lines against the corpus found nothing, because relayed text arrives embedded in a sentence (the comparison direction was backwards); and matching whole field values let a partial paste evade it, which is the likelier relay. Spans are now split at sentence boundaries. Measured: 5/5 behavioural cases pass, 0 false positives across all five real ledger files.
 
 **Honest limits:** verbatim text only — paraphrase is not detected, because paraphrase already implies a judgement was applied. And it flags *after* the write, by design.
+
+## Working note — `set -o pipefail`, fourth instance (F5)
+An F5 assertion ran `./scripts/save-context.sh prepare | grep -q 'DISTILL INSTRUCTION'`. `grep -q` exits on the first match and SIGPIPEs its producer, so `pipefail` reported a *failed* pipeline for a pattern that had matched — the assertion declared a working script broken. Identical in shape to the three already recorded (apply-models' HC-2 guard, check-plan-corrections' printf-as-format JSON, `denies()` in the suite).
+
+The rule was already written in this file and was still violated while adding a test. That is the useful datum: a documented rule does not enforce itself. **Capture into a variable, then test it.**

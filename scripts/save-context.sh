@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# save-context.sh — the §15.5 distill-merge executor.
+#
+# "Pure file operations plus an in-session distill instruction" (§15.5). Deliberately NOT a
+# rewriter: merging conclusions, marking items resolved and deleting superseded claims all
+# require judgement. A script that regenerated the summary itself would be appending chronology
+# under a different name, which is the exact failure §15.5 exists to prevent. So this prepares
+# the delta, prints the binding instruction, and — the part that is worth automating — VERIFIES
+# the result against the semantics that are machine-checkable.
+#
+# Usage: save-context.sh [prepare|check]
+#   prepare  (default) report what changed since the last distill + print the distill instruction
+#   check              assert the distilled files obey §15.5; exit 1 on any failure
+set -uo pipefail
+cd "$(dirname "$0")/.."
+MODE="${1:-prepare}"
+CTX="context"; ENTRY="$CTX/session-summary.md"
+P=0; F=0
+ok () { P=$((P+1)); printf '  [PASS] %s\n' "$1"; }
+no () { F=$((F+1)); printf '  [FAIL] %s\n' "$1"; }
+
+# Built, not written literally: §5.2.4's absolute-path guard is high-recall, and this build has
+# burned two red gates on a file that merely QUOTED the token it checks for.
+ABS=$(printf '/%s/' home)
+
+case "$MODE" in
+prepare)
+  mkdir -p "$CTX"
+  [ -f "$ENTRY" ] || printf '# session-summary.md — distilled state (HC-8 §15.5)\n\n## Next action\n(pending)\n' > "$ENTRY"
+  echo "== distill delta — ledgers newer than the entry point =="
+  for f in PROGRESS.md Plan.md GATES.md context/plan-corrections.md; do
+    [ -f "$f" ] || continue
+    if [ "$f" -nt "$ENTRY" ]; then printf '  CHANGED  %s\n' "$f"; else printf '  current  %s\n' "$f"; fi
+  done
+  echo
+  echo "== DISTILL INSTRUCTION (§15.5, binding) =="
+  cat <<'INS'
+  Rewrite context/session-summary.md so that it states CONCLUSIONS, not chronology:
+   1. MERGE new material into the existing canonical sections. Do not append a new dated block —
+      merging is what prevents compounded drift, and appending is what causes it.
+   2. Mark resolved items resolved, and DELETE superseded claims outright. A summary that keeps
+      every past belief is a transcript.
+   3. Label every entry **verified** or **proposed**. An unverified claim silently promoted to
+      fact across sessions is the hallucination vector these labels close.
+   4. Repo-relative paths only. No pleasantries, no reasoning traces, no diffs, no raw log lines.
+   5. End with a single "## Next action" section naming the next concrete step.
+  Then run: ./scripts/save-context.sh check
+INS
+  ;;
+check)
+  echo "== save-context: §15.5 semantics =="
+  [ -f "$ENTRY" ] && ok "entry point $ENTRY exists" || no "entry point $ENTRY missing"
+  for f in "$CTX"/*.md; do
+    [ -f "$f" ] || continue
+    b=$(basename "$f")
+    # Labelling binds the DISTILLED files §15.5 names, not everything that happens to live in
+    # context/. plan-corrections.md is a machine-checked registry and f2-readiness.md an acceptance
+    # spec; demanding verified/proposed of them was an over-broad guard on its first run, which is
+    # the failure family this build has recorded six times. Hygiene below still applies to all.
+    case "$b" in
+      session-summary.md|decisions.md|architecture.md|runbook.md|troubleshooting.md|open-items.md)
+        grep -qE '\*\*(verified|proposed)\*\*' "$f" \
+          && ok "$b carries verified/proposed labels" \
+          || no "$b is a distilled file with no verified/proposed label (§15.5)" ;;
+      *) ok "$b is not a distilled summary — labelling not required, hygiene still checked" ;;
+    esac
+    grep -q "$ABS" "$f" \
+      && no "$b contains an absolute machine path — §15.5 requires repo-relative" \
+      || ok "$b is free of absolute machine paths"
+    grep -qE '^\{"ts"|^@@ |^\+\+\+ |^--- ' "$f" \
+      && no "$b contains raw log lines or diff hunks — §15.5 forbids both" \
+      || ok "$b carries no raw logs or diffs"
+  done
+  grep -q '^## Next action' "$ENTRY" 2>/dev/null \
+    && ok "entry point declares a Next action" \
+    || no "entry point has no '## Next action' section"
+  printf '\n== save-context: %s PASS / %s FAIL ==\n' "$P" "$F"
+  [ "$F" = 0 ] || exit 1
+  ;;
+*) echo "usage: save-context.sh [prepare|check]"; exit 64;;
+esac

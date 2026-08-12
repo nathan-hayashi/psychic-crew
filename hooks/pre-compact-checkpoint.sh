@@ -11,12 +11,21 @@ set -uo pipefail
   ST="$ROOT/.claude/state"; CK="$ST/checkpoints"
   mkdir -p "$CK" 2>/dev/null || true
 
+  # Capture the last REAL next action BEFORE appending. This block used to hardcode a pointer
+  # ("see the tail of Plan.md..."), which then became the newest "Next action:" line — so §15.4's
+  # cold reader, and the snapshot's own declared-next_action grep below, both recovered the pointer
+  # instead of the instruction it displaced. The parachute was degrading the one field it exists to
+  # protect. Carry it forward verbatim; fall back to the pointer only when nothing was recorded.
+  PRIOR=$(grep -E '^- \*\*Next action:' "$ROOT/PROGRESS.md" 2>/dev/null | tail -1 \
+          | sed 's/^- \*\*Next action:\*\*[[:space:]]*//')
+
   # 15.3 — emergency checkpoint appended to PROGRESS.md (best effort; never fatal)
   {
     printf '\n## [%s|%s] EMERGENCY CHECKPOINT (PreCompact)\n' "$PHASE" "$TS"
     printf -- '- **In-flight:** %s file(s) uncommitted\n' "$(cd "$ROOT" && git status --porcelain 2>/dev/null | wc -l)"
     printf -- '- **HEAD:** %s\n' "$(cd "$ROOT" && git rev-parse --short HEAD 2>/dev/null || echo none)"
-    printf -- '- **Next action:** see the tail of Plan.md and the newest snapshot in .claude/state/checkpoints/\n'
+    printf -- '- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/\n'
+    printf -- '- **Next action:** %s\n' "${PRIOR:-see the tail of Plan.md and the newest snapshot in .claude/state/checkpoints/}"
   } >> "$ROOT/PROGRESS.md" 2>/dev/null || true
 
   # 15.3 — arm the flag for the next Stop to consume exactly once

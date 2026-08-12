@@ -20,5 +20,11 @@ if [ -f "$ST/compact-pending" ]; then
   printf '{"decision":"block","reason":"post-compaction: refresh the PROGRESS.md checkpoint and distill the delta into context/ before ending this turn (§15.3)"}'
   exit 0
 fi
-command -v wsl-notify-send.exe >/dev/null 2>&1 && wsl-notify-send.exe "psychic-crew" "turn complete" >/dev/null 2>&1 || true
+# §6 F5: the toast distinguishes an ordinary turn from a phase waiting on the operator. GATES.md is
+# the authority, not PROGRESS.md prose — the ledger is what the gate token is actually recorded
+# against, so a stale checkpoint sentence cannot manufacture a GATE READY alert.
+MSG="turn complete"
+PEND=$(grep -oE 'awaiting `APPROVE (GATE-F[0-9]+)`' "$ROOT/GATES.md" 2>/dev/null | grep -oE 'GATE-F[0-9]+' | head -1 || true)
+[ -n "${PEND:-}" ] && MSG="GATE READY — $PEND awaiting your token"
+command -v wsl-notify-send.exe >/dev/null 2>&1 && wsl-notify-send.exe "psychic-crew" "$MSG" >/dev/null 2>&1 || true
 exit 0

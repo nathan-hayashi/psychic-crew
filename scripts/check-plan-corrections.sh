@@ -189,6 +189,27 @@ else
 fi
 rm -rf "$c13tmp" 2>/dev/null
 
+# C-15: the PreCompact parachute degraded the field it exists to protect. It appended a hardcoded
+# pointer as "Next action:", which then became the newest such line — so §15.4's cold reader, and
+# the snapshot's own declared-next_action grep, both recovered the pointer instead of the real
+# instruction. Tested BEHAVIOURALLY under a temp root: fire the hook and assert the prior action
+# survives as the newest one.
+c15tmp=$(mktemp -d 2>/dev/null)
+if [ -n "$c15tmp" ] && [ -x hooks/pre-compact-checkpoint.sh ]; then
+  mkdir -p "$c15tmp/.claude/state"
+  printf '# P\n\n## [F9|t] checkpoint\n- **Next action:** SENTINEL-CARRY-FORWARD\n' > "$c15tmp/PROGRESS.md"
+  : > "$c15tmp/GATES.md"; : > "$c15tmp/Plan.md"
+  printf '%s' '{"trigger":"auto"}' | CLAUDE_PROJECT_DIR="$c15tmp" ./hooks/pre-compact-checkpoint.sh >/dev/null 2>&1
+  c15last=$(grep -E '^- \*\*Next action:' "$c15tmp/PROGRESS.md" 2>/dev/null | tail -1)
+  case "$c15last" in
+    *SENTINEL-CARRY-FORWARD*) report C-15 F5 APPLIED "PreCompact carries the prior next_action forward instead of displacing it" ;;
+    *) report C-15 F5 PENDING "PreCompact overwrites next_action with a pointer; a cold reader recovers the pointer, not the instruction" ;;
+  esac
+  rm -rf "$c15tmp"
+else
+  report C-15 F5 PENDING "PreCompact hook missing or temp root unavailable"
+fi
+
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
 # dispatch records to the live trail, and the coverage check correctly failed on events that never
 # happened. A trail with invented records is worse than one with gaps: every gate reads it as truth.

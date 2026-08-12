@@ -282,6 +282,62 @@ cases_F3 () {
   rm -rf "$SCR"
 }
 
+cases_F5 () {
+  echo "== F5 — gate & ledger protocolization =="
+  check "save-context check passes"   0 ./scripts/save-context.sh check
+  check "save-context prepare runs"   0 ./scripts/save-context.sh prepare
+  # CAPTURE, then test. grep -q exits on first match and SIGPIPEs the producer, which pipefail
+  # then reports as a failed pipeline even though the match succeeded. Fourth instance of this in
+  # the build after apply-models, check-plan-corrections and denies() — the registry's rule is
+  # "never branch on the status of a pipeline whose stage exits nonzero meaningfully".
+  o=$(./scripts/save-context.sh prepare 2>/dev/null || true)
+  printf '%s' "$o" | grep -q 'DISTILL INSTRUCTION' \
+    && ok "save-context emits the 15.5 distill instruction" || no "no distill instruction emitted"
+  # 15.5 keeps the merge judgement in-session. Asserted BEHAVIOURALLY: prepare must not alter the
+  # summary. The first version grepped the script's own comment for 'NOT a rewriter', which is both
+  # a prose check and line-wrapped — binding a guard to its own documentation, yet again.
+  h0=$(sha256sum context/session-summary.md | cut -d' ' -f1)
+  ./scripts/save-context.sh prepare >/dev/null 2>&1 || true
+  [ "$(sha256sum context/session-summary.md | cut -d' ' -f1)" = "$h0" ] \
+    && ok "save-context prepare does not rewrite the summary (15.5 judgement stays in-session)" \
+    || no "save-context prepare mutated the summary — that is appending chronology by another name"
+  # Negative control: the guard must reject bad input, not merely pass on good input.
+  sc=$(mktemp -d); mkdir -p "$sc/context" "$sc/scripts"
+  cp scripts/save-context.sh "$sc/scripts/"
+  printf '# s\n\n## Next action\nx\n' > "$sc/context/session-summary.md"
+  if ( cd "$sc" && ./scripts/save-context.sh check >/dev/null 2>&1 ); then
+    no "save-context passed an unlabelled summary — guard is inert"
+  else
+    ok "save-context rejects an unlabelled summary (negative control)"
+  fi
+  rm -rf "$sc"
+  # Stop-hook GATE READY. GATES.md is the authority, so a stale checkpoint sentence cannot
+  # manufacture the alert.
+  st=$(mktemp -d); mkdir -p "$st/.claude/state"; cp GATES.md PROGRESS.md "$st/" 2>/dev/null
+  printf '| G-F9 | ts | d | s | awaiting APPROVE GATE-F9 |\n' >> "$st/GATES.md"
+  m=$(grep -oE 'APPROVE GATE-F[0-9]+' "$st/GATES.md" | tail -1)
+  [ "$m" = "APPROVE GATE-F9" ] && ok "Stop hook resolves a pending gate from the ledger" \
+                               || no "pending gate not resolved from GATES.md"
+  CLAUDE_PROJECT_DIR="$st" ./hooks/stop.sh </dev/null >/dev/null 2>&1
+  [ $? = 0 ] && ok "Stop hook exits 0 on the gate branch (never blocks a turn)" \
+             || no "Stop hook returned non-zero on the gate branch"
+  rm -rf "$st"
+  grep -q 'GATE READY' hooks/stop.sh && ok "Stop hook carries the GATE READY message" || no "no GATE READY message"
+  # Ledger shape and backfill (G-F5 demo).
+  head -5 GATES.md | grep -q 'Operator token line' && ok "GATES.md carries the five-column format" \
+                                                   || no "ledger header missing a column"
+  gn=$(grep -cE '^\| G-F[0-4] ' GATES.md)
+  [ "$gn" -ge 5 ] && ok "ledger backfilled F0-F4 ($gn rows)" || no "ledger has only $gn of 5 rows"
+  tn=$(grep -cE 'APPROVE GATE-F[0-4]' GATES.md)
+  [ "$tn" -ge 5 ] && ok "ledger records operator token lines ($tn)" || no "only $tn operator tokens recorded"
+  grep -q 'Checkpoint discipline' PROGRESS.md && ok "PROGRESS.md carries the checkpoint-discipline section" \
+                                              || no "checkpoint-discipline section absent"
+  # ccs-02 shape: a cold reader must recover the next action from the tail alone.
+  tail -40 PROGRESS.md | grep -qE '^- \*\*Next action:' \
+    && ok "next_action recoverable from the PROGRESS.md tail alone" || no "tail carries no next_action"
+  check "plan corrections: F5 clean" 0 ./scripts/check-plan-corrections.sh F5
+}
+
 gate_evidence () {
   echo "=== LIVE GATE EVIDENCE — generated $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
   echo "--- git ---"; git log --oneline -1; echo "tags: $(git tag -l | tr '\n' ' ')"
@@ -294,9 +350,9 @@ gate_evidence () {
 
 WANT="${1:-all}"
 case "$WANT" in
-  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3; cases_F4;;
-  all)  cases_F0; cases_F1; cases_F2; cases_F3; cases_F4;;
-  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;;
+  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5;;
+  all)  cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5;;
+  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;; F5) cases_F5;;
   *)    echo "unknown target: $WANT"; exit 64;;
 esac
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"
