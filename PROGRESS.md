@@ -150,3 +150,12 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Stress evidence:** executable half green (lock clears in a scratch shell without touching project env; both router branches reachable; project env restored to T3). Residual is stated below.
 - **In-flight changes:** none.
 - **Next action:** STOP. Await `APPROVE GATE-F4`. On approval → F5 Gate & Ledger Protocolization, which owns `scripts/save-context.sh` — currently referenced by the map and by session-summary.md while absent from disk.
+
+## [F4|2026-08-12T03:07:06Z] GATE G-F4 APPROVED — F5 opened
+- **Task:** F4 closed on the exact token `APPROVE GATE-F4`. Tag `crew-f4`. **F5 — Gate & Ledger Protocolization [6K] now active.**
+- **F5 steps (§6):** GATES.md ledger format {gate, iso, demo_result, stress_result, operator_token_line} · PROGRESS.md checkpoint-discipline section · wire the Stop-hook "GATE READY" message · create context/ with a seeded session-summary.md and `scripts/save-context.sh` implementing §15.5 distill-merge · from G-F5 onward distillation is a MANDATORY pre-gate-report step.
+- **Already satisfied by earlier phases (0.2b — do not re-create):** GATES.md exists and already carries the five-column format with F0-F4 populated · PROGRESS.md checkpoints have been in continuous use since F0 · context/session-summary.md exists and has been distilled at each gate.
+- **The real F5 gap:** `scripts/save-context.sh` does not exist, while DIRECTORY_GUIDE.md line 17 and context/session-summary.md both reference it. Same drift class as QR-DG-1/3/4. F5 owns closing it.
+- **Also owed:** the Stop hook currently emits the gate-ledger decision-block but no "GATE READY" toast per §6 F5.
+- **In-flight changes:** none.
+- **Next action:** F5 step 1 — write `scripts/save-context.sh` (§15.5 distill-merge semantics), then the Stop-hook message, then the checkpoint-discipline section.
