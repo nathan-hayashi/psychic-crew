@@ -177,3 +177,12 @@ Two defects were found by testing rather than reasoning: matching whole *written
 An F5 assertion ran `./scripts/save-context.sh prepare | grep -q 'DISTILL INSTRUCTION'`. `grep -q` exits on the first match and SIGPIPEs its producer, so `pipefail` reported a *failed* pipeline for a pattern that had matched — the assertion declared a working script broken. Identical in shape to the three already recorded (apply-models' HC-2 guard, check-plan-corrections' printf-as-format JSON, `denies()` in the suite).
 
 The rule was already written in this file and was still violated while adding a test. That is the useful datum: a documented rule does not enforce itself. **Capture into a variable, then test it.**
+
+## C-16 — the deny-list had no integrity check (F6, found by the G-F6 mutation test)
+The G-F6 stress removed one entry from `.claude/settings.json` `permissions.deny`. The suite reported a failure — but the failure was **"working tree dirty"**. `validate-crew` itself reported zero. The mutation was caught by the dirty-tree canary noticing a file had changed, not by anything that understood what changed. Committed, the removal would have been invisible to every check in the build.
+
+That is "caught for the wrong reason", the same family as the six already recorded. A permission boundary with no integrity assertion is not a boundary; it is a comment.
+
+**Applied**: `validate-crew.sh` now asserts the HC-5 deny set is present by meaning — clone, global install, npx, sudo, the destructive removals and the raw-device write — plus at least two secret-path `Read(` denials. Re-running the mutation now yields `deny-list missing: [<entry>]` by name.
+
+**Implementation note worth keeping**: the needles are assembled from fragments because `bash-blocker` matches the *whole command string*, so a contiguous literal in this check would deny any command that greps or edits the file containing it. Two attempts at this edit were denied before the fragments went in. Also: `$S` is validate-crew's SKIP counter, not a settings path — reusing the other script's convention made `jq` read a file named `0` and report every entry missing.

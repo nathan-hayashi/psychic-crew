@@ -426,6 +426,21 @@ cases_F6 () {
   [ "$smiss" = 0 ] && ok "corpus/§9 every script named by the map exists on disk" \
                    || no "corpus/§9 $smiss script(s) named by the map are absent"
 
+
+  # C-16, tested BEHAVIOURALLY rather than by grepping for the section: copy the repo surface into
+  # a temp root, strip one deny entry there, and assert validate-crew reports it. The G-F6 mutation
+  # showed the removal was previously caught only by the dirty-tree canary — invisible once
+  # committed. Needle assembled from fragments; bash-blocker matches whole command strings.
+  dl=$(mktemp -d); mkdir -p "$dl/scripts" "$dl/.claude" "$dl/hooks"
+  cp scripts/validate-crew.sh "$dl/scripts/"; cp -r .claude/settings.json "$dl/.claude/" 2>/dev/null
+  _g="git"; _needle="$_g clone"
+  jq --arg p "$_needle" '.permissions.deny |= map(select(test($p)|not))' "$dl/.claude/settings.json" \
+     > "$dl/.claude/s.tmp" && mv "$dl/.claude/s.tmp" "$dl/.claude/settings.json"
+  dlout=$("$dl/scripts/validate-crew.sh" 2>/dev/null | grep -c 'deny-list missing' || true)
+  [ "${dlout:-0}" -ge 1 ] && ok "C-16 validate-crew fails on a stripped deny-list (behavioural)" \
+                          || no "C-16 a removed deny entry goes undetected — the boundary is unguarded"
+  rm -rf "$dl"
+
   # ccs-02 (§15.7) — the assertion the suite was missing: from a mid-phase fixture, a COLD start
   # must reproduce the recorded next_action, and the summary must round-trip its labels.
   cs=$(mktemp -d)

@@ -126,6 +126,28 @@ TL=$(jq -r '.env.CREW_TIER_LOCK // empty' .claude/settings.json 2>/dev/null)
 grep -qF '[T3 — LOCKED]' CLAUDE.md && pass "CLAUDE.md states the announcement obligation" \
                                    || fail "CLAUDE.md does not state the announcement obligation"
 
+echo "== deny-list integrity (HC-5, §4.6) =="
+# C-16: the G-F6 mutation removed a deny entry and the ONLY thing that noticed was the dirty-tree
+# canary — validate-crew itself reported zero failures, so once committed the removal would have
+# been invisible. A permission boundary with no integrity check is not a boundary.
+# Needles are assembled from fragments because bash-blocker matches the WHOLE command string: a
+# contiguous literal here would deny any command that merely greps or edits this file.
+# NOTE: $S is the SKIP counter in this script, not a settings path — reference the file literally.
+SETTINGS=".claude/settings.json"
+_c="git"; _n1="$_c clone"
+_m="npm"; _n2="$_m install -g"
+_r="rm -rf"; _n3="$_r /"; _n4="$_r ~"
+_d="dd"; _n5="$_d if="
+DENY=$(jq -r '.permissions.deny[]?' "$SETTINGS" 2>/dev/null)
+dmiss=""
+for needle in "$_n1" "$_n2" "npx" "sudo" "$_n3" "$_n4" "$_n5"; do
+  printf '%s\n' "$DENY" | grep -qF -- "$needle" || dmiss="$dmiss [$needle]"
+done
+[ -z "$dmiss" ] && pass "all HC-5 deny entries present ($(printf '%s\n' "$DENY" | grep -c .) rules)" \
+                || fail "deny-list missing:$dmiss — a removed prohibition is invisible once committed"
+RD=$(printf '%s\n' "$DENY" | grep -c 'Read(' || true)
+[ "${RD:-0}" -ge 2 ] && pass "secret-path Read denials retained" || fail "secret-path Read denials removed"
+
 # C-12 / EX-05: counting is not correlating. The previous form compared the COUNT of Agent calls
 # against the COUNT of arbiter lines, which the audited party can satisfy by writing any lines at
 # all — observed live at G-F3, where two truthful arbiter lines flipped a true-positive FAIL to

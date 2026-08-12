@@ -205,3 +205,12 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none.
 - **Closed avenues:** rewriting session-summary.md from a script — rejected, §15.5 requires the merge judgement stay in-session.
 - **Next action:** STOP. Await `APPROVE GATE-F5`. On approval → F6 Test Suite Consolidation (ETL lane §11.1; suite floor 28 incl. ccs-01/02/03).
+
+## [F6|2026-08-12T06:39:34Z] checkpoint — F6 COMPLETE, G-F6 gate-ready
+- **Task:** F6 — Test Suite Consolidation. ETL lane §11.1 corpus transform, ccs-02, mutation stress.
+- **Workflow status:** validate-crew 36 PASS / 0 SKIP / 0 FAIL · run-crew-tests 131 total · corrections 14 APPLIED / 0 PENDING / 2 SUPERSEDED · gate sims F0-F6 all exit 0.
+- **Corpus:** the plan's "23-error corpus" reconciles as 12 (orchestration guide) + 11 (mermaid guide TROUBLESHOOTING). 17 assertions transformed against this repo's paths, zero verbatim reuse.
+- **ccs-02 added** — it was a comment, not an assertion, though §6 F6 requires all three continuity checks. Now a real cold-start test against a mid-phase fixture.
+- **Mutation stress 3/3 caught**, but M3 was initially caught only by the dirty-tree canary; C-16 closes that so it now fails by name.
+- **In-flight changes:** none.
+- **Next action:** STOP. Await `APPROVE GATE-F6`. On approval → F7 FINAL ORCHESTRATION STRESS TEST [200K, may span 2 sessions with mid-gate G-F7a].
