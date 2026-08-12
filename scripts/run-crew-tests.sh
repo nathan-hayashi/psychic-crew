@@ -338,6 +338,113 @@ cases_F5 () {
   check "plan corrections: F5 clean" 0 ./scripts/check-plan-corrections.sh F5
 }
 
+cases_F6 () {
+  echo "== F6 — error-corpus assertions (ETL §11.1) =="
+  # TRANSFORMED, not copied: each check below is one documented failure from the two guide corpora
+  # (12 in the orchestration guide + 11 in the mermaid guide = the plan's 23), rewritten as an
+  # executable assertion against THIS repo's paths. Zero verbatim script reuse.
+
+  # ERR1 — settings JSON with // comments or trailing commas. jq alone catches trailing commas;
+  # the comment form is the one that looks fine to a human reader.
+  check "corpus/ERR1 settings.json is strict JSON" 0 jq -e . .claude/settings.json
+  grep -qE '^[[:space:]]*//' .claude/settings.json \
+    && no "corpus/ERR1 settings.json contains // comments (invalid JSON)" \
+    || ok "corpus/ERR1 settings.json has no // comments"
+
+  # ERR2 — a model string corrupted by an ANSI escape, e.g. a bracketed suffix injected into the
+  # value. This is the same SHAPE as OQ-2's claude-opus-5[1m]: legitimate as a session display id,
+  # never legitimate inside a config value.
+  badm=$(jq -r '[.aliases[], .pinned[], .session.model, (.agents[]|.model)] | .[]' models.config.json 2>/dev/null \
+         | grep -cE '\[[0-9]+[a-z]\]|\x1b' || true)
+  [ "${badm:-0}" = 0 ] && ok "corpus/ERR2 no model string carries a bracketed/ANSI suffix" \
+                       || no "corpus/ERR2 $badm model string(s) carry an ANSI-corruption suffix"
+
+  # ERR3 — a field that must be an array supplied as a bare string.
+  arrok=$(jq -e '(.permissions.allow|type=="array") and (.permissions.deny|type=="array")' .claude/settings.json >/dev/null 2>&1; echo $?)
+  [ "$arrok" = 0 ] && ok "corpus/ERR3 permission lists are arrays, not bare strings" \
+                   || no "corpus/ERR3 a permission list is not an array"
+
+  # ERR4 — threshold router present but never firing because the tier rules are not declared.
+  { [ -f .claude/skills/threshold-router/SKILL.md ] && grep -qF '[T3 — LOCKED]' CLAUDE.md; } \
+    && ok "corpus/ERR4 router skill exists and CLAUDE.md declares the tier rule" \
+    || no "corpus/ERR4 router or its CLAUDE.md tier declaration is missing"
+
+  # ERR5 — the guide's fix was to SYMLINK rules into $HOME. §5.2.4 forbids that here, so the
+  # assertion is inverted: rules must be real files inside the repo, not links out of it.
+  lk=$(find .claude/rules -type l 2>/dev/null | wc -l)
+  [ "$lk" = 0 ] && ok "corpus/ERR5 rules are real in-repo files, not symlinks out of the tree" \
+                || no "corpus/ERR5 $lk rule(s) are symlinks — §5.2.4 forbids escaping the repo"
+
+  # ERR6 — a hardcoded OAuth token committed and caught by push protection. Check what is TRACKED,
+  # since that is what would actually be pushed.
+  tok=$(git ls-files -z | xargs -0 grep -lE 'gh[pousr]_[A-Za-z0-9]{20,}|xox[abopsr]-[A-Za-z0-9-]{10,}' 2>/dev/null | wc -l)
+  [ "$tok" = 0 ] && ok "corpus/ERR6 no tracked file carries a live token shape" \
+                 || no "corpus/ERR6 $tok tracked file(s) carry a token shape"
+
+  # mermaid-guide E6/E7 — a PostToolUse hook that fires but fails on PATH, then still fails on
+  # shell incompatibility. Both are structural and checkable.
+  np=$(ls -1 hooks/*.sh | wc -l); wp=$(grep -l 'export PATH' hooks/*.sh 2>/dev/null | wc -l)
+  [ "$wp" -ge 1 ] && ok "corpus/E6 hooks export PATH (shared preamble)" || no "corpus/E6 no hook exports PATH"
+  # Discriminate the bash conditional from a POSIX character class: [[:space:]] is not [[ .
+  # The first cut of this check matched both and reported 4 clean hooks as violations. The correct
+  # pattern already existed at validate-crew.sh:101 with a comment explaining exactly this trap —
+  # a worse duplicate of a check the repo had already solved.
+  bb=$(grep -lE '\[\[[^:]' hooks/*.sh 2>/dev/null | wc -l)
+  [ "$bb" = 0 ] && ok "corpus/E7 no hook uses bash-only [[ (POSIX-safe)" || no "corpus/E7 $bb hook(s) use [["
+  nx=$(for h in hooks/*.sh; do [ -x "$h" ] || echo "$h"; done | wc -l)
+  [ "$nx" = 0 ] && ok "corpus/E7 all $np hooks are executable" || no "corpus/E7 $nx hook(s) not executable"
+
+  # mermaid-guide E5 — a skill not detected because it is not DIR/SKILL.md (naming contract, §9).
+  sk=$(find .claude/skills -mindepth 2 -name 'SKILL.md' 2>/dev/null | wc -l)
+  sd=$(find .claude/skills -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+  [ "$sk" = "$sd" ] && ok "corpus/E5 every skill dir contains SKILL.md ($sk/$sd)" \
+                    || no "corpus/E5 $sd skill dir(s) but only $sk SKILL.md"
+
+  # mermaid-guide E10 — an MCP server that fails to connect. HC-5 forbids them outright here, so
+  # the assertion is that none is configured at all.
+  mc=$(jq -r '.mcpServers // {} | length' .claude/settings.json 2>/dev/null || echo 0)
+  { [ "${mc:-0}" = 0 ] && [ ! -f .mcp.json ]; } \
+    && ok "corpus/E10 no MCP server configured (HC-5)" || no "corpus/E10 an MCP server is configured"
+
+  # §9 naming contract — agent frontmatter uses tools:, never allowed-tools:.
+  at=$(grep -l '^allowed-tools:' .claude/agents/*.md 2>/dev/null | wc -l)
+  [ "$at" = 0 ] && ok "corpus/§9 agents use 'tools:' not 'allowed-tools:'" || no "corpus/§9 $at agent(s) use allowed-tools:"
+
+  # §9 phantom deps — nothing is referenced unless it is verified on disk. This is the family that
+  # produced save-context.sh and the router skill being cited while absent.
+  miss=0
+  for s in $(jq -r '.hooks[]?[]?.hooks[]?.command' .claude/settings.json 2>/dev/null | grep -oE 'hooks/[a-z-]+\.sh'); do
+    [ -f "$s" ] || { miss=$((miss+1)); }
+  done
+  [ "$miss" = 0 ] && ok "corpus/§9 every hook referenced by settings.json exists on disk" \
+                  || no "corpus/§9 $miss hook(s) referenced by settings.json are absent"
+  smiss=0
+  for s in scripts/apply-models.sh scripts/validate-crew.sh scripts/run-crew-tests.sh \
+           scripts/check-plan-corrections.sh scripts/save-context.sh scripts/restore-context.sh; do
+    [ -f "$s" ] || smiss=$((smiss+1))
+  done
+  [ "$smiss" = 0 ] && ok "corpus/§9 every script named by the map exists on disk" \
+                   || no "corpus/§9 $smiss script(s) named by the map are absent"
+
+  # ccs-02 (§15.7) — the assertion the suite was missing: from a mid-phase fixture, a COLD start
+  # must reproduce the recorded next_action, and the summary must round-trip its labels.
+  cs=$(mktemp -d)
+  mkdir -p "$cs/.claude/state" "$cs/context" "$cs/hooks" "$cs/scripts"
+  cp hooks/session-start.sh hooks/_common.sh "$cs/hooks/" 2>/dev/null
+  cp scripts/save-context.sh "$cs/scripts/" 2>/dev/null
+  printf '# P\n\n## [F9|t] checkpoint — mid-phase fixture\n- **Next action:** CCS02-SENTINEL-RESUME-HERE\n' > "$cs/PROGRESS.md"
+  : > "$cs/GATES.md"
+  printf '# s\n\n**verified** — fixture decision retained.\n\n**proposed** — fixture hypothesis retained.\n\n## Next action\nCCS02-SENTINEL-RESUME-HERE\n' > "$cs/context/session-summary.md"
+  cold=$(printf '%s' '{}' | CLAUDE_PROJECT_DIR="$cs" "$cs/hooks/session-start.sh" 2>/dev/null || true)
+  printf '%s' "$cold" | grep -q 'CCS02-SENTINEL-RESUME-HERE' \
+    && ok "ccs-02 cold start reproduces the recorded next_action from disk alone" \
+    || no "ccs-02 cold start did NOT surface the recorded next_action"
+  ( cd "$cs" && ./scripts/save-context.sh check >/dev/null 2>&1 ) \
+    && ok "ccs-02 summary round-trips with verified/proposed labels intact" \
+    || no "ccs-02 summary lost its verified/proposed labels"
+  rm -rf "$cs"
+}
+
 gate_evidence () {
   echo "=== LIVE GATE EVIDENCE — generated $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
   echo "--- git ---"; git log --oneline -1; echo "tags: $(git tag -l | tr '\n' ' ')"
@@ -350,9 +457,9 @@ gate_evidence () {
 
 WANT="${1:-all}"
 case "$WANT" in
-  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5;;
-  all)  cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5;;
-  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;; F5) cases_F5;;
+  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5; cases_F6;;
+  all)  cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5; cases_F6;;
+  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;; F5) cases_F5;; F6) cases_F6;;
   *)    echo "unknown target: $WANT"; exit 64;;
 esac
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"
