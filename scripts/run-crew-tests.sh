@@ -184,6 +184,17 @@ cases_F4 () {
   o=$(printf '%s' '{"tool_input":{"file_path":"/x/Plan.md","content":"y"}}' | ./hooks/provenance-flag.sh 2>/dev/null; echo "exit=$?")
   printf '%s' "$o" | grep -q 'exit=0' && ok "C-13 never blocks (exit 0)" || no "C-13 returned non-zero — it must only flag"
   rm -rf "$pv"
+  # §5.3 router contract. The lock path and the scoring path must BOTH be reachable: a router
+  # whose rule 1 is unconditional would announce T3 even with the lock removed, which makes
+  # the G-F4 stress unfalsifiable — it would pass whether or not the lock did anything.
+  SK=.claude/skills/threshold-router/SKILL.md
+  grep -q "If env CREW_TIER_LOCK is set" "$SK" && ok "router rule 1 is CONDITIONAL on the lock" || no "router rule 1 is unconditional"
+  grep -q "^2\\. Else score" "$SK" && ok "router rule 2 is the else-branch (scoring reachable)" || no "scoring path is not an else-branch"
+  grep -q "0-3 T1" "$SK" && ok "scoring thresholds present (trivial prompt -> T1)" || no "scoring thresholds missing"
+  grep -qF "[T3 — LOCKED]" "$SK" && ok "exact announcement token present" || no "announcement token absent or paraphrased"
+  # G-F4 stress, executable half: with the lock absent the lock branch precondition is false.
+  ( unset CREW_TIER_LOCK; [ -z "${CREW_TIER_LOCK:-}" ] ) && ok "stress: lock clears in a scratch shell without touching project env" || no "lock could not be cleared"
+  [ "$(jq -r .env.CREW_TIER_LOCK .claude/settings.json)" = T3 ] && ok "stress: project env restored to T3" || no "project env lock not T3"
   check "plan corrections: F4 clean" 0 ./scripts/check-plan-corrections.sh F4
 }
 

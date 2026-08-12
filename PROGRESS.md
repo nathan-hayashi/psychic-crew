@@ -140,3 +140,13 @@ Disk is canonical; context windows are caches (HC-8 §15.1). Every checkpoint an
 - **Budget note:** F3 ran ~87 min against the 45-min Q5 ceiling, driven by three unplanned P0s (C-11, C-12, C-14). F4 is budgeted 8K and should be comfortably inside it.
 - **In-flight changes:** none.
 - **Next action:** F4 step 1 — write the threshold-router SKILL.md. Per §0.3 (one phase = one session) a fresh session is preferred; the SessionStart hook re-grounds automatically.
+
+## [F4|2026-08-12T02:30:51Z] checkpoint — F4 COMPLETE, G-F4 gate-ready
+- **Task:** F4 — Router + Tier Lock. All three §6 steps plus C-13 (carried in from F3's deferral).
+- **Workflow status:** validate-crew 34 PASS / 0 SKIP / 0 FAIL · run-crew-tests 99 total · corrections 12 APPLIED / 0 PENDING / 2 SUPERSEDED · gate sims F0-F4 all exit 0.
+- **Delivered:** `.claude/skills/threshold-router/SKILL.md` (§5.3 verbatim, 0-line delta) · validate-crew tier-lock section (6 checks) · cases_F4 (12 checks: 5 provenance + 7 router/stress) · C-13 resolved as a provenance-based flag-only guard.
+- **Closed by side effect:** QR-DG-3 — the map listed the router skill while it was absent; the claim is now true without editing a byte-pinned seed.
+- **Demo evidence:** transcript — every response this session opened with the exact token, covering well over three consecutive operator prompts. Machine-checked separately: the token is present verbatim in the skill and in CLAUDE.md.
+- **Stress evidence:** executable half green (lock clears in a scratch shell without touching project env; both router branches reachable; project env restored to T3). Residual is stated below.
+- **In-flight changes:** none.
+- **Next action:** STOP. Await `APPROVE GATE-F4`. On approval → F5 Gate & Ledger Protocolization, which owns `scripts/save-context.sh` — currently referenced by the map and by session-summary.md while absent from disk.

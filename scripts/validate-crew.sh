@@ -103,6 +103,29 @@ else
 fi
 
 echo "== arbiter dispatch coverage (§5.2.2) =="
+echo "== tier lock + router (HC-1, §5.3) =="
+# What is machine-checkable here is the MECHANISM, not the behaviour: that the skill exists at the
+# path DIRECTORY_GUIDE declares, that it branches on the lock, that it carries the exact
+# announcement token, and that the env actually sets the lock. Whether a given session announced
+# the tier is transcript evidence and stays manual-eyes at the gate, per §6 F4.
+SK=".claude/skills/threshold-router/SKILL.md"
+[ -f "$SK" ] && pass "threshold-router skill present at the declared path" \
+             || fail "$SK missing — DIRECTORY_GUIDE lists it and §5.3 specifies it"
+if [ -f "$SK" ]; then
+  grep -q 'CREW_TIER_LOCK' "$SK" && pass "router branches on CREW_TIER_LOCK" \
+                                 || fail "router has no lock branch — it would score every prompt"
+  # The announcement is a fixed token. A paraphrase is not the token, and the gate greps for it.
+  grep -qF '[T3 — LOCKED]' "$SK" && pass "router carries the exact announcement token" \
+                                 || fail "router does not carry the exact [T3 — LOCKED] token"
+  grep -q 'Else score' "$SK" && pass "router retains the unlocked scoring path (stress-testable)" \
+                             || fail "router has no fallback scoring path"
+fi
+TL=$(jq -r '.env.CREW_TIER_LOCK // empty' .claude/settings.json 2>/dev/null)
+[ "$TL" = "T3" ] && pass "CREW_TIER_LOCK=T3 set in project env" \
+                 || fail "CREW_TIER_LOCK is '${TL:-unset}' in settings.json; HC-1 requires T3"
+grep -qF '[T3 — LOCKED]' CLAUDE.md && pass "CLAUDE.md states the announcement obligation" \
+                                   || fail "CLAUDE.md does not state the announcement obligation"
+
 # C-12 / EX-05: counting is not correlating. The previous form compared the COUNT of Agent calls
 # against the COUNT of arbiter lines, which the audited party can satisfy by writing any lines at
 # all — observed live at G-F3, where two truthful arbiter lines flipped a true-positive FAIL to
