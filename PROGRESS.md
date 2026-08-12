@@ -208,7 +208,7 @@ sentence alone cannot manufacture that alert.
 
 ## [F6|2026-08-12T06:39:34Z] checkpoint — F6 COMPLETE, G-F6 gate-ready
 - **Task:** F6 — Test Suite Consolidation. ETL lane §11.1 corpus transform, ccs-02, mutation stress.
-- **Workflow status:** validate-crew 36 PASS / 0 SKIP / 0 FAIL · run-crew-tests 131 total · corrections 14 APPLIED / 0 PENDING / 2 SUPERSEDED · gate sims F0-F6 all exit 0.
+- **Workflow status:** validate-crew 36 PASS / 0 SKIP / 0 FAIL · run-crew-tests 131 total · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED (C-16 is enforced by a behavioural case in cases_F6, not a registry detector — the registry count is 13, not 14) · gate sims F0-F6 all exit 0.
 - **Corpus:** the plan's "23-error corpus" reconciles as 12 (orchestration guide) + 11 (mermaid guide TROUBLESHOOTING). 17 assertions transformed against this repo's paths, zero verbatim reuse.
 - **ccs-02 added** — it was a comment, not an assertion, though §6 F6 requires all three continuity checks. Now a real cold-start test against a mid-phase fixture.
 - **Mutation stress 3/3 caught**, but M3 was initially caught only by the dirty-tree canary; C-16 closes that so it now fails by name.
