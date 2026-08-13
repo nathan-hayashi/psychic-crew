@@ -297,3 +297,12 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none.
 - **Closed avenues:** `node --test test/` (runs zero cases on Node v24) · storing a token-shaped literal in a tracked file on a public repo · routing F7 rounds into logs/rounds/round-1/ where two live detectors read their fixture.
 - **Next action:** B1 — re-ground per §15.4, then B2: seed three bugs with the manifest written to the SCRATCHPAD, never the repo. Full step table in context/f7-plan.md, whose amendment sections supersede the tables above them.
+
+## [F7|2026-08-13T18:02:16Z] checkpoint — B1 + B2 complete, discourse next (TREE DELIBERATELY DIRTY)
+- **Task:** B1 re-grounded from disk (all four §15.4 reads agree). B2 seeded three defects.
+- **Seed state, no locations recorded here by design:** 3 seeds live as UNCOMMITTED working-tree edits. 1 is test-visible (the control, proving the suite is load-bearing); 2 are invisible to all 18 app cases AND to cases_F7, so Robustness depends on the discourse finding them rather than passing for free. Manifest is in the session scratchpad, OUTSIDE the repo — if reviewers could read it, Robustness would measure nothing.
+- **Seeds are NOT committed**, deliberately: committing puts the answer key in git history on a public repo, where `git show` on that commit reveals exactly what to find.
+- **EXPECTED RED, do not treat as regression:** while seeds are live, cases_F0's clean-tree check fails (tree is intentionally dirty) and the F7 app-suite + case-name assertions fail (seed A breaks terminate-twice-is-idempotent). Recorded in advance so the red is explained rather than mysterious. Baseline before seeding was 144 PASS / 0 FAIL, 18/18 app, clean tree at fbcbc1f — so every red is attributable.
+- **First seed set was DISCARDED:** all three landed on covered paths and were caught by tests. The plan requires at least one invisible seed or the discourse is never exercised — "re-seed rather than accept". Root cause: invisibility was judged from test NAMES rather than test BODIES.
+- **In-flight changes:** 3 seeded source files, uncommitted.
+- **Next action:** B3 — dispatch security-reviewer and quality-reviewer IN PARALLEL (task_ids F7-B3-sec / F7-B3-qual, each with expected_output). Reviewers are NOT told seeds exist; that is the honest measurement. Artifacts to logs/rounds/f7-round-1/, never round-1/.
