@@ -332,3 +332,12 @@ sentence alone cannot manufacture that alert.
 - **Judgement call it made well:** it used a distinct --seed per retry invocation because clock.js derives ids from sha256(seed:prefix:n) with a per-process counter reset, so one seed across three runs would have collided notification filenames and silently overwritten its own evidence.
 - **In-flight changes:** none; runtime output confined to the gitignored stress-project/tmp/.
 - **Next action:** arbiter coverage for F7-B8-tests and F7-B9-e2e, then B10 — metrics to logs/metrics/f7.json, the D7 mirror into the GATES.md row, seed disclosure, §12 self-check, and the §10 gate report for G-F7b.
+
+## [F7|2026-08-13T23:39:31Z] checkpoint — B10 COMPLETE, G-F7b gate-ready with one rubric FAIL
+- **Task:** F7 Stage B complete. B10 metrics, seed disclosure, §12 self-check, rubric roll-up.
+- **Workflow status:** crew suite 144 PASS / 0 FAIL · app suite 18/18 · validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 1 PENDING (C-19, F8-owned) / 2 SUPERSEDED · tree clean.
+- **§7 rubric: 6 of 7 PASS, 1 FAIL.** PASS — tests 18/18 · seeded 3/3 with two invisible to every test · edges 3/3 · agents 8/8 bound to named artifacts · post-review defects 0 · arbiter lines 19 >= 18 dispatches. FAIL — token spend 1,922,184 subagent tokens against the 207K denominator fixed pre-run, 9.3x over and a strict lower bound since orchestrator spend is unmeasurable from inside the session.
+- **§6 axes:** Depth PASS · Breadth PASS · Robustness PASS · **Velocity FAIL**. §6 states any fail goes to a gap register, fix loop and re-gate — that is an operator decision, not mine to waive.
+- **Open decisions:** the operator's call on the Velocity FAIL. Zero open P0s, so §0.2c does not independently block.
+- **In-flight changes:** none.
+- **Next action:** STOP. Await the operator's ruling on G-F7b and the exact token, which the plan does not define (C-17 applies to G-F7b as it did to G-F7a).

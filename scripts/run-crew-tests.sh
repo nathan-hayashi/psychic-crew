@@ -586,7 +586,8 @@ cases_F7 () {
   rm -rf "$f7o"
 
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
-  # as it was on entry, and stress-project/tmp must hold nothing.
+  # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
+  # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
   f7tree1=$(git status --porcelain | wc -l)
   f7tmp=$(ls -A "$sp/tmp" 2>/dev/null | wc -l)
   { [ "$f7tree1" = "$f7tree0" ] && [ "$f7tmp" = "$f7tmp0" ]; } \
