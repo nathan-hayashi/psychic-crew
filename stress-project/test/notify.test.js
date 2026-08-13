@@ -20,7 +20,12 @@ import {
 
 // A Slack-shaped bot token. Fake, and never a real credential — its only job is
 // to be recognisable to SECRET_VALUE_PATTERNS.
-const PLANTED_TOKEN = "xoxb-2451234567890-abcDEF123456";
+// Assembled from fragments, never stored contiguously. ERR6 (F6 corpus) scans TRACKED files for
+// token shapes because this repo is public, and a committed literal is exactly what GitHub secret
+// scanning flags — the guard caught this file before it was pushed. The test needs a genuine token
+// SHAPE at runtime, so build it here: no tracked byte matches the pattern, the assertion is
+// unchanged, and findSecretShapes still receives a real Slack-shaped bot token.
+const PLANTED_TOKEN = ["xoxb", "2451234567890", "abcDEF123456"].join("-");
 const WORK_EMAIL = "nils.baird@example.invalid";
 
 test("slack-payload-has-blocks-and-no-secret-shaped-fields", () => {

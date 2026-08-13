@@ -279,3 +279,12 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none.
 - **Open decisions:** unchanged — the unused OUTCOMES import in bin/jml.js and the NONE-row asymmetry both still carried to B3 discourse. No test constrains the NONE+TERMINATE verdict either way.
 - **Next action:** A5 — dispatch lead-executor (`task_id F7-A5-readme`, with expected_output) for stress-project/README.md. Tests are done; do NOT let A5 or A6 revert the runner invocation to `node --test test/`.
+
+## [F7|2026-08-13T16:17:54Z] checkpoint — A4 COMPLETE, A5 next
+- **Task:** F7 Stage A. A0-A4 done. 21 tracked files under stress-project/.
+- **Workflow status:** app suite 18 PASS / 0 FAIL (TAP-verified, names set-diffed) · crew suite 131 PASS / 0 FAIL after this commit · validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 0 PENDING.
+- **Active artifact:** stress-project/test/ — six files, 18 named cases, 9 failure paths.
+- **Open decisions:** two still carried to B3 — the unused OUTCOMES import in bin/jml.js, and the NONE-row asymmetry (MOVE parks, TERMINATE suspends anyway).
+- **In-flight changes:** none.
+- **Closed avenues:** `node --test test/` as the test command — it runs zero cases on Node v24 and exits 1; the working form is `node --test 'test/**/*.test.js'`, quoted. Do not revert it. Also closed: storing a token-shaped literal in a tracked test file, on a public repo.
+- **Next action:** A5 — dispatch lead-executor (`task_id F7-A5-readme`, with expected_output) for README.md plus the GitHub-native mermaid sequence diagram. Assert: even fence count, block contains sequenceDiagram with >=4 participant and >=6 arrows, and NO local renderer binary is invoked anywhere (HC-5).
