@@ -146,3 +146,17 @@ The plan above is the operator-approved artifact and is preserved as approved. A
 - **`PROGRESS.md`'s tail lagged `GATES.md` and `Plan.md`** by one event, still reading "await the mid-gate token". That file is the *first* read §15.4 mandates, so a compaction in the A0→A1 window would have produced a cold reader that re-STOPped at a passed gate. Closed by A1's checkpoint.
 
 **Arbiter conduct note:** it disclosed that holding `Write` but not `Edit` meant rewriting `logs/arbiter-audit.jsonl` whole, and stated that all 9 prior records were reproduced verbatim — the transcription risk the F3 checkpoint already logged against its own contract. It also declined to fabricate a timestamp, using a date-only `ts` as its nine predecessors did.
+
+## A3 amendment — the B9 edge-case commands were wrong
+
+The edge-case table above specifies `node bin/jml.js run --input <file> --out tmp/`. **The built CLI accepts no `run` subcommand and no `--input` flag** — the delivery file is a positional argument, and the audit log is `audit.jsonl`, not `audit-trail.jsonl`. Verified: the plan's form prints usage and exits 2, which would have looked like three failing edge cases at B9 when the application was correct.
+
+Corrected commands, verified against the built CLI:
+
+| Case | Command | Verified result |
+|---|---|---|
+| duplicate | `node bin/jml.js fixtures/edge-duplicate-webhook.json --out tmp --now <iso> --seed s` | exit 0 · one `"outcome":"DUPLICATE"` audit line · **one** ticket |
+| mover-before-hire | `node bin/jml.js fixtures/edge-mover-before-hire.json --out tmp --now <iso> --seed s` | exit 1 · `"outcome":"PARKED"` · D5 FALLBACK, confidence 0.25 |
+| malformed | `node bin/jml.js fixtures/edge-malformed-payload.json.txt --out tmp --now <iso> --seed s` | exit 2 · stdout 6 D5 keys · exactly 1 audit line · no ticket, no notification |
+
+Audit path is `<out>/audit.jsonl`. Determinism requires **both** `--now` and `--seed`; seeded runs are byte-identical under `diff -r`, unseeded runs differ (falsifiable, checked both ways).

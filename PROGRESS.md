@@ -260,3 +260,12 @@ sentence alone cannot manufacture that alert.
 - **Closed avenues:** C-14's word-matching pattern — replaced by an enumerated fixture-id set after it failed the F3 gate on the legitimate dispatch F7-A2-fixtures.
 - **Carry into A3:** the amendments section of context/f7-plan.md is binding — D6 containment needs a WORKING-TREE scan (git grep sees 0 tracked files pre-A7 and passes vacuously); every dispatch carries expected_output; F7 rounds go to logs/rounds/f7-round-1|2/, never round-1/.
 - **Next action:** A3 — dispatch lead-executor (`task_id F7-A3-modules`, with expected_output) to build the six src/ modules, two adapters and bin/jml.js. Budget 35K; if it exceeds 45K, checkpoint and split rather than compressing A4.
+
+## [F7|2026-08-13T15:35:57Z] checkpoint — A3 COMPLETE, A4 next
+- **Task:** F7 Stage A. A0-A3 done. 15 tracked files under stress-project/ (7 fixtures+config, 8 modules).
+- **Workflow status:** validate-crew 36 PASS / 0 SKIP / 0 FAIL · suite 131 PASS / 0 FAIL · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED · tree clean at a1e26b2.
+- **Verified independently:** all three edge-case exit codes and artifact counts, both valid fixtures, determinism (falsifiable both ways), HC-5, D6 containment.
+- **Open decisions:** two carried to B3 discourse — the unused OUTCOMES import in bin/jml.js, and the NONE-row asymmetry (MOVE parks, TERMINATE suspends anyway).
+- **In-flight changes:** none.
+- **Closed avenues:** the plan's `run --input` CLI form — corrected in context/f7-plan.md to the positional contract the CLI actually implements, before B9 could report three false edge-case failures.
+- **Next action:** A4 — dispatch lead-executor (`task_id F7-A4-tests`, with expected_output) for the 18-case suite. Assert the 18 case NAMES, not just a count (amendment 7), and capture `node --test` output into a variable before testing it (amendment 3).
