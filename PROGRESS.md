@@ -269,3 +269,13 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none.
 - **Closed avenues:** the plan's `run --input` CLI form — corrected in context/f7-plan.md to the positional contract the CLI actually implements, before B9 could report three false edge-case failures.
 - **Next action:** A4 — dispatch lead-executor (`task_id F7-A4-tests`, with expected_output) for the 18-case suite. Assert the 18 case NAMES, not just a count (amendment 7), and capture `node --test` output into a variable before testing it (amendment 3).
+
+## [F7|2026-08-13T16:12:23Z] checkpoint — A4 COMPLETE, A5 next
+- **Task:** F7 Stage A. A0-A4 done. 21 tracked files under stress-project/ (7 fixtures+config, 8 modules, 6 tests).
+- **Workflow status:** app suite 18 PASS / 0 FAIL (`# pass 18` / `# fail 0`, TAP) · crew suite and validate-crew unchanged this step (test-only + one package.json line) · tree clean after this commit.
+- **Verified independently:** the 18 case names set-diffed against the contract (empty both directions, not a count) · two consecutive runs identical · tmp/ empty before and after · no ignored artifacts anywhere · HC-5 14 import specifiers all node:/relative.
+- **Defect fixed:** `node --test test/` does not run on Node v24.14.0 — --test positionals are globs and a bare directory is loaded as a module (MODULE_NOT_FOUND, 0 cases executed). package.json's test script is now `node --test 'test/**/*.test.js'`; `npm test` exits 0 with 18/0. A6 must not revert to the directory form.
+- **A3 limit closed:** dedupe independence is now bound by mutation, not by reading — disabling the fingerprint branch fails exactly one case by name; src/intake.js restored byte-identical to HEAD.
+- **In-flight changes:** none.
+- **Open decisions:** unchanged — the unused OUTCOMES import in bin/jml.js and the NONE-row asymmetry both still carried to B3 discourse. No test constrains the NONE+TERMINATE verdict either way.
+- **Next action:** A5 — dispatch lead-executor (`task_id F7-A5-readme`, with expected_output) for stress-project/README.md. Tests are done; do NOT let A5 or A6 revert the runner invocation to `node --test test/`.
