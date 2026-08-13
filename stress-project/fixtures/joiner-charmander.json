@@ -1,0 +1,44 @@
+{
+  "delivery_id": "whd_7a1c4e2b0001",
+  "source": "hris.workday",
+  "api_version": "2026-05-01",
+  "received_at": "2026-08-13T09:14:02.318Z",
+  "events": [
+    {
+      "event_id": "evt_7a1c4e2b-hire-charmander",
+      "event_type": "HIRE",
+      "occurred_at": "2026-08-13T09:13:58.001Z",
+      "effective_date": "2026-08-24",
+      "employee_id": "EMP-10041",
+      "employee": {
+        "display_name": "Charmander Ignis",
+        "work_email": "charmander.ignis@example.invalid",
+        "employment_type": "FULL_TIME",
+        "worker_status": "PRE_HIRE"
+      },
+      "job": {
+        "title": "Platform Engineer",
+        "level": "L4",
+        "cost_center": "CC-4471"
+      },
+      "department": {
+        "id": "DEP-ENG-PLATFORM",
+        "name": "Platform Engineering"
+      },
+      "manager": {
+        "employee_id": "EMP-10002",
+        "display_name": "Dana Okonkwo",
+        "work_email": "dana.okonkwo@example.invalid"
+      },
+      "location": {
+        "site": "SEA-01",
+        "city": "Seattle",
+        "timezone": "America/Los_Angeles"
+      },
+      "entitlements": {
+        "grant": ["idp.baseline", "email.mailbox", "vpn.standard", "github.read"],
+        "revoke": []
+      }
+    }
+  ]
+}

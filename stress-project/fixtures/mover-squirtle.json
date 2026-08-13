@@ -1,0 +1,58 @@
+{
+  "delivery_id": "whd_3d9f8c150001",
+  "source": "hris.workday",
+  "api_version": "2026-05-01",
+  "received_at": "2026-08-13T11:02:47.556Z",
+  "events": [
+    {
+      "event_id": "evt_3d9f8c15-move-squirtle",
+      "event_type": "MOVE",
+      "occurred_at": "2026-08-13T11:02:44.117Z",
+      "effective_date": "2026-09-01",
+      "employee_id": "EMP-10043",
+      "employee": {
+        "display_name": "Squirtle Torrent",
+        "work_email": "squirtle.torrent@example.invalid",
+        "employment_type": "FULL_TIME",
+        "worker_status": "ACTIVE"
+      },
+      "job": {
+        "title": "Site Reliability Engineer",
+        "level": "L5",
+        "cost_center": "CC-4482"
+      },
+      "previous_job": {
+        "title": "Support Engineer",
+        "level": "L4",
+        "cost_center": "CC-4471"
+      },
+      "department": {
+        "id": "DEP-ENG-SRE",
+        "name": "Site Reliability"
+      },
+      "previous_department": {
+        "id": "DEP-SUP-TIER2",
+        "name": "Customer Support Tier 2"
+      },
+      "manager": {
+        "employee_id": "EMP-10007",
+        "display_name": "Ravi Menon",
+        "work_email": "ravi.menon@example.invalid"
+      },
+      "previous_manager": {
+        "employee_id": "EMP-10002",
+        "display_name": "Dana Okonkwo",
+        "work_email": "dana.okonkwo@example.invalid"
+      },
+      "location": {
+        "site": "SEA-01",
+        "city": "Seattle",
+        "timezone": "America/Los_Angeles"
+      },
+      "entitlements": {
+        "grant": ["pagerduty.responder", "aws.readonly", "github.write"],
+        "revoke": ["zendesk.agent"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "delivery_id": "whd_5b12ad600001",
+  "source": "hris.workday",
+  "api_version": "2026-05-01",
+  "received_at": "2026-08-13T13:07:31.004Z",
+  "delivery_attempt": 2,
+  "events": [
+    {
+      "event_id": "evt_5b12ad60-hire-ainsley",
+      "event_type": "HIRE",
+      "occurred_at": "2026-08-13T13:07:28.771Z",
+      "effective_date": "2026-08-31",
+      "employee_id": "EMP-30518",
+      "employee": {
+        "display_name": "Marcus Ainsley",
+        "work_email": "marcus.ainsley@example.invalid",
+        "employment_type": "FULL_TIME",
+        "worker_status": "PRE_HIRE"
+      },
+      "job": {
+        "title": "Accounts Payable Analyst",
+        "level": "L3",
+        "cost_center": "CC-2210"
+      },
+      "department": {
+        "id": "DEP-FIN-AP",
+        "name": "Accounts Payable"
+      },
+      "manager": {
+        "employee_id": "EMP-10015",
+        "display_name": "Helena Vasquez",
+        "work_email": "helena.vasquez@example.invalid"
+      },
+      "location": {
+        "site": "CHI-02",
+        "city": "Chicago",
+        "timezone": "America/Chicago"
+      },
+      "entitlements": {
+        "grant": ["idp.baseline", "email.mailbox", "erp.ap_clerk"],
+        "revoke": []
+      }
+    },
+    {
+      "event_id": "evt_5b12ad60-hire-ainsley",
+      "event_type": "HIRE",
+      "occurred_at": "2026-08-13T13:07:28.771Z",
+      "effective_date": "2026-08-31",
+      "employee_id": "EMP-30518",
+      "employee": {
+        "display_name": "  Marcus   Ainsley ",
+        "work_email": "marcus.ainsley@example.invalid ",
+        "employment_type": "FULL_TIME",
+        "worker_status": "PRE_HIRE"
+      },
+      "job": {
+        "title": "Accounts Payable Analyst",
+        "level": "L3",
+        "cost_center": "CC-2210"
+      },
+      "department": {
+        "id": "DEP-FIN-AP",
+        "name": "Accounts Payable "
+      },
+      "manager": {
+        "employee_id": "EMP-10015",
+        "display_name": "Helena Vasquez",
+        "work_email": "helena.vasquez@example.invalid"
+      },
+      "location": {
+        "site": "CHI-02",
+        "city": "Chicago",
+        "timezone": "America/Chicago"
+      },
+      "entitlements": {
+        "grant": ["idp.baseline", "email.mailbox", "erp.ap_clerk"],
+        "revoke": []
+      }
+    }
+  ]
+}

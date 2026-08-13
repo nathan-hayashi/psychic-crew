@@ -1,0 +1,5 @@
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+x-hris-delivery: whd_0c33ba910001
+
+{"delivery_id":"whd_0c33ba910001","source":"hris.workday","api_version":"2026-05-01","received_at":"2026-08-13T18:22:07.

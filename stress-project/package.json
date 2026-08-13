@@ -1,0 +1,15 @@
+{
+  "name": "jml-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Joiner/Mover/Leaver identity-lifecycle simulator: HRIS webhook -> IAM action -> ticket -> notification -> audit trail. Node standard library only, zero dependencies (HC-5).",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "start": "node bin/jml.js"
+  }
+}

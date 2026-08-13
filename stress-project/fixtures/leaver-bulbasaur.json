@@ -1,0 +1,50 @@
+{
+  "delivery_id": "whd_c4e07b930001",
+  "source": "hris.workday",
+  "api_version": "2026-05-01",
+  "received_at": "2026-08-13T16:41:12.402Z",
+  "events": [
+    {
+      "event_id": "evt_c4e07b93-term-bulbasaur",
+      "event_type": "TERMINATE",
+      "occurred_at": "2026-08-13T16:41:09.884Z",
+      "effective_date": "2026-08-15",
+      "employee_id": "EMP-10047",
+      "employee": {
+        "display_name": "Bulbasaur Overgrow",
+        "work_email": "bulbasaur.overgrow@example.invalid",
+        "employment_type": "FULL_TIME",
+        "worker_status": "ACTIVE"
+      },
+      "job": {
+        "title": "Data Engineer",
+        "level": "L4",
+        "cost_center": "CC-4490"
+      },
+      "department": {
+        "id": "DEP-DATA-ANALYTICS",
+        "name": "Data and Analytics"
+      },
+      "manager": {
+        "employee_id": "EMP-10009",
+        "display_name": "Ines Farkas",
+        "work_email": "ines.farkas@example.invalid"
+      },
+      "location": {
+        "site": "REMOTE-US",
+        "city": "Boise",
+        "timezone": "America/Denver"
+      },
+      "termination": {
+        "reason": "VOLUNTARY_RESIGNATION",
+        "voluntary": true,
+        "last_working_day": "2026-08-15",
+        "rehire_eligible": true
+      },
+      "entitlements": {
+        "grant": [],
+        "revoke": ["idp.baseline", "email.mailbox", "vpn.standard", "github.write", "aws.readonly"]
+      }
+    }
+  ]
+}
