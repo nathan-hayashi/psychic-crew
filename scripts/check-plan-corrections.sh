@@ -213,7 +213,15 @@ fi
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
 # dispatch records to the live trail, and the coverage check correctly failed on events that never
 # happened. A trail with invented records is worse than one with gaps: every gate reads it as truth.
-fixt=$(jq -r 'select((.task_id // "") | test("regression|fixture|^test-"; "i")) | .task_id' \
+# The first pattern here matched any task_id containing "regression|fixture|test-", and the real
+# F7 build step F7-A2-fixtures tripped it — a legitimate dispatch record read as test pollution,
+# which would have failed the F3 gate spuriously. That is a NAMING proxy, not the artifact: what
+# indicates pollution is a record bearing an id that only the test harness ever generates, not a
+# record whose id happens to contain an English word real work also uses.
+# Bind to the enumerated fixture ids instead. A new fixture id MUST be added here when introduced —
+# that coupling is deliberate: it makes the guard's scope explicit rather than guessable.
+FIXTURE_IDS='scrub-regression|ccs02-probe|provenance-probe|c16-probe'
+fixt=$(jq -r --arg ids "$FIXTURE_IDS" 'select((.task_id // "") | test("^(" + $ids + ")$"; "i")) | .task_id' \
        logs/tooluse-audit.jsonl 2>/dev/null | head -1)
 if [ -z "${fixt:-}" ]; then
   report C-14 F3 APPLIED "no fixture-shaped task_id in the audit trail; fixtures run under a temp root"

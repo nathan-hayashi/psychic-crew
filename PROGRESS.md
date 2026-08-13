@@ -250,3 +250,13 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none after this commit.
 - **Closed avenues:** routing F7 rounds into the existing `logs/rounds/round-1/` — rejected, it would clobber C-13's and F4's fixture with no git safety net.
 - **Next action:** A2 — dispatch lead-executor (`task_id F7-A2-fixtures`, WITH expected_output) to scaffold `stress-project/`, write `package.json` and the six fixtures via Bash heredoc.
+
+## [F7|2026-08-13T15:02:39Z] checkpoint — A2 COMPLETE, A3 next (session boundary recommended)
+- **Task:** F7 Stage A. A0 release, A1 gate-0 + amendments, A2 scaffold/fixtures all complete.
+- **Workflow status:** validate-crew 36 PASS / 0 SKIP / 0 FAIL · suite 131 PASS / 0 FAIL after this commit · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED · gate sims F0-F6 exit 0.
+- **Active artifact:** stress-project/ — package.json + 6 fixtures, 7 tracked files. src/, bin/, test/, README.md correctly absent.
+- **Open decisions:** none blocking A3.
+- **In-flight changes:** none.
+- **Closed avenues:** C-14's word-matching pattern — replaced by an enumerated fixture-id set after it failed the F3 gate on the legitimate dispatch F7-A2-fixtures.
+- **Carry into A3:** the amendments section of context/f7-plan.md is binding — D6 containment needs a WORKING-TREE scan (git grep sees 0 tracked files pre-A7 and passes vacuously); every dispatch carries expected_output; F7 rounds go to logs/rounds/f7-round-1|2/, never round-1/.
+- **Next action:** A3 — dispatch lead-executor (`task_id F7-A3-modules`, with expected_output) to build the six src/ modules, two adapters and bin/jml.js. Budget 35K; if it exceeds 45K, checkpoint and split rather than compressing A4.
