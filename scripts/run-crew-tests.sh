@@ -460,6 +460,135 @@ cases_F6 () {
   rm -rf "$cs"
 }
 
+cases_F7 () {
+  echo "== F7 — JML simulator artifact (crew gate evidence) =="
+  # SCOPE NOTE, so a later reader cannot conflate two totals: everything below is CREW gate
+  # evidence about the F7 artifact. The §7 "tests >= 15" bar counts `node --test` cases inside
+  # stress-project/ ONLY — there are 18, and they are asserted BY NAME below. Not one [PASS]
+  # line emitted by cases_F7 counts toward that bar.
+  # C-14 law: every command here that RUNS the artifact writes into a mktemp -d. Fixtures once
+  # wrote fabricated records into the live audit trail; an auditor must not pollute its subject.
+  sp=stress-project
+  f7tree0=$(git status --porcelain | wc -l)
+  check "plan corrections: F7 clean"              0 ./scripts/check-plan-corrections.sh F7
+
+  # -- the app suite runs green. Capture into a variable, THEN test: node --test exits nonzero
+  # on failure and a pipeline would swallow that under pipefail (five recorded incidents).
+  # The TAP reporter is requested explicitly — the default reporter here is `spec`, whose
+  # summary reads "pass 18" with no leading '#', so a `# pass` grep would silently find nothing.
+  # NOT `node --test test/`: a bare directory is loaded as a module on Node v24, runs ZERO
+  # cases and exits 1. The working invocation is the quoted glob, same as package.json's script.
+  f7suite=$( cd "$sp" && node --test --test-reporter=tap 'test/**/*.test.js' 2>&1 )
+  f7pass=$(printf '%s\n' "$f7suite" | awk '$1=="#" && $2=="pass" {print $3}')
+  f7fail=$(printf '%s\n' "$f7suite" | awk '$1=="#" && $2=="fail" {print $3}')
+  { [ "${f7pass:-0}" = 18 ] && [ "${f7fail:-1}" = 0 ]; } \
+    && ok "F7 app suite green: # pass 18 / # fail 0" \
+    || no "F7 app suite: pass=${f7pass:-none} fail=${f7fail:-none}, expected 18 / 0"
+
+  # The 18 contract case NAMES as a SET, both directions (amendment 7). A count of 18 is
+  # satisfiable by 18 renamed or duplicated cases; a set difference is not.
+  f7d=$(mktemp -d)
+  printf '%s\n' dedupe-survives-whitespace-variant dedupes-identical-event-id \
+    every-stage-appends-exactly-one-jsonl-line hire-none-to-active-emits-create \
+    iam-adapter-failure-produces-failed-ticket leaver-suspend-ticket-notify-full-trail \
+    malformed-bytes-return-fallback-schema move-active-emits-transfer \
+    move-before-hire-parks-and-fallbacks parked-move-replays-after-hire \
+    parses-valid-hire rejects-missing-employee-id rejects-unknown-event-type \
+    slack-payload-has-blocks-and-no-secret-shaped-fields \
+    terminate-active-to-suspended-emits-suspend terminate-twice-is-idempotent \
+    ticket-shape-matches-jira-fields unknown-transition-returns-error-value-not-throw \
+    | sort > "$f7d/want"
+  printf '%s\n' "$f7suite" | sed -n 's/^ok [0-9][0-9]* - //p' | sort > "$f7d/got"
+  f7nd=$(diff "$f7d/want" "$f7d/got" | grep -c '^[<>]' || true)
+  [ "${f7nd:-1}" = 0 ] && ok "F7 all 18 contract case names present and set-equal" \
+                       || no "F7 case-name set differs from the contract by ${f7nd} name(s)"
+  rm -rf "$f7d"
+
+  # HC-5 zero dependencies. Exit must be EXACTLY 1 (amendment 8): a missing or malformed
+  # package.json exits 2 or 5, and a merely-nonzero test would read that absence as a pass.
+  jq -e 'has("dependencies") or has("devDependencies")' "$sp/package.json" >/dev/null 2>&1
+  f7jq=$?
+  [ "$f7jq" = 1 ] && ok "HC-5 stress-project declares no dependencies (jq -e exit exactly 1)" \
+                  || no "HC-5 dependency probe exit $f7jq, expected exactly 1 (2/5 = file missing or malformed)"
+
+  # D6 containment — a WORKING-TREE scan, not `git grep` (amendment 2). Theme tokens are data
+  # in fixtures/ and prose in README/tests; they must never reach the modules or the CLI.
+  f7th=$(grep -ril -e charmander -e squirtle -e bulbasaur -- "$sp/src" "$sp/bin" 2>/dev/null | wc -l)
+  [ "$f7th" = 0 ] && ok "D6 no theme token under stress-project/src or bin" \
+                  || no "D6 $f7th file(s) under src/ or bin/ carry a theme token"
+
+  # Fixtures. The five .json must parse; the malformed one must NOT — it is named .json.txt
+  # precisely so auto-format.sh cannot repair it back into validity.
+  f7n=0; f7bad=0
+  for f in "$sp"/fixtures/*.json; do
+    f7n=$((f7n+1)); jq -e . "$f" >/dev/null 2>&1 || f7bad=$((f7bad+1))
+  done
+  { [ "$f7n" = 5 ] && [ "$f7bad" = 0 ]; } && ok "F7 all 5 .json fixtures parse" \
+                                          || no "F7 fixtures: $f7n found, $f7bad unparseable (want 5 / 0)"
+  jq -e . "$sp/fixtures/edge-malformed-payload.json.txt" >/dev/null 2>&1 \
+    && no "F7 edge-malformed-payload.json.txt PARSES — the malformed-input path is untestable" \
+    || ok "F7 edge-malformed-payload.json.txt does not parse (as required)"
+
+  # README diagram. Arrows are counted by TOKEN, not by line: a line-based proxy reported 0
+  # against a real 14 at A5, because mermaid arrows share lines with their messages.
+  f7fen=$(grep -c '^```mermaid' "$sp/README.md" || true)
+  f7mmd=$(awk '/^```mermaid$/{b=1;next} b&&/^```$/{exit} b' "$sp/README.md")
+  f7seq=0; printf '%s\n' "$f7mmd" | grep -q '^[[:space:]]*sequenceDiagram' && f7seq=1
+  f7par=$(printf '%s\n' "$f7mmd" | grep -c '^[[:space:]]*participant ' || true)
+  f7arr=$(printf '%s\n' "$f7mmd" | grep -o -E '[A-Za-z]+-?->>' | wc -l)
+  { [ "${f7fen:-0}" = 1 ] && [ "$f7seq" = 1 ] && [ "${f7par:-0}" -ge 4 ] && [ "${f7arr:-0}" -ge 6 ]; } \
+    && ok "F7 README: 1 mermaid sequenceDiagram, ${f7par} participants, ${f7arr} arrows" \
+    || no "F7 README mermaid: blocks=${f7fen:-0} sequenceDiagram=$f7seq participants=${f7par:-0} arrows=${f7arr:-0} (want 1 / 1 / >=4 / >=6)"
+
+  # The three CLI edge-case exit codes. The delivery file is POSITIONAL — no `run` subcommand
+  # and no --input (the A3 amendment: the plan's form prints usage and exits 2, which would have
+  # read as three failing edge cases against a correct application). Audit log is <out>/audit.jsonl.
+  f7o=$(mktemp -d)
+  ( cd "$sp" && node bin/jml.js fixtures/edge-duplicate-webhook.json --out "$f7o/dup" \
+       --now 2026-01-01T00:00:00Z --seed f7 >/dev/null 2>&1 ); f7rc=$?
+  f7tk=$(ls -1 "$f7o/dup/tickets" 2>/dev/null | wc -l)
+  { [ "$f7rc" = 0 ] && [ "$f7tk" = 1 ]; } \
+    && ok "F7 edge duplicate: exit 0 with exactly 1 ticket (the redelivery opened none)" \
+    || no "F7 edge duplicate: exit $f7rc, $f7tk ticket(s) — want exit 0 and exactly 1"
+  ( cd "$sp" && node bin/jml.js fixtures/edge-mover-before-hire.json --out "$f7o/park" \
+       --now 2026-01-01T00:00:00Z --seed f7 >/dev/null 2>&1 ); f7rc=$?
+  f7pk=$(grep -c '"outcome":"PARKED"' "$f7o/park/audit.jsonl" 2>/dev/null || true)
+  { [ "$f7rc" = 1 ] && [ "${f7pk:-0}" -ge 1 ]; } \
+    && ok "F7 edge mover-before-hire: exit 1 and a PARKED audit outcome" \
+    || no "F7 edge mover-before-hire: exit $f7rc, PARKED lines ${f7pk:-0} — want exit 1 and >=1"
+  ( cd "$sp" && node bin/jml.js fixtures/edge-malformed-payload.json.txt --out "$f7o/bad" \
+       --now 2026-01-01T00:00:00Z --seed f7 >/dev/null 2>&1 ); f7rc=$?
+  f7al=$(wc -l < "$f7o/bad/audit.jsonl" 2>/dev/null || echo 0)
+  f7bt=$(ls -1 "$f7o/bad/tickets" 2>/dev/null | wc -l)
+  { [ "$f7rc" = 2 ] && [ "${f7al:-0}" = 1 ] && [ "$f7bt" = 0 ]; } \
+    && ok "F7 edge malformed: exit 2, exactly 1 rejection audit line, no ticket" \
+    || no "F7 edge malformed: exit $f7rc, ${f7al:-0} audit line(s), $f7bt ticket(s) — want 2 / 1 / 0"
+
+  # Determinism, falsifiable BOTH ways: identical seeded runs prove reproducibility, and a
+  # differing free-running pair proves the first assertion is not vacuously true of every run.
+  for f7p in s1 s2; do
+    ( cd "$sp" && node bin/jml.js fixtures/joiner-charmander.json --out "$f7o/$f7p" \
+         --now 2026-01-01T00:00:00Z --seed f7 >/dev/null 2>&1 )
+  done
+  for f7p in u1 u2; do
+    ( cd "$sp" && node bin/jml.js fixtures/joiner-charmander.json --out "$f7o/$f7p" >/dev/null 2>&1 )
+  done
+  diff -r "$f7o/s1" "$f7o/s2" >/dev/null 2>&1 && f7det=1 || f7det=0
+  diff -r "$f7o/u1" "$f7o/u2" >/dev/null 2>&1 && f7var=0 || f7var=1
+  { [ "$f7det" = 1 ] && [ "$f7var" = 1 ]; } \
+    && ok "F7 determinism: seeded pair byte-identical, free-running pair differs (falsifiable)" \
+    || no "F7 determinism: seeded-identical=$f7det free-running-differs=$f7var (want 1 / 1)"
+  rm -rf "$f7o"
+
+  # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
+  # as it was on entry, and stress-project/tmp must hold nothing.
+  f7tree1=$(git status --porcelain | wc -l)
+  f7tmp=$(ls -A "$sp/tmp" 2>/dev/null | wc -l)
+  { [ "$f7tree1" = "$f7tree0" ] && [ "$f7tmp" = 0 ]; } \
+    && ok "F7 auditing the artifact did not modify it (tree $f7tree0 -> $f7tree1, tmp/ empty)" \
+    || no "F7 the audit polluted its subject (tree $f7tree0 -> $f7tree1, tmp/ holds $f7tmp entr(y|ies))"
+}
+
 gate_evidence () {
   echo "=== LIVE GATE EVIDENCE — generated $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
   echo "--- git ---"; git log --oneline -1; echo "tags: $(git tag -l | tr '\n' ' ')"
@@ -472,9 +601,9 @@ gate_evidence () {
 
 WANT="${1:-all}"
 case "$WANT" in
-  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5; cases_F6;;
-  all)  cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5; cases_F6;;
-  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;; F5) cases_F5;; F6) cases_F6;;
+  gate) gate_evidence; cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5; cases_F6; cases_F7;;
+  all)  cases_F0; cases_F1; cases_F2; cases_F3; cases_F4; cases_F5; cases_F6; cases_F7;;
+  F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;; F5) cases_F5;; F6) cases_F6;; F7) cases_F7;;
   *)    echo "unknown target: $WANT"; exit 64;;
 esac
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"
