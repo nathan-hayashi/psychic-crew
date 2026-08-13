@@ -214,3 +214,12 @@ sentence alone cannot manufacture that alert.
 - **Mutation stress 3/3 caught**, but M3 was initially caught only by the dirty-tree canary; C-16 closes that so it now fails by name.
 - **In-flight changes:** none.
 - **Next action:** STOP. Await `APPROVE GATE-F6`. On approval → F7 FINAL ORCHESTRATION STRESS TEST [200K, may span 2 sessions with mid-gate G-F7a].
+
+## [F6|2026-08-13T05:42:38Z] GATE G-F6 APPROVED — F7 opened and immediately HELD (session-model conflict)
+- **Task:** F6 closed on the exact token `APPROVE GATE-F6`. **F7 — FINAL ORCHESTRATION STRESS TEST [200K, may span 2 sessions, mid-gate G-F7a] is the active phase**, held before any work.
+- **HOLD (HC-2 / CLAUDE.md non-negotiable):** the orchestrator session is running claude-fable-5 as of this turn — an interactive model override supersedes the settings pin until restart, and this repo forbids any fable model for any session. No F7 work was executed under the override.
+- **Verified intact:** .claude/settings.json pins model opus / effort max / CREW_TIER_LOCK T3; agent stamps unchanged (4 opus / 4 sonnet); tree was clean at b655ad7 before this turn's ledger writes.
+- **Workflow status:** suite 131 PASS / 0 FAIL · validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED — all unchanged this turn (docs-only writes).
+- **In-flight changes:** none.
+- **Closed avenues:** running F7 from this session regardless — rejected, it would place the build's largest phase in breach of a hard constraint; §0.3's one-phase-one-session preference points at a fresh session anyway.
+- **Next action:** operator relaunches Claude Code from the repo root — the pin restores Opus automatically and SessionStart re-grounds. Then F7 step 1: dispatch lead-planner for the JML-simulator plan (Pokémon overlay per Q4) and STOP at mid-gate G-F7a for plan approval.
