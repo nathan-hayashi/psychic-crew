@@ -470,6 +470,11 @@ cases_F7 () {
   # wrote fabricated records into the live audit trail; an auditor must not pollute its subject.
   sp=stress-project
   f7tree0=$(git status --porcelain | wc -l)
+  # Compare tmp/ BEFORE and AFTER, not "is it empty". Those were indistinguishable when this was
+  # written because tmp/ happened to be empty; B9's legitimate e2e evidence separated them and the
+  # guard fired on gate evidence it had no business flagging. Bind to what changes if the defect
+  # is real - the audit modifying its subject - not to an incidental starting state.
+  f7tmp0=$(ls -A "$sp/tmp" 2>/dev/null | wc -l)
   check "plan corrections: F7 clean"              0 ./scripts/check-plan-corrections.sh F7
 
   # -- the app suite runs green. Capture into a variable, THEN test: node --test exits nonzero
@@ -584,9 +589,9 @@ cases_F7 () {
   # as it was on entry, and stress-project/tmp must hold nothing.
   f7tree1=$(git status --porcelain | wc -l)
   f7tmp=$(ls -A "$sp/tmp" 2>/dev/null | wc -l)
-  { [ "$f7tree1" = "$f7tree0" ] && [ "$f7tmp" = 0 ]; } \
-    && ok "F7 auditing the artifact did not modify it (tree $f7tree0 -> $f7tree1, tmp/ empty)" \
-    || no "F7 the audit polluted its subject (tree $f7tree0 -> $f7tree1, tmp/ holds $f7tmp entr(y|ies))"
+  { [ "$f7tree1" = "$f7tree0" ] && [ "$f7tmp" = "$f7tmp0" ]; } \
+    && ok "F7 auditing the artifact did not modify it (tree $f7tree0 -> $f7tree1, tmp/ $f7tmp0 -> $f7tmp)" \
+    || no "F7 the audit polluted its subject (tree $f7tree0 -> $f7tree1, tmp/ $f7tmp0 -> $f7tmp)"
 }
 
 gate_evidence () {
