@@ -13,6 +13,7 @@ import assert from "node:assert/strict";
 import { fixedClock } from "../src/adapters/clock.js";
 import { IAM_ACTIONS, createIamAdapter } from "../src/adapters/iam.js";
 import { STATES, applyEvent } from "../src/lifecycle.js";
+import { REDACTION, findSecretShapes } from "../src/notify.js";
 import {
   PROJECT_KEY,
   TICKET_PRIORITY,
@@ -106,6 +107,35 @@ test("ticket-shape-matches-jira-fields", () => {
   // Third clock tick: applyEvent, then iam.apply, then buildTicket.
   assert.equal(ticket.fields.created, "2026-03-01T00:00:02.000Z");
   assert.match(ticket.fields.description, /ACTIVE -> SUSPENDED \(APPLIED\)/);
+
+  // The ticket is the DURABLE artifact and its own docstring says a client
+  // could POST it unchanged, so it owes the same scrubbing the chat payload
+  // gets. The token is planted in a field the builder actually copies, and the
+  // control below proves the detector can see it unscrubbed — without that,
+  // an always-empty findSecretShapes() would satisfy the assertion.
+  const planted = ["AKIA", "ABCDEFGHIJKLMNOP"].join("");
+  const leaky = {
+    ...terminateEvent,
+    employee: { display_name: `Ines Farkas ${planted}` },
+  };
+  assert.equal(findSecretShapes(leaky).length, 1);
+  assert.equal(findSecretShapes(leaky)[0].path, "$.employee.display_name");
+
+  const leakyTicket = buildTicket(
+    { event: leaky, lifecycle, iam, sequence: 9 },
+    { clock: clock("ticket-scrub") },
+  );
+  assert.deepEqual(
+    findSecretShapes(leakyTicket),
+    [],
+    "a credential must not survive into a ticket written to disk and POSTed",
+  );
+  assert.equal(JSON.stringify(leakyTicket).includes(planted), false);
+  assert.equal(
+    JSON.stringify(leakyTicket).includes(REDACTION),
+    true,
+    "it must be redacted, not silently dropped",
+  );
 });
 
 test("iam-adapter-failure-produces-failed-ticket", () => {

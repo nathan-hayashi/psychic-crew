@@ -314,3 +314,13 @@ sentence alone cannot manufacture that alert.
 - **BINDING SEQUENCING for B7:** QUAL-01 must not be fixed in isolation ahead of sec-2/QUAL-06 — it is currently the only remaining path back to iam.apply() for a stranded account, so fixing it alone removes the last accidental recovery path. This is the fixer's most important constraint and it came out of round 2, not round 1.
 - **In-flight changes:** 3 seeded source files, still uncommitted; 0 seed commits in history.
 - **Next action:** B6 — dispatch arbiter (task_id F7-B6-compile2, with expected_output) to compile round 2, apply confidence arithmetic, drop undefended challenges, and RELEASE to the fixer.
+
+## [F7|2026-08-13T21:35:08Z] checkpoint — B6 + B7 complete (closing a stale anchor the arbiter caught)
+- **Task:** F7 Stage B. B6 compiled round 2 and released; B7 applied all 11 fixes. This checkpoint also closes a §15.4 staleness the arbiter flagged: PROGRESS.md had not been checkpointed across B6 or B7, so a compaction would have lost two completed steps.
+- **Workflow status:** app suite 18 PASS / 0 FAIL · crew suite 143 PASS / 1 FAIL (dirty-tree canary only, cleared by this commit) · validate-crew 36 PASS / 0 SKIP / 0 FAIL incl. dispatch coverage · corrections 13 APPLIED / 1 PENDING (C-19, F8-owned) / 2 SUPERSEDED.
+- **Verdicts:** 11 ACCEPT, 0 REJECT, 0 DEFER, nothing reverted. All four open P0s closed by applied fixes.
+- **Active artifact:** stress-project/ — src, bin and test all modified by the fixer; seeds gone, leaving no trace.
+- **Open decisions:** none blocking. C-19 is F8-owned by design.
+- **In-flight changes:** none after this commit.
+- **Closed avenues:** repairing the coverage red by writing a line (the fixer refused, correctly); leaving retrospective coverage unlabelled (the arbiter refused, correctly).
+- **Next action:** B8 — dispatch test-runner (task_id F7-B8-tests, with expected_output) for OBSERVED suite evidence. The arbiter released B7 without running anything and said so; B8 owns execution.

@@ -15,6 +15,9 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { iamFailed } from "./adapters/iam.js";
+import { scrubSecrets } from "./notify.js";
+
 export const PROJECT_KEY = "JML";
 
 export const TICKET_STATUS = Object.freeze({ DONE: "Done", FAILED: "Failed" });
@@ -42,6 +45,11 @@ export function ticketKey(sequence) {
  * Build the issue. Shape mirrors the Jira REST create-issue body: a `key` plus a
  * `fields` object whose members are the named system fields, so a downstream
  * client could POST it unchanged.
+ *
+ * Because it could be POSTed unchanged, the whole issue passes through the same
+ * scrubber the chat payload uses on the way out. The ticket is the DURABLE
+ * artifact of the two, so an unredacted credential here outlives one in a chat
+ * channel — "the ticket is only read by the desk" is not a control.
  */
 export function buildTicket(
   { event = {}, lifecycle = {}, iam = {}, sequence = 1 },
@@ -53,7 +61,7 @@ export function buildTicket(
     );
   }
 
-  const failed = iam.ok === false;
+  const failed = iamFailed(iam);
   const action = lifecycle.emission ?? iam.action ?? null;
   const verb = ACTION_LABEL[action] ?? "update";
   const employeeId = event.employee_id ?? lifecycle.employee_id ?? "unknown";
@@ -77,7 +85,7 @@ export function buildTicket(
       : `IAM ${action} succeeded, provider ref ${iam.provider_ref ?? "n/a"}.`,
   ];
 
-  return {
+  return scrubSecrets({
     key: ticketKey(sequence),
     self: `jml://tickets/${ticketKey(sequence)}`,
     fields: {
@@ -102,7 +110,7 @@ export function buildTicket(
         ? (iam.error?.code ?? "UNKNOWN")
         : null,
     },
-  };
+  });
 }
 
 /** Persist the ticket under `dir`. Runtime output only — D2 keeps this in tmp/. */

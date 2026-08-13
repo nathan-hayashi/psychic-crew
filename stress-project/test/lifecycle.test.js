@@ -172,7 +172,17 @@ test("unknown-transition-returns-error-value-not-throw", () => {
   assert.equal(illegal.to, STATES.SUSPENDED);
   assert.equal(illegal.emission, null);
   assert.match(illegal.detail, /not a legal transition out of SUSPENDED/);
-  assert.equal(illegal.fallback, undefined);
+  // INVALID_TRANSITION exits 1 exactly as PARKED does, so it owes the same D5
+  // block. This assertion previously read `illegal.fallback === undefined`,
+  // which pinned the omission in place: the run reported that it needed a human
+  // and never reported why, and report.fallbacks came back empty.
+  assert.equal(
+    isFallbackShaped(illegal.fallback),
+    true,
+    "a needs-a-human outcome must carry its reason, not only its verdict",
+  );
+  assert.ok(illegal.fallback.confidence < 0.6);
+  assert.match(illegal.fallback.reason, /state SUSPENDED/);
 
   // An event_type with no row at all takes the same value-returning path.
   const unknownType = applyEvent(STATES.ACTIVE, event("PROMOTE"), {
@@ -181,6 +191,7 @@ test("unknown-transition-returns-error-value-not-throw", () => {
   assert.equal(unknownType.ok, false);
   assert.equal(unknownType.outcome, OUTCOMES.INVALID_TRANSITION);
   assert.match(unknownType.detail, /no transition from ACTIVE/);
+  assert.equal(isFallbackShaped(unknownType.fallback), true);
 
   // The other half of the boundary: programmer error still throws. Without this,
   // a module that never threw at all would also pass the assertions above.

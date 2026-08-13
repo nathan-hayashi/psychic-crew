@@ -19,6 +19,29 @@ export const IAM_ACTIONS = Object.freeze({
 
 const KNOWN_ACTIONS = new Set(Object.values(IAM_ACTIONS));
 
+/**
+ * "Did the downstream IAM call fail" — asked in four places (ticketing, notify
+ * and twice in the CLI), so it is answered in ONE. It used to be reimplemented
+ * per caller, and one copy grew an `action !== "iam.suspend"` exemption the
+ * others never had: a failed termination was reported to chat as completed
+ * while the ticket said Failed. Duplicated predicates do not merely risk
+ * drifting; nothing here could ever have reported that they had.
+ */
+export function iamFailed(result) {
+  return result?.ok === false;
+}
+
+/**
+ * A failure the provider itself says may be re-attempted. This is the ONLY
+ * reader of `error.retryable`, and it exists because the field was previously
+ * printed to a human on every Failed ticket while no code path consulted it —
+ * an instruction the pipeline could not honour. Intake's outcome-aware dedupe
+ * calls this to decide whether a redelivery is a RETRY or a DUPLICATE.
+ */
+export function iamRetryable(result) {
+  return iamFailed(result) && result?.error?.retryable === true;
+}
+
 /** `create`, `iam.create` and `all` all select the create action. */
 function normaliseSelector(selector) {
   const value = String(selector).trim().toLowerCase();

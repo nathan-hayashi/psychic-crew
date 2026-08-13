@@ -205,11 +205,22 @@ export function parseDelivery(
 /**
  * Stateful intake. Holds the dedupe index for a run and, when restored from a
  * state file, across runs — a redelivery an hour later is still a redelivery.
+ *
+ * "Already seen" means "already SUCCESSFULLY processed". The distinction is the
+ * whole point: an at-least-once HRIS heals a transient provider failure by
+ * redelivering, so an index that swallowed every repeat would make the system's
+ * own recovery channel the thing that suppresses recovery — a failed suspend
+ * would have no retry path at all. An event whose prior attempt ended in a
+ * retryable provider failure is therefore re-admitted as a RETRY, not answered
+ * DUPLICATE. The cost, stated rather than hidden: the provider call must be
+ * genuinely idempotent, because a retry re-issues it.
  */
 export function createIntake({
   clock,
   seenEventIds = [],
   seenFingerprints = [],
+  failedEventIds = [],
+  failedFingerprints = [],
 } = {}) {
   if (!clock || typeof clock.now !== "function") {
     throw new TypeError(
@@ -218,6 +229,8 @@ export function createIntake({
   }
   const byEventId = new Set(seenEventIds);
   const byFingerprint = new Set(seenFingerprints);
+  const failedById = new Set(failedEventIds);
+  const failedByFingerprint = new Set(failedFingerprints);
 
   return {
     admit(event, { delivery = {}, taskId = "jml-intake" } = {}) {
@@ -249,7 +262,10 @@ export function createIntake({
           ? "fingerprint"
           : null;
 
-      if (duplicateBy) {
+      const priorAttemptFailed =
+        failedById.has(eventId) || failedByFingerprint.has(fingerprint);
+
+      if (duplicateBy && !priorAttemptFailed) {
         return {
           status: "DUPLICATE",
           event_id: eventId,
@@ -262,6 +278,10 @@ export function createIntake({
 
       byEventId.add(eventId);
       byFingerprint.add(fingerprint);
+      // Cleared on re-admission and re-marked only if this attempt fails too,
+      // so a retry that succeeds stops retrying instead of looping forever.
+      failedById.delete(eventId);
+      failedByFingerprint.delete(fingerprint);
       return {
         status: "ACCEPTED",
         event_id: eventId,
@@ -269,15 +289,31 @@ export function createIntake({
         event_type: normaliseString(event.event_type),
         delivery_id: delivery.delivery_id ?? null,
         fingerprint,
+        // Present only on a redelivery whose prior attempt failed, so the audit
+        // trail distinguishes "first time" from "second chance".
+        ...(duplicateBy ? { retry_of: duplicateBy } : {}),
         event: canonicalise(event),
         admitted_at: clock.now(),
       };
+    },
+    /**
+     * Record that this event's provider work failed and may be re-attempted.
+     * Keyed on BOTH indexes because a redelivery may arrive with a fresh id and
+     * be recognisable only by content fingerprint — which is exactly the case
+     * the retry path exists for.
+     */
+    markFailed(event) {
+      const eventId = normaliseString(String(event?.event_id ?? ""));
+      if (eventId.length > 0) failedById.add(eventId);
+      failedByFingerprint.add(fingerprintEvent(event));
     },
     /** Serialisable dedupe index, for the CLI's state file. */
     snapshot() {
       return {
         seenEventIds: [...byEventId],
         seenFingerprints: [...byFingerprint],
+        failedEventIds: [...failedById],
+        failedFingerprints: [...failedByFingerprint],
       };
     },
   };

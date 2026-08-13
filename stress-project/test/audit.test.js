@@ -15,7 +15,13 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { fixedClock } from "../src/adapters/clock.js";
-import { STAGES, createAuditLog, readAuditLog } from "../src/audit.js";
+import {
+  STAGES,
+  createAuditLog,
+  fallbackRecord,
+  isFallbackShaped,
+  readAuditLog,
+} from "../src/audit.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const STAGE_ORDER = [
@@ -110,4 +116,37 @@ test("every-stage-appends-exactly-one-jsonl-line", (t) => {
   const fifth = log.append(STAGES.INTAKE, { outcome: "OK" });
   assert.equal(readFileSync(path, "utf8"), `${onDisk}${fifth}`);
   assert.equal(readAuditLog(path).length, 5);
+
+  // A needs-a-human record carries its REASON to disk, not only its verdict.
+  // The nine-key assertion above is the other half of this: the D5 block is
+  // added when present and never manufactured when it is not, so a routine
+  // stage line keeps its shape while a denial stops being a silent control.
+  const reason = fallbackRecord({
+    agent: "lifecycle",
+    taskId: "audit-suite",
+    reason: "event evt_test-0002 is not a legal transition out of SUSPENDED",
+    missing: ["an explanation for how EMP-90005 reached SUSPENDED"],
+    confidence: 0.25,
+  });
+  log.append(STAGES.LIFECYCLE, {
+    event_id: "evt_test-0002",
+    outcome: "INVALID_TRANSITION",
+    detail: "illegal",
+    fallback: reason,
+  });
+
+  const persisted = readAuditLog(path);
+  assert.equal(persisted.length, 6);
+  const denial = persisted[5];
+  assert.equal(
+    isFallbackShaped(denial.fallback),
+    true,
+    "the persisted line must carry the six-key D5 block, not just the outcome",
+  );
+  assert.deepEqual(denial.fallback, reason);
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(persisted[0], "fallback"),
+    false,
+    "a record with no fallback must not gain an empty one",
+  );
 });

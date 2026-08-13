@@ -210,6 +210,16 @@ else
   report C-15 F5 PENDING "PreCompact hook missing or temp root unavailable"
 fi
 
+# C-19: C-12 restored identity correlation, but a retrospective self-issued arbiter line satisfies
+# it exactly as a contemporaneous one does — the arbiter itself escalated this against its own
+# interest after emitting four such lines at B7. Coverage now proves an id was recorded, not that
+# it was recorded before the packet was consumed. Detect whether the check distinguishes them.
+if grep -q 'retrospective' scripts/validate-crew.sh 2>/dev/null; then
+  report C-19 F8 APPLIED "coverage distinguishes retrospective from contemporaneous arbiter lines"
+else
+  report C-19 F8 PENDING "a retrospective arbiter line satisfies C-12 identically to a contemporaneous one; green proves an id exists, not that it preceded consumption"
+fi
+
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
 # dispatch records to the live trail, and the coverage check correctly failed on events that never
 # happened. A trail with invented records is worse than one with gaps: every gate reads it as truth.

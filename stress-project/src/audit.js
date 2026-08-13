@@ -116,8 +116,13 @@ export function createAuditLog({ path, clock, runId } = {}) {
         employee_id: record.employee_id ?? null,
         outcome: record.outcome ?? "UNKNOWN",
         detail: record.detail ?? null,
+        // The REASON a run needed a human, not merely that it did. Dropping it
+        // here left the outcome persisted and its D5 block — reason, missing
+        // set, confidence — only ever on stdout, which is the "blocking without
+        // an audit line is a silent control" failure in a different codebase.
+        // Added only when present, so a routine stage line keeps its nine keys.
+        ...(record.fallback ? { fallback: record.fallback } : {}),
       };
-      if (record.fallback) entry.fallback = record.fallback;
       const line = `${JSON.stringify(entry)}\n`;
       if (path) appendFileSync(path, line, "utf8");
       lines.push(line);

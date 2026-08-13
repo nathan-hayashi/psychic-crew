@@ -33,10 +33,20 @@ const FIXTURE = join(ROOT, "fixtures", "leaver-bulbasaur.json");
 const FIXED_NOW = "2026-06-01T00:00:00.000Z";
 const SEED = "e2e-leaver";
 
-function runCli(outDir) {
+function runCli(outDir, extra = []) {
   return spawnSync(
     process.execPath,
-    [CLI, FIXTURE, "--out", outDir, "--now", FIXED_NOW, "--seed", SEED],
+    [
+      CLI,
+      FIXTURE,
+      "--out",
+      outDir,
+      "--now",
+      FIXED_NOW,
+      "--seed",
+      SEED,
+      ...extra,
+    ],
     { cwd: ROOT, encoding: "utf8" },
   );
 }
@@ -148,4 +158,62 @@ test("leaver-suspend-ticket-notify-full-trail", (t) => {
     audit,
     "a seeded rerun must be byte-identical, or the trail is not reproducible",
   );
+
+  // ---- the failure path, end to end: a failed suspend must stay recoverable ----
+  // Two properties, both invisible to any unit test: nothing durable may claim
+  // an access change the provider refused, and the redelivery that would heal
+  // it must not be swallowed as a duplicate. They are asserted together because
+  // each one alone is satisfiable by a system that strands the account.
+  const failDir = join(dir, "run-fail");
+  const failed = runCli(failDir, ["--fail-iam", "suspend"]);
+  assert.equal(failed.status, 1, "a failed IAM call needs a human");
+
+  const failedTicket = JSON.parse(
+    readFileSync(join(failDir, "tickets", "JML-0001.json"), "utf8"),
+  );
+  assert.equal(failedTicket.fields.status.name, "Failed");
+
+  const failedState = JSON.parse(
+    readFileSync(join(failDir, "state.json"), "utf8"),
+  );
+  assert.equal(
+    failedState.employees["EMP-10047"],
+    undefined,
+    "state must not record SUSPENDED for a suspend the provider refused",
+  );
+  assert.equal(
+    failedState.failedFingerprints.length,
+    1,
+    "the failed attempt must be remembered, or the redelivery cannot retry it",
+  );
+
+  // The redelivery, into the SAME directory: retried, not answered DUPLICATE.
+  const retried = runCli(failDir);
+  assert.equal(retried.status, 0, `retry exited ${retried.status}`);
+  const retryReport = JSON.parse(retried.stdout);
+  assert.deepEqual(
+    retryReport.counts,
+    { events: 1, accepted: 1, duplicate: 0, rejected: 0 },
+    "a redelivery whose prior attempt failed is a RETRY, not a duplicate",
+  );
+  assert.deepEqual(readdirSync(join(failDir, "tickets")).sort(), [
+    "JML-0001.json",
+    "JML-0002.json",
+  ]);
+
+  const healedState = JSON.parse(
+    readFileSync(join(failDir, "state.json"), "utf8"),
+  );
+  assert.equal(healedState.employees["EMP-10047"], "SUSPENDED");
+  assert.equal(
+    healedState.failedFingerprints.length,
+    0,
+    "a retry that succeeded must stop retrying",
+  );
+
+  // And a redelivery after SUCCESS is still a duplicate — the dedupe index did
+  // not simply stop working.
+  const third = runCli(failDir);
+  assert.equal(third.status, 0);
+  assert.equal(JSON.parse(third.stdout).counts.duplicate, 1);
 });

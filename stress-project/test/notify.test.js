@@ -111,4 +111,66 @@ test("slack-payload-has-blocks-and-no-secret-shaped-fields", () => {
   assert.match(payload.blocks[1].fields[0].text, /\(EMP-90004\)/);
   assert.match(payload.blocks[1].fields[2].text, /IT Operations/);
   assert.match(payload.blocks[2].elements[0].text, /JML-0007/);
+
+  // ---- the failure branch, which nothing exercised before (F7-QUAL-03) ----
+  // The suspend action is named on purpose: the exemption this asserts against
+  // was carved out for `iam.suspend` alone, so any other action would pass on
+  // the defective build and measure nothing.
+  const failedPayload = buildNotification(
+    {
+      event: { ...event, event_type: "TERMINATE" },
+      lifecycle: {
+        ...lifecycle,
+        to: "SUSPENDED",
+        emission: IAM_ACTIONS.SUSPEND,
+      },
+      ticket: { key: "JML-0008" },
+      iam: {
+        ok: false,
+        action: IAM_ACTIONS.SUSPEND,
+        error: { code: "IAM_UPSTREAM_UNAVAILABLE", retryable: true },
+      },
+    },
+    { clock },
+  );
+
+  assert.equal(
+    failedPayload.text,
+    "Identity action FAILED: TERMINATE for EMP-90004 (iam.suspend)",
+    "a failed suspend must read as FAILED in chat, exactly as it does on the ticket",
+  );
+  assert.deepEqual(failedPayload.blocks[0].text, {
+    type: "plain_text",
+    text: "Identity action FAILED",
+  });
+  assert.match(
+    failedPayload.blocks[2].elements[0].text,
+    /highest priority - IAM_UPSTREAM_UNAVAILABLE/,
+  );
+
+  // ---- webhook free text may not carry markup into a rendered block (sec-4) ----
+  const injected = buildNotification(
+    {
+      event: {
+        ...event,
+        employee: {
+          display_name: "*Nils Baird* <https://elsewhere.invalid|click here>",
+        },
+        department: { name: "IT `Operations`" },
+      },
+      lifecycle,
+      ticket: { key: "JML-0009" },
+      iam: { ok: true },
+    },
+    { clock },
+  );
+
+  const employeeField = injected.blocks[1].fields[0].text;
+  const departmentField = injected.blocks[1].fields[2].text;
+  assert.equal(
+    employeeField,
+    "*Employee*\nNils Baird &lt;https://elsewhere.invalid click here&gt; (EMP-90004)",
+    "our own label keeps its markup; the webhook's does not",
+  );
+  assert.equal(departmentField, "*Department*\nIT Operations");
 });

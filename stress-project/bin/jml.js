@@ -24,7 +24,11 @@ import { parseArgs } from "node:util";
 import process from "node:process";
 
 import { resolveClock } from "../src/adapters/clock.js";
-import { createIamAdapter } from "../src/adapters/iam.js";
+import {
+  createIamAdapter,
+  iamFailed,
+  iamRetryable,
+} from "../src/adapters/iam.js";
 import { STAGES, createAuditLog, fallbackRecord } from "../src/audit.js";
 import { createIntake, parseDelivery } from "../src/intake.js";
 import { OUTCOMES, createLifecycle } from "../src/lifecycle.js";
@@ -105,6 +109,10 @@ function loadState(path) {
     parked: {},
     seenEventIds: [],
     seenFingerprints: [],
+    // Events whose provider work failed retryably. Persisted, because the
+    // redelivery that heals them arrives in a LATER run.
+    failedEventIds: [],
+    failedFingerprints: [],
     ticketSequence: 0,
   };
   if (!path || !existsSync(path)) return empty;
@@ -224,6 +232,8 @@ function main(argv) {
     clock,
     seenEventIds: state.seenEventIds,
     seenFingerprints: state.seenFingerprints,
+    failedEventIds: state.failedEventIds,
+    failedFingerprints: state.failedFingerprints,
   });
   const lifecycle = createLifecycle({
     clock,
@@ -275,16 +285,20 @@ function main(argv) {
     if (result.fallback) report.fallbacks.push(result.fallback);
     if (!result.ok) {
       needsHuman = true;
-      return;
+      return false;
     }
-    if (!shouldOpenTicket(result)) return;
+    if (!shouldOpenTicket(result)) return false;
 
     const iamResult = iam.apply({
       action: result.emission,
       employeeId: result.employee_id,
       event,
     });
-    if (!iamResult.ok) needsHuman = true;
+    if (iamFailed(iamResult)) needsHuman = true;
+    // The provider says this one may be re-attempted, so make that a fact the
+    // pipeline acts on rather than a sentence printed on a ticket: intake will
+    // re-admit the redelivery instead of answering DUPLICATE.
+    if (iamRetryable(iamResult)) intake.markFailed(event);
 
     ticketSequence += 1;
     const ticket = buildTicket(
@@ -296,7 +310,7 @@ function main(argv) {
       delivery_id: report.delivery_id,
       event_id: result.event_id,
       employee_id: result.employee_id,
-      outcome: iamResult.ok ? "TICKET_CREATED" : "TICKET_FAILED",
+      outcome: iamFailed(iamResult) ? "TICKET_FAILED" : "TICKET_CREATED",
       detail: ticket.key,
     });
     report.tickets.push({
@@ -332,6 +346,8 @@ function main(argv) {
       channel: notification.channel,
       path: notificationPath,
     });
+
+    return iamFailed(iamResult);
   };
 
   for (const rawEvent of delivery.delivery.events) {
@@ -346,7 +362,9 @@ function main(argv) {
       outcome: admitted.status,
       detail: admitted.duplicate_of
         ? `duplicate by ${admitted.duplicate_of}`
-        : (admitted.errors?.map((e) => e.code).join(",") ?? null),
+        : admitted.retry_of
+          ? `retry of a failed attempt, matched by ${admitted.retry_of}`
+          : (admitted.errors?.map((e) => e.code).join(",") ?? null),
       ...(admitted.fallback ? { fallback: admitted.fallback } : {}),
     });
 
@@ -362,10 +380,16 @@ function main(argv) {
     }
 
     report.counts.accepted += 1;
+    // Snapshot BEFORE the transition: if the provider refuses the work this
+    // event authorised, the state must not durably claim it happened.
+    const stateBefore = lifecycle.stateOf(admitted.event.employee_id);
     const { result, replays } = lifecycle.apply(admitted.event);
-    settle(admitted.event, result);
+    let chainFailed = settle(admitted.event, result);
     for (const { result: replayed, event: heldEvent } of replays) {
-      settle(heldEvent, replayed);
+      chainFailed = settle(heldEvent, replayed) || chainFailed;
+    }
+    if (chainFailed) {
+      lifecycle.rollback(admitted.event.employee_id, stateBefore);
     }
   }
 

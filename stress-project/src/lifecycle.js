@@ -90,6 +90,13 @@ const TRANSITIONS = Object.freeze({
       emission: null,
       outcome: OUTCOMES.INVALID_TRANSITION,
     },
+    // Idempotent, as the header three lines above says and as the suite
+    // asserts: a repeat TERMINATE must not reach the provider a second time.
+    // This row used to emit a real suspend, which made it the one accidental
+    // route back to iam.apply() for an account whose suspend had failed — so it
+    // is closed only now that a REAL retry path exists (outcome-aware dedupe in
+    // intake), rather than earlier when closing it would have stranded the
+    // account for good while turning a test green.
     TERMINATE: {
       to: STATES.SUSPENDED,
       emission: null,
@@ -133,12 +140,25 @@ export function applyEvent(state, event, deps = {}, options = {}) {
   const result = baseResult(from, event, decidedAt);
   const row = TRANSITIONS[from][event.event_type];
 
+  // INVALID_TRANSITION is a needs-a-human outcome exactly as PARKED is — the
+  // CLI exits 1 for both — so it carries the same D5 block. Without one it
+  // exited 1 with an empty `report.fallbacks`, because the consumer pushes only
+  // `if (result.fallback)`: the outcome was reported and its reason was not.
   if (!row) {
     return {
       ...result,
       ok: false,
       outcome: OUTCOMES.INVALID_TRANSITION,
       detail: `no transition from ${from} for event_type ${String(event.event_type)}`,
+      fallback: fallbackRecord({
+        agent: "lifecycle",
+        taskId,
+        reason: `event ${event.event_id ?? "unknown"} carries event_type ${String(event.event_type)}, which has no row in state ${from}`,
+        missing: [`a transition for ${String(event.event_type)} from ${from}`],
+        how: "confirm the sender's event vocabulary, then either correct the event or extend the transition table deliberately",
+        why: "inventing a transition for an unrecognised event type would guess at an identity change nobody authorised",
+        confidence: 0.2,
+      }),
     };
   }
 
@@ -149,6 +169,17 @@ export function applyEvent(state, event, deps = {}, options = {}) {
       outcome: OUTCOMES.INVALID_TRANSITION,
       to: row.to,
       detail: `${event.event_type} is not a legal transition out of ${from}`,
+      fallback: fallbackRecord({
+        agent: "lifecycle",
+        taskId,
+        reason: `event ${event.event_id ?? "unknown"} asks for ${event.event_type} on an employee in state ${from}`,
+        missing: [
+          `an explanation for how ${event.employee_id ?? "this employee"} reached ${from} before this event`,
+        ],
+        how: "check the delivery order upstream and replay the events for this employee in sequence",
+        why: "applying an illegal transition would move a permission boundary the state machine says is already closed",
+        confidence: 0.25,
+      }),
     };
   }
 
@@ -257,6 +288,24 @@ export function createLifecycle({
       }
 
       return { result, replays };
+    },
+    /**
+     * Un-commit an employee's transition after the provider refused it.
+     *
+     * `apply()` moves the state optimistically because the emission has to be
+     * decided before anyone can call the provider — but the caller learns the
+     * outcome afterwards, and a state committed on work that never happened is
+     * a false record of a permission boundary. The caller snapshots `stateOf()`
+     * before `apply()` and restores it here if any IAM call in that event's
+     * chain failed, so nothing durable claims an access change the provider
+     * never made. One restore point per admitted event, deliberately: a
+     * per-result rollback would replay in the wrong order when a HIRE drains a
+     * parked MOVE and both fail, and would leave the MORE permissive state.
+     */
+    rollback(employeeId, toState) {
+      if (toState === STATES.NONE) delete states[employeeId];
+      else states[employeeId] = toState;
+      return stateOf(employeeId);
     },
     parkedFor(employeeId) {
       return [...(parkingLot[employeeId] ?? [])];

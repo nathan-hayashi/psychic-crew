@@ -16,7 +16,44 @@
  * failing assertion names the field instead of just saying "something leaked".
  */
 
+import { iamFailed } from "./adapters/iam.js";
+
 export const REDACTION = "[redacted]";
+
+/** Longest webhook-sourced free-text run allowed into one rendered field. */
+export const MRKDWN_FIELD_LIMIT = 120;
+
+/**
+ * Render one piece of webhook-controlled free text as mrkdwn body copy.
+ *
+ * `validateEvent()` checks four fields for non-emptiness and `display_name` is
+ * not one of them, `normaliseString()` collapses whitespace without touching
+ * markup, and `scrubSecrets()` matches credential shapes only — so nothing on
+ * the path between the HRIS and a rendered block escapes anything. A display
+ * name of `*IT Operations*` renders as a formatted heading, and one carrying
+ * `<https://elsewhere|click here>` renders as a link the desk did not write.
+ *
+ * Slack's three reserved characters are escaped, its formatting characters are
+ * stripped (rather than backslash-escaped, which mrkdwn does not honour), and
+ * the result is capped — a field is a label, not a document.
+ */
+export function mrkdwnText(value) {
+  return (
+    String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      // A SPACE, not an empty string: deleting the pipe out of a link payload
+      // welds its two halves into one word ("invalidclick here"), which is a
+      // second way of rendering something the desk did not write. Whitespace is
+      // collapsed and trimmed immediately below, so `*Nils Baird*` still reads
+      // `Nils Baird` rather than gaining padding.
+      .replace(/[*_~`|]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, MRKDWN_FIELD_LIMIT)
+  );
+}
 
 /** Key names that carry credentials by convention. */
 export const SECRET_KEY_PATTERN =
@@ -102,10 +139,12 @@ export function buildNotification(
     );
   }
 
-  const failed = iam.ok === false;
+  // One shared predicate, no local exemption: a failed suspend is a failure
+  // here for exactly the same reason it is one on the ticket.
+  const failed = iamFailed(iam);
   const employeeId = event.employee_id ?? lifecycle.employee_id ?? "unknown";
-  const displayName = event.employee?.display_name ?? employeeId;
-  const department = event.department?.name ?? "unassigned";
+  const displayName = mrkdwnText(event.employee?.display_name ?? employeeId);
+  const department = mrkdwnText(event.department?.name ?? "unassigned");
   const action = lifecycle.emission ?? "none";
   const heading = failed
     ? "Identity action FAILED"
@@ -126,7 +165,10 @@ export function buildNotification(
             type: "mrkdwn",
             text: `*Employee*\n${displayName} (${employeeId})`,
           },
-          { type: "mrkdwn", text: `*Event*\n${event.event_type ?? "unknown"}` },
+          {
+            type: "mrkdwn",
+            text: `*Event*\n${mrkdwnText(event.event_type ?? "unknown")}`,
+          },
           { type: "mrkdwn", text: `*Department*\n${department}` },
           { type: "mrkdwn", text: `*IAM action*\n${action}` },
         ],
