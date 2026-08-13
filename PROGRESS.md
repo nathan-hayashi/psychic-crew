@@ -306,3 +306,11 @@ sentence alone cannot manufacture that alert.
 - **First seed set was DISCARDED:** all three landed on covered paths and were caught by tests. The plan requires at least one invisible seed or the discourse is never exercised — "re-seed rather than accept". Root cause: invisibility was judged from test NAMES rather than test BODIES.
 - **In-flight changes:** 3 seeded source files, uncommitted.
 - **Next action:** B3 — dispatch security-reviewer and quality-reviewer IN PARALLEL (task_ids F7-B3-sec / F7-B3-qual, each with expected_output). Reviewers are NOT told seeds exist; that is the honest measurement. Artifacts to logs/rounds/f7-round-1/, never round-1/.
+
+## [F7|2026-08-13T18:48:29Z] checkpoint — B5 complete, B6 next (seeds still live, tree deliberately dirty)
+- **Task:** F7 Stage B. B1-B5 done. Round 2 discourse complete; exactly two rounds, as §5.4 requires.
+- **Workflow status:** round-1 packets 11 findings, round-2 packets 15 entries (7 AGREE / 1 CHALLENGE / 5 CONNECT / 2 SURFACE), all in logs/rounds/f7-round-1|2/. arbiter-audit carries F7-P1, F7-B4-compile1.
+- **Open decisions for B6:** the arbiter must rule on a defended CHALLENGE against its OWN P0->P1 downgrade of sec-2, with both branches now agreeing from newly-read adapter source. Two P0s remain open, and §0.2c blocks a gate PASS while they are.
+- **BINDING SEQUENCING for B7:** QUAL-01 must not be fixed in isolation ahead of sec-2/QUAL-06 — it is currently the only remaining path back to iam.apply() for a stranded account, so fixing it alone removes the last accidental recovery path. This is the fixer's most important constraint and it came out of round 2, not round 1.
+- **In-flight changes:** 3 seeded source files, still uncommitted; 0 seed commits in history.
+- **Next action:** B6 — dispatch arbiter (task_id F7-B6-compile2, with expected_output) to compile round 2, apply confidence arithmetic, drop undefended challenges, and RELEASE to the fixer.
