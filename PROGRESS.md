@@ -240,3 +240,13 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none. stress-project/ still empty.
 - **Closed avenues:** trimming A3/B5 to fit 200K — rejected by the operator in favour of the 7K overrun, because the trim would compress module build and round-2 discourse, the two places lead-planner flagged as least safe to squeeze.
 - **Next action:** STOP. Await the operator's mid-gate token. On receipt → A0 (arbiter releases the plan under task_id F7-P1-jml-simulator-plan), then A1-A7 build.
+
+## [F7|2026-08-13T14:50:30Z] checkpoint — A0 + A1 complete, Stage A released, A2 next
+- **Task:** F7 Stage A. G-F7a approved @ 2026-08-13T14:39:23Z; arbiter released the plan at A0; A1 absorbed the release flags and re-measured Gate 0.
+- **Workflow status (re-measured, not recalled):** validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED · suite green once this step's edits are committed · stress-project/ still empty (0 entries).
+- **Active artifact:** `context/f7-plan.md` — the approved plan plus an appended "A0 arbiter release — accepted amendments" section. The approved text is preserved as approved; amendments are visible as amendments.
+- **Binding amendments carried into A2-B10:** F7 rounds go to `logs/rounds/f7-round-1|2/`, NEVER `round-1/` (two live detectors read that fixture and logs/ is gitignored) · D6 containment uses a working-tree scan, not `git grep` (0 tracked files pre-A7 makes it vacuous) · B2's seed check captures into a variable (`git grep -c` exits 1 on zero matches, so `= 0` fails on the success case) · A2's jq test must be exit **exactly 1** · A4 asserts the 18 case NAMES, not just a count · every A2-A6 dispatch carries `expected_output`.
+- **Open decisions:** none blocking. C-17/C-18 resolved at the gate.
+- **In-flight changes:** none after this commit.
+- **Closed avenues:** routing F7 rounds into the existing `logs/rounds/round-1/` — rejected, it would clobber C-13's and F4's fixture with no git safety net.
+- **Next action:** A2 — dispatch lead-executor (`task_id F7-A2-fixtures`, WITH expected_output) to scaffold `stress-project/`, write `package.json` and the six fixtures via Bash heredoc.
