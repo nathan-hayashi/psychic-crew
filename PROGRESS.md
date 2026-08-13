@@ -223,3 +223,11 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none.
 - **Closed avenues:** running F7 from this session regardless — rejected, it would place the build's largest phase in breach of a hard constraint; §0.3's one-phase-one-session preference points at a fresh session anyway.
 - **Next action:** operator relaunches Claude Code from the repo root — the pin restores Opus automatically and SessionStart re-grounds. Then F7 step 1: dispatch lead-planner for the JML-simulator plan (Pokémon overlay per Q4) and STOP at mid-gate G-F7a for plan approval.
+
+## [F7|2026-08-13T05:48:36Z] HOLD LIFTED — F7 started
+- **Task:** the HC-2 session-model conflict is resolved; the session is on Opus per the harness switch confirmation (HC-2 compliant, no forbidden substring). G-F6's approval was NOT re-recorded — the artifact exists (@ 2026-08-13T05:42:38Z) and §0.2b forbids re-running it.
+- **Pre-flight verified:** pin opus/max/T3 · stamps 4 opus / 4 sonnet · validate-crew 36 PASS / 0 SKIP / 0 FAIL · suite 131 PASS / 0 FAIL · corrections 13 APPLIED / 0 PENDING · tree clean at 66fa12e.
+- **stress-project/ is present but EMPTY** — an F0 mkdir scaffold declared at DIRECTORY_GUIDE.md:20, 0 tracked files, none of the F7 modules present. Nothing of F7 has executed.
+- **Evidentiary limit, stated:** a session cannot introspect its own model. The basis is the harness switch confirmation plus the settings pin, not self-report — the same limit recorded for the tier announcement at G-F4.
+- **In-flight changes:** none.
+- **Next action:** F7 step 1 — dispatch lead-planner for the JML-simulator plan, then STOP at mid-gate G-F7a for operator plan approval. No build work before that token.
