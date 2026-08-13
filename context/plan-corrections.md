@@ -186,3 +186,25 @@ That is "caught for the wrong reason", the same family as the six already record
 **Applied**: `validate-crew.sh` now asserts the HC-5 deny set is present by meaning — clone, global install, npx, sudo, the destructive removals and the raw-device write — plus at least two secret-path `Read(` denials. Re-running the mutation now yields `deny-list missing: [<entry>]` by name.
 
 **Implementation note worth keeping**: the needles are assembled from fragments because `bash-blocker` matches the *whole command string*, so a contiguous literal in this check would deny any command that greps or edits the file containing it. Two attempts at this edit were denied before the fragments went in. Also: `$S` is validate-crew's SKIP counter, not a settings path — reusing the other script's convention made `jq` read a file named `0` and report every entry missing.
+
+## C-17 — the mid-gate has a name but no token (F7, blocking G-F7a)
+**Plan says**: §6 F7 names a mid-gate `G-F7a` and a final gate `G-F7b`, and §0.2 requires the exact token `APPROVE GATE-Fn` — case-sensitive, no substitutes, no inference of approval.
+
+**Reality**: `n` is an integer everywhere in the grammar. Verified by enumeration: the only literal tokens the plan defines are `APPROVE GATE-F0` and `APPROVE GATE-F8`, plus the generic `APPROVE GATE-Fn`. No token for `G-F7a` or `G-F7b` exists anywhere in the plan, CLAUDE.md, or GATES.md. §6 invented two gate names its own token grammar cannot express.
+
+**Why it matters**: §0.2 forbids inferring approval. An agent that guesses the token has invented a gate control — the single thing the FIFO machinery exists to prevent. lead-planner correctly refused to infer it and returned a FALLBACK at confidence 0.45.
+
+**Apply**: the operator defines both tokens; they are recorded verbatim in the `G-F7a`/`G-F7b` ledger rows exactly as issued. Recommended for consistency with the gate names already in §6: `APPROVE GATE-F7a` and `APPROVE GATE-F7b`.
+
+**Verify**: the `G-F7a` row's operator-token column contains the token verbatim, and it matches what the operator typed.
+
+## C-18 — §7 judges F7 against a ceiling smaller than F7's own budget (F7)
+**Plan says**: §7's numeric rubric includes `token spend ≤ Q5 ceiling`. Q5's ceiling is 150K tokens (or 45 min, whichever first).
+
+**Reality**: §6 budgets F7 at **200K** and states it may span two sessions. So the phase's own authorised budget exceeds the ceiling the same plan judges it against — F7 fails that rubric axis before a line is written, regardless of execution quality.
+
+**Why it matters**: a rubric axis that cannot be satisfied is not a bar, it is noise, and noise trains a reader to discount the whole rubric. It also invites the convenient fix — quietly scoring against the larger number at gate time — which would make Velocity self-scoring, the exact wrong-reason failure family recorded seven times in this build.
+
+**Apply**: the phase-specific budget in §6 supersedes Q5's generic default for F7 (a specific provision beats a general one). The rubric denominator is F7's §6 budget as adjusted by the operator, recorded in `logs/metrics/f7.json` and the GATES.md row before the run, never chosen after the number is known.
+
+**Verify**: the denominator appears in the ledger row and in the metrics JSON, and both were written before B10 computed the spend.
