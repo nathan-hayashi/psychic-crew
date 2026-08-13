@@ -231,3 +231,12 @@ sentence alone cannot manufacture that alert.
 - **Evidentiary limit, stated:** a session cannot introspect its own model. The basis is the harness switch confirmation plus the settings pin, not self-report — the same limit recorded for the tier announcement at G-F4.
 - **In-flight changes:** none.
 - **Next action:** F7 step 1 — dispatch lead-planner for the JML-simulator plan, then STOP at mid-gate G-F7a for operator plan approval. No build work before that token.
+
+## [F7|2026-08-13T14:17:51Z] checkpoint — G-F7a READY (plan complete, build NOT started)
+- **Task:** F7 step 1 done. lead-planner produced the JML Simulator plan; nothing has been built.
+- **Workflow status:** validate-crew 36 PASS / 0 SKIP / 0 FAIL · suite 131 PASS / 0 FAIL · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED · tree clean.
+- **Active artifact:** the plan (in-session, released to the operator at this gate; arbiter release is step A0 and happens AFTER approval).
+- **Open decisions:** C-17 — the mid-gate token is undefined by the plan and must be issued by the operator; recommended `APPROVE GATE-F7a`. C-18 RESOLVED pre-run: wall 45 min per session (breach → early gate), token denominator 207K.
+- **In-flight changes:** none. stress-project/ still empty.
+- **Closed avenues:** trimming A3/B5 to fit 200K — rejected by the operator in favour of the 7K overrun, because the trim would compress module build and round-2 discourse, the two places lead-planner flagged as least safe to squeeze.
+- **Next action:** STOP. Await the operator's mid-gate token. On receipt → A0 (arbiter releases the plan under task_id F7-P1-jml-simulator-plan), then A1-A7 build.

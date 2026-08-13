@@ -208,3 +208,5 @@ That is "caught for the wrong reason", the same family as the six already record
 **Apply**: the phase-specific budget in §6 supersedes Q5's generic default for F7 (a specific provision beats a general one). The rubric denominator is F7's §6 budget as adjusted by the operator, recorded in `logs/metrics/f7.json` and the GATES.md row before the run, never chosen after the number is known.
 
 **Verify**: the denominator appears in the ledger row and in the metrics JSON, and both were written before B10 computed the spend.
+
+**C-18 RESOLVED (operator decision, recorded pre-run).** For F7: the wall ceiling is per SESSION and breaching it triggers an early gate rather than failing the phase (Q5's own wording is "hard ceiling per phase before mandatory early gate" — a gate trigger, not a pass/fail bar). The token denominator for §7's `token spend ≤ Q5 ceiling` is F7's §6 phase budget as adjusted by the operator, **207K**, superseding Q5's generic 150K. Both were fixed in the ledger before execution began; choosing either after the spend was known would have made Velocity self-scoring, which is the wrong-reason failure family this registry exists to catch.
