@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # run-crew-tests.sh — crew test harness (§5.5). Wraps the validators and adds per-phase cases.
 #
-# Usage:  run-crew-tests.sh [all|gate|F0|F1|F2|F3]
+# Usage:  run-crew-tests.sh [all,gate,F0..F7]
 #   all  (default) every registered case
 #   gate           regenerate ALL gate evidence LIVE and stamp it — answer a gate against this,
 #                  never against a recorded claim (G-F0's evidence decayed 31s after recording)

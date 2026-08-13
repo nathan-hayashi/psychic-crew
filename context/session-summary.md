@@ -4,51 +4,53 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 ## Where the build stands
 
-**verified** — F0 through F6 are complete and gated; tags `crew-f0` … `crew-f6`, every operator token recorded in `GATES.md`. Suite 131 PASS / 0 FAIL · validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED. **F7 — the final orchestration stress test — is the active phase and is HELD before any work** (see next section). Nothing of F7 has executed.
+**verified** — F0–F6 complete and gated (tags `crew-f0`…`crew-f6`). **F7 Stage A is COMPLETE**: A0 arbiter release, A1 gate-0, A2 fixtures, A3 modules, A4 tests, A5 README, A6 harness wiring, A7 this checkpoint. Rollback tags `rb/f7-a1`…`rb/f7-a7`. **This is the planned Stage A/B split point — Session 2 resumes at B1 and needs nothing from a context window.**
 
-## The F7 hold — session-model conflict (HC-2)
+Live numbers: crew suite **144 PASS / 0 FAIL** · app suite **18 PASS / 0 FAIL** · validate-crew **36 PASS / 0 SKIP / 0 FAIL** · corrections **13 APPLIED / 0 PENDING / 2 SUPERSEDED** · 22 tracked files under `stress-project/`.
 
-**verified** — At the moment G-F6 was approved, the orchestrator session was running `claude-fable-5`: an interactive model override supersedes the `.claude/settings.json` pin until the next session start. `CLAUDE.md`'s non-negotiable forbids any fable model for any session in this repo, so F7 was opened and immediately held rather than started. Escalated to the operator.
+## What Stage B must do (the remaining F7 work)
 
-**verified** — The pin itself is intact (`model: opus`, `effortLevel: max`, `CREW_TIER_LOCK: T3`) and all 8 agent stamps are unchanged (4 opus / 4 sonnet). Blast radius zero: subagent models come from stamped frontmatter, not the session, and this turn performed ledger bookkeeping only.
+**verified** — Steps B1–B10 are specified in `context/f7-plan.md`, whose two amendment sections SUPERSEDE the tables above them. In order: re-ground · seed 3 bugs · round-1 discourse (2 parallel branches) · arbiter compiles round 1 · round-2 discourse · arbiter compiles round 2 and releases · fixer verdicts · test-runner · integration-runner e2e · metrics + §7 rubric roll-up at `G-F7b`.
 
-**verified** — Resolution is one step: relaunch from the repo root. The pin restores Opus automatically and the SessionStart hook re-grounds. A mid-build `/model` change re-opens the fable window that F0 step 7 closed — treat any interactive model change as suspect until restart.
+**verified — binding amendments Stage B must honour:**
 
-## Decisions that constrain everything downstream
+- F7 round artifacts go to **`logs/rounds/f7-round-1/`** and `f7-round-2/`. NEVER `logs/rounds/round-1/` — that path holds F3 fixtures read by two live detectors (`check-plan-corrections.sh` for C-13, `run-crew-tests.sh` for the F4 provenance cases) and `logs/` is gitignored, so an overwrite is unrecoverable.
+- The **seed manifest goes to the scratchpad, never into the repo**. If it lands in the tree, reviewers read it as authoritative context and "find" all three — Robustness then measures nothing. This is the highest wrong-reason risk in F7.
+- At least one seed must be **invisible to any test existing at seed time**, or the tests alone satisfy Robustness and the discourse pipeline is never exercised.
+- Agent coverage 8/8 must bind each agent to a **named artifact** (findings file, verdict, run record, released packet), not to a grep count — C-12 is the precedent.
+- Every dispatch carries `expected_output`; a DISPATCH without it is malformed per `.claude/rules/arbiter-protocol.md`.
+- The §7 `tests >= 15` bar counts **`node --test` cases only**. `cases_F7`'s 13 crew assertions are gate evidence and must not be added to it.
 
-- **verified** — Project is `psychic-crew`, **public** at `github.com/nathan-hayashi/psychic-crew`, branch `dev`.
-- **verified** — `MASTER_FIFO_PLAN_CLAUDE.md` is never edited locally. Defects are corrected in the built artifact under numbered exceptions (`Plan.md` Fix Ledger) and machine-checked via `context/plan-corrections.md` + `scripts/check-plan-corrections.sh <phase>`.
-- **verified** — EX-01 modulo-rename seed identity (deltas 1/0/1) · EX-02/EX-03 apply-models fixes · EX-05 broker law restated (below) · EX-04 applied then reverted as inert.
-- **verified** — Seed files are Bash-only; the global Prettier hook corrupts byte-pinned payloads written via Write/Edit.
-- **verified** — Q0: secrets deferred · desktop notify reused · F7 = JML simulator with Pokémon overlay (joiner Charmander, mover Squirtle, leaver Bulbasaur; fixture-level only, §7 rubric unchanged) · 45-min per-phase wall ceiling · default roadmap order · §11 ETL lanes pre-authorized.
+**verified — operator decisions fixed pre-run at G-F7a (C-18):** wall ceiling is **45 min per session**, and breaching it triggers an early gate rather than failing the phase. The §7 token denominator is **207K** (F7's §6 budget plus the accepted 7K overrun), superseding Q5's generic 150K. Both were recorded before execution so Velocity cannot be self-scored.
 
-## EX-05 — the broker law as it actually is
+## The JML artifact as built
 
-**verified** — Nested dispatch does not exist (a subagent cannot invoke `Agent` at any depth), so the enforceable law is: **no specialist output may be ACTED ON until the arbiter has released it.** The orchestrator dispatches; every dispatch carries a `task_id`; the arbiter must emit an audit line bearing that id before its packet is consumed. No agent holds a dispatch tool. Coverage is identity-correlated in `validate-crew.sh` — surplus lines cannot mask a missing one.
+**verified** — `stress-project/`: 22 tracked files, Node stdlib only, zero dependencies. CLI takes the delivery file **positionally** (`node bin/jml.js <file> --out <dir> --now <iso> --seed <s>`) — there is no `run` subcommand and no `--input`; the audit log is `<out>/audit.jsonl`. The plan's original invocation was wrong and is corrected in `context/f7-plan.md`; left unfixed it would have produced three false edge-case failures at B9.
 
-**proposed** — Residual: identity correlation stops a _missing_ arbiter line, not a _hollow_ one. `SubagentStart`/`SubagentStop` carry `agent_type` and could make coverage hook-enforced.
+**verified** — Exit contract: 0 handled · 1 needs a human (parked) · 2 unusable input. Edge cases verified independently: duplicate exit 0 with exactly **one** ticket (the load-bearing half — a dedupe that logs but still writes a ticket passes the audit-line check alone) · mover-before-hire exit 1 with `PARKED` and a D5 FALLBACK at confidence 0.25 · malformed exit 2, six D5 keys on stdout, exactly one audit line, no ticket, no notification.
 
-## Proven live, not merely written
+**verified** — Determinism is falsifiable both ways: `--now` plus `--seed` gives byte-identical runs; unseeded runs differ with probability 1 (`randomUUID`), not by timing luck.
 
-- **verified** — All ten hooks dispatch through the platform; 6-op adversarial stress 6/6 denied with 6/6 audit records; denials self-audit and scrub secret shapes.
-- **verified** — Full broker chain end to end: lead-planner → orchestrator fan-out → two reviewers in parallel → arbiter (order check, anchor verification, recalibration, quarantine, audit, partial release) → fixer (steelman, ACCEPT/DEFER, fix applied, suite re-run).
-- **verified** — Same-named global agents do NOT shadow the project definitions (SELFCHECK vocabularies confirmed).
-- **verified** — C-13 provenance guard: flags unattributed relays into continuity files, silent when attributed; 0 false positives on the real corpus.
-- **verified** — F6 corpus transform: the "23-error corpus" = 12 (orchestration guide) + 11 (mermaid guide); 17 assertions rewritten against this repo, ccs-01/02/03 all real.
+**verified** — `npm test` runs the suite. **`node --test test/` runs ZERO cases and exits 1 on Node v24** — a bare directory positional resolves as a module. The working form is `node --test 'test/**/*.test.js'`, quoted so node globs rather than the shell. Do not revert it.
 
-## The two failure families this build keeps hitting
+**verified** — Reading `# pass` from `node --test` requires `--test-reporter=tap`; the default reporter here is `spec` and prints `ℹ pass`.
 
-**verified** — **Controls bound to a proxy rather than the artifact** (recurred through F6: C-16's deny-list removal was caught only by the dirty-tree canary; the E7 check matched POSIX `[[:space:]]` as bash `[[`). The rule: a check must bind to the artifact that would change if the defect were real; counting and substring proxies are satisfiable by the audited party.
+## Open items carried into Stage B
 
-**verified** — **`set -o pipefail` with meaningful nonzero exits** (four instances). Capture into a variable, then test; JSON goes to printf as an argument, never the format.
+- **verified** — `bin/jml.js` imports `OUTCOMES` from `src/lifecycle.js` and never uses it. Dead import, IDE-flagged, left for B3 discourse rather than fixed silently.
+- **verified** — The `NONE` row of the transition table is deliberately asymmetric: `NONE+MOVE` parks, `NONE+TERMINATE` suspends anyway, on the stated rule "err toward less access, never toward more". The 18 named cases do not constrain that row, so it is a design call worth arguing with at B3.
+- **verified** — `fixtures/mover-squirtle.json` exits 1 with `PARKED` on a fresh `--out`: EMP-10043 has no prior HIRE and no fixture supplies one. The plan's phrase "both valid fixtures" is misleading for the mover, and there is no runnable replay demo in the current fixture set.
+- **verified** — G-F3's round-2 re-emission is still owed: branch B's four anchor-verified findings remain quarantined and unreleased.
+- **verified** — `DIRECTORY_GUIDE.md` still drifts from the tree; it is byte-pinned under EX-01, so the fix needs an operator routing decision. Precedent: route around the pin, as QR-DG-3 was closed at F4 by creating the file the map already claimed.
 
-## Open items
+## The failure families this build keeps hitting
 
-- **verified** — G-F3 round 2 still owed: branch B's four anchor-verified findings remain quarantined/unreleased; SEC-DG-02/QR-DG-1 merge deferred with them.
-- **verified** — `DIRECTORY_GUIDE.md` drift (phantom `decisions.md` etc., missing real files) needs an operator routing decision; the file is byte-pinned under EX-01, precedent says route around the pin.
-- **verified** — OQ-2: pinned mode cannot express a context-variant session id; alias mode unaffected.
-- **proposed** — Arbiter holds `Write` not `Edit`; appending to the audit log means rewriting it whole — transcription risk worth a contract change.
+**verified** — **A control bound to a proxy rather than the artifact.** Nine instances, the most recent three during F7: C-14 matched the word "fixture" and flagged the legitimate dispatch `F7-A2-fixtures`; an A5 arrow count used a line proxy and returned 0 against a real 14; ERR6 caught a token-shaped literal in a tracked test file on a public repo, before it was pushed. The rule: **a check must bind to the artifact that would change if the defect were real.**
+
+**verified** — **`set -o pipefail` with a meaningful nonzero stage.** Five instances. Capture into a variable, then test; pass JSON to printf as an argument, never as the format.
+
+**verified** — **A dispatch contract can be wrong.** Three of my own F7 dispatches specified commands that do not work (`node --test test/`, `# pass` under the default reporter, `run --input`). Executors caught all three and flagged rather than reinterpreting. Verify a command before putting it in a contract.
 
 ## Next action
 
-**verified** — Operator relaunches Claude Code from the repo root (the pin restores Opus; SessionStart re-grounds automatically). Then F7 step 1: dispatch `lead-planner` for the JML-simulator plan and STOP at mid-gate `G-F7a` for plan approval. Full F7 pipeline per §6: plan → G-F7a → lead-executor build → two-round discourse → fixer → test-runner → integration-runner e2e → G-F7b with the §7 numeric rubric.
+**verified** — **B1**: re-ground per §15.4, then B2 — seed three bugs with the manifest written to the scratchpad, never the repo. Full step table in `context/f7-plan.md`.

@@ -288,3 +288,12 @@ sentence alone cannot manufacture that alert.
 - **In-flight changes:** none.
 - **Closed avenues:** `node --test test/` as the test command — it runs zero cases on Node v24 and exits 1; the working form is `node --test 'test/**/*.test.js'`, quoted. Do not revert it. Also closed: storing a token-shaped literal in a tracked test file, on a public repo.
 - **Next action:** A5 — dispatch lead-executor (`task_id F7-A5-readme`, with expected_output) for README.md plus the GitHub-native mermaid sequence diagram. Assert: even fence count, block contains sequenceDiagram with >=4 participant and >=6 arrows, and NO local renderer binary is invoked anywhere (HC-5).
+
+## [F7|2026-08-13T17:06:23Z] checkpoint — STAGE A COMPLETE, split point, Stage B next
+- **Task:** F7 Stage A (A0-A7) complete. The JML Simulator is built, tested, documented and bound to the crew harness.
+- **Workflow status:** crew suite 144 PASS / 0 FAIL · app suite 18 PASS / 0 FAIL · validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 0 PENDING / 2 SUPERSEDED · 22 tracked files under stress-project/.
+- **Active artifact:** stress-project/ — 8 modules, 6 fixtures, 6 test files with 18 named cases, README with a GitHub-native mermaid sequenceDiagram (8 participants, 14 arrows), package.json with zero dependencies.
+- **Open decisions:** OUTCOMES dead import in bin/jml.js · the NONE-row asymmetry (MOVE parks, TERMINATE suspends) · mover-squirtle has no HIRE so no runnable replay demo exists. All three are B3 discourse material, deliberately not fixed silently.
+- **In-flight changes:** none.
+- **Closed avenues:** `node --test test/` (runs zero cases on Node v24) · storing a token-shaped literal in a tracked file on a public repo · routing F7 rounds into logs/rounds/round-1/ where two live detectors read their fixture.
+- **Next action:** B1 — re-ground per §15.4, then B2: seed three bugs with the manifest written to the SCRATCHPAD, never the repo. Full step table in context/f7-plan.md, whose amendment sections supersede the tables above them.
