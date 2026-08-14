@@ -220,6 +220,17 @@ else
   report C-19 F8 PENDING "a retrospective arbiter line satisfies C-12 identically to a contemporaneous one; green proves an id exists, not that it preceded consumption"
 fi
 
+# C-20: the plan's per-phase token budgets were never calibrated to multi-agent cost. The whole
+# nine-phase build is budgeted 319K; F7's subagents alone measured 1,922K. §7's token axis was
+# unsatisfiable for the pipeline §6 mandates - 18 dispatches x the cheapest observed dispatch is
+# already 4x the denominator. Closed when a measured baseline exists that a future phase can be
+# judged against, rather than inheriting numbers no execution could meet.
+if [ -f context/budget-baseline.md ] && grep -q 'per-dispatch' context/budget-baseline.md 2>/dev/null; then
+  report C-20 F8 APPLIED "a measured per-dispatch budget baseline exists in context/budget-baseline.md"
+else
+  report C-20 F8 PENDING "phase budgets uncalibrated: 319K for the whole build vs 1,922K measured in F7 alone; no measured baseline on disk"
+fi
+
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
 # dispatch records to the live trail, and the coverage check correctly failed on events that never
 # happened. A trail with invented records is worse than one with gaps: every gate reads it as truth.
