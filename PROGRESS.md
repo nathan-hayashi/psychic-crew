@@ -377,3 +377,10 @@ sentence alone cannot manufacture that alert.
 - §12 self-check complete: HC-1 T3 · HC-2 clean (line-based scan; the naive filename-based form reproduces the OQ-6 defect and false-positives on the forbidden_substrings declaration) · HC-3 4 opus / 4 sonnet matching the policy table · HC-4 apply-models re-run leaves 0 dirty · HC-5 zero node_modules, zero declared deps.
 - context/session-summary.md distilled to final state per §15.5/§15.6.
 - **Next action:** STOP. Await `APPROVE GATE-F8`, which closes the plan. After approval: tag crew-f8. Merging to main requires the approved gate and has NOT been done.
+
+## CHECKPOINT 2026-08-14T01:54:54Z — G-F8 APPROVED · PLAN CLOSED
+- Operator token `APPROVE GATE-F8` received @ 2026-08-14T01:54:54Z. **The MASTER_FIFO_PLAN is closed.** All nine phases F0-F8 complete and gated.
+- Final state: crew suite 144 PASS / 0 FAIL · validate-crew 37 PASS / 0 SKIP / 0 FAIL · app suite 18/18 · corrections 18 APPLIED / 0 PENDING / 2 SUPERSEDED · portability drill PORTABLE · 74 tracked files.
+- Tags: crew-f0..crew-f8, v1.0.0 moved to the final commit per the gate report.
+- **main NOT touched.** The project rule permits pushing main only with an approved gate; the gate is now approved, but the plan's F8 text says "push" without specifying a merge, so that remains an operator call.
+- **Next action:** none pending. The build is complete. Open items carried past v1.0.0 are listed in ROADMAP.md and context/session-summary.md.
