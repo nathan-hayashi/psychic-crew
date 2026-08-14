@@ -173,5 +173,30 @@ else
   skip "no audit logs yet (F2/F3 own logs/)"
 fi
 
+# C-19: coverage that cannot be ORDERED is coverage that cannot be trusted. A task_id match proves
+# a line exists, not that it was written before the output it covers was consumed — so a line added
+# after the fact is indistinguishable from one written at the time. Dispatch records carry full ISO
+# timestamps; the arbiter's schema did not require one, and it wrote date-only, which is exactly what
+# made F7's ten arbiter lines ordering-undecidable. arbiter.md now requires the full form. The F0-F7
+# lines are grandfathered by enumeration (the C-14 precedent: an explicit set, not a guessable rule)
+# because their granularity is already lost and a closed phase must not fail retroactively.
+if [ -f logs/arbiter-audit.jsonl ]; then
+  ISO='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$'
+  GRANDFATHERED='^(F0|F1|F2|F3|F4|F5|F6|F7)$'
+  bad=$(jq -r --arg iso "$ISO" --arg g "$GRANDFATHERED" '
+          select(((.ts // "") | test($iso)) | not)
+          | select(((.phase // "") | test($g)) | not)
+          | "\(.phase // "?"):\(.task_id // "?")"' logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
+  undec=$(jq -r --arg iso "$ISO" 'select(((.ts // "") | test($iso)) | not) | .task_id // "?"' \
+          logs/arbiter-audit.jsonl 2>/dev/null | sort -u | sed '/^$/d' | wc -l)
+  if [ -n "$bad" ]; then
+    fail "arbiter audit line(s) without a full ISO-8601 ts, so coverage order is undecidable (C-19): $(printf '%s' "$bad" | tr '\n' ' ')"
+  else
+    pass "arbiter ts granularity enforced; $undec grandfathered date-only line(s), ordering-undecidable and disclosed (C-19)"
+  fi
+else
+  skip "no arbiter audit log yet (F3 owns logs/arbiter-audit.jsonl)"
+fi
+
 printf '\n== validate-crew: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
 [ "$F" = 0 ] || exit 1

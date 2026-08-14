@@ -214,8 +214,15 @@ fi
 # it exactly as a contemporaneous one does — the arbiter itself escalated this against its own
 # interest after emitting four such lines at B7. Coverage now proves an id was recorded, not that
 # it was recorded before the packet was consumed. Detect whether the check distinguishes them.
-if grep -q 'retrospective' scripts/validate-crew.sh 2>/dev/null; then
-  report C-19 F8 APPLIED "coverage distinguishes retrospective from contemporaneous arbiter lines"
+# Root cause found at F8: arbiter.md specified {"ts",...} without a FORMAT, and the arbiter wrote
+# date-only, so no arbiter line could be ordered against the full-ISO dispatch records. Bound to the
+# two things that actually prevent recurrence - the writer mandating the format, and the validator
+# enforcing it - not to the word "retrospective" appearing in a comment, which is the proxy-binding
+# family this registry has now recorded nine times.
+c19w=$(grep -c 'YYYY-MM-DDTHH:MM:SSZ' .claude/agents/arbiter.md 2>/dev/null || true)
+c19v=$(sed 's/#.*//' scripts/validate-crew.sh 2>/dev/null | grep -c 'undecidable' || true)
+if [ "${c19w:-0}" -ge 1 ] && [ "${c19v:-0}" -ge 1 ]; then
+  report C-19 F8 APPLIED "arbiter.md mandates a full ISO-8601 ts and validate-crew fails any post-F7 line lacking one; F0-F7 lines stay grandfathered and disclosed as ordering-undecidable"
 else
   report C-19 F8 PENDING "a retrospective arbiter line satisfies C-12 identically to a contemporaneous one; green proves an id exists, not that it preceded consumption"
 fi
@@ -225,10 +232,25 @@ fi
 # unsatisfiable for the pipeline §6 mandates - 18 dispatches x the cheapest observed dispatch is
 # already 4x the denominator. Closed when a measured baseline exists that a future phase can be
 # judged against, rather than inheriting numbers no execution could meet.
-if [ -f context/budget-baseline.md ] && grep -q 'per-dispatch' context/budget-baseline.md 2>/dev/null; then
-  report C-20 F8 APPLIED "a measured per-dispatch budget baseline exists in context/budget-baseline.md"
+# Bound to measured ROWS, not to a phrase: the defect is "no calibrated numbers exist", so the check
+# counts per-role cost rows. A file that merely discusses budgeting does not close this.
+c20n=$(grep -cE '^\| *(lead-planner|lead-executor|arbiter|security-reviewer|quality-reviewer|fixer|test-runner|integration-runner) *\|' context/budget-baseline.md 2>/dev/null || true)
+if [ "${c20n:-0}" -ge 5 ]; then
+  report C-20 F8 APPLIED "measured per-dispatch cost recorded for $c20n agent roles in context/budget-baseline.md"
 else
-  report C-20 F8 PENDING "phase budgets uncalibrated: 319K for the whole build vs 1,922K measured in F7 alone; no measured baseline on disk"
+  report C-20 F8 PENDING "phase budgets uncalibrated: 319K for the whole build vs 2,045K measured in F7 alone; no measured per-role baseline on disk"
+fi
+
+# C-21: the F7 token measurement was never persisted. The Velocity axis, C-18 and C-20 all rest on
+# per-dispatch numbers that existed ONLY in the orchestrator's context window - logs/tooluse-audit
+# .jsonl records dispatches but not their cost. They were recoverable at F8 only from session
+# transcripts outside the repo, which is precisely the "disk is canonical, context is a cache"
+# inversion HC-8 exists to prevent, discovered at handover. Closed when a script regenerates the
+# measurement from disk rather than a human transcribing it from a context window.
+if [ -x scripts/measure-dispatch-cost.sh ]; then
+  report C-21 F8 APPLIED "scripts/measure-dispatch-cost.sh regenerates per-dispatch cost from disk"
+else
+  report C-21 F8 PENDING "per-dispatch cost is not derivable from repo state; F7's figures were recovered from session transcripts outside the repo (HC-8 inversion)"
 fi
 
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
