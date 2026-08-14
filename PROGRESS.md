@@ -369,3 +369,11 @@ sentence alone cannot manufacture that alert.
 - **New deliverables**: scripts/setup.sh (toolchain, runtime dirs, exec bits, model stamp, validation, app suite — installs nothing, idempotent), scripts/portability-drill.sh, scripts/measure-dispatch-cost.sh, README.md (operator quickstart + honest not-proven section), ROADMAP.md (Q6 order IAM to Compliance to HR-lifecycle to ITSM to rest, dormant lanes, open decisions), context/budget-baseline.md.
 - Suite 144 PASS / 0 FAIL · validate-crew 37 PASS / 0 SKIP / 0 FAIL · app suite 18/18 · corrections 18 APPLIED / 0 PENDING · drill PORTABLE.
 - **Next action:** final verification sweep, tag v1.0.0, push, then present the G-F8 gate report and await `APPROVE GATE-F8`, which closes the plan.
+
+## CHECKPOINT 2026-08-14T01:19:37Z — F8 COMPLETE, G-F8 READY
+- All six F8 steps done: gap register closed (C-19, C-20, C-21, C-22, C-23) · final validate+tests green · README.md operator quickstart · **tag v1.0.0 pushed** · ROADMAP.md with the Q6 order.
+- G-F8 demo GREEN by two mechanisms (C-22): git archive extract of all 74 tracked files, and a detached worktree where the absolute-path assertion is confirmed to RUN rather than skip. setup.sh exits 0 in both and leaves the worktree byte-clean.
+- G-F8 stress GREEN: no absolute machine paths in tracked files outside the byte-pinned execution authority.
+- §12 self-check complete: HC-1 T3 · HC-2 clean (line-based scan; the naive filename-based form reproduces the OQ-6 defect and false-positives on the forbidden_substrings declaration) · HC-3 4 opus / 4 sonnet matching the policy table · HC-4 apply-models re-run leaves 0 dirty · HC-5 zero node_modules, zero declared deps.
+- context/session-summary.md distilled to final state per §15.5/§15.6.
+- **Next action:** STOP. Await `APPROVE GATE-F8`, which closes the plan. After approval: tag crew-f8. Merging to main requires the approved gate and has NOT been done.
