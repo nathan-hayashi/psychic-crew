@@ -60,10 +60,15 @@ fi
 # C-23: the absolute-path assertion must RUN here, not skip. It tested [ -d .git ], which is false in
 # a worktree (.git is a file), so the G-F8 stress requirement silently skipped in the very checkout
 # this drill uses. A skip here is a failure of the drill, not a neutral result.
-if grep -q 'no absolute .* literals outside the execution authority' "$TMP/b.out"; then
+# Bind to validate-crew's OWN output, not setup.sh's one-line summary — the summary reports totals
+# and would say nothing about which assertions ran, so grepping it could never see this regression.
+( cd "$WT" && ./scripts/validate-crew.sh ) > "$TMP/b-validate.out" 2>&1 || true
+if grep -qE '\[(PASS|FAIL)\].*absolute .* literals' "$TMP/b-validate.out"; then
   printf '  [ok]   absolute-path assertion ran in the worktree (C-23)\n'
 else
-  printf '  [FAIL] absolute-path assertion did not run in the worktree — C-23 has regressed\n'; FAIL=$((FAIL + 1))
+  printf '  [FAIL] absolute-path assertion did not run in the worktree — C-23 has regressed\n'
+  grep -iE 'skip|absolute' "$TMP/b-validate.out" | sed 's/^/         /'
+  FAIL=$((FAIL + 1))
 fi
 # setup.sh must not dirty a clean checkout: apply-models is a stamp, and a stamp that changes tracked
 # files on a clean tree means config and stamps have drifted.
