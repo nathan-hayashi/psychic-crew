@@ -44,7 +44,12 @@ for e in "logs/" ".env"; do
 done
 
 echo "== no absolute machine paths in tracked files (§5.2.4) =="
-if [ -d .git ]; then
+# C-23: this tested [ -d .git ], which is FALSE in a git worktree, where .git is a file pointing at
+# the parent. The G-F8 portability drill runs in exactly such a checkout, so the one assertion that
+# gate's stress requirement names — and the one that produced two red gates at F0 — silently skipped
+# there while reporting "git not initialized yet", which was not true. Ask git, do not guess from a
+# path shape. Tenth instance of the proxy-binding family.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   # Pattern is split so this validator does not match its own check. Excluding the
   # file instead would blind the validator to the one file most worth checking.
   HOMEPAT="/ho""me/"

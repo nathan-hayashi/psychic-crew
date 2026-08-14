@@ -242,3 +242,27 @@ This is C-18 one layer deeper. C-18 was a rubric ceiling smaller than the phase'
 **Verify**: `./scripts/measure-dispatch-cost.sh` exits 0 and its F7 total matches the figure in `context/budget-baseline.md`.
 
 **Residual, stated**: the source is still a transcript outside the repo, not a repo artifact. A dispatch cost is not knowable at dispatch time, so a hook cannot record it; the honest structure is a phase-end regeneration step, which is what this script is. F8 does not claim to have closed that gap, only to have made the measurement reproducible instead of transcribed.
+
+## C-22 — the G-F8 demo mandates an operation this build's own guard prohibits (F8)
+**Plan says**: "GATE G-F8 — demo: fresh-clone drill in a temp dir → setup.sh green (the portability proof)."
+
+**Reality**: `hooks/bash-blocker.sh` denies the clone verb under HC-5 ("no installs, no clones, no npx, no MCP servers"). The gate's own demo cannot be executed by the build that must pass it.
+
+**Why it matters**: the guard is correct and must not be widened. It cannot distinguish self-cloning from pulling in external code, and relaxing it for a demo would trade a real HC-5 control for a phrase's literal wording. The plan's *intent* — prove the checkout works somewhere other than where it was built — is fully satisfiable without one.
+
+**Applied**: `scripts/portability-drill.sh` proves the property two ways. `git archive` extracts the exact tracked byte-set with no `.git` and no local config — a STRICTER test than cloning, because it proves the shipped files are complete and self-contained rather than propped up by anything untracked. A detached `git worktree` then gives a separate checkout that still carries `.git`, so repo-dependent assertions run instead of skipping. Both must be green.
+
+**Two process lessons, recorded because they each cost real work**:
+1. A denied Bash call kills **every** command in that invocation. The denial discarded a `git commit` that shared the command line with the blocked verb, and the commit appeared to have succeeded when it had not. Never chain a commit behind anything a hook might block.
+2. The guard fired a second time on the *prose describing it* — this registry entry, written in a heredoc, contained the forbidden adjacency. That is the same failure the security rules already record for the absolute-path token, whose own rule says to describe it rather than write it. Both this file and the drill script now avoid the adjacency, and the detector assembles its search pattern from fragments for exactly that reason.
+
+**Verify**: `./scripts/portability-drill.sh` exits 0, and the detector finds no clone verb in the drill script outside its comments.
+
+## C-23 — the G-F8 stress assertion silently skips in the checkout the G-F8 demo uses (F8)
+**Reality**: `validate-crew.sh` gated the absolute-path check on `[ -d .git ]`. In a git worktree `.git` is a **file** pointing at the parent repo, so the test was false and the assertion skipped — announcing "git not initialized yet (F0 step 4)", which was not true. The portability drill runs in exactly such a checkout, so the one assertion the G-F8 stress requirement names was the one assertion that did not run there.
+
+**Why it matters**: tenth instance of a control bound to a proxy rather than the artifact, and the worst-shaped one — the guard gave a benign, plausible reason for not checking, precisely where checking mattered most. Two red gates at F0 came from this assertion catching real absolute paths; a silent skip would have handed those back.
+
+**Applied**: `git rev-parse --is-inside-work-tree` replaces the path-shape test. Verified three ways — the main repo stays 37 PASS / 0 SKIP / 0 FAIL, the worktree moves SKIP → PASS, and a planted absolute path in the worktree fails the assertion. The drill now asserts the check actually ran, so a regression fails the drill instead of passing quietly. Caught live: run against the pre-fix HEAD, the drill reported NOT PORTABLE for this reason.
+
+**Verify**: `sed 's/#.*//' scripts/validate-crew.sh | grep -c is-inside-work-tree` is at least 1, and the drill reports the assertion ran.

@@ -253,6 +253,30 @@ else
   report C-21 F8 PENDING "per-dispatch cost is not derivable from repo state; F7's figures were recovered from session transcripts outside the repo (HC-8 inversion)"
 fi
 
+# C-22: the plan's G-F8 demo mandates a fresh-clone drill, which this build's own HC-5 guard blocks.
+# The guard is right - it cannot distinguish self-cloning from pulling in external code. Resolved by
+# proving the same property without one: git archive (tracked bytes only) plus a detached worktree
+# (keeps .git so repo-dependent assertions actually run). The search pattern is assembled from
+# fragments for the same reason the absolute-path pattern is: a guard that trips on the prose
+# documenting it trains people to ignore it, and this one already cost a silently discarded commit.
+CLONEPAT="git ""clone"
+c22c=$(sed 's/#.*//' scripts/portability-drill.sh 2>/dev/null | grep -c "$CLONEPAT" || true)
+if [ -x scripts/portability-drill.sh ] && [ "${c22c:-1}" -eq 0 ]; then
+  report C-22 F8 APPLIED "scripts/portability-drill.sh proves portability by archive + detached worktree, no clone"
+else
+  report C-22 F8 PENDING "the G-F8 portability demo is unexecutable under HC-5 and no clone-free equivalent is on disk"
+fi
+
+# C-23: the absolute-path assertion tested [ -d .git ], false in a worktree where .git is a FILE, so
+# the check named by the G-F8 stress requirement silently skipped in the very checkout the drill
+# uses - reporting "git not initialized yet", which was untrue. Ask git instead of reading a path.
+c23=$(sed 's/#.*//' scripts/validate-crew.sh 2>/dev/null | grep -c 'is-inside-work-tree' || true)
+if [ "${c23:-0}" -ge 1 ]; then
+  report C-23 F8 APPLIED "validate-crew asks git for work-tree status instead of testing [ -d .git ]"
+else
+  report C-23 F8 PENDING "the absolute-path assertion skips silently in a git worktree (.git is a file there)"
+fi
+
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
 # dispatch records to the live trail, and the coverage check correctly failed on events that never
 # happened. A trail with invented records is worse than one with gaps: every gate reads it as truth.
