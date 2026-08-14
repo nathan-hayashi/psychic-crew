@@ -341,3 +341,17 @@ sentence alone cannot manufacture that alert.
 - **Open decisions:** the operator's call on the Velocity FAIL. Zero open P0s, so §0.2c does not independently block.
 - **In-flight changes:** none.
 - **Next action:** STOP. Await the operator's ruling on G-F7b and the exact token, which the plan does not define (C-17 applies to G-F7b as it did to G-F7a).
+
+## [F7|2026-08-14T00:47:43Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 1 file(s) uncommitted
+- **HEAD:** 42364c6
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** STOP. Await the operator's ruling on G-F7b and the exact token, which the plan does not define (C-17 applies to G-F7b as it did to G-F7a).
+
+## CHECKPOINT 2026-08-14T00:50:58Z — F7 Velocity resolved, G-F7b ready
+- **Operator ruling (option A)**: Q5's ceiling is a gate TRIGGER, not a pass/fail bar — the same reading the operator applied to the wall-clock limb at G-F7a, now applied consistently to the token limb. Velocity **PASS by trigger**. §7 is 7 of 7; §6 Depth/Breadth/Robustness/Velocity all PASS.
+- **Not a waiver**: 1,922,184 subagent tokens at 9.3x the 207K denominator stands recorded, and it is a strict lower bound (excludes one unreported dispatch and all orchestrator tokens).
+- **C-20 registered and left PENDING, F8-owned**: the axis was unsatisfiable by construction — 18 mandated dispatches x 46,388 cheapest-observed = 834,984, still 4.0x the denominator at best. Detector added to check-plan-corrections.sh; closes only when context/budget-baseline.md records measured per-dispatch cost. F8 exit=1 until then, by design.
+- **Evidence made durable**: logs/ is gitignored, so the rubric roll-up would not have survived a clone. Mirrored to the tracked context/f7-metrics.md, limits and both audit-coverage readings included.
+- Suite 144 PASS / 0 FAIL · validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 2 PENDING / 2 SUPERSEDED.
+- **Next action:** STOP. Present the G-F7b gate report and await the operator's token. The plan defines no G-F7b token (C-17 applies as it did to G-F7a); the ledger is prepared for `APPROVE GATE-F7b`.
