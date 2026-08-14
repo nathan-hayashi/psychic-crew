@@ -4,7 +4,7 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 ## Where the build stands
 
-**verified** — **F0–F7 complete and gated** (tags `crew-f0`…`crew-f7`). **F8 work is complete and the repo is tagged `v1.0.0`.** The only thing outstanding is the operator's token: the plan defines `APPROVE GATE-F8` and says it closes the plan.
+**verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
 Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SKIP / 0 FAIL** · app suite **18/18** · corrections **all applied, 0 pending** · portability drill **PORTABLE** · 74 tracked files.
 
