@@ -355,3 +355,9 @@ sentence alone cannot manufacture that alert.
 - **Evidence made durable**: logs/ is gitignored, so the rubric roll-up would not have survived a clone. Mirrored to the tracked context/f7-metrics.md, limits and both audit-coverage readings included.
 - Suite 144 PASS / 0 FAIL · validate-crew 36 PASS / 0 SKIP / 0 FAIL · corrections 13 APPLIED / 2 PENDING / 2 SUPERSEDED.
 - **Next action:** STOP. Present the G-F7b gate report and await the operator's token. The plan defines no G-F7b token (C-17 applies as it did to G-F7a); the ledger is prepared for `APPROVE GATE-F7b`.
+
+## CHECKPOINT 2026-08-14T00:56:07Z — G-F7b APPROVED, F8 OPEN
+- Operator token `APPROVE GATE-F7b` received @ 2026-08-14T00:56:07Z (one prior attempt was a typo, `APPROVR`, and was correctly refused — exact-token rule held).
+- **F7 CLOSED.** §7 rubric 7/7, §6 all four axes PASS, 0 open P0. Tag `crew-f7`.
+- **F8 OPEN — Audit & Handover [plan L311-313].** Steps: gap register closure · final validate+tests · repo README (operator quickstart = clone + scripts/setup.sh + auth note) · tag v1.0.0 · push · ROADMAP.md stub with the Q6 domain order. Gate demo: fresh-clone drill in a temp dir with setup.sh green (portability proof). Stress: no absolute home paths in tracked files. Token `APPROVE GATE-F8` closes the plan.
+- **Next action:** F8 step 1 — inventory the gap register (C-19, C-20, G-F3 owed re-emission, DIRECTORY_GUIDE drift) and confirm whether scripts/setup.sh exists, since the gate demo depends on it.
