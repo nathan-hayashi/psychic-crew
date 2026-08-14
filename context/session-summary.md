@@ -58,4 +58,8 @@ Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SK
 
 ## Next action
 
-**verified** — **Present the G-F8 gate report and await `APPROVE GATE-F8`**, which closes the plan. Nothing further should be built first. After approval: tag `crew-f8`. Merging to `main` requires the approved gate and has not been done.
+**verified** — **None. The build is complete.** `APPROVE GATE-F8` was received @ 2026-08-14T01:58:11Z and closed the plan; all nine phases are gated, `v1.0.0` is tagged at the final commit, and `crew-f8` is pushed.
+
+**verified — branch layout is a SETTLED operator decision, not an oversight.** There is no `main` branch and none will be created: `dev` is the remote's default branch and the only branch that has ever existed, `v1.0.0` marks the release, and the standing "never push main without an approved gate" rule was moot throughout because there was never a `main` to push to. Do not "fix" this in a later session.
+
+Open items carried past v1.0.0 are in `ROADMAP.md`; the largest available upgrade is C-05 (hook-enforced bypass detection).

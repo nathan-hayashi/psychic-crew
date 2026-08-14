@@ -384,3 +384,8 @@ sentence alone cannot manufacture that alert.
 - Tags: crew-f0..crew-f8, v1.0.0 moved to the final commit per the gate report.
 - **main NOT touched.** The project rule permits pushing main only with an approved gate; the gate is now approved, but the plan's F8 text says "push" without specifying a merge, so that remains an operator call.
 - **Next action:** none pending. The build is complete. Open items carried past v1.0.0 are listed in ROADMAP.md and context/session-summary.md.
+
+## CHECKPOINT 2026-08-14T01:58:11Z — branch decision settled; project closed
+- Operator accepted the recommendation: **leave the branch layout as is.** No `main` branch exists or will be created. `dev` is the remote default; `v1.0.0` marks the release. This is a decision, not an omission — do not create `main` in a later session on the assumption it was forgotten.
+- Nothing else outstanding. Final: 144 crew / 37 validate / 18 app · corrections 18 APPLIED / 0 PENDING · 10 gates approved · drill PORTABLE · tree clean, synced.
+- **Next action:** none. The build is complete and handed over.
