@@ -434,3 +434,12 @@ sentence alone cannot manufacture that alert.
 - **Self-inflicted, caught and fixed in step:** a comment I wrote for CR-015 spelled out the HC-5 verb set as a contiguous literal, which denies any command quoting that region. Rewritten to describe rather than spell. Third live instance of that family in this project's work.
 - **Tree is intentionally dirty mid-batch;** the dirty-tree canary fails until commit 1a lands. No commit yet, by design.
 - **Next action:** resume at CR-016. Nothing is blocked.
+
+## CHECKPOINT 2026-08-17T07:10:01Z — S1 / CR-BATCH-1 COMPLETE, awaiting gate
+- **Three commits:** 39ce1c1 eleven controls restored · c6c4f65 phase derivation isolated · 561013f figures corrected, registry completed, fidelity check added.
+- **Nineteen CRs applied**, every one with its negative control executed. CR-009 · 024 · 013 · 015 · 019 · 016 · 010 · 030 · 021 · PR-F2 · 014 · 031 · 018 · 007 · 011 · 032/C-24 · 012 · C-14 extension · PR-F1.
+- **Suites:** validate-crew 40/0/0 · run-crew-tests 147/0 · save-context 21/0 · corrections 21 rows / 24 registered IDs · stress 18/18 · drill PORTABLE · probe 0 paths · 82 tracked.
+- **Every count delta attributed to a named CR.** No unexplained movement.
+- **Registered, not fixed:** CR-033 (the audit's line-number citations, now stale again because this batch moved those lines — the fix is to replace them with content anchors, which is the audit's own lesson applied to its prose).
+- **Not pushed.** Commits are local pending the gate token.
+- **Next action:** await the exact token `APPROVE CR-BATCH-1`. On approval: push to dev. Then S2 (CR-025 + CR-022, permission boundary, own gate) awaits ruling R1-R3 and the operator's v3.0.1 §5.2.2 wording correction.
