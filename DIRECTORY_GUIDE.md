@@ -1,21 +1,25 @@
 # DIRECTORY_GUIDE.md
 psychic-crew/
-├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (this build)
+├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (v3.0 canonical; never edited locally)
 ├─ CLAUDE.md                    # standing context (loaded every session)
-├─ CLAUDE_DESIGN.md             # architecture rationale
-├─ DIRECTORY_GUIDE.md           # this map
+├─ CLAUDE_DESIGN.md             # architecture rationale + attributions
+├─ DIRECTORY_GUIDE.md           # this map (matches the v1.0.0 tree + audit outputs)
 ├─ Plan.md                      # LIVE log: debugging, fixes, review notes, navigation decisions
 ├─ GATES.md                     # gate ledger: token, timestamp, demo/stress results
 ├─ PROGRESS.md                  # compaction-safe phase/step checkpoints
+├─ README.md                    # operator quickstart (written at F8)
+├─ ROADMAP.md                   # accepted domain order + dormant lanes (written at F8)
 ├─ models.config.json           # SINGLE source of truth: per-agent model/version/effort
+├─ .gitignore                   # also fences the local reference corpus (stage-everything = 0)
 ├─ .claude/
 │  ├─ settings.json             # permissions + hooks + env (project scope)
 │  ├─ agents/                   # 8 agent definitions (frontmatter stamped by apply-models.sh)
-│  ├─ rules/                    # fallback-protocol.md · arbiter-protocol.md · model-policy.md · security.md
+│  ├─ rules/                    # arbiter-protocol · fallback-protocol · model-policy · security
 │  └─ skills/threshold-router/SKILL.md
-├─ hooks/                       # repo-tracked hook scripts (POSIX-safe, bash -c wrapped)
-├─ scripts/                     # setup.sh · apply-models.sh · validate-crew.sh · run-crew-tests.sh · save-context.sh (§15.5) · restore-context.sh (§15.9)
-├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/
-├─ context/                     # HC-8 distilled knowledge base (tracked): session-summary.md · decisions.md · architecture.md · runbook.md · troubleshooting.md · open-items.md
-└─ stress-project/              # F7 end-to-end build workspace
+├─ hooks/                       # 12 tracked hook scripts (deny-list, model/secrets guards, audit, continuity, session-start, stop, format, notify, recovery, provenance)
+├─ scripts/                     # 9: setup · apply-models · validate-crew · run-crew-tests · save-context (§15.5) · restore-context (§15.9) · portability-drill · measure-dispatch-cost · check-plan-corrections
+├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/ · rounds/
+├─ context/                     # tracked knowledge base — session-summary.md (entry) · plan-corrections.md (WINS for implementation) · budget-baseline.md · f2-readiness.md · f7-metrics.md · f7-plan.md
+├─ docs/audit/                  # final-audit outputs (created by the audit session)
+└─ stress-project/              # F7 JML simulator (22 files)
 Navigation rule: any fix or anomaly → append to Plan.md first (what/where/why/fix), then act. Runtime flags and auto-snapshots (.claude/state/compact-pending · .claude/state/checkpoints/) are gitignored; the context/ tree is tracked and merge-distilled, never appended-to raw (§15.5/§15.9).

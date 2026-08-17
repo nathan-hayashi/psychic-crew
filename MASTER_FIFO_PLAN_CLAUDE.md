@@ -1,10 +1,10 @@
-# MASTER_FIFO_PLAN_CLAUDE.md — v2.3 (R6: §15.9 auto-checkpoint snapshot/restore workaround added; deployment guide issued)
+# MASTER_FIFO_PLAN_CLAUDE.md — v3.0 (psychic-crew canonical edition — operator ruling A1b: EX-01 retired by upstream re-export; byte-pin restored against THIS file)
 # Audience: Claude Code (machine execution). Human counterpart: MASTER_FIFO_PLAN_USER.pdf v2.
 # Authored: 2026-08-02 R1/R2; re-iterated R3 same date after full ingestion of 5 repos + CrewAI docs + Claude Platform docs (see AUDIT_TRAIL_R3.md and §13 changelog). v1 structure preserved; only audited deltas applied.
 # Evidence labels used throughout: [E]=established [I]=inferred [S]=speculative [V?]=verify before reliance.
 
 ## §0 EXECUTION CONTRACT — read completely before any tool use
-0.1 You are Claude Code operating inside `$HOME/projects/hiya-crew` (concrete on the origin machine: `/home/luckytuffy/projects/hiya-crew`). Always resolve via `$HOME`; never hardcode `/home/luckytuffy` into any committed file (R1 defect D1/D2 precedent).
+0.1 You are Claude Code operating inside `$HOME/projects/psychic-crew` (concrete on the origin machine: `/home/luckytuffy/projects/psychic-crew`). Always resolve via `$HOME`; never hardcode `/home/luckytuffy` into any committed file (R1 defect D1/D2 precedent).
 0.2 This plan is a strict FIFO queue F0→F8. Never start phase F(n+1) before the human has typed the exact gate token `APPROVE GATE-Fn` (case-sensitive, exact match, no substitutes, no inference of approval from positive sentiment).
 0.2b FORWARD-RESUME RULE (D10, transformed from OCR workflow Phase 0, Apache-2.0): on any session start inside a phase, read PROGRESS.md + GATES.md and act on the recorded next action. NEVER regress to an earlier completed step and NEVER re-run a step whose artifact already exists on disk — re-create only what is missing. If recorded state and on-disk files disagree, ESCALATE to the operator; do not guess which to trust.
 0.2c CANONICAL VERDICTS (D10): fixer per-finding verdicts are exactly ACCEPT | REJECT | DEFER (steelman rule stands: when in doubt ACCEPT; a fix that breaks tests is reverted and becomes DEFER). Gate machine verdicts are exactly PASS | FAIL | ESCALATE — no composite verdicts ("pass with follow-ups" is PASS plus logged DEFER items). PASS requires zero open P0/CRITICAL findings (mirrors OCR's APPROVE-requires-0-blockers consistency rule); an off-vocabulary verdict is itself a FAIL and must be re-emitted canonically.
@@ -32,7 +32,7 @@ HC-8 CONTEXT CONTINUITY (R5 hard constraint, operator-mandated): the build MUST 
 
 ## §3 Q0 — QUESTION GATE (execute before F0 file writes)
 Ask the operator exactly these questions, numbered, then WAIT. Do not proceed on partial answers. Do not re-ask anything answered in this file.
-Q1 GitHub: create private repo `nathan-hayashi/hiya-crew`? (yes/name-change/public). Auth path: is `gh` CLI installed+authenticated (`gh auth status`)? If not: SSH or HTTPS+PAT? (No installs — if gh absent, you will print manual repo-creation instructions instead.)
+Q1 GitHub: create private repo `nathan-hayashi/psychic-crew`? (yes/name-change/public). Auth path: is `gh` CLI installed+authenticated (`gh auth status`)? If not: SSH or HTTPS+PAT? (No installs — if gh absent, you will print manual repo-creation instructions instead.)
 Q2 Secrets: for this build no external API secrets are required. Confirm secrets backend decision may be DEFERRED to post-build (env + .gitignore discipline now)? (defer/decide-now)
 Q3 Notification channel for gate-ready alerts: reuse existing desktop notify hook config from the guide environment? (yes/silent)
 Q4 F7 stress-project domain: default is the JML (joiner-mover-leaver) IT-automation simulator (§7). Accept default or name an alternative end-to-end target?
@@ -44,7 +44,7 @@ Record answers verbatim in `Plan.md §Q0-Answers`. Unanswered = ESCALATE, do not
 ## §4 F0 PAYLOADS — write these files verbatim (templating markers `{{...}}` resolved at write time; `$VARS` inside code stay literal)
 ### 4.1 `CLAUDE.md` (project root)
 ```markdown
-# hiya-crew — Project Context for Claude Code
+# psychic-crew — Project Context for Claude Code
 Mission: from-scratch AI Agent Crew for IT-automation orchestration. Built under MASTER_FIFO_PLAN_CLAUDE.md (repo root) — that file is the execution authority; this file is standing context.
 ## Non-negotiables
 - Tier: announce [T3 — LOCKED] every response while CREW_TIER_LOCK=T3.
@@ -72,25 +72,29 @@ DIRECTORY_GUIDE.md = map · Plan.md = live debugging/fix/review log · GATES.md 
 ### 4.3 `DIRECTORY_GUIDE.md` (write verbatim)
 ```markdown
 # DIRECTORY_GUIDE.md
-hiya-crew/
-├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (this build)
+psychic-crew/
+├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (v3.0 canonical; never edited locally)
 ├─ CLAUDE.md                    # standing context (loaded every session)
-├─ CLAUDE_DESIGN.md             # architecture rationale
-├─ DIRECTORY_GUIDE.md           # this map
+├─ CLAUDE_DESIGN.md             # architecture rationale + attributions
+├─ DIRECTORY_GUIDE.md           # this map (matches the v1.0.0 tree + audit outputs)
 ├─ Plan.md                      # LIVE log: debugging, fixes, review notes, navigation decisions
 ├─ GATES.md                     # gate ledger: token, timestamp, demo/stress results
 ├─ PROGRESS.md                  # compaction-safe phase/step checkpoints
+├─ README.md                    # operator quickstart (written at F8)
+├─ ROADMAP.md                   # accepted domain order + dormant lanes (written at F8)
 ├─ models.config.json           # SINGLE source of truth: per-agent model/version/effort
+├─ .gitignore                   # also fences the local reference corpus (stage-everything = 0)
 ├─ .claude/
 │  ├─ settings.json             # permissions + hooks + env (project scope)
 │  ├─ agents/                   # 8 agent definitions (frontmatter stamped by apply-models.sh)
-│  ├─ rules/                    # fallback-protocol.md · arbiter-protocol.md · model-policy.md · security.md
+│  ├─ rules/                    # arbiter-protocol · fallback-protocol · model-policy · security
 │  └─ skills/threshold-router/SKILL.md
-├─ hooks/                       # repo-tracked hook scripts (POSIX-safe, bash -c wrapped)
-├─ scripts/                     # setup.sh · apply-models.sh · validate-crew.sh · run-crew-tests.sh · save-context.sh (§15.5) · restore-context.sh (§15.9)
-├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/
-├─ context/                     # HC-8 distilled knowledge base (tracked): session-summary.md · decisions.md · architecture.md · runbook.md · troubleshooting.md · open-items.md
-└─ stress-project/              # F7 end-to-end build workspace
+├─ hooks/                       # 12 tracked hook scripts (deny-list, model/secrets guards, audit, continuity, session-start, stop, format, notify, recovery, provenance)
+├─ scripts/                     # 9: setup · apply-models · validate-crew · run-crew-tests · save-context (§15.5) · restore-context (§15.9) · portability-drill · measure-dispatch-cost · check-plan-corrections
+├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/ · rounds/
+├─ context/                     # tracked knowledge base — session-summary.md (entry) · plan-corrections.md (WINS for implementation) · budget-baseline.md · f2-readiness.md · f7-metrics.md · f7-plan.md
+├─ docs/audit/                  # final-audit outputs (created by the audit session)
+└─ stress-project/              # F7 JML simulator (22 files)
 Navigation rule: any fix or anomaly → append to Plan.md first (what/where/why/fix), then act. Runtime flags and auto-snapshots (.claude/state/compact-pending · .claude/state/checkpoints/) are gitignored; the context/ tree is tracked and merge-distilled, never appended-to raw (§15.5/§15.9).
 ```
 ### 4.4 `Plan.md` initial content (write verbatim)
@@ -184,7 +188,7 @@ description: Broker and covert auditor between leads and specialists. All specia
 tools: Read, Grep, Glob, Write
 model: {{APPLY}}
 ---
-You are the arbiter — the middle layer of the hiya-crew pipeline. Leads send you DISPATCH blocks; you fan work out to specialists, then intercept everything that comes back BEFORE any lead sees it.
+You are the arbiter — the middle layer of the psychic-crew pipeline. Leads send you DISPATCH blocks; you fan work out to specialists, then intercept everything that comes back BEFORE any lead sees it.
 On receiving specialist output you MUST, in order:
 1. ORDER CHECK — verify the work corresponds to the current phase/step in Plan.md and PROGRESS.md; out-of-order results are quarantined (returned to sender with a FALLBACK, never forwarded).
 2. NORMALIZE — reshape output to the FINDINGS schema (§FINDINGS below). Discard chatter.
@@ -232,7 +236,7 @@ Routing: specialists → arbiter → lead → (if still unresolved) human gate E
 7. Never bypass a child workflow's own steps through the argument channel ("just do X, skip your loop") — arguments must match the child's documented interface.
 8. Finishing a child task is not finishing the phase: after any sub-task completes, re-read the phase task list and continue to the next item before responding. End long steps with a bounded table, not a prose completion summary — a prose "done" report is the measured trigger for premature turn-ending.
 ```
-#### 5.2.2 `arbiter-protocol.md`: paths ["**/*"]; states the dispatch law verbatim: "Leads MUST NOT invoke the Task tool on any specialist directly. Every dispatch is a DISPATCH block sent to arbiter: {"task_id","phase","to":[agents],"objective","inputs","budget_tokens","deadline_steps"}. Bypass detection: validate-crew.sh diffs tooluse-audit.jsonl Task calls against arbiter-audit.jsonl coverage; uncovered lead→specialist calls fail the gate." [Enforcement is audit-based, not hook-blocked — hooks cannot reliably attribute caller identity [V?]; flagged as this plan's weakest enforcement point.]
+#### 5.2.2 `arbiter-protocol.md`: paths ["**/*"]; states the dispatch law verbatim: "Leads MUST NOT invoke the Task tool on any specialist directly. Every dispatch is a DISPATCH block sent to arbiter: {"task_id","phase","to":[agents],"objective","inputs","budget_tokens","deadline_steps"}. Bypass detection: validate-crew.sh diffs tooluse-audit.jsonl Task calls against arbiter-audit.jsonl coverage; uncovered lead→specialist calls fail the gate." [Enforcement is audit-based at v1.0.0. Ground truth updated (D14): subagent lifecycle hooks now carry the agent type, making caller attribution deterministic [E: build report 5.9] — structural call-time blocking (C-05) is PRE-AUTHORIZED by operator ruling A2a as a permission-boundary CR requiring its own gate and negative control. Until that gate, audit-based detection remains the live mechanism and the declared weakest point.]
 #### 5.2.3 `model-policy.md`: paths [".claude/**","models.config.json","scripts/**"]; restates HC-2/HC-3/HC-4 and the stamp-only rule.
 #### 5.2.4 `security.md`: paths ["**/*"]; severity definitions (crit=secret exposure or destructive-capability widening; high=permission/deny-list weakening; med=injection-adjacent; low=hygiene), plus: no absolute machine paths in tracked files; no new allow-rules without a gate.
 ### 5.3 `.claude/skills/threshold-router/SKILL.md` (verbatim)
@@ -269,7 +273,7 @@ jq -r '.agents | keys[]' "$CFG" | while read -r a; do
 done
 echo "[OK] apply-models complete. Note[V?]: per-agent effort is recorded in config; native per-agent effort support is verified in F1 and, if unsupported, effort applies at session level (max) — recorded in Plan.md."
 ```
-- `scripts/setup.sh`: the one-command bootstrap for a fresh clone of hiya-crew — verifies baseline (§2.2 checks), auth presence, runs apply-models.sh, validate-crew.sh, prints next-gate instructions. This is the priority-1 "run the script and set up instantly" mechanism.
+- `scripts/setup.sh`: the one-command bootstrap for a fresh clone of psychic-crew — verifies baseline (§2.2 checks), auth presence, runs apply-models.sh, validate-crew.sh, prints next-gate instructions. This is the priority-1 "run the script and set up instantly" mechanism.
 - `scripts/validate-crew.sh`: assertions — settings.json parses (jq .); every agent has stamped model matching config; no forbidden substrings (reuse apply-models check); hooks files exist+executable+POSIX (`bash -n`, no `[[`); tier-lock env present; arbiter coverage check (5.2.2); .gitignore covers logs/ and .env; no `/home/` literals in tracked files (`git grep -l "/home/" -- ':!MASTER_FIFO_PLAN_CLAUDE.md'` empty). Exit nonzero on any failure; used by every gate.
 - `scripts/run-crew-tests.sh`: wraps validate-crew + phase-specific test cases registered per phase (append-a-case pattern).
 ### 5.6 Hooks (build from scratch in F2 to these contracts; all wrapped `bash -c`, PATH exported with `$HOME/bin`, POSIX case/esac not `[[` — corpus errors 6/7 pre-empted)
@@ -283,8 +287,8 @@ echo "[OK] apply-models complete. Note[V?]: per-agent effort is recorded in conf
 - `notify.sh` / `stop.sh`: per Q3; platform-detect logic reimplemented from scratch (uname/-proc-version checks) — 15 lines max each. `stop.sh` MAY additionally emit `{"decision":"block","reason":"GATES.md not updated for completed phase"}` on stdout to hold the turn open when a phase completed without its ledger entry [E: decision-block Stop contract observed in neatcontext stop.mjs]; verify current Stop-hook JSON contract during F0 step 6 before enabling this branch [V?].
 
 ## §6 FIFO PHASES — objective · why · steps · gate(demo+stress) · rollback · budget
-### F0 — Verify, Question, Scaffold  [budget 12K tokens]
-Steps: (1) run §2.2 verification, record in Plan.md; (2) run Q0, wait, record answers; (3) `mkdir -p` tree per DIRECTORY_GUIDE; write §4 payloads verbatim; (4) git init, branch dev, first commit; (5) create GitHub repo per Q1 (`gh repo create nathan-hayashi/hiya-crew --private --source=. --push` if gh present; else print manual steps + `git remote add`); (6) fetch+read current hooks/subagents doc pages, log schema deltas to Plan.md [this is the sanctioned doc-verification step, not an install]; (7) run apply-models.sh + validate-crew.sh.
+### F0 — Verify, Question, Scaffold
+Steps: (1) run §2.2 verification, record in Plan.md; (2) run Q0, wait, record answers; (3) `mkdir -p` tree per DIRECTORY_GUIDE; write §4 payloads verbatim; (4) git init, branch dev, first commit; (5) create GitHub repo per Q1 (`gh repo create nathan-hayashi/psychic-crew --private --source=. --push` if gh present; else print manual steps + `git remote add`); (6) fetch+read current hooks/subagents doc pages, log schema deltas to Plan.md [this is the sanctioned doc-verification step, not an install]; (7) run apply-models.sh + validate-crew.sh.
 GATE G-F0 — demo: `tree`-style listing + validate-crew all-green + repo URL. Stress: re-run steps 3–7 → zero diffs (idempotency); attempt `git clone anything` → bash-blocker denies (if F2 not yet live, demonstrate deny-list config instead and defer live test to G-F2). Rollback: `git reset --hard crew-f0`. Token: `APPROVE GATE-F0`.
 ### F1 — Model Routing Layer  [10K]
 Steps: finalize apply-models.sh; probe per-agent effort support (attempt an effort key in one agent frontmatter; observe; record verdict in Plan.md) [V? resolved here]; write model-policy rule.
@@ -307,13 +311,13 @@ GATE G-F6 — demo: full suite green. Stress: mutation test — deliberately bre
 ### F7 — FINAL ORCHESTRATION STRESS TEST  [200K; may span 2 sessions with mid-gate]
 Build a real end-to-end project at full T3: **JML Simulator** in `stress-project/` — a from-scratch Node.js CLI app: (a) `intake.js` consumes mock HRIS webhook JSON (new-hire/mover/leaver fixtures you author); (b) `lifecycle.js` state machine emits IAM actions (create/suspend/transfer) to a mock adapter layer; (c) `ticketing.js` writes Jira-style ticket JSON; (d) `notify.js` renders Slack-style message payloads; (e) audit trail JSONL; (f) test suite ≥15 cases incl. failure paths; (g) README + a ```mermaid``` sequence diagram (GitHub-native render — zero local render deps, HC-5 safe). Full pipeline mandatory: lead-planner plan → operator plan approval (mid-gate G-F7a) → lead-executor build → two-round discourse (5.4) → fixer → test-runner → integration-runner e2e run.
 Metrics captured to logs/metrics/f7.json: wall time, per-agent token spend, findings raised/accepted/rejected/deferred, arbiter interventions, test pass rate, defects found post-review (target 0).
-GATE G-F7b (final) — demo: live e2e run leaver→suspend→ticket→notify with audit trail; metrics report. Stress + judgement rubric (Depth/Breadth/Velocity): Depth = injected edge cases (duplicate webhook, out-of-order mover-before-hire, malformed payload) all handled or cleanly FALLBACK'd; Breadth = every one of the 8 agents shows ≥1 logged contribution; Velocity = build completes within Q5 budget; Robustness = mutation test on stress-project (3 seeded bugs) caught by discourse+tests. All four pass → orchestration judged production-viable; any fail → gap register → fix loop → re-gate. Tag crew-f7.
+GATE G-F7b (final) — demo: live e2e run leaver→suspend→ticket→notify with audit trail; metrics report. Stress + judgement rubric (Depth/Breadth/Velocity): Depth = injected edge cases (duplicate webhook, out-of-order mover-before-hire, malformed payload) all handled or cleanly FALLBACK'd; Breadth = every one of the 8 agents shows ≥1 logged contribution; Velocity = the gating mechanism fires as designed (early gates on wall/context pressure per Q5); token spend is measured and reported, never a pass/fail bar (operator ruling D3c, see D14); Robustness = mutation test on stress-project (3 seeded bugs) caught by discourse+tests. All four pass → orchestration judged production-viable; any fail → gap register → fix loop → re-gate. Tag crew-f7.
 ### F8 — Audit & Handover  [10K]
 Steps: gap register closure; final validate+tests; README for the repo (operator-facing quickstart = clone + scripts/setup.sh + auth note); version tag v1.0.0; push; write ROADMAP.md stub with Q6 domain order.
 GATE G-F8 — demo: fresh-clone drill in a temp dir → setup.sh green (the portability proof). Stress: `git grep "/home/"` empty in tracked files. Tag v1.0.0. Token: `APPROVE GATE-F8` closes the plan.
 
 ## §7 F7 JUDGEMENT — pass thresholds (numeric)
-tests ≥15 and 100% green · seeded-bug catch 3/3 · edge cases 3/3 handled/FALLBACK · agent coverage 8/8 · token spend ≤ Q5 ceiling ·  post-review defects 0 · arbiter audit lines ≥ dispatch count (no silent hops).
+tests ≥15 and 100% green · seeded-bug catch 3/3 · edge cases 3/3 handled/FALLBACK · agent coverage 8/8 · post-review defects 0 · arbiter audit lines ≥ dispatch count, correlated by identity (no silent hops). Token spend: measured and reported per dispatch (scripts/measure-dispatch-cost.sh → context/budget-baseline.md); NOT a pass/fail axis — operator ruling D3c/D14. The Q5 wall/context ceiling remains an early-gate TRIGGER, never a failure bar.
 
 ## §8 FALLBACK & ESCALATION LOOP (canonical restatement)
 uncertainty(<0.6) or unmet precondition → FALLBACK block → arbiter attempts resolution from repo state → unresolved → lead reframes as ONE precise question (highest information gain, how+why explicit) → still unresolved → GATE ESCALATE block for operator. Each loop iteration must state what changed vs the prior attempt; identical re-asks are prohibited.
@@ -348,9 +352,10 @@ D8 F0 gains one verification step: if an API key is available, `GET /v1/models` 
 D9 (v2.1) Reviewer dimension-label contract, P0–P3 definitions, Failure-scenario line, dismiss-only-with-read-mitigation rule.
 D10 (v2.1) Forward-resume rule (never regress, never re-run existing artifacts), canonical verdict vocabularies (fixer ACCEPT/REJECT/DEFER; gates PASS/FAIL/ESCALATE with zero-P0 consistency), untrusted-input rule for personas, ETL sources, and fetched web content.
 D11 (v2.1) Standalone context files emitted; residual queue rewritten after Ingestion Pass 2; PDF rebuilt as v3 with Paragraph-wrapped cells after the v1/v2 overlap defect (RCA in AUDIT_TRAIL_R4).
+D14 (v3.0, 2026-08-16, operator rulings session) A1b executed: canonical re-export under the permanent psychic-crew name (8 occurrences renamed, single token form; former name recorded once in this entry: hiya-crew); EX-01 retired — the byte-pin now binds to THIS file, and the identity check returns to strict equality for the CLAUDE.md and CLAUDE_DESIGN.md seeds (verified byte-identical against the deployed repo at re-export time); Plan.md's payload is the F0 SEED only — the deployed file is a live ledger and is exempt from equality by nature, checked as seed-prefix instead; DIRECTORY_GUIDE equality begins when its CR lands post-audit. DIRECTORY_GUIDE payload rewritten to the real v1.0.0 tree (+README, ROADMAP, all 9 scripts, real context/ listing incl. plan-corrections.md, docs/audit/) — closes drift item 12.3; the repo-side file update is CR-scoped, post-audit. D3c executed: token limb removed at three sites (F0 header bracket, F7 Velocity limb, §7 rubric); the Q5 wall/context ceiling remains an early-gate trigger; measured baselines are the reference (context/budget-baseline.md). §5.2.2 corrected to current ground truth and C-05 pre-authorized (A2a) pending its own gate. Full rulings ledger A1b·A2a·A3a·A4a·B1a·B2a·B3a·B4b·C1b·C2a·C3a+c·D1a·D2b·D3c·E1a·E2a lives in RULINGS_AND_DEPLOYMENT_2026-08-16.md; the B/C/E build items belong to the next planning session, not this document. DEPLOYMENT: swap this file + the four seeds into the repo ONLY after APPROVE AUDIT-GATE-A5.
 D13 (v2.3) §15.9 WORKAROUND-01: autonomous numbered PreCompact snapshots + rolling per-turn latest.md + 10-deep retention + restore-context.sh reload path, explicitly interim and roadmap-superseded; ccs-03 added (suite ≥28); DIRECTORY_GUIDE payload updated (seeds re-extracted); DEPLOYMENT_GUIDE.md issued (file placement + kickoff prompts).
 D12 (v2.2) HC-8 Context Continuity elevated to hard constraint per operator directive; §15 subsystem added; §11.4 upgraded to MANDATORY; F2/F5/F6 steps and F5 stress extended; CLAUDE.md + DIRECTORY_GUIDE payloads gain continuity lines (seeds re-extracted); suite floor 25→27 with ccs-01/ccs-02. Validated live: the authoring session compacted mid-R4 at 63% and lost zero deliverable state because this doctrine was already partially in force.
-Unchanged by design (audit-confirmed, no overhaul-for-overhaul's-sake): FIFO phase order F0–F8, gate-token grammar, 8-agent roster, broker-pattern arbiter with audit log, two-layer distribution, secrets posture, F7 JML stress spec and §7 rubric, weakest-claim designation (arbiter bypass enforcement remains audit-based).
+Unchanged by design (audit-confirmed, no overhaul-for-overhaul's-sake): FIFO phase order F0–F8, gate-token grammar, 8-agent roster, broker-pattern arbiter with audit log, two-layer distribution, secrets posture, F7 JML stress spec and §7 rubric (token limb removed by ruling D3c; every other axis untouched), weakest-claim designation (arbiter bypass enforcement remains audit-based).
 
 ## §14 R3 INTEGRATIONS
 ### 14.1 Claude-only replacement table (HC-7)

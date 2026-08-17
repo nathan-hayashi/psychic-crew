@@ -32,8 +32,14 @@ cases_F0 () {
   check "plan corrections: F0 clean"              0 ./scripts/check-plan-corrections.sh F0
   check "settings.json parses"                    0 jq -e . .claude/settings.json
   check "models.config.json parses"               0 jq -e . models.config.json
-  # EX-01: seeds equal their payloads modulo the recorded rename delta (0 / 1 / 1)
-  for pair in "CLAUDE.md 4.1 1" "CLAUDE_DESIGN.md 4.2 0" "DIRECTORY_GUIDE.md 4.3 1"; do
+  # v3.0 (operator ruling A1b, 2026-08-16): EX-01 is RETIRED. The rename was applied UPSTREAM in the
+  # canonical re-export, so every §4 payload now matches its deployed seed byte-for-byte and the
+  # byte-pin re-binds to this plan. The old expectations were the rename allowance — CLAUDE.md 1 line
+  # (L1 title) and DIRECTORY_GUIDE.md 1 line (L2 tree root); both are now 0 because there is nothing
+  # left to allow. Measured 0/0/0 before this line changed, so the check went from FAIL-on-a-correct
+  # -repo to PASS without loosening: expecting `<= 1` instead would have silently accepted one line of
+  # real drift forever, which is the allowance EX-01 existed to bound and no longer needs to.
+  for pair in "CLAUDE.md 4.1 0" "CLAUDE_DESIGN.md 4.2 0" "DIRECTORY_GUIDE.md 4.3 0"; do
     set -- $pair; f=$1; sec=$2; want=$3
     got=$(diff <(awk -v h="### $sec " 'index($0,h)==1&&!fd{fd=1;next} fd&&!inf&&substr($0,1,3)=="```"{inf=1;next} fd&&inf&&$0=="```"{exit} fd&&inf' MASTER_FIFO_PLAN_CLAUDE.md) "$f" | grep -c '^>')
     if [ "$got" = "$want" ]; then ok "EX-01 $f delta $got"; else no "EX-01 $f delta $got, expected $want"; fi
