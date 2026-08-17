@@ -14,6 +14,8 @@ cd psychic-crew
 
 `setup.sh` installs nothing. It checks the toolchain, recreates the gitignored runtime directories, verifies model routing, and runs the validation and app suites. Exit 0 means ready; any failure names itself.
 
+**A human runs that first line; an agent working inside this repo cannot.** The in-repo deny-list blocks the clone verb under the no-installs constraint, and the guard matches the whole command string, so it refuses regardless of intent. That is deliberate and is why the portability drill proves the same property with `git archive` and a detached worktree instead — see the constraints section below and C-22.
+
 **Requirements:** `git`, `node` ≥ 22, `npm`, `jq`. `gh` is optional. Tested on Node v24.14.0 / npm 11.9.0 under WSL2 Ubuntu 24.04.
 
 **Auth:** this repo holds no secrets and needs none for anything above. Claude Code authentication is per-machine, not per-repo — check it with `claude auth status`, or `/status` inside a session. `gh auth status` matters only if you use the GitHub lanes. `.env`, `.env.*` and `secrets/` are both gitignored and blocked by `hooks/sensitive-guard.sh`; that guard is a backstop, not permission to put secrets in the tree.
@@ -25,7 +27,7 @@ Every claim below is reproducible from a clean checkout:
 ```bash
 ./scripts/validate-crew.sh            # 37 structural assertions
 ./scripts/run-crew-tests.sh           # 144 crew assertions
-./scripts/check-plan-corrections.sh   # plan-vs-reality registry, 23 entries
+./scripts/check-plan-corrections.sh   # plan-vs-reality registry, 24 entries
 ./scripts/portability-drill.sh        # proves the shipped file set works elsewhere
 cd stress-project && npm test         # 18 cases, the JML simulator
 ```
@@ -114,7 +116,9 @@ The in-repo deny-list blocks the clone verb during agent work, which is why the 
 - Bypass detection is audit-based, caught at the gate rather than blocked at the call. `SubagentStart`/`SubagentStop` carry `agent_type` and would make it deterministic; adopting that is an open decision (C-05).
 - The phase token budgets in the plan were never calibrated against multi-agent cost and were wrong by roughly an order of magnitude. Measured figures are in `context/budget-baseline.md` (C-20, C-21).
 
-`context/plan-corrections.md` is the full registry: 23 numbered places where the plan and reality disagreed, what was done, and how to verify each. Where it and the plan conflict, it wins for implementation.
+`context/plan-corrections.md` is the full registry: **24** numbered places where the plan and reality disagreed, what was done, and how to verify each. Where it and the plan conflict, it wins for implementation. The checker reports **21** of them as rows; C-16 is enforced in `validate-crew.sh` rather than by the registry's own detector, and C-17 is closed by completion — a mid-gate that was named without a token, since issued — so neither produces a row.
+
+_This said 23 until 2026-08-17. The figure came from reading the highest correction ID and assuming no gaps, and C-15 had no entry, so it overcounted by one while the registry held 22. Corrected under CR-012 after CR-007 wrote C-15's entry and CR-032 added C-24._
 
 ## Licence
 

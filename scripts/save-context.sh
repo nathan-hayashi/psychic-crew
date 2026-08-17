@@ -74,6 +74,34 @@ check)
   grep -q '^## Next action' "$ENTRY" 2>/dev/null \
     && ok "entry point declares a Next action" \
     || no "entry point has no '## Next action' section"
+
+  # CR-032 / C-24 (audit A0-F3) — FIDELITY, not hygiene. Every assertion above is a property of the
+  # distilled file considered ALONE: no absolute paths, no raw logs, labels present, a Next action
+  # declared. All twenty passed for three days against a summary that dated the closing gate to a
+  # timestamp belonging to the NEXT ledger entry — a conflation, not a typo, and one no hygiene check
+  # can reach by construction. A distillation whose whole job is to be the authoritative cold-start
+  # read was checked for tidiness and never for truth.
+  # Bind to the source: the gate ledger is where an approval timestamp actually lives.
+  # Vacuity-guarded first, because a claim this cannot find is a claim it cannot check, and silently
+  # passing on "not found" is how a fidelity check becomes decorative.
+  fid_src=$(grep -oE 'APPROVE GATE-F8` @ [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' GATES.md 2>/dev/null \
+            | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' | head -1)
+  fid_cls=$(grep -oE 'APPROVE GATE-F8` was received @ [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' "$ENTRY" 2>/dev/null \
+            | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' | head -1)
+  # The guard fires on "a claim with no source", never on "no claim". Caught by the ccs-02 fixture,
+  # which builds a temp root with an empty ledger and a summary that makes no gate claim at all — a
+  # legitimate state that the first version of this check treated as failure. An absent claim is
+  # reported rather than skipped silently, so it cannot become the way this check quietly stops
+  # meaning anything; an unverifiable claim is what actually fails.
+  if [ -z "$fid_cls" ]; then
+    ok "C-24 fidelity: the summary makes no GATE-F8 approval claim — nothing to bind"
+  elif [ -z "$fid_src" ]; then
+    no "C-24 fidelity: the summary claims a GATE-F8 approval timestamp but the gate ledger carries none to check it against"
+  elif [ "$fid_src" = "$fid_cls" ]; then
+    ok "C-24 fidelity: the summary's GATE-F8 approval timestamp matches the gate ledger ($fid_src)"
+  else
+    no "C-24 fidelity: summary says $fid_cls, the gate ledger says $fid_src — a distilled claim its source does not support"
+  fi
   printf '\n== save-context: %s PASS / %s FAIL ==\n' "$P" "$F"
   [ "$F" = 0 ] || exit 1
   ;;

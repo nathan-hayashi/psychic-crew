@@ -302,6 +302,29 @@ else
   report C-23 F8 PENDING "the absolute-path assertion skips silently in a git worktree (.git is a file there)"
 fi
 
+# C-24 (CR-032): the §15.5 checker verified HYGIENE only — twenty assertions about the distilled file
+# considered alone — so a claim conflated from two adjacent source entries passed for three days and
+# through every gate. Tested BEHAVIOURALLY under a temp root: hand it a summary whose gate timestamp
+# disagrees with the ledger and require it to reject THAT claim specifically. Grepping for the word
+# "fidelity" would report APPLIED for a check that compares nothing.
+c24tmp=$(mktemp -d 2>/dev/null)
+if [ -n "$c24tmp" ] && [ -f scripts/save-context.sh ]; then
+  mkdir -p "$c24tmp/context" "$c24tmp/scripts"
+  cp scripts/save-context.sh "$c24tmp/scripts/" 2>/dev/null
+  grep -m1 'APPROVE GATE-F8` @' GATES.md > "$c24tmp/GATES.md" 2>/dev/null
+  sed 's/was received @ [0-9T:-]*Z/was received @ 1999-01-01T00:00:00Z/' \
+      context/session-summary.md > "$c24tmp/context/session-summary.md" 2>/dev/null
+  c24out=$( cd "$c24tmp" && ./scripts/save-context.sh check 2>&1 )
+  if printf '%s' "$c24out" | grep -q 'C-24 fidelity: summary says'; then
+    report C-24 F8 APPLIED "the §15.5 checker rejects a distilled gate timestamp that disagrees with the gate ledger"
+  else
+    report C-24 F8 PENDING "the §15.5 checker accepts a distilled claim its own source contradicts — hygiene only, no fidelity"
+  fi
+  rm -rf "$c24tmp"
+else
+  report C-24 F8 PENDING "save-context.sh missing or temp root unavailable"
+fi
+
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
 # dispatch records to the live trail, and the coverage check correctly failed on events that never
 # happened. A trail with invented records is worse than one with gaps: every gate reads it as truth.
@@ -315,10 +338,25 @@ fi
 FIXTURE_IDS='scrub-regression|ccs02-probe|provenance-probe|c16-probe'
 fixt=$(jq -r --arg ids "$FIXTURE_IDS" 'select((.task_id // "") | test("^(" + $ids + ")$"; "i")) | .task_id' \
        logs/tooluse-audit.jsonl 2>/dev/null | head -1)
-if [ -z "${fixt:-}" ]; then
-  report C-14 F3 APPLIED "no fixture-shaped task_id in the audit trail; fixtures run under a temp root"
+# CR-013 extension (audit A3-F1): C-14's fix and this detector covered logs/tooluse-audit.jsonl only.
+# The identical defect ran against logs/build-errors.jsonl for the entire build — run-crew-tests fed
+# the error-recovery fixture with the LIVE repo as ROOT on every suite run, reaching 198 of 209
+# records, none of which described a failure that happened. CR-013 isolated the fixture and CR-012
+# redacted the accumulated fiction with the removal logged. Cover the sibling trail so a regression
+# is caught rather than rediscovered by a later audit.
+# AuditRedaction records are excluded BY TOOL rather than by pattern, because the redaction record
+# necessarily QUOTES the string it removed — a pattern-only check would match its own documentation,
+# which is the family this registry keeps recording and the reason C-14's own fix logged the
+# redaction as an event instead of deleting silently.
+befix=$(jq -r 'select((.tool // "") != "AuditRedaction")
+         | select((.error // "") | test("bash: foo: command not found"))
+         | .ts' logs/build-errors.jsonl 2>/dev/null | head -1)
+if [ -z "${fixt:-}" ] && [ -z "${befix:-}" ]; then
+  report C-14 F3 APPLIED "no fixture-written records in either audit trail; fixtures run under a temp root"
+elif [ -n "${fixt:-}" ]; then
+  report C-14 F3 PENDING "tooluse trail carries fixture-written records (task_id=$fixt) — tests polluting the artifact they audit"
 else
-  report C-14 F3 PENDING "audit trail carries fixture-written records (task_id=$fixt) — tests polluting the artifact they audit"
+  report C-14 F3 PENDING "build-errors trail carries fixture-written records (first at $befix) — tests polluting the artifact they audit"
 fi
 
 printf '\n== %s APPLIED / %s PENDING / %s SUPERSEDED ==\n' "$APPL" "$PEND" "$NA"

@@ -180,11 +180,17 @@ cases_F2 () {
   erj='{"tool_name":"Bash","tool_response":{"error":"bash: foo: command not found"}}'
   erb=$(wc -l < logs/build-errors.jsonl 2>/dev/null || echo 0)
   feedr () { printf '%s' "$2" | CLAUDE_PROJECT_DIR="$er" "./hooks/$1.sh"; }
-  check "error-recovery exits 0"                 0 feedr error-recovery "$erj"
+  # CR-018 changed the contract: a recognised error now DELIVERS its hint on stderr with exit 2,
+  # while an unrecognised one still exits 0 and says nothing. Both paths are asserted, because
+  # "never fatal" and "actually delivers" are separate properties and the old single check conflated
+  # them by testing stdout — emission, not delivery.
+  check "error-recovery exits 0 on an unrecognised error"  0 feedr error-recovery '{"tool_name":"Bash","tool_response":{"error":"an entirely novel failure"}}'
   [ -s "$er/logs/build-errors.jsonl" ] && ok "error-recovery wrote build-errors.jsonl under an isolated root" \
                                        || no "error-recovery wrote no record"
-  printf '%s' "$erj" | CLAUDE_PROJECT_DIR="$er" ./hooks/error-recovery.sh 2>/dev/null | grep -q 'minimal-shell' \
-    && ok "error-recovery emits the §9 corpus hint" || no "§9 hint missing"
+  ehint=$(printf '%s' "$erj" | CLAUDE_PROJECT_DIR="$er" ./hooks/error-recovery.sh 2>&1 >/dev/null); erc=$?
+  { printf '%s' "$ehint" | grep -q 'minimal-shell' && [ "$erc" = 2 ]; } \
+    && ok "CR-018 §9 hint DELIVERED on stderr with exit 2 (not merely emitted)" \
+    || no "CR-018 §9 hint not delivered (exit=$erc stderr='$ehint')"
   [ "$(wc -l < logs/build-errors.jsonl 2>/dev/null || echo 0)" = "$erb" ] \
     && ok "CR-013 error-recovery fixtures left the live trail untouched ($erb lines)" \
     || no "CR-013 fixtures wrote to the live logs/build-errors.jsonl — tests polluting the artifact they audit"

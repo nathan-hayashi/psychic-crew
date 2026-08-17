@@ -1,0 +1,23 @@
+# CR-031 (audit A5-F3 / PG-F1). Nothing declared end-of-line normalisation, so a checkout with
+# core.autocrlf=true — the Git for Windows default — would rewrite every tracked text file with CRLF.
+# That is not merely a "scripts fail to start" problem, though shebangs do become `bash\r`:
+#
+#   - the fenced-payload byte comparison behind the §4 seed identity check would report drift on
+#     every seed, failing the exception the whole build rests on;
+#   - validate-crew's line-exact matching would stop matching correct rules;
+#   - bash-blocker's whole-string case patterns would see a trailing \r that was not there when the
+#     patterns were written.
+#
+# One line prevents all of it, and it is a no-op on Linux. Landed before any Windows work rather
+# than as part of it, because the alternative is discovering it as a mystifying red gate after the
+# first CRLF checkout has already happened.
+#
+# Two adjacent Windows traps are absent and should stay that way: zero symlinks in tracked files,
+# and all twenty executable shell files declaring the same interpreter line.
+* text=auto eol=lf
+
+# Explicit for the file types where a stray CR is load-bearing rather than cosmetic.
+*.sh   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.js   text eol=lf

@@ -34,6 +34,27 @@ for bad in $(jq -r '.forbidden_substrings[]' models.config.json 2>/dev/null); do
 done
 [ "$hc2" = 0 ] && pass "no forbidden model assigned anywhere in the config surface"
 
+echo "== agent contract shape (PR-F1) =="
+# PR-F1 (audit PROMPT_READINESS): lead-planner was 8 lines against a 21-32 line median for the other
+# seven — no backstory, no numbered process, and no output schema, while every reviewer had a JSON
+# contract and the fixer an enumerated verdict vocabulary. It is also the most expensive agent to
+# re-run (opus at max effort) and the one whose output an operator approves at a mid-gate, so a
+# malformed plan could not be rejected the way a malformed FINDINGS packet can.
+# Assert the CONTRACT declares a schema. A runtime plan is not visible here, but a contract that
+# names no schema cannot produce a checkable one — that is the artifact that would differ if the
+# defect were real.
+LP=".claude/agents/lead-planner.md"
+if [ -f "$LP" ]; then
+  lpmiss=""
+  for k in step paths acceptance rollback_tag budget_tokens; do
+    grep -qF -- "\"$k\"" "$LP" || lpmiss="$lpmiss [$k]"
+  done
+  [ -z "$lpmiss" ] && pass "lead-planner declares a PLAN schema with all five required fields" \
+                   || fail "lead-planner PLAN schema missing:$lpmiss — a plan with no declared shape cannot be rejected for having the wrong one"
+else
+  skip "no lead-planner definition yet (F3 owns .claude/agents/)"
+fi
+
 echo "== HC-7 Claude-only content scan (§1) =="
 # CR-030 (audit A5-F1): HC-7 states that this validator greps .claude/, hooks/ and scripts/ for
 # non-Claude vendor names. It never did — measured zero such occurrences in this file. The only

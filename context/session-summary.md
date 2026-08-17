@@ -60,7 +60,9 @@ Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SK
 
 ## Next action
 
-**verified** — **None. The build is complete.** `APPROVE GATE-F8` was received @ 2026-08-14T01:58:11Z and closed the plan; all nine phases are gated, `v1.0.0` is tagged at the final commit, and `crew-f8` is pushed.
+**verified** — **None. The build is complete.** `APPROVE GATE-F8` was received @ 2026-08-14T01:54:54Z and closed the plan; all nine phases are gated, `v1.0.0` is tagged at the final commit, and `crew-f8` is pushed.
+
+_CR-012 (audit A0-F3): this read `01:58:11Z` until 2026-08-17. Not a typo — a conflation. `Plan.md`'s last two entries are adjacent, `[F8|…01:54:54Z] G-F8 APPROVED` and `[F8|…01:58:11Z] BRANCH LAYOUT SETTLED`, and the distillation attached the second entry's timestamp to the first entry's event. Every constituent fact was true of something in the source; the assembled sentence was true of nothing. `save-context.sh check` returned 20 PASS against this file throughout, because all twenty assertions were hygiene properties of the distilled file considered alone and none compared a distilled claim to its source. C-24 now does._
 
 **verified — branch layout is a SETTLED operator decision, not an oversight.** There is no `main` branch and none will be created: `dev` is the remote's default branch and the only branch that has ever existed, `v1.0.0` marks the release, and the standing "never push main without an approved gate" rule was moot throughout because there was never a `main` to push to. Do not "fix" this in a later session.
 
