@@ -332,7 +332,19 @@ its 22 IDs. _0.5h, none, no._
 **CR-012 — correct the "23".** The count appears in `Plan.md`'s closing entry, `README.md:28`,
 `README.md:117` and `ReportforClaudeWeb.txt` §5.3. It was derived from the highest correction ID
 rather than counted; the registry holds 22 and the checker reports 20. Two of the four are in the
-public README. _0.5h, none, no._
+public README.
+
+**Same CR, second figure (A0-F3).** `context/session-summary.md` dated `APPROVE GATE-F8` to
+`01:58:11Z`; `GATES.md` and `PROGRESS.md` both say `01:54:54Z`. Not a typo — a conflation. The two
+adjacent `Plan.md` entries are `[F8|…01:54:54Z] G-F8 APPROVED` and `[F8|…01:58:11Z] BRANCH LAYOUT
+SETTLED`, and the distillation attached the second entry's timestamp to the first entry's event.
+Deliberately left uncorrected by this audit, since repairing a finding is a fix. _0.5h, none, no._
+
+**The gap this second figure exposes is the more valuable half.** `save-context.sh check` returns
+20 PASS against that file, and all twenty assertions are hygiene properties of the distilled file
+considered alone — no absolute paths, no raw logs, a declared Next action. **None compares a
+distilled claim against the source it was distilled from.** A fidelity check would catch this whole
+class; a hygiene check cannot, by construction. Worth pricing separately if CR-012 is approved.
 
 **CR-018 — error hints.** `hooks/error-recovery.sh` writes its §9 hints to stdout with `exit 0` and
 discards stderr; the reference requires `exit 2` so Claude sees stderr. The suite asserts emission,

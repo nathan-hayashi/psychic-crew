@@ -7,7 +7,8 @@ stress-project/tmp/
 .claude/state/
 
 # Reference corpus dropped into the repo root for analysis, 2026-08-16. This repo is PUBLIC and the
-# build is closed at v1.0.0 with 74 tracked files; without this rule a `git add -A` would stage
+# build is closed at v1.0.0 with 80 tracked files (74 at closure, plus six audit documents added
+# by the post-v1.0.0 audit on 2026-08-17); without this rule a `git add -A` would stage
 # ~83,000 files and ~864MB of third-party source into it. The glob is deliberately a catch-all
 # rather than an enumeration so a later upload following the same zip convention is covered before
 # anyone thinks to add it. Present when this was written (16): agent-framework, babysitter,

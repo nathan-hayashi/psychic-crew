@@ -6,7 +6,9 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 **verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
-Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SKIP / 0 FAIL** · app suite **18/18** · corrections **all applied, 0 pending** · portability drill **PORTABLE** · 74 tracked files.
+Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SKIP / 0 FAIL** · app suite **18/18** · corrections **20 rows — 18 APPLIED / 0 PENDING / 2 SUPERSEDED** · portability drill **PORTABLE** · **80 tracked files**.
+
+**verified — an independent audit ran after closure (2026-08-17) and its record is in `docs/audit/`.** It fixed nothing; its product is truth plus a priced backlog of 31 change requests. Start at `docs/audit/FINAL_AUDIT_REPORT.md`. Three things a cold session should know before trusting anything below: the correction count long quoted as "23" is wrong — the registry holds 22 IDs and the checker reports 20 rows, and the figure came from reading the highest ID rather than counting; two detectors (C-12, C-21) report APPLIED while testing nothing, proven with executed negative controls; and the four quarantined G-F3 findings have now been adjudicated (three ACCEPT, one REJECT), which closes the round-2 re-emission item recorded below.
 
 ## What F8 delivered
 
