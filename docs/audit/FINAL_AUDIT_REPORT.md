@@ -701,3 +701,191 @@ construct the four collaborators: `loadState`, `createAuditLog`, `createIntake`,
 site are in `bin/jml.js`; there are **none** in `src/` `[E]`. The modules are pure decision
 functions that never call each other and never write. That is the architecture, it is a good one,
 and it is the opposite of what `stress-project/README.md`'s diagram draws.
+
+---
+
+## A5 — Optimization, gaps, avenues, conformance
+
+### A5.1 Optimization register
+
+Anchored to measured economics, not speculation. F7: **2,045,319 tokens across 18 dispatches, mean
+113,628, floor 46,388, ceiling 198,302** `[E]`. All-phase mean across 30 dispatches: 102,621.
+Orchestrator tokens are unmeasurable from inside a session, so every figure is a lower bound.
+
+Measured cost by role `[E]`:
+
+| Role                 | n   | mean    | total   |
+| -------------------- | --- | ------- | ------- |
+| `arbiter`            | 8   | 92,689  | 741,515 |
+| `quality-reviewer`   | 4   | 130,495 | 521,981 |
+| `lead-executor`      | 5   | 88,874  | 444,372 |
+| `security-reviewer`  | 3   | 123,923 | 371,770 |
+| `fixer`              | 2   | 169,410 | 338,820 |
+| `integration-runner` | 1   | 198,302 | 198,302 |
+| `lead-planner`       | 2   | 48,935  | 97,870  |
+| `test-runner`        | 1   | 46,388  | 46,388  |
+
+| Component                  | Axis          | Candidate                                                                                                                                                                                                                                                     | Value      | Effort | Risk | Gate |
+| -------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------ | ---- | ---- |
+| Dispatch payloads          | **tokens**    | Enforce the 30-line excerpt cap (CR-022). Reading dominates cost and this is the only stated lever                                                                                                                                                            | high       | 2h     | low  | no   |
+| `arbiter`                  | tokens        | 8 dispatches, 741K — the largest single consumer. Its work is normalise/recalibrate/audit, all schema-shaped. A dispatch carrying only the packet plus the two rule files should cost far less than 92K mean                                                  | high       | —      | med  | no   |
+| `run-crew-tests.sh`        | **speed**     | 144 assertions run serially with many `mktemp -d` roots and `node` invocations. Phase-scoped runs already exist (`F<n>`); making the default incremental would shorten every fix loop                                                                         | med        | 2h     | low  | no   |
+| `measure-dispatch-cost.sh` | speed         | Reparses full transcripts each run. A cache keyed on transcript mtime makes CR-010 cheap enough to run every gate                                                                                                                                             | med        | 1h     | low  | no   |
+| `validate-crew.sh`         | security      | CR-015 (identity, not count) and CR-019 (state, not text) — both restore a control that currently passes without testing                                                                                                                                      | high       | 1h     | low  | no   |
+| Hook chain                 | **execution** | 12 hooks, 3 on every `Write\|Edit`. `_common.sh` re-derives PHASE by grepping `PROGRESS.md` on **every** hook invocation. Caching it per session is trivial and removes a file read from the hot path — and CR-014 has to touch this code anyway              | med        | 1h     | med  | no   |
+| `logs/`                    | memory        | `tooluse-audit.jsonl` is 1.3 MB and grows unbounded; every `validate-crew` run `jq`-scans it whole. Rotation by phase would bound it                                                                                                                          | low-med    | 1h     | low  | no   |
+| Reviewer lanes             | tokens        | `quality-reviewer` and `security-reviewer` each re-read the same source (~27K counted twice per round, per C-20). Nothing safe to change here — the independence **is** the product; recorded so it is not "optimised" later by someone who has not read C-20 | **do not** | —      | —    | —    |
+
+The last row is the important one. The single largest available token saving is merging the two
+review branches, and F7's own result forbids it: the seeded bug invisible to all 18 tests was found
+by the **uncontaminated** branch at the highest confidence in either packet. Duplication is the
+mechanism, not the waste.
+
+### A5.2 Unbuilt avenues
+
+Items **a** (C-05), **b** (intake layer) and **c** (PowerShell) are specified in full in
+`CHANGE_REQUESTS.md` CR-025, `PROMPT_READINESS.md`, and `PLATFORM_GAP_POWERSHELL.md`. The remaining
+three follow.
+
+#### d. README and accessibility review
+
+**Heading hierarchy is clean** `[E]`: `#` → `##` → `###`, no level skips, 121 lines, 10 headings.
+That is the main structural accessibility property and it holds. Tables carry header rows. The one
+diagram is fenced mermaid, which GitHub renders natively — no image without alt text, because there
+is no image.
+
+**Cognitive load is well managed.** "Verify it yourself" appears at line 21, before the
+architecture — a reader can reproduce the claims before being asked to believe them. The
+proven/not-proven split at line 105 gives both halves equal prominence, which is unusual and good.
+
+**Two content defects**, both already filed: the correction count is wrong at `:28` and `:117`
+(CR-012), and the Quickstart's first command is denied by this build's own guard with the
+disclosure 93 lines later (CR-020).
+
+**The missing section — CR-027.** `README.md:17` states software requirements and the tested
+platform. It states nothing about hardware, disk footprint, or the token economics that determine
+whether a plan tier can actually run this. Drafted from measured data, each labelled:
+
+| Fact                                 | Value                                                   | Label |
+| ------------------------------------ | ------------------------------------------------------- | ----- |
+| Node / npm actually used             | v24.14.0 / 11.9.0                                       | `[E]` |
+| Tracked bytes                        | 723,222 (~0.7 MB)                                       | `[E]` |
+| Runtime dependencies                 | zero                                                    | `[E]` |
+| Disk beyond the checkout             | `logs/` grows unbounded; 1.3 MB after nine phases       | `[E]` |
+| Mean cost of one specialist dispatch | ~102,621 tokens (30 dispatches, all phases)             | `[E]` |
+| Cost of one full review round        | ~250K tokens (two reviewers + arbiter)                  | `[I]` |
+| Cost of a phase like F7              | ~2.05M tokens across 18 dispatches                      | `[E]` |
+| Plan-tier implication                | a phase of F7's shape is **not** a light-usage workload | `[I]` |
+
+The last two rows are the ones a prospective user actually needs and the ones no README-style
+requirements section ever carries. The build's own §6 budgets were wrong by 9.65×, so publishing
+the measured figures is the honest correction — and `context/budget-baseline.md` already holds them.
+
+#### e. Psychic-Crew-Lite derivation seams
+
+Coupling measured as references to Claude-Code-specific surface (`.claude/`, `hooks/`) `[E]`:
+
+| Module                          | Couples to    | Extractable?                                                         |
+| ------------------------------- | ------------- | -------------------------------------------------------------------- |
+| **`stress-project/`**           | 1 ref, 0 deps | **cleanly** — self-contained, zero dependencies, own `package.json`  |
+| `scripts/save-context.sh`       | **0 refs**    | **cleanly** — depends only on `PROGRESS.md` / `context/` conventions |
+| `scripts/restore-context.sh`    | 1 ref         | nearly — one path reference                                          |
+| `scripts/apply-models.sh`       | 1 ref         | nearly — depends on agent-frontmatter shape, not the runtime         |
+| `hooks/_common.sh` `scrub()`    | —             | **cleanly** — a standalone redaction function, useful anywhere       |
+| The FINDINGS / FALLBACK schemas | —             | **cleanly** — conventions, no code at all                            |
+| `scripts/portability-drill.sh`  | 1 hooks ref   | mostly — pure git mechanics                                          |
+| `scripts/validate-crew.sh`      | both          | **no** — reads `.claude/settings.json` structure throughout          |
+| `scripts/run-crew-tests.sh`     | both          | **no** — the most coupled file in the repo                           |
+| `hooks/` (12 files)             | 5 refs        | **no** — the hook event system does not exist outside Claude Code    |
+
+**The honest seam.** A Zed-hosted variant inherits the _conventions_ and almost none of the
+_enforcement_. What travels is the discipline — filesystem-as-truth, the FINDINGS and FALLBACK
+schemas, exact-token gates, the steelman verdict vocabulary, and `stress-project/` entire. What
+does not travel is every hook, and therefore every mechanical guarantee: the deny-list, the model
+guard, the secrets guard, the audit trail, the provenance flag.
+
+That is a Lite variant in the exact sense the name implies, and the report should say so plainly:
+it would be the crew's _practices_ without the crew's _controls_, and this build's central lesson is
+that a practice with no control is a comment.
+
+#### f. Capability classes over `models.config.json` — feasible
+
+**What.** Introduce named classes (`judgment`, `lens`, `batch`) resolving to the existing aliases,
+so agents declare a capability need rather than a model tier.
+
+**Feasibility: straightforward, and HC-4 survives.** The config already carries `.aliases`,
+`.pinned`, `.session` and `.agents[].model`; a `.classes` object mapping class → alias is one more
+key resolved by the same `if/then/else` idiom `apply-models.sh` already uses for mode. The one-file
+rule is preserved because the resolution stays inside `models.config.json`.
+
+**One real constraint.** `validate-crew.sh:75` resolves the expected stamp with
+`.[if $m=="pinned" then "pinned" else "aliases" end][.agents[$a].model]` — a **two-level** lookup.
+Classes make it three, so the validator changes too, and the HC-2 assignment-position scan at
+`:22-35` must learn to follow the extra hop or a forbidden model could hide behind a class name.
+That is the whole risk, and it is exactly the kind of indirection that defeats a substring guard.
+
+**Verdict: worth doing only if the roster grows.** With eight agents across two tiers, classes add a
+level of indirection to a mapping that fits in one table. The `haiku` row in `model-policy.md`
+already anticipates "future trivial batch lanes"; when one exists, this becomes worth it.
+
+### A5.3 Conformance
+
+| Check                     | Result                                                              |
+| ------------------------- | ------------------------------------------------------------------- |
+| Claude-only purge (HC-7)  | **clean** — 12 hits across 3 files, all allowlisted `[E]`           |
+| Plan byte-pin (EX-01)     | **intact** — `8fa5155d3386bc4a`, **1 commit ever**, the F0 scaffold |
+| EX-01 seed deltas         | **1 / 0 / 1** exactly as the rule requires                          |
+| §15 continuity assertions | **20 PASS / 0 FAIL**                                                |
+| `node_modules` present    | **0**                                                               |
+| Declared dependencies     | **0** — `jq -e` exits 1, as HC-5 requires                           |
+| Deny / allow rules        | 14 / 34 — **unchanged**, 0 commits to `settings.json` this session  |
+| Model facts vs live docs  | see A3-F9 and CR-025 `[V]`                                          |
+
+The purge allowlist is exactly three files and each earns its place: the byte-pinned authority
+(which documents the replacements, and HC-7's own text excludes it), `hooks/bash-blocker.sh` (the
+blocking hook), and `scripts/run-crew-tests.sh` (the negative control proving the hook denies). The
+third is the class-(d) category A0-F2 had to invent — the string is the needle. **No hits in
+`.claude/`, `context/`, `README.md`, `Plan.md` or `PROGRESS.md`.**
+
+#### A5-F1 — HC-7 names an enforcement in `validate-crew` that is not there
+
+**P2 · conformance gap · Failure scenario:** a non-Claude invocation is written into `.claude/`,
+`hooks/` or `scripts/`. The runtime deny-test still passes, because it tests that `bash-blocker`
+refuses a _command_, and nothing scans repository _content_.
+
+HC-7 states that `validate-crew` greps `.claude/`, `hooks/` and `scripts/` for the forbidden vendor
+names. Measured: **zero** such occurrences in `scripts/validate-crew.sh` `[E]`. The only coverage
+is a single deny-test in `run-crew-tests.sh`, which asserts a different property.
+
+Content is clean today — verified independently in this audit — so this is a missing control, not a
+live breach. Filed as CR-030.
+
+#### A5-F2 — the conformance check the brief mandates cannot be run as a plain command here
+
+**P3 · operating constraint, not a defect · Failure scenario:** an operator or agent runs the HC-7
+conformance grep, the entire Bash invocation is denied, and every unrelated command sharing that
+invocation is silently discarded along with it.
+
+This happened **twice during this audit** `[E]` — once on the grep itself, and once on a line that
+merely _quoted HC-7's own sentence describing the check_. `hooks/bash-blocker.sh:17` matches the
+whole command string, so any command containing the forbidden names is refused regardless of intent.
+
+Both denials killed every other command in their invocation, which is the recorded C-22 lesson
+arriving live. The workaround is the one already established: assemble the pattern from fragments.
+Recorded as a standing operating constraint, and it is why CR-030 carries a non-optional
+implementation note.
+
+#### A5-F3 — no `.gitattributes`, which is a latent portability defect today and a blocking one on Windows
+
+**P2 · portability · Failure scenario:** the repository is checked out anywhere with
+`core.autocrlf=true` — the Git for Windows default. Every `.sh` file gains CRLF endings, shebangs
+become `#!/usr/bin/env bash\r`, and **EX-01's byte-identity check fails on every seed**, breaking
+the exception the whole build rests on.
+
+`.gitattributes` is absent `[E]`; nothing declares end-of-line normalisation. The blast radius
+reaches `grep -qxF` line matching (compounding A3-F7), the fenced-payload byte comparison, and
+`bash-blocker`'s whole-string `case` patterns.
+
+Two adjacent traps are **absent**, which is worth recording: zero symlinks in tracked files, and
+all 20 shebangs identical. Analysis is in `PLATFORM_GAP_POWERSHELL.md`. One line fixes it and it is
+a no-op on Linux. Filed as **CR-031**.

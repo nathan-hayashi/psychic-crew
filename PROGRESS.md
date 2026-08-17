@@ -410,3 +410,12 @@ sentence alone cannot manufacture that alert.
 - **Execution:** portability drill PORTABLE at 77 tracked files, both mechanisms, C-23 assertion confirmed running. Stress e2e verified every README claim except the replay path.
 - **Suites:** validate-crew 37/0/0 · crew 144/0 after commit · corrections 20 rows unchanged.
 - **Next action:** await the exact token `APPROVE AUDIT-GATE-A3`. On approval, A4 (flow + the four owed findings) runs to the A5 gate.
+
+## CHECKPOINT 2026-08-17T05:41:35Z — AUDIT COMPLETE, awaiting final gate
+- **All five phases done.** A0 baseline · A1 diagrams · A2 decisions · A3 code · A4 flow + four owed findings · A5 optimization/gaps/conformance.
+- **Findings:** 1 P1 (A2-F2, the C-12 detector satisfied by comments) · 13 P2 · 8 P3 · 1 raised then REFUTED on evidence (PostToolUseFailure is real).
+- **Backlog:** CR-001..CR-031 in docs/audit/CHANGE_REQUESTS.md, priced with effort/risk/value and gate flags. Top three by value: CR-009, CR-024, CR-013 — all under an hour, none touching a permission boundary.
+- **Owed findings closed:** the four quarantined G-F3 branch-B findings adjudicated after five days. Three ACCEPT, one REJECT, anchors quoted into docs/audit/ because logs/ is gitignored.
+- **Conformance:** HC-7 clean · plan byte-pin intact (1 commit ever) · zero deps · deny/allow lists untouched · suites at the A0 baseline.
+- **Nothing was fixed.** Six tracked audit documents plus one gitignored distillation. Fixes begin only on approval of specific CRs at a future gate.
+- **Next action:** await the exact token `APPROVE AUDIT-GATE-A5`.
