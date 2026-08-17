@@ -491,3 +491,213 @@ verified by observation, not assumption.
 | `--now` + `--seed` gives byte-identical runs             | identical                               |
 | Without them, runs differ                                | differ — the falsification holds        |
 | Reusing `--out` replays a parked event                   | **see A3-F5**                           |
+
+---
+
+## A4 — Flow, integration, and the four owed findings
+
+### A4.1 The release law, traced by identity
+
+Correlated by `task_id`, never by count `[E]`:
+
+| Quantity                                                | Value |
+| ------------------------------------------------------- | ----- |
+| Distinct dispatch `task_id`s in `tooluse-audit.jsonl`   | 16    |
+| Distinct arbiter `task_id`s in `arbiter-audit.jsonl`    | 11    |
+| Arbiter audit lines total                               | 19    |
+| **Specialist dispatches with no matching arbiter line** | **0** |
+
+The law holds. Surplus arbiter lines exist — 19 lines across 11 ids — and surplus is exactly what
+C-12 made harmless: because coverage is a set difference on identity, extra lines cannot mask a
+missing one. This is the correction working as designed, verified against the artifacts rather than
+against the checker's own report.
+
+### A4-F1 — the C-19 fix has never been exercised, and A3-F2 would exempt the first line that could exercise it
+
+**P2 · latent control · Failure scenario:** the first post-F7 arbiter line is written, is stamped
+`F7` by a stale phase derivation, and is grandfathered out of the very requirement C-19 added.
+
+Measured across all 19 arbiter lines `[E]`:
+
+| Property                           | Count                           |
+| ---------------------------------- | ------------------------------- |
+| Full ISO-8601 `ts` (`…THH:MM:SSZ`) | **0**                           |
+| Date-only `ts`                     | 19                              |
+| Phases present                     | `F3`, `F7` — both grandfathered |
+
+The C-19 fix is real and correctly built: `arbiter.md` mandates the format, and
+`validate-crew.sh:188-203` enforces it with a genuine regex and an enumerated grandfather list. But
+**no line in the repository satisfies it**, so the enforcement path has never executed against a
+conforming record. It is prospective only, which the repository does state.
+
+What the repository does not state is the interaction with A3-F2. The grandfather predicate is
+`^(F0|F1|F2|F3|F4|F5|F6|F7)$`, and `hooks/_common.sh` can no longer emit anything but `F7`. Any
+future writer taking its phase from that derivation produces records that are permanently exempt.
+The two defects are individually modest and compose into a control that cannot fire.
+
+### A4-F2 — three arbiter lines carry no `task_id`, and nothing checks for that
+
+**P3 · schema conformance · Failure scenario:** an arbiter line omits `task_id`. C-12's correlation
+counts only lines that have one, so the line is invisible to coverage in both directions — it
+neither covers a dispatch nor registers as uncovered. No assertion notices.
+
+Schema conformance across the 19 lines `[E]`:
+
+| Field             | Present   |
+| ----------------- | --------- |
+| `ts`              | 19/19     |
+| `phase`           | 19/19     |
+| `from_agent`      | 19/19     |
+| `to`              | 19/19     |
+| `original_sha256` | 19/19     |
+| `mutation`        | 19/19     |
+| `reason`          | 19/19     |
+| **`task_id`**     | **16/19** |
+
+The three exceptions are all F3 and all record a _failed_ dispatch — "dispatch-not-executed; zero
+specialist packets received" and two "dispatch ATTEMPTED and FAILED at the tool layer". **The
+steelman is strong**: a dispatch that never executed covers no task, so omitting the id is arguably
+the honest record, and these lines predate F8's schema tightening, which added the `task_id MUST`
+clause. They are not a violation of the rule as it stood when they were written.
+
+The finding is the absent control. `validate-crew.sh` enforces `ts` **granularity** and nothing
+enforces `task_id` **presence**, so the schema's one MUST-clause that C-12 depends on is unchecked.
+
+### A4.2 Untrusted input and the reference-passing cap
+
+**Untrusted input** is stated in `.claude/rules/arbiter-protocol.md:26` (§0.2d) and mechanically
+backed by exactly one control: `hooks/provenance-flag.sh`, wired PostToolUse and confirmed present
+in `settings.json` `[E]`. C-13 records its limits honestly — verbatim text only, and it flags
+**after** the write by design. That is the whole mechanical surface; everything else is a rule.
+
+### A4-F3 — the reference-passing cap is the proven economic lever and is prose only
+
+**P2 · unenforced constraint · Failure scenario:** a dispatch inlines a large file body instead of a
+path. Nothing rejects it, nothing measures it, and the cost lands in a budget the build already
+missed by 9.65×.
+
+`arbiter-protocol.md:16` states: "DISPATCH payloads carry paths, contracts and `expected_output` —
+never file bodies beyond a **30-line excerpt**." Searched across every script and hook: **no
+enforcement of any kind** `[E]`.
+
+This matters more than an unenforced style rule usually would. The measured economics identify
+reading as the dominant cost and reference-passing as the proven lever, and C-20 quantifies the
+counter-case: `subagent_tokens` counted the same ~27K of source once per reading agent, ~214K, 11%
+of F7's total, pure input. The 30-line cap is the rule that keeps that number down, it is the one
+HC-8 names as "the compounding driver", and it is enforced by nothing.
+
+### A4.3 The four owed findings, re-adjudicated
+
+Branch B's quarantined packet, `logs/rounds/round-1/quality-reviewer.json`, four findings, never
+released. Each anchor re-verified against current code. Steelman rule applied: when in doubt,
+ACCEPT.
+
+Recorded here in full because `logs/` is gitignored — this evidence does not survive a clone, so an
+adjudication that merely cited it would be unreproducible.
+
+| ID      | Sev  | Verdict                             | Basis                                           |
+| ------- | ---- | ----------------------------------- | ----------------------------------------------- |
+| QR-DG-1 | high | **ACCEPT** — and it widened         | 5 mapped files absent, 5 present files unmapped |
+| QR-DG-2 | high | **ACCEPT** — and escalate           | the intervening fix is itself a proxy           |
+| QR-DG-3 | med  | **REJECT** — resolved by completion | the file exists and is tracked                  |
+| QR-DG-4 | med  | **ACCEPT, narrowed**                | half stale, half widened 1 → 3                  |
+
+**QR-DG-1 — ACCEPT.** Claim: the map's `context/` line names files that do not exist and omits ones
+that do. Re-measured `[E]`:
+
+| Named in the map, absent from disk | Present on disk, absent from the map |
+| ---------------------------------- | ------------------------------------ |
+| `architecture.md`                  | `budget-baseline.md`                 |
+| `decisions.md`                     | `f2-readiness.md`                    |
+| `open-items.md`                    | `f7-metrics.md`                      |
+| `runbook.md`                       | `f7-plan.md`                         |
+| `troubleshooting.md`               | `plan-corrections.md`                |
+
+Six names on each side and **exactly one overlap**, `session-summary.md`. At F3 two existing files
+were unmapped; there are now five. The failure scenario is intact and more likely: a
+post-compaction session following HC-8 opens `context/decisions.md`, the read fails, and the map
+offers no pointer to `plan-corrections.md` — which is authority #2 for implementation.
+
+**QR-DG-2 — ACCEPT, severity escalated.** Claim: no check verifies `DIRECTORY_GUIDE.md` against the
+real tree; the EX-01 loop is doc-vs-doc and "passes identically whether or not the map matches the
+filesystem."
+
+An assertion has since appeared that reports `corpus/§9 every script named by the map exists on
+disk`. **It does not read the map.** `scripts/run-crew-tests.sh:422-427` iterates a list of six
+paths hardcoded into the test; `DIRECTORY_GUIDE.md` appears **zero** times in that block `[E]`.
+
+The hardcoded list has itself drifted from the map in both directions `[E]`: the map names
+`setup.sh`, which the check omits; the check names `check-plan-corrections.sh`, which the map omits.
+Two enumerations that were presumably once transcribed from each other, now disagreeing, with a
+green assertion whose text claims one is validated against the other.
+
+This is worse than the original finding. QR-DG-2 reported an absent control; there is now a present
+control that asserts the property in its message and does not test it. The whole build's dominant
+lesson — bind the check to the artifact that would differ — applied to a check written in response
+to a finding about exactly that.
+
+**QR-DG-3 — REJECT.** Claim: `.claude/skills/threshold-router/SKILL.md` is listed with no phase
+qualifier and does not exist. The file exists, is tracked, and is asserted by `validate-crew.sh:117`
+`[E]`. The premise is false today; the map line is accurate. Resolved by completion, not by fix.
+
+**QR-DG-4 — ACCEPT, narrowed.** Claim had two halves. The first — `setup.sh` is listed but unwritten
+— is **stale**: F8 delivered it. The second — `check-plan-corrections.sh` exists and is omitted from
+the map — **stands, and widened** `[E]`: three scripts on disk are now unmapped
+(`check-plan-corrections.sh`, `measure-dispatch-cost.sh`, `portability-drill.sh`).
+
+**Common constraint on all three accepted findings.** Every one anchors to `DIRECTORY_GUIDE.md`,
+which is byte-pinned under EX-01. The F4 precedent is to route around the pin by creating what the
+map claims rather than editing the map. That precedent does not resolve QR-DG-4 (the map would have
+to _gain_ names) and resolves QR-DG-1 only by creating five documents to satisfy a stale map. This
+is the "DIRECTORY_GUIDE drift needs an operator routing decision" open item, and these three
+findings are its concrete content.
+
+### A4.4 Pattern-flow narrative — one event, end to end
+
+The integration ground truth. Every function named below was located in the source, not inferred
+`[E]`. Tracing `fixtures/leaver-bulbasaur.json` — one `TERMINATE` for `EMP-10047`.
+
+**Setup.** `bin/jml.js:186` `resolveClock({now, seed, stepMs})` returns a fixed or stepping clock;
+determinism lives here and nowhere else. `:191` `clock.newId("run")` mints the run id. `:220`
+`parseDelivery(raw, {taskId, source})` (`src/intake.js`) parses the envelope — on failure the run
+ends at `:226` via `emitFallbackAndExit`, writing exactly one audit line and exiting 2. `:229-243`
+construct the four collaborators: `loadState`, `createAuditLog`, `createIntake`, `createLifecycle`,
+`createIamAdapter`.
+
+**Per event, the loop at `:353`.**
+
+1. `:354` `intake.admit(rawEvent, {delivery, taskId})` — validates via `validateEvent`, computes a
+   `fingerprintEvent` hash, and returns `ACCEPTED`, `DUPLICATE` or `REJECTED`. Dedupe is
+   outcome-aware: a redelivery of a _failed_ attempt is re-admitted as `retry_of`.
+2. `:358` **the CLI** calls `audit.append(STAGES.INTAKE, …)` — seq 1.
+3. `:371-380` `REJECTED` → exit 1 path; `DUPLICATE` → counted and skipped, no ticket.
+4. `:385` `lifecycle.stateOf(employee_id)` snapshots state **before** the transition. This line is
+   the reason the rollback at `:392` can exist.
+5. `:386` `lifecycle.apply(event)` → `applyEvent` reads `TRANSITIONS[NONE].TERMINATE`
+   (`src/lifecycle.js:63`) → `{to: SUSPENDED, emission: iam.suspend, outcome: APPLIED}`. It
+   **decides** the emission and does **not** call the provider.
+6. `:271` `settle(event, result)` — a CLI closure, and the hub the diagram misses (A1-F3):
+   - `:272` `audit.append(STAGES.LIFECYCLE, …)` — seq 2
+   - `:290` `shouldOpenTicket(result)` gates the rest
+   - `:292` **`iam.apply({action, employeeId, event})`** — the only real provider call in the
+     program, made by the CLI
+   - `:301` `iamRetryable(iamResult)` → `intake.markFailed(event)`, so a redelivery is re-admitted
+     rather than deduped
+   - `:304-308` `buildTicket(...)` → `writeTicket(ticket, outDir/tickets)`
+   - `:309` `audit.append(STAGES.TICKETING, …)` — seq 3
+   - `:322` `buildNotification(...)`, which runs `scrubSecrets` / `findSecretShapes`
+     (`src/notify.js`) before serialisation
+   - `:337` `audit.append(STAGES.NOTIFY, …)` — seq 4
+   - returns `iamFailed(iamResult)` as `chainFailed`
+7. `:388-390` any events drained from the parking lot settle through the same closure, reporting
+   `REPLAYED` rather than `APPLIED` — the path A3-F5 shows no fixture can reach.
+8. `:391-393` if the chain failed, `lifecycle.rollback(employee_id, stateBefore)` un-commits, so
+   nothing durable claims an access change the provider refused.
+
+**Close.** `:396` `lifecycle.snapshot()`, `:397` `saveState` merged with `intake.snapshot()`, `:405`
+`audit.count()` into the report, `:406` exit code — 0 handled, 1 needs a human, 2 unusable input.
+
+**The load-bearing observation.** Every `audit.append` call site and the single `iam.apply` call
+site are in `bin/jml.js`; there are **none** in `src/` `[E]`. The modules are pure decision
+functions that never call each other and never write. That is the architecture, it is a good one,
+and it is the opposite of what `stress-project/README.md`'s diagram draws.
