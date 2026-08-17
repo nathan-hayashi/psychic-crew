@@ -34,14 +34,46 @@ for bad in $(jq -r '.forbidden_substrings[]' models.config.json 2>/dev/null); do
 done
 [ "$hc2" = 0 ] && pass "no forbidden model assigned anywhere in the config surface"
 
+echo "== HC-7 Claude-only content scan (§1) =="
+# CR-030 (audit A5-F1): HC-7 states that this validator greps .claude/, hooks/ and scripts/ for
+# non-Claude vendor names. It never did — measured zero such occurrences in this file. The only
+# coverage was one deny-test in the suite, which proves bash-blocker refuses a COMMAND. That is a
+# different property from "no such invocation is written anywhere in the tree", and content being
+# clean today is not the same as a control noticing when it stops being.
+# The needles are assembled from fragments, and here that is not stylistic: a contiguous literal in
+# this file would deny every later command that greps or edits it, and two Bash invocations were lost
+# to exactly that hazard during the audit. This file is deliberately NOT allowlisted below — the F0
+# precedent is that excluding the validator's own target blinds it, and the fragments are what keep
+# it from matching itself.
+_v1="cod""ex"; _v2="chat""gpt"; _v3="open""ai"
+# Allowlisted by FILE, because in each the vendor name IS the search term rather than an invocation:
+# the blocking hook must contain what it blocks, and the suite's negative control must contain what
+# it proves is refused. Same class as the rebrand guard that greps for the pre-rename name.
+h7=$(grep -rilE "$_v1|$_v2|$_v3" .claude/ hooks/ scripts/ 2>/dev/null \
+     | grep -vE '^(hooks/bash-blocker\.sh|scripts/run-crew-tests\.sh)$' | tr '\n' ' ')
+[ -z "$h7" ] && pass "HC-7: no non-Claude vendor invocation in .claude/, hooks/ or scripts/" \
+             || fail "HC-7: non-Claude vendor name outside the allowlist -> $h7"
+
 echo "== tier lock =="
 [ "$(jq -r '.env.CREW_TIER_LOCK // empty' .claude/settings.json 2>/dev/null)" = "T3" ] \
   && pass "settings.json declares CREW_TIER_LOCK=T3" || fail "CREW_TIER_LOCK not declared as T3"
 
 echo "== .gitignore coverage =="
-for e in "logs/" ".env"; do
-  grep -qxF "$e" .gitignore 2>/dev/null && pass ".gitignore covers $e" || fail ".gitignore missing $e"
-done
+# CR-019 (audit A3-F7): this grepped .gitignore for the exact rule TEXT, so three of four
+# functionally equivalent spellings (/logs/, logs, logs/**) failed the gate while ignoring perfectly.
+# C-04's detector already asks git for the effective state. Ask git here too: the artifact that would
+# differ if the defect were real is what git actually ignores, never how the rule happens to be spelt.
+# Guarded on work-tree membership for the C-23 reason — the portability drill runs this in a `git
+# archive` extract with no .git at all, where check-ignore cannot answer. That is a genuine SKIP, and
+# announcing it is what C-23 punished the absence of.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  for p in "logs/probe.log" ".env"; do
+    git check-ignore -q "$p" 2>/dev/null && pass ".gitignore effectively ignores $p" \
+                                         || fail ".gitignore does not ignore $p"
+  done
+else
+  skip ".gitignore effectiveness needs a work tree (archive extract has no .git)"
+fi
 
 echo "== no absolute machine paths in tracked files (§5.2.4) =="
 # C-23: this tested [ -d .git ], which is FALSE in a git worktree, where .git is a file pointing at
@@ -150,8 +182,22 @@ for needle in "$_n1" "$_n2" "npx" "sudo" "$_n3" "$_n4" "$_n5"; do
 done
 [ -z "$dmiss" ] && pass "all HC-5 deny entries present ($(printf '%s\n' "$DENY" | grep -c .) rules)" \
                 || fail "deny-list missing:$dmiss — a removed prohibition is invisible once committed"
-RD=$(printf '%s\n' "$DENY" | grep -c 'Read(' || true)
-[ "${RD:-0}" -ge 2 ] && pass "secret-path Read denials retained" || fail "secret-path Read denials removed"
+# CR-015 (audit A3-F3): this counted `Read(` entries and required >= 2. Demonstrated: swap both for
+# Read(/tmp/nothing) and Read(/tmp/alsonothing) and it passes with neither secret path denied. Ten
+# lines above, every HC-5 Bash prohibition is asserted BY NAME — that is the C-16 fix, and C-16's own
+# text says a permission boundary with no integrity assertion is not a boundary. The Bash half got
+# that treatment; the Read half kept a count. Assert these by name too.
+# No fragment assembly needed here, unlike the needles above. bash-blocker matches whole command
+# strings, but only against the HC-5 verb set, and neither of these two paths is in it. Note the
+# enumeration is deliberately NOT written out: a contiguous literal of those verbs in a tracked file
+# denies any command that later quotes this region, which is the C-22 trap and cost real work twice
+# during the audit. Describe the set, never spell it.
+rmiss=""
+for needle in ".env" "secrets"; do
+  printf '%s\n' "$DENY" | grep '^Read(' | grep -qF -- "$needle" || rmiss="$rmiss [$needle]"
+done
+[ -z "$rmiss" ] && pass "secret-path Read denials retained by name (.env, secrets)" \
+                || fail "secret-path Read denial missing:$rmiss — a removed prohibition is invisible once committed"
 
 # C-12 / EX-05: counting is not correlating. The previous form compared the COUNT of Agent calls
 # against the COUNT of arbiter lines, which the audited party can satisfy by writing any lines at
@@ -186,6 +232,20 @@ fi
 # lines are grandfathered by enumeration (the C-14 precedent: an explicit set, not a guessable rule)
 # because their granularity is already lost and a closed phase must not fail retroactively.
 if [ -f logs/arbiter-audit.jsonl ]; then
+  # CR-021 (audit A4-F2): this enforced `ts` GRANULARITY and nothing enforced `task_id` PRESENCE.
+  # arbiter.md names task_id as a MUST, and C-12's correlation counts only lines that have one — so a
+  # line without it is invisible in both directions at once: it covers no dispatch and registers as
+  # no gap. Three existing lines have none. All three are F3 records of dispatches that FAILED, which
+  # is arguably the honest record, and all three predate F8's schema tightening, so they are
+  # grandfathered by ENUMERATION of their mutation text — the C-14 precedent that an explicit set
+  # beats a guessable rule, because a phase-shaped rule would exempt anything later stamped F3.
+  GF_MUT='dispatch-not-executed|dispatch ATTEMPTED and FAILED at the tool layer'
+  noid=$(jq -r --arg g "$GF_MUT" 'select((.task_id // "") == "")
+           | select(((.mutation // "") | test($g)) | not)
+           | "\(.phase // "?"):\(.ts // "?")"' logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
+  [ -z "$noid" ] && pass "every arbiter line carries a task_id (3 grandfathered F3 failed-dispatch records, enumerated)" \
+                 || fail "arbiter line(s) with no task_id — invisible to coverage correlation in both directions (C-12): $(printf '%s' "$noid" | tr '\n' ' ')"
+
   ISO='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$'
   GRANDFATHERED='^(F0|F1|F2|F3|F4|F5|F6|F7)$'
   bad=$(jq -r --arg iso "$ISO" --arg g "$GRANDFATHERED" '

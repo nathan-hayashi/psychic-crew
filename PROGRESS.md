@@ -426,3 +426,11 @@ sentence alone cannot manufacture that alert.
 - **Blocked on an operator decision, not on work:** CR-023, the DIRECTORY_GUIDE routing decision. Three accepted findings from G-F3 have waited on it since 2026-08-11.
 - **Highest-value work available:** CR-009, CR-024, CR-013 — each restores a control that currently reports green while testing nothing; each under an hour; none touches a permission boundary.
 - **Next action:** none. Await operator approval of specific CRs before any fix session begins. Do not implement a CR without that approval — the separation between finding and fixing is what makes the findings trustworthy.
+
+## CHECKPOINT 2026-08-17T06:32:45Z — S1 commit 1a, 5 of 11 complete (early gate, Q5 wall)
+- **Applied, each with its negative control demonstrated:** CR-009 · CR-024 · CR-013 · CR-015 · CR-019. Every one shows the control failing under the old predicate and passing under the new.
+- **Next CR: CR-016** — scripts/run-crew-tests.sh, the read-only agent check: capture the tools line into a variable so a file with NO tools line fails explicitly instead of reporting "is read-only". Then CR-010, CR-030, CR-021, PR-F2, then commit 1a.
+- **Registered, not fixed (2):** the C-14 detector extension to build-errors.jsonl must land in commit 2 after CR-012's redaction or the suite goes red — same ordering shape as CR-032, which the plan already moved. CR-033 (audit line-number citations off by +6) still open.
+- **Self-inflicted, caught and fixed in step:** a comment I wrote for CR-015 spelled out the HC-5 verb set as a contiguous literal, which denies any command quoting that region. Rewritten to describe rather than spell. Third live instance of that family in this project's work.
+- **Tree is intentionally dirty mid-batch;** the dirty-tree canary fails until commit 1a lands. No commit yet, by design.
+- **Next action:** resume at CR-016. Nothing is blocked.

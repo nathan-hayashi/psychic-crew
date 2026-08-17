@@ -168,11 +168,27 @@ cases_F2 () {
   [ "$(sha256sum CLAUDE.md | cut -d' ' -f1)" = "$h0" ] && ok "auto-format refuses byte-pinned CLAUDE.md" \
                                                        || no "auto-format mutated a byte-pinned seed"
   check "auto-format exits 0 on a missing path"  0 feed auto-format '{"tool_input":{"file_path":"/nope/x.md"}}'
-  check "error-recovery exits 0"                 0 feed error-recovery '{"tool_name":"Bash","tool_response":{"error":"bash: foo: command not found"}}'
-  [ -f logs/build-errors.jsonl ] && ok "error-recovery wrote build-errors.jsonl" || no "no build-errors record"
-  printf '%s' '{"tool_name":"Bash","tool_response":{"error":"bash: foo: command not found"}}' \
-    | ./hooks/error-recovery.sh 2>/dev/null | grep -q 'minimal-shell' \
+  # CR-013 (audit A3-F1): these fixtures ran with the LIVE repo as ROOT, so every suite run appended
+  # a fabricated "command not found" record to logs/build-errors.jsonl — 178 of 188 records, 95%,
+  # described failures that never happened. That is C-14 exactly; C-14's mktemp fix covered
+  # logs/tooluse-audit.jsonl only, and its detector inspects only that file, so nothing looked here.
+  # The existence assertion was circular besides: it asserted the log exists immediately after the
+  # line above caused it to exist, so on a fresh checkout it passed because the fixture made it pass.
+  # Isolate the root, then assert against THAT — the write this fixture actually performed — and add
+  # a canary proving the live trail did not move.
+  er=$(mktemp -d); mkdir -p "$er/logs"
+  erj='{"tool_name":"Bash","tool_response":{"error":"bash: foo: command not found"}}'
+  erb=$(wc -l < logs/build-errors.jsonl 2>/dev/null || echo 0)
+  feedr () { printf '%s' "$2" | CLAUDE_PROJECT_DIR="$er" "./hooks/$1.sh"; }
+  check "error-recovery exits 0"                 0 feedr error-recovery "$erj"
+  [ -s "$er/logs/build-errors.jsonl" ] && ok "error-recovery wrote build-errors.jsonl under an isolated root" \
+                                       || no "error-recovery wrote no record"
+  printf '%s' "$erj" | CLAUDE_PROJECT_DIR="$er" ./hooks/error-recovery.sh 2>/dev/null | grep -q 'minimal-shell' \
     && ok "error-recovery emits the §9 corpus hint" || no "§9 hint missing"
+  [ "$(wc -l < logs/build-errors.jsonl 2>/dev/null || echo 0)" = "$erb" ] \
+    && ok "CR-013 error-recovery fixtures left the live trail untouched ($erb lines)" \
+    || no "CR-013 fixtures wrote to the live logs/build-errors.jsonl — tests polluting the artifact they audit"
+  rm -rf "$er"
   check "notify exits 0 and is never fatal"      0 feed notify '{"message":"run-crew-tests probe"}'
 }
 cases_F4 () {
@@ -223,9 +239,22 @@ cases_F3 () {
                                        || ok "no {{APPLY}} placeholders remain"
   # §5.1.3: the read-only lenses must not hold mutating tools. A reviewer that can write is a
   # reviewer that can quietly fix what it found, which destroys the finding trail.
+  # CR-016 (audit A3-F4): this piped grep into grep under pipefail. A file with NO tools: line makes
+  # the first grep exit 1, the second sees empty input and exits 1 too, the pipeline fails, and
+  # control falls through to `|| ok "is read-only"`. Omitting that line means the subagent INHERITS
+  # every tool — so the most permissive declaration possible produced the safest possible verdict.
+  # Capture, then test: the registry's own rule for a pipeline whose first stage exits nonzero
+  # meaningfully. "Declares nothing" is now its own failure, distinct from "declares a mutating tool"
+  # instead of collapsing into a pass.
   for a in security-reviewer quality-reviewer lead-planner; do
-    grep -m1 '^tools:' ".claude/agents/$a.md" | grep -qE 'Write|Edit|Bash' \
-      && no "$a holds a mutating tool — read-only by contract" || ok "$a is read-only"
+    tl=$(grep -m1 '^tools:' ".claude/agents/$a.md" 2>/dev/null || true)
+    if [ -z "$tl" ]; then
+      no "$a declares no tools: line at all — that inherits every tool, it is not read-only"
+    elif printf '%s' "$tl" | grep -qE 'Write|Edit|Bash'; then
+      no "$a holds a mutating tool — read-only by contract"
+    else
+      ok "$a is read-only"
+    fi
   done
   for r in fallback-protocol arbiter-protocol model-policy security; do
     [ -f ".claude/rules/$r.md" ] && ok "rule $r.md present" || no "rule $r.md missing"
@@ -424,13 +453,32 @@ cases_F6 () {
   done
   [ "$miss" = 0 ] && ok "corpus/§9 every hook referenced by settings.json exists on disk" \
                   || no "corpus/§9 $miss hook(s) referenced by settings.json are absent"
-  smiss=0
-  for s in scripts/apply-models.sh scripts/validate-crew.sh scripts/run-crew-tests.sh \
-           scripts/check-plan-corrections.sh scripts/save-context.sh scripts/restore-context.sh; do
-    [ -f "$s" ] || smiss=$((smiss+1))
-  done
-  [ "$smiss" = 0 ] && ok "corpus/§9 every script named by the map exists on disk" \
-                   || no "corpus/§9 $smiss script(s) named by the map are absent"
+  # CR-024 (audit QR-DG-2, ACCEPTED and escalated). This WAS a hardcoded list of six paths under a
+  # message claiming the map had been checked — DIRECTORY_GUIDE.md appeared ZERO times in the block,
+  # and the two enumerations had already drifted apart in both directions (the map named setup.sh,
+  # which the list omitted; the list named check-plan-corrections.sh, which the map omitted). A
+  # finding about a missing control was answered with a control that asserts the property in its
+  # message and never tests it. Read the map.
+  # BOTH directions are asserted because QR-DG-4 was the converse case — a script on disk the map
+  # never names — and a one-way check would have reported clean through it.
+  # The extracted set is asserted non-empty first: a set difference against an empty set is
+  # vacuously clean, which is how a parser change would silently turn this check off.
+  dgs=$(awk -F'#' '/scripts\// && NF>1 {print $2}' DIRECTORY_GUIDE.md | grep -oE '[a-z][a-z0-9-]*' | sort -u)
+  dsk=$(ls -1 scripts/*.sh 2>/dev/null | xargs -n1 basename | sed 's/\.sh$//' | sort -u)
+  dgc=$(awk -F'#' '/context\// && NF>1 {print $2}' DIRECTORY_GUIDE.md | grep -oE '[a-z0-9-]+\.md' | sort -u)
+  dkc=$(ls -1 context/ 2>/dev/null | sort -u)
+  { [ -n "$dgs" ] && [ -n "$dgc" ]; } && ok "CR-024 map parses to a non-empty path set (vacuity guard)" \
+                                      || no "CR-024 map parsed to nothing — every comparison below would be vacuously clean"
+  sab=$(comm -23 <(printf '%s\n' "$dgs") <(printf '%s\n' "$dsk") | tr '\n' ' ')
+  sun=$(comm -13 <(printf '%s\n' "$dgs") <(printf '%s\n' "$dsk") | tr '\n' ' ')
+  { [ -z "$sab" ] && [ -z "$sun" ]; } \
+    && ok "CR-024 map scripts/ matches the tree both ways ($(printf '%s\n' "$dsk" | grep -c .) scripts)" \
+    || no "CR-024 map scripts/ drift — named but absent:[$sab] on disk but unmapped:[$sun]"
+  cab=$(comm -23 <(printf '%s\n' "$dgc") <(printf '%s\n' "$dkc") | tr '\n' ' ')
+  cun=$(comm -13 <(printf '%s\n' "$dgc") <(printf '%s\n' "$dkc") | tr '\n' ' ')
+  { [ -z "$cab" ] && [ -z "$cun" ]; } \
+    && ok "CR-024 map context/ matches the tree both ways ($(printf '%s\n' "$dkc" | grep -c .) files)" \
+    || no "CR-024 map context/ drift — named but absent:[$cab] on disk but unmapped:[$cun]"
 
 
   # C-16, tested BEHAVIOURALLY rather than by grepping for the section: copy the repo surface into

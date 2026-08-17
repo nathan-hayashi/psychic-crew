@@ -142,10 +142,22 @@ fi
 # G-F3: two failed Agent calls logged nothing (PostToolUse cannot fire for a tool that never ran),
 # the arbiter's two honest lines took c from 1 to 3 against d=3, and a true-positive FAIL flipped to
 # PASS with no bypass remediated. Third instance of this family after F2 deny() and the self-match.
-if grep -q 'task_id' scripts/validate-crew.sh 2>/dev/null; then
-  report C-12 F3 APPLIED "bypass coverage correlates dispatch identity, not raw line counts"
+# CR-009 (audit A2-F2): this WAS `grep -q 'task_id' scripts/validate-crew.sh` — not comment-stripped,
+# so the three comments in that file mentioning task_id satisfied it. Demonstrated: strip every
+# non-comment task_id line out of validate-crew.sh and this still reported APPLIED against a file
+# that correlates nothing. The correction about a control satisfiable by the party it audits had a
+# detector satisfiable by prose, while eight siblings in this same file already used $CODE_VC.
+# Bind to the three parts the correlation is MADE of: a task_id set drawn from the dispatch log, one
+# drawn from the arbiter log, and a set difference between them. Reverting to counting deletes all
+# three; a comment cannot supply any of them.
+c12=0
+for needle in 'tooluse-audit.jsonl' 'arbiter-audit.jsonl' 'task_id' 'comm -23'; do
+  printf '%s' "$CODE_VC" | grep -qF -- "$needle" || c12=1
+done
+if [ "$c12" = 0 ]; then
+  report C-12 F3 APPLIED "bypass coverage correlates dispatch identity by set difference over both logs, not raw line counts"
 else
-  report C-12 F3 PENDING "bypass coverage compares counts only — the arbiter can satisfy it by writing any lines (G-F3 P0)"
+  report C-12 F3 PENDING "bypass coverage does not correlate identity — the arbiter can satisfy it by writing any lines (G-F3 P0)"
 fi
 
 # C-10: CLAUDE.md binds every agent to .claude/rules/fallback-protocol.md, but no §6 phase step
@@ -247,8 +259,21 @@ fi
 # transcripts outside the repo, which is precisely the "disk is canonical, context is a cache"
 # inversion HC-8 exists to prevent, discovered at handover. Closed when a script regenerates the
 # measurement from disk rather than a human transcribing it from a context window.
+# CR-010 (audit A2-F4): this was `[ -x scripts/measure-dispatch-cost.sh ]` — a file-mode test,
+# satisfied by a two-line executable stub containing only a shebang, demonstrated. The registry's own
+# Verify line for C-21 is materially stronger and was simply never implemented: "exits 0 and its F7
+# total matches the figure in context/budget-baseline.md". Implement the stated Verify. It runs in
+# about a second, so it costs nothing to run at every gate, and it binds to the script's OUTPUT
+# rather than to whether the file exists and is executable.
 if [ -x scripts/measure-dispatch-cost.sh ]; then
-  report C-21 F8 APPLIED "scripts/measure-dispatch-cost.sh regenerates per-dispatch cost from disk"
+  c21out=$(./scripts/measure-dispatch-cost.sh 2>/dev/null); c21rc=$?
+  c21got=$(printf '%s\n' "$c21out" | awk '/^== F7 ==/{f=1;next} f&&/total=/{sub(/.*total=/,"");sub(/ .*/,"");print;exit}')
+  c21want=$(grep -E '^\| *total *\|' context/budget-baseline.md 2>/dev/null | grep -oE '[0-9][0-9,]+' | tr -d ',' | head -1)
+  if [ "$c21rc" = 0 ] && [ -n "$c21got" ] && [ "$c21got" = "$c21want" ]; then
+    report C-21 F8 APPLIED "measure-dispatch-cost.sh exits 0 and reproduces the recorded F7 total ($c21got) from disk"
+  else
+    report C-21 F8 PENDING "measure-dispatch-cost.sh did not reproduce the recorded F7 total (exit=$c21rc got='${c21got:-none}' want='${c21want:-none}')"
+  fi
 else
   report C-21 F8 PENDING "per-dispatch cost is not derivable from repo state; F7's figures were recovered from session transcripts outside the repo (HC-8 inversion)"
 fi
