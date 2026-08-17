@@ -389,3 +389,9 @@ sentence alone cannot manufacture that alert.
 - Operator accepted the recommendation: **leave the branch layout as is.** No `main` branch exists or will be created. `dev` is the remote default; `v1.0.0` marks the release. This is a decision, not an omission — do not create `main` in a later session on the assumption it was forgotten.
 - Nothing else outstanding. Final: 144 crew / 37 validate / 18 app · corrections 18 APPLIED / 0 PENDING · 10 gates approved · drill PORTABLE · tree clean, synced.
 - **Next action:** none. The build is complete and handed over.
+
+## [F7|2026-08-17T04:01:19Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 1 file(s) uncommitted
+- **HEAD:** a7bc87c
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** none. The build is complete and handed over.
