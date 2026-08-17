@@ -24,5 +24,10 @@ stress-project/tmp/
 deep-research-report.md
 
 # Local-only working documents about that corpus and this build's history. Not published.
-ReportforClaudeWeb.txt
+# The report is globbed rather than enumerated for the same reason the corpus above is: a second
+# one arrived (ReportforClaudeWeb_2.txt, the audit distillation) and the literal filename rule did
+# not cover it, so the file was unignored until someone noticed. The glob covers the next one too.
+# Note the asymmetry with docs/audit/, which IS tracked: those are the audit's findings and belong
+# in the repo, while these are working notes about material that never lands on GitHub at all.
+ReportforClaudeWeb*.txt
 Project-Explorer.md
