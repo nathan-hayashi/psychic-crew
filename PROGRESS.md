@@ -395,3 +395,11 @@ sentence alone cannot manufacture that alert.
 - **HEAD:** a7bc87c
 - **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
 - **Next action:** none. The build is complete and handed over.
+
+## CHECKPOINT 2026-08-17T04:22:31Z — AUDIT A0 baseline measured, awaiting gate
+- **Session type:** AUDIT-ONLY. Inspect, measure, adjudicate. No fix, refactor or implementation; every improvement becomes a numbered CR in docs/audit/CHANGE_REQUESTS.md gated for a later session.
+- **Baseline (measured, not assumed):** validate-crew 37 PASS / 0 SKIP / 0 FAIL · crew 144 PASS / 0 FAIL · save-context 20 PASS / 0 FAIL · stress 18 declared = 18 ran (set difference non-vacuous, negative-controlled) · corrections 20 rows = 18 APPLIED / 0 PENDING / 2 SUPERSEDED.
+- **Deviation from the brief:** corrections expected 23, measured 20. Traced to this repo's own G-F8 closing entry, which counted by highest ID rather than by entry. Recorded as A0-F1.
+- **Findings so far:** A0-F1 registry three-way asymmetry (P2) · A0-F2 rebrand guard scans the two directories with zero hits (P2) · A0-F3 distilled entry point conflates two adjacent ledger events, and the distillation checker verifies hygiene not fidelity (P3).
+- **Write boundary honoured:** two non-behavioural commits (PreCompact checkpoint; ignore-rule glob so ReportforClaudeWeb_2.txt cannot be staged into a public repo). models.config.json byte-identical before and after every suite. Stage-everything probe stages 0 paths.
+- **Next action:** await the exact token `APPROVE AUDIT-GATE-A0`. On approval, A1 (diagram audit) and A2 (decision audit) run back-to-back to the A3 gate.
