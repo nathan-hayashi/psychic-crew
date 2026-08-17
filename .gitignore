@@ -18,6 +18,11 @@ stress-project/tmp/
 *-main/
 *.pdf
 
+# Third-party research reports dropped at the root alongside the corpus. Enumerated rather than
+# globbed on *.md, because every root .md except these IS tracked and load-bearing (the plan,
+# the ledgers, README, ROADMAP) - a glob here would hide the repo's own documentation.
+deep-research-report.md
+
 # Local-only working documents about that corpus and this build's history. Not published.
 ReportforClaudeWeb.txt
 Project-Explorer.md
