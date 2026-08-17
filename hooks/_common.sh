@@ -4,7 +4,19 @@
 # for an enforcement layer. Derive from the script's own location as the fallback.
 export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin"
 ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
-PHASE=$(grep -oE '^## \[F[0-9]' "$ROOT/PROGRESS.md" 2>/dev/null | tail -1 | grep -oE 'F[0-9]' || true)
+# CR-014 (audit A3-F2): this read the last '## [F<n>' heading in PROGRESS.md — and
+# hooks/pre-compact-checkpoint.sh WRITES a heading in that exact format. The hook read what it wrote,
+# so F7 became self-sustaining and was still being stamped three days after that gate closed. Every
+# hook-written record in between carried a phase that had already ended.
+# The compounding half is what makes it more than cosmetic: C-19 grandfathers exactly F0-F7 out of
+# its ISO-8601 requirement, so a phase permanently pinned at F7 is a permanent exemption from a
+# control added to close that very gap.
+# Derive from the gate ledger instead. Only the operator advances it, so it cannot self-feed.
+# Bound to the FIRST COLUMN of rows that are both a phase gate and APPROVED: a non-phase row such as
+# a plan-swap must never become the phase, and an unapproved row is not a phase the build has reached.
+# G-F7a and G-F7b reduce to F7, preserving the field's shape and matching C-19's enumeration.
+PHASE=$(awk -F'|' '/APPROVED/ && $2 ~ /^ *G-F[0-9]+[ab]? *$/ {gsub(/[^0-9]/,"",$2); p=$2}
+                   END{if(p!="") print "F" p}' "$ROOT/GATES.md" 2>/dev/null || true)
 [ -n "${PHASE:-}" ] || PHASE="F?"
 now () { date -u +%Y-%m-%dT%H:%M:%SZ; }
 # SEC-DG-01: every audit target passes through scrub() before it is written. The old form was
