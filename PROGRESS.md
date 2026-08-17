@@ -419,3 +419,10 @@ sentence alone cannot manufacture that alert.
 - **Conformance:** HC-7 clean · plan byte-pin intact (1 commit ever) · zero deps · deny/allow lists untouched · suites at the A0 baseline.
 - **Nothing was fixed.** Six tracked audit documents plus one gitignored distillation. Fixes begin only on approval of specific CRs at a future gate.
 - **Next action:** await the exact token `APPROVE AUDIT-GATE-A5`.
+
+## CHECKPOINT 2026-08-17T05:50:43Z — AUDIT-GATE-A5 APPROVED, AUDIT CLOSED
+- **Three audit gates approved:** A0, A3, A5. All five phases complete.
+- **Product:** 31 findings and 31 priced change requests in docs/audit/. **Nothing was fixed.**
+- **Blocked on an operator decision, not on work:** CR-023, the DIRECTORY_GUIDE routing decision. Three accepted findings from G-F3 have waited on it since 2026-08-11.
+- **Highest-value work available:** CR-009, CR-024, CR-013 — each restores a control that currently reports green while testing nothing; each under an hour; none touches a permission boundary.
+- **Next action:** none. Await operator approval of specific CRs before any fix session begins. Do not implement a CR without that approval — the separation between finding and fixing is what makes the findings trustworthy.
