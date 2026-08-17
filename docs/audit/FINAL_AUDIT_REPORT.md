@@ -233,3 +233,261 @@ assigns them.
 | `F7 auditing the artifact did not modify it (tree 1 -> 1)` — count-bound, not identity-bound                                    | A3    |
 | The registry index table is stale at 10 of 22 IDs                                                                               | A2    |
 | `.claude/settings.json` wires a `PostToolUseFailure` hook; C-02 established `PostToolUseFail` is not real — is this one? `[V?]` | A3    |
+
+---
+
+## A3 — Function and code audit
+
+Scope: 9 scripts · 12 hooks · 8 agent bodies · 4 rules · `stress-project/` (22 files) ·
+`models.config.json` · `.claude/settings.json`.
+
+### A3.1 Mechanical sweep — clean `[E]`
+
+| Check                                      | Result                                                  |
+| ------------------------------------------ | ------------------------------------------------------- |
+| `bash -n` over 9 scripts + 12 hooks        | 21/21 parse                                             |
+| `node --check` over stress-project JS      | 14/14 parse                                             |
+| `jq -e .` over every tracked JSON          | 8/8 valid                                               |
+| Executable bits on scripts and hooks       | 21/21 set                                               |
+| Absolute machine paths in tracked scripts  | **none** — only `/usr/local/bin` inside a `PATH` export |
+| JSON passed as a `printf` format string    | **none** — 82 uses of the safe `printf '%s'` form       |
+| A commit chained behind a deny-listed verb | **none** in any tracked script                          |
+
+**Shell-option discipline is deliberate, not accidental.** Scripts that must not abort mid-run use
+`set -uo pipefail`; one-shot tools use `set -eu`. `hooks/_common.sh` carries no `set` line because
+it is sourced, which is correct — its options would leak into every caller.
+
+### A3.2 Pipeline sweep (lesson 6.2) — one real finding
+
+Every `| grep -q` under `pipefail` was examined. All but three have `printf` as the producer, which
+cannot meaningfully exit nonzero — that is the capture-then-test pattern the registry mandates, and
+it is applied consistently. Two script-producer pipelines were checked directly:
+`restore-context.sh latest` and `error-recovery.sh` both exit 0 `[E]`, so neither poisons its
+pipeline.
+
+The third is a real defect and is filed as A3-F4 below.
+
+### A3-F1 — the C-14 fix was applied to one audit trail and not its sibling
+
+**P2 · evidence integrity · Failure scenario:** any analysis of `logs/build-errors.jsonl` — an
+error-rate trend, a §9 corpus review, a gate report citing failure counts — is computed over a file
+that is 95% synthetic, describing command failures that never occurred.
+
+`scripts/run-crew-tests.sh:165-167` feeds fixture payloads into `./hooks/error-recovery.sh` **with
+no `CLAUDE_PROJECT_DIR` override and no `mktemp` root** — measured: zero occurrences of either in
+that block `[E]`. The hook therefore appends to the live trail.
+
+**Negative control, executed** `[E]`: one fixture invocation moved `logs/build-errors.jsonl` from
+187 to 188 lines, adding
+`{"ts":"…","tool":"Bash","error":"bash: AUDITPROBE: command not found","phase":"F7"}`.
+
+**179 of 188 records — 95% — are fixture fiction** `[E]`, every one a `bash: foo: command not
+found` that never happened.
+
+C-14 is precisely this defect: "tests wrote to the artifact they audit … an evidence trail
+containing invented events is worse than one with gaps, because every downstream check and every
+gate report treats it as ground truth." Its fix moved six fixtures to a `mktemp -d` root — for
+`logs/tooluse-audit.jsonl`. The identical pattern against `logs/build-errors.jsonl` was never
+migrated, and C-14's detector only inspects `tooluse-audit.jsonl`, so nothing looks.
+
+A second, smaller defect sits in the same block. Line 166 asserts
+`[ -f logs/build-errors.jsonl ] && ok "error-recovery wrote build-errors.jsonl"` — immediately
+after the line above it caused that file to be written. The assertion creates the condition it
+tests. On a fresh checkout, where `logs/` does not exist, it passes because the fixture made it
+pass.
+
+### A3-F2 — every hook-written record since F7 closed carries the wrong phase, and the error is self-sustaining
+
+**P2 · control binding · Failure scenario:** C-19's grandfather list exempts phases F0–F7 from the
+ISO-8601 timestamp requirement, because their granularity was already lost. Records written today
+are stamped `F7`. Any writer taking its phase from this derivation inherits an exemption that was
+meant to close when F7 did.
+
+`hooks/_common.sh:7` derives the phase by reading the **last `^## \[F[0-9]` heading in
+`PROGRESS.md`**. `hooks/pre-compact-checkpoint.sh:24` **writes a heading in exactly that format**,
+stamped with the phase it just read.
+
+The hook reads the heading it writes. Once the last matching heading said `F7`, every subsequent
+PreCompact writes another `F7` heading, and the value can never advance. Evidence `[E]`:
+
+| Heading in `PROGRESS.md` | Written                                     |
+| ------------------------ | ------------------------------------------- |
+| `## [F7\|2026-08-13…]`   | during F7 — correct                         |
+| `## [F7\|2026-08-14…]`   | **after `APPROVE GATE-F7b` @ 00:56:07Z**    |
+| `## [F7\|2026-08-17…]`   | three days later, during this audit session |
+
+Every `logs/tooluse-audit.jsonl`, `logs/build-errors.jsonl` and denial record written in this
+session is stamped `phase:"F7"` `[E]` — a phase that closed on 2026-08-14.
+
+**The C-19 interaction, demonstrated with both controls** `[E]`. Running C-19's exact `jq`
+predicate against a synthetic date-only arbiter line:
+
+| Synthetic line                        | C-19 verdict                    |
+| ------------------------------------- | ------------------------------- |
+| `{"ts":"2026-08-17","phase":"F7", …}` | **not flagged** — grandfathered |
+| `{"ts":"2026-08-17","phase":"A3", …}` | `FLAGGED: A3:AUDIT-PROBE`       |
+
+Stated precisely, because the scope matters: `_common.sh` supplies the phase for **hook-written**
+records. The arbiter writes its own audit lines and declares its own phase, so `arbiter-audit.jsonl`
+is not stamped by this code path today. The exposure is that the repository's one automated answer
+to "what phase is it?" has been wrong for three days and cannot self-correct, and that a
+phase-keyed exemption exists a few files away.
+
+### A3-F3 — a permission boundary asserted by count, inside the block C-16 fixed by asserting meaning
+
+**P2 · control binding · Failure scenario:** the two secret-path `Read` denials are replaced with
+any two other `Read(` entries. `validate-crew` reports "secret-path Read denials retained", the
+gate passes, and `.env` and `secrets/` are no longer denied.
+
+`scripts/validate-crew.sh:153-154`:
+
+```sh
+RD=$(printf '%s\n' "$DENY" | grep -c 'Read(' || true)
+[ "${RD:-0}" -ge 2 ] && pass "secret-path Read denials retained" || fail "..."
+```
+
+**Negative control, executed** `[E]`: a deny-list containing `Read(/tmp/nothing)` and
+`Read(/tmp/alsonothing)` yields a count of 2 and passes, with neither secret path denied.
+
+What makes this a finding rather than a nitpick is its neighbourhood. Ten lines above, the Bash
+prohibitions are asserted **by name** — `git clone`, `npm install -g`, `npx`, `sudo`, `rm -rf /`,
+`rm -rf ~`, `dd if=` — each needle assembled from fragments so the check does not trip
+`bash-blocker`. That is the C-16 fix, and C-16's own text is unambiguous: "A permission boundary
+with no integrity assertion is not a boundary; it is a comment." The Bash half of the deny-list
+received that treatment. The `Read` half, in the same block, kept a count.
+
+### A3-F4 — an agent file that declares no tools at all reports as read-only
+
+**P2 · control binding · Failure scenario:** an agent definition is authored or edited without a
+`tools:` line. Omitting it means the subagent inherits every tool. `run-crew-tests.sh` reports it
+"is read-only", and the reviewer-cannot-mutate contract — the thing that keeps a review trail
+honest — is silently void.
+
+`scripts/run-crew-tests.sh:221`:
+
+```sh
+grep -m1 '^tools:' ".claude/agents/$a.md" | grep -qE 'Write|Edit|Bash' \
+  && no "$a holds a mutating tool — read-only by contract" || ok "$a is read-only"
+```
+
+Under `pipefail`, a file with no `tools:` line makes the first `grep` exit 1; the second receives
+empty input and also exits 1; the pipeline fails; control falls to `|| ok`.
+
+**Negative control, executed** `[E]`: a synthetic agent file with frontmatter `name`/`model` and no
+`tools:` line returns `PASS — "is read-only"`.
+
+The check is **green today for the right reason** — all eight agent bodies declare a `tools:` line
+`[E]`, and the three audited ones are genuinely `Read, Grep, Glob`. The defect is the failure mode,
+which is inverted: the most permissive possible declaration produces the safest possible verdict.
+
+### A3-F5 — `REPLAYED` is not merely undemonstrated, it is unreachable from the shipped fixtures
+
+**P2 · coverage gap · Failure scenario:** a reader follows `stress-project/README.md:114-117`,
+reuses one `--out` across two deliveries, and observes no replay. The mechanism described is real;
+no shipped input can exercise it.
+
+The repository states this open item as "the parked-replay path is green in tests but was never
+demonstrated in a live end-to-end run" (`README.md:111`, `context/session-summary.md:47`). That is
+true and understates it.
+
+**Measured across all six fixtures** `[E]`:
+
+| Fixture                       | Events                   |
+| ----------------------------- | ------------------------ |
+| `edge-mover-before-hire.json` | `MOVE:EMP-30442` ← parks |
+| `joiner-charmander.json`      | `HIRE:EMP-10041`         |
+| `edge-duplicate-webhook.json` | `HIRE:EMP-30518` ×2      |
+| `leaver-bulbasaur.json`       | `TERMINATE:EMP-10047`    |
+| `mover-squirtle.json`         | `MOVE:EMP-10043`         |
+
+The parking lot is keyed by `employee_id`. The parked event belongs to `EMP-30442`; **no fixture
+contains a HIRE for that employee.** No pair of shipped fixtures, in any order, sharing any `--out`,
+can drain that parking lot.
+
+Executed live to confirm `[E]`: run 1 (`edge-mover-before-hire`) exits 1 with `seq 2 lifecycle
+PARKED` and `state.json` holding the parked event under `EMP-30442`. Run 2 (`joiner-charmander`,
+same `--out`) exits 0 and correctly does _not_ drain it — a different employee. `REPLAYED` occurs
+**0 times** in the artifact.
+
+The unit test `parked-move-replays-after-hire` (`test/lifecycle.test.js:127`) constructs its events
+in-process and never touches `fixtures/`. So the path is proven at the unit level and structurally
+unreachable at the CLI level. This converts an open item from "nobody got round to it" into a
+one-fixture change request.
+
+### A3-F6 — the error hints are written to the channel that does not reach the model
+
+**P3 · dead code · Failure scenario:** none operationally. The §9 corpus hints the hook exists to
+surface have never been seen by anything.
+
+`hooks/error-recovery.sh` does two jobs. The logging half **works** — see A3-F1; it captured this
+audit's own `WebFetch` failures within seconds `[E]`. The hint half emits `[hint] §9 …` to
+**stdout** and then `exit 0`, with the whole block wrapped in `{ … } 2>/dev/null`.
+
+The hooks reference states that to surface a warning to Claude from a `PostToolUse` or
+`PostToolUseFailure` hook you must **exit 2, so Claude sees stderr** `[V]`. This hook exits 0 and
+writes to stdout, and discards stderr besides. No artifact anywhere in `logs/`, `Plan.md`,
+`PROGRESS.md` or `context/` records a hint having been surfaced `[E]`.
+
+The suite asserts the hint is _emitted_ (`run-crew-tests.sh:167`, grepping the hook's stdout) — a
+correct test of the wrong property. Emission is not delivery.
+
+### A3-F7 — the gitignore assertion binds to rule text where the repo elsewhere binds to state
+
+**P3 · control binding · Failure scenario:** mostly noise, not risk. `.gitignore` is rewritten with
+an equivalent but differently-spelled rule and the gate fails while the ignore works correctly.
+
+`scripts/validate-crew.sh:42-44` uses `grep -qxF "$e" .gitignore`. C-04's detector in
+`check-plan-corrections.sh:59` asks `git check-ignore -q` — the effective state. Same property, two
+methods, and the gate validator has the weaker one. Measured `[E]`: of four functionally equivalent
+spellings of the same rule (`logs/`, `/logs/`, `logs`, `logs/**`), **three fail the text grep**
+while all four ignore correctly.
+
+Recorded as P3 because the failure direction is safe — it produces false FAILs, which are loud.
+
+### A3-F8 — the README's first command is one this repository's own guard forbids
+
+**P3 · documentation · Failure scenario:** an agent working in this repository is asked to follow
+the Quickstart and is denied at the first line, with the explanation 93 lines further down.
+
+`README.md:10` opens the Quickstart with the clone verb. `hooks/bash-blocker.sh:12` denies any Bash
+command whose **whole string** contains it. `README.md:103` discloses this honestly — "The in-repo
+deny-list blocks the clone verb during agent work" — but it is under a later heading.
+
+Related and worth recording as an operating constraint rather than a defect: **six tracked files
+carry that adjacency** `[E]` — `.claude/settings.json`, `MASTER_FIFO_PLAN_CLAUDE.md`, `README.md`,
+`hooks/bash-blocker.sh`, `scripts/check-plan-corrections.sh`, `scripts/run-crew-tests.sh`. Any Bash
+command quoting their content is denied outright. This is the C-22 lesson still live, and it was
+encountered twice during this audit, both times resolved by assembling patterns from fragments.
+
+### A3-F9 — resolved and refuted: `PostToolUseFailure` is a real event
+
+Raised in A2 as a `[V?]` that could void an entire hook. **Refuted, three ways** — recorded because
+a finding that dissolves under evidence should be reported as clearly as one that survives.
+
+1. The hooks reference documents `PostToolUseFailure` as a real event that fires after a tool call
+   fails `[V]`.
+2. `logs/build-errors.jsonl` is 188 lines and was last written **during this audit session**,
+   capturing this audit's own blocked `WebFetch` calls seconds after they failed `[E]`.
+3. The operator's live global configuration wires the same event name `[E]`.
+
+C-02's correction is right, its detector is right about what it can test, and `error-recovery.sh`
+demonstrably fires. Only the hint-delivery half is defective (A3-F6).
+
+### A3.3 Execution checks
+
+**Portability drill: PORTABLE** `[E]`, both mechanisms green with the three new audit documents
+tracked. `git archive` extracted **77** tracked files with `setup.sh` green at 34 PASS / 3 SKIP /
+0 FAIL; the detached worktree ran 35 PASS / 2 SKIP / 0 FAIL with the C-23 absolute-path assertion
+**confirmed running**, and `setup.sh` left that checkout byte-clean. The drill computes its expected
+file count from `git ls-files` rather than a literal, so adding tracked files did not break it —
+verified by observation, not assumption.
+
+**End-to-end against README claims** `[E]`. Every claim tested held except the replay path:
+
+| Claim                                                    | Observed                                |
+| -------------------------------------------------------- | --------------------------------------- |
+| `--fail-iam` opens a ticket with status `Failed`, exit 1 | exit 1, status `Failed`                 |
+| Delivery from stdin via `-`                              | exit 0, all four artifact kinds written |
+| `--now` + `--seed` gives byte-identical runs             | identical                               |
+| Without them, runs differ                                | differ — the falsification holds        |
+| Reusing `--out` replays a parked event                   | **see A3-F5**                           |

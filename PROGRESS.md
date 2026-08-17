@@ -403,3 +403,10 @@ sentence alone cannot manufacture that alert.
 - **Findings so far:** A0-F1 registry three-way asymmetry (P2) · A0-F2 rebrand guard scans the two directories with zero hits (P2) · A0-F3 distilled entry point conflates two adjacent ledger events, and the distillation checker verifies hygiene not fidelity (P3).
 - **Write boundary honoured:** two non-behavioural commits (PreCompact checkpoint; ignore-rule glob so ReportforClaudeWeb_2.txt cannot be staged into a public repo). models.config.json byte-identical before and after every suite. Stage-everything probe stages 0 paths.
 - **Next action:** await the exact token `APPROVE AUDIT-GATE-A0`. On approval, A1 (diagram audit) and A2 (decision audit) run back-to-back to the A3 gate.
+
+## CHECKPOINT 2026-08-17T04:46:29Z — AUDIT A3 complete, awaiting gate
+- **Findings A3-F1..A3-F9.** Six proven with executed negative controls rather than argued. One (A3-F9, PostToolUseFailure) raised at A2 and REFUTED here by three independent sources.
+- **Severity:** five P2 (evidence integrity, stale-phase self-reinforcement, count-bound permission assertion, inverted tools-line failure mode, REPLAYED unreachable) · three P3 · one refuted.
+- **Execution:** portability drill PORTABLE at 77 tracked files, both mechanisms, C-23 assertion confirmed running. Stress e2e verified every README claim except the replay path.
+- **Suites:** validate-crew 37/0/0 · crew 144/0 after commit · corrections 20 rows unchanged.
+- **Next action:** await the exact token `APPROVE AUDIT-GATE-A3`. On approval, A4 (flow + the four owed findings) runs to the A5 gate.
