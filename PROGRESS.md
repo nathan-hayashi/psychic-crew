@@ -484,3 +484,11 @@ sentence alone cannot manufacture that alert.
 - **Operator decision:** no CR is proposed for action until the S6 planning session completes. No CR gates.
 - **Still in force:** discoveries are registered as they are found (§15.1). The freeze is on doing, not on recording.
 - **Next action:** S6 — the planning session. gastown deep dive first (D1a), then oh-my-claudecode and ruflo, then the Psychic-Crew-Lite Master FIFO Plan (B1a/B2a/B3a/B4b) with CR-028 seams and CR-029 capability classes folded into its config design.
+
+## CHECKPOINT 2026-08-19T15:39:18Z — S6a complete (gastown), early gate at the Q5 wall
+- **gastown read targeted, not whole:** Project-Explorer named six files, so ~30KB was read against a 4.3M-token repo. The map paid for itself.
+- **Three mechanisms confirmed** this build lacks: stall detection (with a documented false-escalation incident and the rule "never declare an agent stuck from a single store"), a watchdog chain where something watches the watchdog, and Seance — a successor querying its predecessor's event log instead of inheriting a summary.
+- **Two further ideas the map had not extracted:** NDI (nondeterministic idempotence) as a named philosophy, and universal hierarchical attribution — half of which C-25 already landed at S2, and whose git-authorship half is **rejected** against the operator's standing identity rule.
+- **One deliberate non-adoption:** GUPP/propulsion is the philosophical opposite of a gated build and stays out, but its enabler — agents discovering their own state rather than being briefed — is §15.4 and belongs in Lite.
+- **Next action:** S6b — oh-my-claudecode and ruflo dives, then S6c the Psychic-Crew-Lite FIFO plan. Nothing is blocked.
+- **Note for S6c:** Lite's plan output will be **local and gitignored**, like Project-Explorer.md, because DIRECTORY_GUIDE.md is byte-pinned to plan v3.1 and a new tracked file it does not name is the drift QR-DG-4 recorded. Tracking it needs an operator re-export.
