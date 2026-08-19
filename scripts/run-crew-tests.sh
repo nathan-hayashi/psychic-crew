@@ -370,6 +370,60 @@ cases_F4 () {
   ( unset CREW_TIER_LOCK; [ -z "${CREW_TIER_LOCK:-}" ] ) && ok "stress: lock clears in a scratch shell without touching project env" || no "lock could not be cleared"
   [ "$(jq -r .env.CREW_TIER_LOCK .claude/settings.json)" = T3 ] && ok "stress: project env restored to T3" || no "project env lock not T3"
   check "plan corrections: F4 clean" 0 ./scripts/check-plan-corrections.sh F4
+
+  # CR-026 (S4, ruling R3a) — the user-facing intake layer. The agent-side contracts were strong;
+  # the human side had none, so every task contract was authored by the orchestrator from an
+  # unstructured request.
+  # The skill's BEHAVIOUR is model-interpreted and is deliberately not asserted here — see the
+  # manual drills in the skill itself. What IS asserted is the part that is data: the file sits at
+  # the path the map names, its class vocabulary is security.md's and not a second scale, and its
+  # classifier table actually classifies. The table is extracted and exercised, never grepped for
+  # its own prose, because a check that read the skill's description and called that a behavioural
+  # test would be the eleventh instance of this repository's most-recorded defect.
+  # Path comes from the §4.3 map, not a literal: CR-024's lesson is that a check naming its own
+  # target cannot notice the map drifting away from it.
+  ikp=$(awk -F'#' '/skills\/intake\/SKILL\.md/ {print $1}' DIRECTORY_GUIDE.md \
+        | grep -oE '\.claude/skills/[a-z-]+/SKILL\.md|skills/[a-z-]+/SKILL\.md' | head -1)
+  case "$ikp" in .claude/*) : ;; skills/*) ikp=".claude/$ikp" ;; esac
+  [ -n "$ikp" ] && [ -f "$ikp" ] \
+    && ok "CR-026 intake skill present at the path the map names ($ikp)" \
+    || no "CR-026 intake skill missing from the mapped path (map said '${ikp:-nothing}')"
+
+  # Vocabulary parity. No fragment assembly needed and the reason is worth stating: the four class
+  # tokens are severity words, not deny-listed verbs, so a contiguous literal here denies nothing.
+  iktab=$(awk '/^# INTAKE-CLASSIFIER/{f=1;next} f&&/^```/{exit} f&&NF' "$ikp" 2>/dev/null)
+  ikcls=$(printf '%s\n' "$iktab" | cut -f1 | sort -u | tr '\n' ' ')
+  iksec=$(grep -oE '^\| `(crit|high|med|low)`' .claude/rules/security.md | grep -oE 'crit|high|med|low' | sort -u | tr '\n' ' ')
+  { [ -n "$ikcls" ] && [ "$ikcls" = "$iksec" ]; } \
+    && ok "CR-026 intake classes are security.md's vocabulary exactly, no second scale ($ikcls)" \
+    || no "CR-026 intake class vocabulary diverges — skill:[$ikcls] security.md:[$iksec]"
+
+  # The classifier, exercised. First matching row wins, top to bottom; the final '*' row is the
+  # default. A table that classified nothing would make every fixture below vacuously agree, so the
+  # extraction is asserted non-empty first.
+  ikclassify () {
+    printf '%s\n' "$iktab" | while IFS="$(printf '\t')" read -r c pat; do
+      [ -n "${c:-}" ] || continue
+      if [ "$pat" = "*" ]; then printf '%s' "$c"; return 0; fi
+      case "$1" in *"$pat"*) printf '%s' "$c"; return 0 ;; esac
+    done
+  }
+  [ "$(printf '%s\n' "$iktab" | grep -c .)" -ge 4 ] \
+    && ok "CR-026 classifier table extracts $(printf '%s\n' "$iktab" | grep -c .) rows (vacuity guard)" \
+    || no "CR-026 classifier table did not extract — every classification below would be vacuous"
+  ikbad=""
+  for probe in \
+      "low|read README.md and summarise what the crew is" \
+      "high|add an allow rule to .claude/settings.json" \
+      "crit|change the gate rule so a phase advances without the exact token"; do
+    want=${probe%%|*}; req=${probe#*|}
+    got=$(ikclassify "$req")
+    [ "$got" = "$want" ] || ikbad="$ikbad [want $want got ${got:-none}]"
+  done
+  [ -z "$ikbad" ] \
+    && ok "CR-026 classifier: read-only=low, settings.json=high, gate-rule=crit" \
+    || no "CR-026 classifier misclassified:$ikbad"
+
 }
 
 cases_F3 () {
@@ -734,8 +788,31 @@ cases_F7 () {
   for f in "$sp"/fixtures/*.json; do
     f7n=$((f7n+1)); jq -e . "$f" >/dev/null 2>&1 || f7bad=$((f7bad+1))
   done
-  { [ "$f7n" = 5 ] && [ "$f7bad" = 0 ]; } && ok "F7 all 5 .json fixtures parse" \
-                                          || no "F7 fixtures: $f7n found, $f7bad unparseable (want 5 / 0)"
+  # CR-017 (S4) changed this from an equality to a floor: adding the EMP-30442 HIRE fixture that
+  # drains the parking lot legitimately made it 6. The §6 F7 requirement is that the fixtures exist
+  # and parse, never that there are exactly five of them. Same shape as the F7 mermaid assertion
+  # CR-005 broke at S3 — an equality on a count that the work is supposed to grow.
+  { [ "$f7n" -ge 5 ] && [ "$f7bad" = 0 ]; } && ok "F7 all $f7n .json fixtures parse" \
+                                          || no "F7 fixtures: $f7n found, $f7bad unparseable (want >=5 / 0)"
+
+  # CR-017 (audit A3-F5): REPLAYED was not merely undemonstrated, it was UNREACHABLE from the
+  # shipped fixtures — the parked MOVE belongs to EMP-30442 and no fixture hired that employee, so
+  # no pair of deliveries in any order could drain the lot. The repository carried "never
+  # demonstrated in a live end-to-end run" as a standing open item for that reason.
+  # This asserts the live path end to end: park, then drain, in two runs sharing one --out, which
+  # is the mechanism stress-project/README.md describes and the S3 state machine draws.
+  r17=$(mktemp -d)
+  ( cd "$sp" && node bin/jml.js fixtures/edge-mover-before-hire.json --out "$r17" \
+      --now 2026-08-13T17:00:00.000Z --seed demo >/dev/null 2>&1 )
+  r17park=$(grep -c '"outcome":"PARKED"' "$r17/audit.jsonl" 2>/dev/null || true)
+  ( cd "$sp" && node bin/jml.js fixtures/edge-hire-drains-parked.json --out "$r17" \
+      --now 2026-08-13T17:00:00.000Z --seed demo >/dev/null 2>&1 )
+  r17rep=$(grep -c '"outcome":"REPLAYED"' "$r17/audit.jsonl" 2>/dev/null || true)
+  r17left=$(jq -r '.parked | length' "$r17/state.json" 2>/dev/null || echo -1)
+  { [ "${r17park:-0}" -ge 1 ] && [ "${r17rep:-0}" -ge 1 ] && [ "${r17left:-1}" = 0 ]; } \
+    && ok "CR-017 REPLAYED proven live: parked then drained across two runs sharing one --out, lot empty" \
+    || no "CR-017 replay path not demonstrated (parked=$r17park replayed=$r17rep still-parked=$r17left)"
+  rm -rf "$r17"
   jq -e . "$sp/fixtures/edge-malformed-payload.json.txt" >/dev/null 2>&1 \
     && no "F7 edge-malformed-payload.json.txt PARSES — the malformed-input path is untestable" \
     || ok "F7 edge-malformed-payload.json.txt does not parse (as required)"

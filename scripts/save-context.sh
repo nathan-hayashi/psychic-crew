@@ -102,6 +102,42 @@ check)
   else
     no "C-24 fidelity: summary says $fid_cls, the gate ledger says $fid_src — a distilled claim its source does not support"
   fi
+  # CR-034: C-24 bound ONE claim, the gate timestamp, and everything else in this file drifted
+  # freely — by S4 it still advertised the closure numbers, three sessions out of date. Fidelity is
+  # not a property you finish; each claim needs its own binding. Two more, both cheap static
+  # comparisons against artifacts that cannot lie about themselves.
+  #
+  # Deliberately NOT bound by shelling out to check-plan-corrections.sh: that script's own C-24
+  # detector runs THIS script under a temp root, so calling it back would recurse. Read the registry
+  # file directly instead — the same fact, without the loop.
+
+  # Binding B — tracked file count. Guarded on work-tree membership for the C-23 reason: the C-24
+  # detector runs this under a mktemp root that is not a repo, and a silent skip there is exactly
+  # what C-23 punished, so the skip announces itself.
+  fid_tc=$(grep -oE '[0-9]+ tracked files' "$ENTRY" 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  if [ -z "$fid_tc" ]; then
+    ok "C-24 fidelity: the summary makes no tracked-file claim — nothing to bind"
+  elif git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    fid_ta=$(git ls-files 2>/dev/null | wc -l)
+    [ "$fid_tc" = "$fid_ta" ] && ok "C-24 fidelity: tracked-file count matches the tree ($fid_ta)" \
+                              || no "C-24 fidelity: summary claims $fid_tc tracked files, the tree has $fid_ta"
+  else
+    ok "C-24 fidelity: tracked-file count needs a work tree (not one here) — claim not checkable"
+  fi
+
+  # Binding C — registered correction IDs, read straight out of the registry.
+  fid_cc=$(grep -oE '[0-9]+ registered correction IDs' "$ENTRY" 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  fid_ca=$(grep -oE 'C-[0-9]{2}' "$CTX/plan-corrections.md" 2>/dev/null | sort -u | wc -l)
+  if [ -z "$fid_cc" ]; then
+    ok "C-24 fidelity: the summary makes no registered-ID claim — nothing to bind"
+  elif [ "${fid_ca:-0}" = 0 ]; then
+    no "C-24 fidelity: the summary claims $fid_cc registered IDs but the registry could not be read"
+  elif [ "$fid_cc" = "$fid_ca" ]; then
+    ok "C-24 fidelity: registered correction IDs match the registry ($fid_ca)"
+  else
+    no "C-24 fidelity: summary claims $fid_cc registered correction IDs, the registry holds $fid_ca"
+  fi
+
   printf '\n== save-context: %s PASS / %s FAIL ==\n' "$P" "$F"
   [ "$F" = 0 ] || exit 1
   ;;

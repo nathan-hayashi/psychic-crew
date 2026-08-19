@@ -15,7 +15,8 @@ psychic-crew/
 │  ├─ settings.json             # permissions + hooks + env (project scope)
 │  ├─ agents/                   # 8 agent definitions (frontmatter stamped by apply-models.sh)
 │  ├─ rules/                    # arbiter-protocol · fallback-protocol · model-policy · security
-│  └─ skills/threshold-router/SKILL.md
+│  ├─ skills/threshold-router/SKILL.md
+│  └─ skills/intake/SKILL.md    # CR-026 user-facing task-contract intake (R3a: blocking only at high/crit; advisory below)
 ├─ hooks/                       # 12 tracked hook scripts (deny-list, model/secrets guards, audit, continuity, session-start, stop, format, notify, recovery, provenance)
 ├─ scripts/                     # 9: setup · apply-models · validate-crew · run-crew-tests · save-context (§15.5) · restore-context (§15.9) · portability-drill · measure-dispatch-cost · check-plan-corrections
 ├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/ · rounds/

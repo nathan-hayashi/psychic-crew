@@ -1,0 +1,48 @@
+{
+  "api_version": "2026-05-01",
+  "delivery_id": "whd_e83f21c70002",
+  "source": "hris.workday",
+  "received_at": "2026-08-13T08:29:11.402Z",
+  "events": [
+    {
+      "event_id": "evt_e83f21c7-hire-raghunathan",
+      "event_type": "HIRE",
+      "occurred_at": "2026-08-13T08:29:04.118Z",
+      "effective_date": "2026-08-10",
+      "employee_id": "EMP-30442",
+      "employee": {
+        "display_name": "Priya Raghunathan",
+        "work_email": "priya.raghunathan@example.invalid",
+        "employment_type": "FULL_TIME",
+        "worker_status": "PRE_HIRE"
+      },
+      "job": {
+        "title": "IT Support Specialist",
+        "level": "L3",
+        "cost_center": "CC-3290"
+      },
+      "department": {
+        "id": "DEP-IT-HELPDESK",
+        "name": "IT Helpdesk"
+      },
+      "manager": {
+        "employee_id": "EMP-10018",
+        "display_name": "Grace Adeyemi",
+        "work_email": "grace.adeyemi@example.invalid"
+      },
+      "location": {
+        "site": "AMS-01",
+        "city": "Amsterdam",
+        "timezone": "Europe/Amsterdam"
+      },
+      "entitlements": {
+        "grant": [
+          "idp.baseline",
+          "email.mailbox",
+          "helpdesk.agent"
+        ],
+        "revoke": []
+      }
+    }
+  ]
+}

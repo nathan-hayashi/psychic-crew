@@ -26,6 +26,7 @@ byte-pinned file, or a gate rule, and therefore cannot be a quiet commit under
 | **010** | Implement C-21's own stated Verify                        | med-high  | 0.5h   | low  | no      |
 | **031** | Add `.gitattributes` with `eol=lf`                        | med       | 0.2h   | none | no      |
 | **034** | Correct the distilled summary and bind more of its claims | med       | 1h+    | low  | no      |
+| **033** | Re-anchor audit citations; decide historical vs forward-looking | low-med   | 1-2h   | low  | no      |
 | **030** | Add the HC-7 content scan the plan says validate-crew has | med       | 0.5h   | low  | no      |
 | **021** | Enforce `task_id` presence on arbiter lines               | med       | 0.5h   | low  | no      |
 | **017** | Add a fixture that makes `REPLAYED` reachable             | med       | 1h     | low  | no      |
@@ -293,6 +294,47 @@ hand and unbound by check will drift again the moment someone stops looking.
 **Where.** `context/session-summary.md`; optionally extend `save-context.sh`'s fidelity block.
 
 **Effort** 1h for the corrections, plus whatever binding is chosen · **Risk** low · **Gate** no.
+
+### CR-033 — the audit's line-number citations are stale, and half of them should stay that way
+
+**Registered at S4. This registration is itself the fix for a §15.1 breach**, independent of the
+item: CR-033 was referenced as an open item in `GATES.md`, in `PROGRESS.md` twice, and in session
+memory, and it appeared **nowhere in this file** — the register that IS the backlog. Anyone reading
+the backlog to decide what to work on could not have seen it. An item that exists only in ledgers
+and close-out messages is not registered; it is remembered, and remembering is what disk exists to
+replace.
+
+**The item.** `docs/audit/*.md` carries **28 line-number citations** into `scripts/` and `hooks/`
+`[E]`. Every S1, S2 and S3 edit shifted those lines. Spot-checked: `scripts/run-crew-tests.sh:221`
+now lands on an unrelated `awk` block; `scripts/validate-crew.sh:153` lands on a bare `else`.
+
+**Why this is not a sweep, which is the part the original framing missed.** The citations divide
+into two classes and they want opposite treatment:
+
+- **Forward-looking** — the ones in this file. They tell a future session where to make a change,
+  so they must point at code as it is now. Content anchors are strictly better: they survive edits,
+  and they state *what* to look for rather than *where* it happened to sit.
+- **Historical** — the ones in `FINAL_AUDIT_REPORT.md`, `DIAGRAM_AUDIT.md` and `DECISION_AUDIT.md`.
+  Those record what was found on 2026-08-17 at the lines it was found at. Rewriting them would
+  edit a record to match a present it was never describing — the same instinct R1d refused for
+  `PLATFORM_GAP_POWERSHELL.md`, and the same reason `Plan.md`'s wrong G-F8 figure was corrected by
+  an appended entry rather than a rewrite.
+
+**Proposed shape, needing an operator decision rather than a mechanical pass:** convert this file's
+citations to content anchors; leave the audit reports' citations intact and add one dated
+as-of-audit note per report saying the line numbers were accurate at the audit and have since
+moved, with the content anchor given alongside.
+
+**Where.** `docs/audit/CHANGE_REQUESTS.md` (convert) · `FINAL_AUDIT_REPORT.md`, `DIAGRAM_AUDIT.md`,
+`DECISION_AUDIT.md` (annotate, do not rewrite).
+
+**Effort** 1–2h · **Risk** low · **Gate** no.
+
+**DEFERRED at S4, and the reason is the reframing above, not the size.** The session's instruction
+was to implement if ≤1h and gate:no. It is gate:no, but a blanket re-anchor would rewrite three
+historical records, and which citations are historical is a judgment the operator should make
+rather than one I should make inside a session scoped to four other items. Registered here so the
+next reader of the backlog sees it, which is the breach actually closed today.
 
 ### CR-031 — add `.gitattributes` with `eol=lf`
 

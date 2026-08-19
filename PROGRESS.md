@@ -470,3 +470,12 @@ sentence alone cannot manufacture that alert.
 - **The F7 mermaid assertion was corrected** from exactly-one-block to a floor, because CR-005 legitimately broke it. Control: removing the sequenceDiagram still fails.
 - **Counts:** run-crew-tests 152 → 153 (+1). Everything else unchanged; no script added, no hook, no settings, no agent body.
 - **Next action:** await the exact token `APPROVE CR-DIAGRAMS`, then one commit and push to dev.
+
+## CHECKPOINT 2026-08-19T09:05:58Z — S4 complete, awaiting gate
+- **CR-026** intake layer at the mapped path, R3a hybrid. Classifier is a parseable table the suite exercises; behaviour that is model-interpreted is written as four manual drills in the skill and labelled as such.
+- **CR-017** REPLAYED **proven live** — was unreachable, not merely undemonstrated. New fixture drains the parked lot; control confirms removing it fails.
+- **CR-034** summary repaired, after demonstrating the extended C-24 failing against it (80 claimed vs 84 actual). C-24 now binds three claims instead of one.
+- **CR-033** registered and deferred on a reframing: a blanket re-anchor would rewrite three historical audit records. The registration itself closes the §15.1 breach.
+- **Counts:** run-crew-tests 153 → 158 · save-context 21 → 23 · tracked 84 → 86. Everything else unchanged, all attributed.
+- **Disclosed:** the tree carried a second modified file (DIRECTORY_GUIDE.md) which is the plan's own §4.3 payload at delta 0 — reported, not treated as a stop.
+- **Next action:** await the exact token `APPROVE CR-026`, then one commit and push to dev.

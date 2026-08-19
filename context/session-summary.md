@@ -6,9 +6,13 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 **verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
-Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SKIP / 0 FAIL** · app suite **18/18** · corrections **20 rows — 18 APPLIED / 0 PENDING / 2 SUPERSEDED** · portability drill **PORTABLE** · **80 tracked files**.
+Live numbers (post-S4): crew suite **157 PASS / 0 FAIL** · validate-crew **42 PASS / 1 SKIP / 0 FAIL** · save-context **23 PASS / 0 FAIL** · app suite **18/18** · corrections **22 rows across 25 registered correction IDs** · portability drill **PORTABLE** · **86 tracked files**.
 
-**verified — an independent audit ran after closure (2026-08-17) and its record is in `docs/audit/`.** It fixed nothing; its product is truth plus a priced backlog of 31 change requests. Start at `docs/audit/FINAL_AUDIT_REPORT.md`. Three things a cold session should know before trusting anything below: the correction count long quoted as "23" is wrong — the registry holds 22 IDs and the checker reports 20 rows, and the figure came from reading the highest ID rather than counting; two detectors (C-12, C-21) report APPLIED while testing nothing, proven with executed negative controls; and the four quarantined G-F3 findings have now been adjudicated (three ACCEPT, one REJECT), which closes the round-2 re-emission item recorded below.
+The one SKIP is honest and named: C-25's identity coverage has no live trail until a subagent is dispatched in-session. These figures are bound — `save-context.sh check` compares the tracked-file count against the tree and the registered-ID count against the registry, so this line cannot silently rot again (C-24, extended at CR-034).
+
+**verified — an independent audit ran after closure (2026-08-17) and its record is in `docs/audit/`.** It fixed nothing; its product was truth plus a priced backlog, now at 33 change requests. Start at `docs/audit/FINAL_AUDIT_REPORT.md`; the backlog is `docs/audit/CHANGE_REQUESTS.md`.
+
+**verified — the audit's findings have since been worked, and its own text is a historical record, not current state.** S1 repaired nineteen items, S2 landed the enforcement gate, S3 the diagrams, S4 the intake layer. Where a document under `docs/audit/` describes a defect in the present tense, read it as *found on 2026-08-17* and check the registry or this file for what happened next. The three things that file warns a cold reader about — the miscounted corrections figure, two detectors that reported APPLIED while testing nothing, and four unadjudicated findings — are all closed.
 
 ## What F8 delivered
 
@@ -42,11 +46,11 @@ Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SK
 
 **verified** — **C-05 acted on at a gate as C-25 (2026-08-19).** `SubagentStart` supplies `agent_id` and `agent_type`, so attribution is deterministic and specialist creations are correlated by identity against the arbiter trail — which also closes coverage of dispatches that FAILED, the hole C-12 observed where `PostToolUse` cannot fire for a tool that never ran. **Prevention at the call is NOT available**: `SubagentStart` cannot block subagent creation. Detection moved from the gate to the moment; blocking remains impossible, and this file previously implied otherwise.
 
-**verified** — **G-F3 round-2 re-emission** is still owed: branch B's four anchor-verified findings remain quarantined and unreleased.
+**verified — G-F3 round-2 re-emission is CLOSED.** All four of branch B's anchor-verified findings were adjudicated at audit phase A4: three ACCEPT, one REJECT. Two of the accepted three were then resolved outright by the v3.0 map re-export.
 
-**verified** — **`DIRECTORY_GUIDE.md` drifts from the tree** and is byte-pinned under EX-01. The F4 precedent is to route around the pin by creating what the map claims, rather than editing the map. Needs an operator routing decision.
+**verified — the `DIRECTORY_GUIDE.md` drift is RESOLVED and EX-01 is retired.** Ruling A1b re-exported the plan under the permanent name, so the map now matches the tree and every §4 seed sits at delta 0. The map is still byte-pinned — to plan v3.1 — so it can only gain a path through an operator re-export, which is exactly how the intake skill's path arrived (D16). A tenth script was rejected by that constraint during S3 and had to move inline.
 
-**verified** — **`REPLAYED` appears in zero end-to-end artifacts.** The parked-replay path is green in tests but was never demonstrated live; no live replay is claimed.
+**verified — `REPLAYED` is now PROVEN live (CR-017, S4).** It was not merely undemonstrated but *unreachable*: the parked MOVE belongs to `EMP-30442` and no shipped fixture hired that employee, so no pair of deliveries in any order could drain the lot. `fixtures/edge-hire-drains-parked.json` closes it, and the suite asserts the full path — two runs sharing one `--out` produce `PARKED` then `REPLAYED` with the parking lot empty. Control: removing that fixture returns the assertion to failing.
 
 **verified** — **OQ-2**: the orchestrator ran a context-variant model id that `.pinned` cannot express. Alias mode unaffected; a pinned reproducibility run would not reproduce the variant.
 
