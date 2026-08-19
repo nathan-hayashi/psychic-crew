@@ -197,6 +197,109 @@ cases_F2 () {
   rm -rf "$er"
   check "notify exits 0 and is never fatal"      0 feed notify '{"message":"run-crew-tests probe"}'
 
+  # S3 (CR-001/002/004/005): three new diagrams shipped this session and nothing validated any of
+  # them. A1-F4 found the only existing diagram check asserted one fence, the token
+  # sequenceDiagram, and floor counts — a diagram depicting a different system passed identically,
+  # which is the state A1 actually found both then-existing diagrams in. Shipping three more
+  # unchecked repeats the F2 lesson, where three hooks shipped with zero cases.
+  #
+  # This lives INLINE rather than in scripts/ deliberately. A tenth script would break CR-024's
+  # map-vs-tree assertion, because DIRECTORY_GUIDE.md is the §4.3 payload and must stay at delta 0 —
+  # the map can only gain a name through an operator re-export of the plan. CR-024 caught exactly
+  # that when this was first written as scripts/check-diagrams.sh, which is the check working.
+  #
+  # It validates fence integrity, a recognised diagram type, and referential integrity: every edge
+  # endpoint resolves to a declared node, participant or state. Those are the failures that render
+  # as an error box on GitHub, and they need no renderer (HC-5; bash and awk only per ruling R1d).
+  # It does NOT check whether a diagram is TRUE — binding a picture to the code it depicts is not
+  # mechanically decidable, and pretending otherwise would be the proxy recorded ten times here.
+  dgn=0; dgbad=0
+  for dgf in $(git ls-files '*.md' 2>/dev/null | grep -v '^docs/audit/'); do
+    dgc=$(grep -c '^```mermaid$' "$dgf" 2>/dev/null || true)
+    [ "${dgc:-0}" -gt 0 ] || continue
+    dgn=$((dgn + dgc))
+    dgout=$(awk -v FNAME="$dgf" '
+  function flush(  i, k, bad) {
+    if (!inblk) return
+    if (kind == "") { print "ERR " FNAME ":" start " no recognised diagram type on the first line"; nblk++; return }
+    bad = ""
+    for (k in used) if (!(k in decl)) bad = bad " " k
+    if (bad != "") print "ERR " FNAME ":" start " " kind " references undeclared node(s):" bad
+    else print "OK " FNAME ":" start " " kind " nodes=" ndecl " edges=" nedge
+    nblk++
+  }
+  /^```mermaid$/ { inblk=1; start=NR; kind=""; ndecl=0; nedge=0; delete decl; delete used; next }
+  inblk && /^```$/ { flush(); inblk=0; delete decl; delete used; next }
+  !inblk { next }
+  {
+    line=$0
+    sub(/^[ \t]+/, "", line); sub(/[ \t]+$/, "", line)
+    if (line == "" || line ~ /^%%/) next
+    if (kind == "") {
+      if (line ~ /^flowchart/ || line ~ /^graph/) kind="flowchart"
+      else if (line ~ /^sequenceDiagram/) kind="sequenceDiagram"
+      else if (line ~ /^stateDiagram/) kind="stateDiagram"
+      else { kind="" ; print "ERR " FNAME ":" start " unrecognised first line: " line ; nblk++ }
+      next
+    }
+    if (line ~ /^autonumber/ || line ~ /^direction/ || line ~ /^title/) next
+
+    if (kind == "sequenceDiagram") {
+      if (match(line, /^participant[ \t]+[A-Za-z0-9_]+/)) {
+        s=substr(line, RSTART+11); sub(/^[ \t]+/, "", s); sub(/[ \t].*$/, "", s)
+        if (!(s in decl)) { decl[s]=1; ndecl++ }
+        next
+      }
+      if (match(line, /(-|--)?(->>|->|-x|--x)/)) {
+        a=substr(line, 1, RSTART-1); b=substr(line, RSTART+RLENGTH)
+        sub(/:.*$/, "", b)
+        gsub(/[ \t]/, "", a); gsub(/[ \t]/, "", b)
+        if (a != "") used[a]=1
+        if (b != "") used[b]=1
+        nedge++
+      }
+      next
+    }
+
+    if (kind == "stateDiagram") {
+      if (line ~ /^note/ || line ~ /^end note/ || line ~ /^state /) next
+      if (match(line, /-->/)) {
+        a=substr(line, 1, RSTART-1); b=substr(line, RSTART+3)
+        sub(/:.*$/, "", b)
+        gsub(/[ \t]/, "", a); gsub(/[ \t]/, "", b)
+        if (a != "" && a != "[*]") { used[a]=1; if (!(a in decl)) { decl[a]=1; ndecl++ } }
+        if (b != "" && b != "[*]") { used[b]=1; if (!(b in decl)) { decl[b]=1; ndecl++ } }
+        nedge++
+      }
+      next
+    }
+
+    # flowchart: declaration-by-first-use, then assert every endpoint was seen as an id
+    tmp=line
+    while (match(tmp, /[A-Za-z_][A-Za-z0-9_]*[[({]/)) {
+      id=substr(tmp, RSTART, RLENGTH-1)
+      if (!(id in decl)) { decl[id]=1; ndecl++ }
+      tmp=substr(tmp, RSTART+RLENGTH)
+    }
+    if (match(line, /(-->|---|-\.->|-\.-|==>|===)/)) {
+      a=substr(line, 1, RSTART-1); b=substr(line, RSTART+RLENGTH)
+      sub(/^\|[^|]*\|/, "", b)
+      gsub(/[ \t]/, "", a); gsub(/[ \t]/, "", b)
+      sub(/[[({].*$/, "", a); sub(/[[({].*$/, "", b)
+      if (a != "") used[a]=1
+      if (b != "") used[b]=1
+      nedge++
+    }
+  }
+  END { if (inblk) { print "ERR " FNAME ":" start " fence is never closed"; nblk++ } }
+    ' "$dgf")
+    dge=$(printf '%s\n' "$dgout" | grep -c '^ERR ' || true)
+    [ "${dge:-0}" = 0 ] || { dgbad=$((dgbad + dge)); printf '%s\n' "$dgout" | grep '^ERR ' | sed 's/^ERR /      /'; }
+  done
+  { [ "$dgn" -ge 5 ] && [ "$dgbad" = 0 ]; } \
+    && ok "S3 all $dgn mermaid blocks are structurally valid (fences, type, referential integrity)" \
+    || no "S3 mermaid: $dgn block(s) found, $dgbad structural error(s) — want >=5 and 0"
+
   # S2 (CR-025 / CR-022): two new hooks touch the enforcement layer, and untested enforcement is a
   # finding by this crew's own reviewer contract — F2 shipped three hooks with zero cases and a
   # denial path that left no record, and both survived every green suite before them.
@@ -644,9 +747,14 @@ cases_F7 () {
   f7seq=0; printf '%s\n' "$f7mmd" | grep -q '^[[:space:]]*sequenceDiagram' && f7seq=1
   f7par=$(printf '%s\n' "$f7mmd" | grep -c '^[[:space:]]*participant ' || true)
   f7arr=$(printf '%s\n' "$f7mmd" | grep -o -E '[A-Za-z]+-?->>' | wc -l)
-  { [ "${f7fen:-0}" = 1 ] && [ "$f7seq" = 1 ] && [ "${f7par:-0}" -ge 4 ] && [ "${f7arr:-0}" -ge 6 ]; } \
-    && ok "F7 README: 1 mermaid sequenceDiagram, ${f7par} participants, ${f7arr} arrows" \
-    || no "F7 README mermaid: blocks=${f7fen:-0} sequenceDiagram=$f7seq participants=${f7par:-0} arrows=${f7arr:-0} (want 1 / 1 / >=4 / >=6)"
+  # S3: this required EXACTLY one fenced block, which CR-005 legitimately broke by adding the
+  # transition-table state machine alongside the sequence diagram. A floor, not an equality — the
+  # §6 F7 requirement is that the README carries a sequence diagram, never that it carries only one
+  # picture. The extraction still reads the FIRST block, which is the sequenceDiagram, so the
+  # participant and arrow floors continue to measure what they always measured.
+  { [ "${f7fen:-0}" -ge 1 ] && [ "$f7seq" = 1 ] && [ "${f7par:-0}" -ge 4 ] && [ "${f7arr:-0}" -ge 6 ]; } \
+    && ok "F7 README: sequenceDiagram present with ${f7par} participants and ${f7arr} arrows (${f7fen} mermaid block(s) in the file)" \
+    || no "F7 README mermaid: blocks=${f7fen:-0} sequenceDiagram=$f7seq participants=${f7par:-0} arrows=${f7arr:-0} (want >=1 / 1 / >=4 / >=6)"
 
   # The three CLI edge-case exit codes. The delivery file is POSITIONAL — no `run` subcommand
   # and no --input (the A3 amendment: the plan's form prints usage and exits 2, which would have

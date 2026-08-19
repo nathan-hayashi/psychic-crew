@@ -382,6 +382,12 @@ property, two methods, weaker one in the gate validator. _0.5h, low, no._
 **CR-020 — README disclosure placement.** The Quickstart's first command is denied by this build's
 own guard; the disclosure is 93 lines later. Move it adjacent. _0.2h, none, no._
 
+**CR-001, CR-002, CR-004, CR-005 — DELIVERED at S3 (2026-08-19), per ruling R2a.** All four
+mermaid, all renderable in-repo, plus a structural validator over every fenced block inline in
+`run-crew-tests.sh`. See `DIAGRAM_AUDIT.md` for what the validator does and does not check.
+**CR-003 and CR-006 remain deferred** for the reasons ruled: no d2 renderer under HC-5, and
+CR-006's data still sits in the gitignored `logs/`.
+
 **CR-001 to CR-006 — diagrams.** Specified in full in `DIAGRAM_AUDIT.md` §A1.3, including the
 DIAGRAM-WORTH reasoning for each and the two concepts deliberately **not** recommended. CR-003
 carries a real constraint: there is no d2 renderer here and HC-5 forbids installing one, so a `.d2`

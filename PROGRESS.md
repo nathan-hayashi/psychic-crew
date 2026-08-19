@@ -462,3 +462,11 @@ sentence alone cannot manufacture that alert.
 - **Two disclosures:** the ROADMAP item to be marked SUPERSEDED did not exist, so the exclusion was recorded in the correct section with the absence stated; and R2a/R3a were recorded beyond the enumerated five, per HC-8.
 - **Registered, not fixed:** two ROADMAP entries are stale in the CR-034 class — the DIRECTORY_GUIDE item still calls the map byte-pinned under EX-01, and the G-F3 item still reads "still owed" though A4 adjudicated all four.
 - **Next action:** await the exact token `APPROVE R1D`, then one commit and push to dev.
+
+## CHECKPOINT 2026-08-19T08:40:11Z — S3 complete, awaiting gate
+- **Four diagrams delivered per R2a:** CR-001 (dispatch flowchart corrected) · CR-002 (gate FSM) · CR-004 (§15 continuity) · CR-005 (JML state machine). CR-003 and CR-006 deferred as ruled.
+- **Plus a structural validator** over every fenced block in tracked markdown, controlled four ways. It checks well-formed, **never true** — accuracy stays a review obligation and the limit is stated in the code.
+- **CR-024 caught my own drift:** the validator as a tenth script broke the map-vs-tree assertion, so it moved inline. The map is the §4.3 payload at delta 0 and can only change by operator re-export.
+- **The F7 mermaid assertion was corrected** from exactly-one-block to a floor, because CR-005 legitimately broke it. Control: removing the sequenceDiagram still fails.
+- **Counts:** run-crew-tests 152 → 153 (+1). Everything else unchanged; no script added, no hook, no settings, no agent body.
+- **Next action:** await the exact token `APPROVE CR-DIAGRAMS`, then one commit and push to dev.

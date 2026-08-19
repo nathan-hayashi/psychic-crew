@@ -43,6 +43,39 @@ sequenceDiagram
 Every arrow into `audit.jsonl` is a real line on disk. That is the assertable surface: the audit log
 is what the test suite and the gate demo read back.
 
+## The transition table, as a machine
+
+The sequence diagram above is one happy path. This is the whole decision surface —
+`src/lifecycle.js`, nine transitions across three states, currently readable only as a nested
+JavaScript object literal. Each label reads `event / emission / outcome`.
+
+```mermaid
+stateDiagram-v2
+    [*] --> NONE
+    NONE --> ACTIVE: HIRE / iam.create / APPLIED
+    NONE --> NONE: MOVE / none / PARKED
+    NONE --> SUSPENDED: TERMINATE / iam.suspend / APPLIED
+    ACTIVE --> ACTIVE: HIRE / none / IDEMPOTENT
+    ACTIVE --> ACTIVE: MOVE / iam.transfer / APPLIED
+    ACTIVE --> SUSPENDED: TERMINATE / iam.suspend / APPLIED
+    SUSPENDED --> SUSPENDED: HIRE / none / INVALID_TRANSITION
+    SUSPENDED --> SUSPENDED: MOVE / none / INVALID_TRANSITION
+    SUSPENDED --> SUSPENDED: TERMINATE / none / IDEMPOTENT
+    NONE --> Parked: the MOVE is held, not discarded
+    Parked --> ACTIVE: a later HIRE drains the lot / iam.transfer / REPLAYED
+```
+
+**Argue with the `NONE` row.** It is deliberately asymmetric and the source says so. A `MOVE` for an
+employee this system has never seen **parks**, because acting would have to invent an account and
+the error would GRANT access the HRIS never authorised. A `TERMINATE` for that same unknown
+employee **suspends anyway**, because declining would RETAIN access until a human noticed. One rule
+underneath both: when delivery order is uncertain, err toward less access, never toward more.
+
+`REPLAYED` is a distinct outcome, not a flag on `APPLIED` — the trail has to distinguish "worked
+first time" from "worked once its precondition finally arrived". Note the honest gap: that edge is
+green in the unit tests and **unreachable from the shipped fixtures**, because the parked employee
+id is never hired by any of them. Closing it takes one fixture, and it is tracked as CR-017.
+
 ## Layout
 
 ```text

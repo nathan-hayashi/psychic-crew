@@ -53,14 +53,59 @@ Nested dispatch does not exist in this runtime — a subagent cannot spawn anoth
 
 ```mermaid
 flowchart LR
-    O[orchestrator] -->|DISPATCH + task_id| S[specialist]
-    S -->|findings| A[arbiter]
-    A -->|audit line bearing the same task_id| L[(arbiter-audit.jsonl)]
-    A -->|RELEASE| O
-    L -.->|coverage correlated by identity| V[validate-crew]
+    O[orchestrator] -->|1 DISPATCH with task_id| S[specialist]
+    S -->|2 findings, returned unread-upon| O
+    O -->|3 route the packet| A[arbiter]
+    A -->|4 audit line carrying that task_id| L[(arbiter-audit.jsonl)]
+    A -->|5 CONFIRM the line landed| L
+    A -->|6 RELEASE| O
+    O -.->|PostToolUse| T[(tooluse-audit.jsonl)]
+    S -.->|SubagentStart fires at creation| U[(subagent-starts.jsonl)]
+    T -.->|set difference on task_id| V[validate-crew]
+    U -.->|set difference on agent_id| V
+    L -.-> V
 ```
 
+Read the numbered path carefully, because the shape is the point. **A specialist does not hand its
+output to the arbiter.** Nested dispatch does not exist — a subagent cannot invoke another agent at
+any depth — so findings return to the orchestrator, which routes them onward without acting on
+them. An earlier version of this diagram drew a direct specialist → arbiter edge, which is the
+architecture C-11 proved unexecutable.
+
+Three trails feed the check, and they answer different questions. `tooluse-audit.jsonl` records
+dispatches that **completed**; `subagent-starts.jsonl` records every subagent the runtime
+**created**, whether or not the call then succeeded; `arbiter-audit.jsonl` is the coverage. Both
+correlations are set differences, so surplus lines cannot mask a missing one — and the second trail
+exists because `PostToolUse` cannot fire for a tool that never executed, which is how C-12 watched
+a coverage denominator silently shrink.
+
 **No specialist output may be acted on until the arbiter has released it.** Every dispatch carries a `task_id`; the arbiter must emit an audit line bearing that same id. Coverage is correlated by identity, never by count — counting alone is satisfiable by the party being audited, which was observed live and is recorded as C-12.
+
+### The gate machine
+
+Verdicts are exactly `PASS`, `FAIL` or `ESCALATE` — no composite verdicts, and "pass with
+follow-ups" is a `PASS` plus logged `DEFER` items. `PASS` requires zero open P0. The part worth
+drawing is what `PASS` does **not** do:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Executing
+    Executing --> Verdict: phase steps done and suites run
+    Verdict --> FAIL: any open P0
+    Verdict --> ESCALATE: undecidable without the operator
+    Verdict --> PASS: zero open P0
+    FAIL --> Executing: remediate then re-run
+    ESCALATE --> Verdict: operator resolves
+    PASS --> AwaitingToken: gate report emitted
+    AwaitingToken --> AwaitingToken: silence, praise, or a near-miss token
+    AwaitingToken --> NextPhase: exact token APPROVE GATE-Fn
+    NextPhase --> [*]
+```
+
+`PASS` reaches `AwaitingToken`, never the next phase. The only edge out is the **exact** token,
+case-sensitive, no substitutes, and approval is never inferred from positive sentiment. The
+self-loop is the whole control: a mistyped token leaves the machine exactly where it was, which is
+what happened once in this build's history and is why the loop is drawn rather than assumed.
 
 ### Review discourse
 
@@ -101,6 +146,28 @@ The delivery file is **positional** — there is no `run` subcommand and no `--i
 - **Uncertainty returns a FALLBACK block, never a guess** — with what is missing and what would resolve it.
 - **Disk is canonical, context windows are caches** — every decision is written to its ledger at the moment it is made.
 - **No absolute machine paths in tracked files** — paths resolve through environment variables.
+
+### How continuity actually survives a compaction
+
+"Disk is canonical" is a doctrine; these are the layers that make it true. A context window is a
+cache that can vanish mid-turn, so nothing load-bearing is allowed to exist only inside one:
+
+```mermaid
+flowchart TB
+    D[decision, verdict, next_action] -->|15.1 written the moment it is made| L[(Plan.md · PROGRESS.md · GATES.md)]
+    L -->|15.5 distilled, merged not appended| C[(context/session-summary.md)]
+    PC[PreCompact fires] -->|15.3 emergency checkpoint block| L
+    PC -->|15.9 numbered snapshot plus rolling latest| SN[(.claude/state/checkpoints/)]
+    L -->|15.4 read first at every session start| N[next session]
+    C --> N
+    SN -->|restore-context.sh| N
+    N -->|0.2b forward-resume, never regress| D
+```
+
+The loop closes at the bottom: a new session re-grounds from disk and proceeds **forward only**,
+never re-running an artifact that already exists. §15.9 is explicitly a workaround, not
+architecture — it exists because compaction cannot be shaped from inside the session, and
+`ROADMAP.md` records the condition under which it gets removed.
 
 The in-repo deny-list blocks the clone verb during agent work, which is why the portability drill proves the same property with `git archive` and a detached worktree instead. That is recorded as C-22, along with why the guard was not widened to accommodate the demo.
 

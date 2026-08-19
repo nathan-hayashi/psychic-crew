@@ -248,6 +248,36 @@ Two constraints the CR must carry, or it produces an unreproducible artifact:
 2. **The TSV has no header row** `[E]`, so column meaning lives only in
    `scripts/measure-dispatch-cost.sh`.
 
+### DELIVERED — S3, 2026-08-19 (appended; the findings above are left as written)
+
+Ruling **R2a** scoped S3 to the four mermaid items. All four landed:
+
+| CR | Where | What |
+| --- | --- | --- |
+| **001** | `README.md:54` | The dispatch flowchart **corrected**. The specialist → arbiter edge is gone — findings return to the orchestrator, which routes them onward — and coverage now shows all three trails, including `subagent-starts.jsonl` from C-25, which did not exist when A1-F2 was written |
+| **002** | `README.md` | Gate FSM as `stateDiagram-v2`, drawn around the point that `PASS` reaches `AwaitingToken` and never the next phase. The self-loop on a near-miss token is the control |
+| **004** | `README.md` | §15 continuity layers, closing at forward-resume |
+| **005** | `stress-project/README.md` | The nine-transition JML machine, with the deliberate `NONE`-row asymmetry called out as the row to argue with, and `REPLAYED` drawn as the distinct path it is — including its honest gap, unreachable from shipped fixtures (CR-017) |
+
+**Deferred as ruled:** CR-003 (d2 — no renderer here, HC-5 forbids installing one) and CR-006
+(Vega-Lite — its data is gitignored and must move to `context/` first).
+
+**A1-F4 is now partly closed.** Nothing had bound any diagram to anything; the only check asserted a
+fence, a token, and floor counts, so a diagram of an entirely different system passed identically.
+S3 adds a structural validator over **every** fenced block in tracked Markdown — fence integrity, a
+recognised type, and referential integrity on every edge endpoint — controlled against an
+undeclared node, an unclosed fence, and an unrecognised type.
+
+**Partly, not wholly, and the remainder is stated rather than papered over:** it checks that a
+diagram is *well-formed*, never that it is *true*. Binding a picture to the code it depicts is not
+mechanically decidable, and a check that claimed to would be the proxy this repository has recorded
+ten times. Accuracy remains a review obligation.
+
+The validator lives **inline in `run-crew-tests.sh`**, not in `scripts/`. A tenth script broke
+CR-024's map-vs-tree assertion, because `DIRECTORY_GUIDE.md` is the §4.3 payload and must stay at
+delta 0 — the map can only gain a name through an operator re-export. CR-024 caught that on the
+first attempt, which is the S1 control working on the session that came after it.
+
 ### What is deliberately not recommended
 
 Two rows are marked **no**, and the reasoning is the same in both: a diagram is a second source of
