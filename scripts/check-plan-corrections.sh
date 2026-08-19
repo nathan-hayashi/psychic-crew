@@ -325,6 +325,36 @@ else
   report C-24 F8 PENDING "save-context.sh missing or temp root unavailable"
 fi
 
+# C-25 (CR-025): bypass coverage had no record of a dispatch that FAILED — PostToolUse cannot fire
+# for a tool that never executed, which is how C-12 watched a denominator silently shrink. Closed by
+# recording SubagentStart, where the runtime hands over agent_id and agent_type directly.
+# Tested BEHAVIOURALLY under a temp root, because grepping validate-crew for the string "agent_id"
+# would report APPLIED for a file that correlates nothing — the exact defect CR-009 had to repair in
+# C-12's own detector. Plant an uncovered specialist start, then a SURPLUS arbiter line bearing an
+# unrelated id: a real set difference still FAILs, a count would not.
+c25tmp=$(mktemp -d 2>/dev/null)
+if [ -n "$c25tmp" ] && [ -x hooks/subagent-start.sh ] && [ -f scripts/validate-crew.sh ]; then
+  mkdir -p "$c25tmp/scripts" "$c25tmp/logs" "$c25tmp/.claude"
+  cp scripts/validate-crew.sh "$c25tmp/scripts/" 2>/dev/null
+  cp models.config.json "$c25tmp/" 2>/dev/null; cp GATES.md "$c25tmp/" 2>/dev/null
+  cp .claude/settings.json "$c25tmp/.claude/" 2>/dev/null
+  : > "$c25tmp/logs/tooluse-audit.jsonl"
+  printf '%s' '{"session_id":"c25","agent_id":"c25-uncovered","agent_type":"security-reviewer"}' \
+    | CLAUDE_PROJECT_DIR="$c25tmp" ./hooks/subagent-start.sh >/dev/null 2>&1
+  jq -cn '{ts:"2026-01-01T00:00:00Z",task_id:"c25-t",phase:"F8",from_agent:"arbiter",to:"lead",
+           agent_id:"c25-unrelated",original_sha256:"x",mutation:"RELEASE",reason:"surplus"}' \
+    > "$c25tmp/logs/arbiter-audit.jsonl" 2>/dev/null
+  c25out=$( cd "$c25tmp" && ./scripts/validate-crew.sh 2>&1 )
+  if printf '%s' "$c25out" | grep -q 'C-25: specialist subagent start(s) with no arbiter coverage: c25-uncovered'; then
+    report C-25 F8 APPLIED "subagent starts are correlated to arbiter coverage by agent_id as a set difference; a surplus line does not mask a missing one"
+  else
+    report C-25 F8 PENDING "subagent-start coverage does not correlate identity — a failed dispatch leaves no record the auditor can see (C-12 hole)"
+  fi
+  rm -rf "$c25tmp"
+else
+  report C-25 F8 PENDING "hooks/subagent-start.sh missing, not executable, or temp root unavailable"
+fi
+
 # C-14: tests must never write to the artifact they audit. Fixtures once appended fabricated Agent
 # dispatch records to the live trail, and the coverage check correctly failed on events that never
 # happened. A trail with invented records is worse than one with gaps: every gate reads it as truth.

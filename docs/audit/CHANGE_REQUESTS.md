@@ -25,6 +25,7 @@ byte-pinned file, or a gate rule, and therefore cannot be a quiet commit under
 | **016** | Distinguish "declared read-only" from "declared nothing"  | med-high  | 0.5h   | low  | no      |
 | **010** | Implement C-21's own stated Verify                        | med-high  | 0.5h   | low  | no      |
 | **031** | Add `.gitattributes` with `eol=lf`                        | med       | 0.2h   | none | no      |
+| **034** | Correct the distilled summary and bind more of its claims | med       | 1h+    | low  | no      |
 | **030** | Add the HC-7 content scan the plan says validate-crew has | med       | 0.5h   | low  | no      |
 | **021** | Enforce `task_id` presence on arbiter lines               | med       | 0.5h   | low  | no      |
 | **017** | Add a fixture that makes `REPLAYED` reachable             | med       | 1h     | low  | no      |
@@ -268,6 +269,30 @@ _unreachable_, which is a different and more fixable thing.
 item into a proven one.
 
 **Effort** 1h · **Risk** low · **Gate** no.
+
+### CR-034 — the distilled summary's live numbers are stale, and its open-items list is wrong
+
+**Registered at S2, not fixed** — outside the enumerated scope of this gate.
+
+**Why.** `context/session-summary.md` is the file HC-8 §15.4 designates as the first thing a cold
+session reads. Three of its claims are now false:
+
+- the live-numbers line still reads `144 PASS` / `37 PASS` / `20 rows` / `80 tracked files`, against
+  an actual 151+ / 42 / 22 / 84;
+- it states that "two detectors (C-12, C-21) report APPLIED while testing nothing" — both were
+  repaired in S1 (CR-009, CR-010) with executed negative controls;
+- it states the four quarantined G-F3 findings are "still owed", in the same paragraph that
+  elsewhere records them as adjudicated.
+
+**Why this is worth its own CR rather than a quiet edit.** C-24 exists because this file was checked
+for hygiene and never for fidelity, and it binds exactly **one** claim today — the GATE-F8 approval
+timestamp. Everything above is precisely the class C-24 cannot see. The fix is not only to correct
+the numbers but to decide which further claims get bound, because a summary that is corrected by
+hand and unbound by check will drift again the moment someone stops looking.
+
+**Where.** `context/session-summary.md`; optionally extend `save-context.sh`'s fidelity block.
+
+**Effort** 1h for the corrections, plus whatever binding is chosen · **Risk** low · **Gate** no.
 
 ### CR-031 — add `.gitattributes` with `eol=lf`
 

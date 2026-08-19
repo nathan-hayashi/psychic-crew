@@ -443,3 +443,14 @@ sentence alone cannot manufacture that alert.
 - **Registered, not fixed:** CR-033 (the audit's line-number citations, now stale again because this batch moved those lines — the fix is to replace them with content anchors, which is the audit's own lesson applied to its prose).
 - **Not pushed.** Commits are local pending the gate token.
 - **Next action:** await the exact token `APPROVE CR-BATCH-1`. On approval: push to dev. Then S2 (CR-025 + CR-022, permission boundary, own gate) awaits ruling R1-R3 and the operator's v3.0.1 §5.2.2 wording correction.
+
+## CHECKPOINT 2026-08-19T07:24:40Z — S2 complete, awaiting the enforcement gate
+- **Plan v3.0.1 verified before anything else:** diff is exactly the three expected changes; §4 payloads byte-identical; seed deltas 0/0/0.
+- **CR-025 rescoped and applied.** Attribution + detection-at-creation + failed-dispatch coverage. **Prevention at the call is not implemented and not claimed** — SubagentStart cannot block. Five premise sites corrected to match.
+- **CR-022 applied, flag-only.** Over-cap fenced blocks flag; nothing ever denies.
+- **A C-12 hazard was found and closed in the same change:** FLAG lines in the arbiter trail would have let a hook satisfy the arbiter's own coverage obligation. Both correlations now exclude `event:FLAG` by field.
+- **Counts:** validate-crew 42 PASS / 1 SKIP (43 total) · run-crew-tests 151 PASS + the dirty-tree canary (152 total) · save-context 21 · corrections 22 rows · stress 18/18. Every delta attributed.
+- **The one SKIP is honest:** C-25's correlation has no live trail yet because no subagent has been dispatched this session. Its behavioural detector in the registry does exercise it.
+- **Registered, not fixed:** CR-034 — the distilled summary carries pre-S1 numbers and a self-contradicting open-items list.
+- **Nothing committed.** The whole session is one gate because it touches the enforcement layer.
+- **Next action:** await the exact token `APPROVE CR-025`. On approval: one commit including the v3.0.1 plan, then push to dev.

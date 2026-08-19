@@ -32,16 +32,17 @@ Discovery path (why this isn't pointed to from CLAUDE.md): CLAUDE.md is a byte-p
 | C-22 | G-F8 demo mandates a prohibited operation    | F8    | scripts/portability-drill.sh                |
 | C-23 | stress assertion skips in a worktree         | F8    | scripts/validate-crew.sh                    |
 | C-24 | §15.5 checker verified hygiene, not fidelity | F8    | save-context.sh behaviour                   |
+| C-25 | bypass detection blind to a failed dispatch  | F8    | subagent-starts.jsonl + validate-crew.sh    |
 
 **Table refreshed at CR-011 (audit A0-F1).** It had listed 10 of the then-22 IDs and had not been
 maintained since roughly F4, so the registry's own index disagreed with the registry. It now lists
-all **24**. Two carry a caveat rather than a detector, and the distinction is deliberate: **C-16** is
+all **25**. Two carry a caveat rather than a detector, and the distinction is deliberate: **C-16** is
 genuinely enforced, but in `validate-crew.sh` rather than by `check-plan-corrections.sh`, so the
 checker under-reports it; **C-17** has no enforcement anywhere and does not need any — a mid-gate was
 named without a token, the operator issued the tokens, they are recorded verbatim in the `G-F7a` and
 `G-F7b` rows, and F7 is closed, so there is nothing left to recur. _Closed by completion_ and
 _closed by control_ are different states and the registry should say which. That is why the checker
-reports 21 rows against 24 registered IDs.
+reports 22 rows against 25 registered IDs.
 
 ---
 
@@ -96,7 +97,7 @@ exit 2
 **Plan says** (§5.2.2): diff "tooluse-audit.jsonl Task calls" against arbiter coverage.
 **Reality**: `Task` was renamed `Agent` in v2.1.63 (`Task` survives only as an alias). A lead calling `Agent` directly yields zero matches, so the check passes while the bypass succeeds — defeating the plan's own declared weakest enforcement point.
 **Apply**: match `Task|Agent` everywhere bypass detection appears — `scripts/validate-crew.sh` (already done) and `.claude/rules/arbiter-protocol.md` (F3 writes it).
-**Upgrade available, operator decision**: `SubagentStart`/`SubagentStop` hooks receive the subagent's name as `agent_type` — the caller/callee attribution §5.2.2 assumed hooks "cannot reliably" provide. This would make bypass detection hook-enforced and deterministic rather than audit-diff-based.
+**Upgrade taken, at a gate (C-25, CR-025).** `SubagentStart`/`SubagentStop` receive the subagent's name as `agent_type` — the caller/callee attribution §5.2.2 assumed hooks "cannot reliably" provide. **Corrected scope, platform-verified `[V]`:** this makes attribution deterministic and adds detection at creation, and it closes coverage of dispatches that FAILED — the hole C-12 observed, where `PostToolUse` cannot fire for a tool that never executed. It does **not** provide prevention at the call: `SubagentStart` cannot block subagent creation. This entry previously claimed hook-*enforced* detection; that word was wrong and is corrected here, in `.claude/rules/arbiter-protocol.md`, `README.md`, `context/session-summary.md` and `ROADMAP.md`, and upstream at plan v3.0.1 (D15). See C-25.
 **Verify**: both names present wherever dispatch detection occurs.
 
 ## C-06/C-07/C-08 — §5.5 apply-models.sh (F0, APPLIED as EX-02)
@@ -234,6 +235,60 @@ Two defects were found by testing rather than reasoning: matching whole _written
 An F5 assertion ran `./scripts/save-context.sh prepare | grep -q 'DISTILL INSTRUCTION'`. `grep -q` exits on the first match and SIGPIPEs its producer, so `pipefail` reported a _failed_ pipeline for a pattern that had matched — the assertion declared a working script broken. Identical in shape to the three already recorded (apply-models' HC-2 guard, check-plan-corrections' printf-as-format JSON, `denies()` in the suite).
 
 The rule was already written in this file and was still violated while adding a test. That is the useful datum: a documented rule does not enforce itself. **Capture into a variable, then test it.**
+
+## C-25 — bypass detection had no record of a dispatch that failed (F8, CR-025, gated)
+
+**Operator-authorised at a gate** (ruling A2a; `APPROVE CR-025`), because wiring a new hook event
+into `.claude/settings.json` changes the enforcement layer and `.claude/rules/security.md` makes
+that an operator decision, never a quiet commit. The permission surface itself is untouched — 34
+allow rules and 14 deny rules before and after.
+
+**The premise this corrects, which the repository asserted in five places.** C-05 and four other
+documents stated that subagent lifecycle hooks would turn bypass detection "from after-the-fact
+detection into **prevention at the call**." Verified against the platform reference `[V]`:
+`SubagentStart` supplies `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `agent_id` and
+`agent_type`, and `SubagentStop` adds `agent_transcript_path` and `last_assistant_message`. **But
+`SubagentStart` cannot block subagent creation** — it can inject context and nothing more. The
+attribution half of the claim was right; the prevention half was never achievable. Plan v3.0.1 (D15)
+corrects §5.2.2 upstream; this entry records the same at the implementation layer.
+**Prevention-at-the-call is explicitly NOT claimed here.**
+
+**What is delivered, and the third row is the one nobody had claimed:**
+
+| Property                      | Delivered |
+| ----------------------------- | --------- |
+| Deterministic attribution     | **yes** — `agent_type` is handed over by the runtime, not inferred from a prompt body |
+| Detection at the moment       | **yes** — fires at creation, not at the gate |
+| Coverage of failed dispatches | **yes** — and this closes a hole C-12 observed live |
+| Prevention at the call        | **no** — and not claimed |
+
+**Why the third row matters.** C-12's live observation at G-F3 was that two failed `Agent` calls
+produced **zero** `PostToolUse` records, because that hook cannot fire for a tool that never
+executed. The coverage denominator silently shrank and a true-positive FAIL flipped to PASS with
+nothing remediated. `SubagentStart` fires at creation, independently of the outcome — the hook's
+input carries no success field at all, so it cannot depend on one — and the attempt therefore stays
+visible to the auditor.
+
+**Applied**: `hooks/subagent-start.sh` appends `{ts, agent_id, agent_type, session_id, phase}` to
+`logs/subagent-starts.jsonl`; `validate-crew.sh` correlates that trail against
+`logs/arbiter-audit.jsonl` by `agent_id` as a **set difference**, alongside the existing `task_id`
+correlation. Never a count — surplus lines cannot mask a missing one.
+
+**Hardening that came with it (CR-022).** `hooks/reference-cap.sh` also writes into
+`arbiter-audit.jsonl`, and the coverage extraction previously counted **any** line carrying an id,
+regardless of writer — so a hook could have satisfied the arbiter's own coverage obligation. That is
+C-12's defect arriving through a new door. Both correlations now exclude `event:"FLAG"` **by field**,
+per the C-14 and C-24 precedent. Pre-existing lines carry no `event` and are unaffected.
+
+**Verify**: tested BEHAVIOURALLY under a temp root — an uncovered specialist start must FAIL naming
+its `agent_id`; a surplus arbiter line bearing an unrelated id must **still** FAIL, proving set
+difference rather than count; a matching line must PASS; and a `FLAG` line must not satisfy
+coverage. Grepping for the string `agent_id` in the validator would report APPLIED for a file that
+correlates nothing, which is exactly the C-12 detector defect CR-009 had to repair.
+
+**Honest limit**: this covers specialist starts the platform reports. A dispatch the runtime never
+begins produces no `SubagentStart` either, so "attempted and refused before creation" remains
+outside every trail here.
 
 ## C-24 — the §15.5 checker verified hygiene and never fidelity (F8, opened and closed by CR-032)
 

@@ -196,6 +196,49 @@ cases_F2 () {
     || no "CR-013 fixtures wrote to the live logs/build-errors.jsonl — tests polluting the artifact they audit"
   rm -rf "$er"
   check "notify exits 0 and is never fatal"      0 feed notify '{"message":"run-crew-tests probe"}'
+
+  # S2 (CR-025 / CR-022): two new hooks touch the enforcement layer, and untested enforcement is a
+  # finding by this crew's own reviewer contract — F2 shipped three hooks with zero cases and a
+  # denial path that left no record, and both survived every green suite before them.
+  s2t=$(mktemp -d); mkdir -p "$s2t/logs"; cp GATES.md "$s2t/" 2>/dev/null
+  printf '%s' '{"session_id":"s2","agent_id":"s2-agt","agent_type":"security-reviewer"}' \
+    | CLAUDE_PROJECT_DIR="$s2t" ./hooks/subagent-start.sh >/dev/null 2>&1
+  s2id=$(jq -r '.agent_id // ""' "$s2t/logs/subagent-starts.jsonl" 2>/dev/null | head -1)
+  s2ty=$(jq -r '.agent_type // ""' "$s2t/logs/subagent-starts.jsonl" 2>/dev/null | head -1)
+  { [ "$s2id" = "s2-agt" ] && [ "$s2ty" = "security-reviewer" ]; } \
+    && ok "CR-025 subagent-start records the runtime-supplied agent_id and agent_type" \
+    || no "CR-025 subagent-start lost the supplied identity (id='$s2id' type='$s2ty')"
+  # The identity is SUPPLIED, never inferred: the hook reads no outcome field, so it cannot depend
+  # on the dispatch succeeding. That is the whole point — it covers the failed ones.
+  sed 's/#.*//' hooks/subagent-start.sh | grep -qE 'tool_response|\.error|success' \
+    && no "CR-025 subagent-start reads an outcome field — it must fire regardless of success" \
+    || ok "CR-025 subagent-start depends on no outcome field (covers failed dispatches)"
+  # CR-022: flag-mode only. Over-cap flags, at-cap does not, and it NEVER denies.
+  # The fence is built from a variable: inside a single-quoted printf a backslash-escaped backtick
+  # stays literal, so the first version of this fixture emitted no fence at all and the over-cap
+  # case silently produced no flag. The suite caught it; a fixture that cannot trigger the thing it
+  # tests is the same vacuity class as an empty set difference.
+  s2f='```'
+  s2big=$( { printf '{"task_id":"s2-cap"}\n\n%s\n' "$s2f"; i=0; while [ $i -lt 31 ]; do echo "l$i"; i=$((i+1)); done; printf '%s\n' "$s2f"; } )
+  s2sm=$( { printf '{"task_id":"s2-cap"}\n\n%s\n' "$s2f"; i=0; while [ $i -lt 5 ]; do echo "l$i"; i=$((i+1)); done; printf '%s\n' "$s2f"; } )
+  : > "$s2t/logs/arbiter-audit.jsonl"
+  s2out=$(jq -cn --arg p "$s2sm" '{tool_name:"Agent",tool_input:{subagent_type:"fixer",prompt:$p}}' \
+          | CLAUDE_PROJECT_DIR="$s2t" ./hooks/reference-cap.sh 2>/dev/null)
+  s2a=$(wc -l < "$s2t/logs/arbiter-audit.jsonl")
+  jq -cn --arg p "$s2big" '{tool_name:"Agent",tool_input:{subagent_type:"fixer",prompt:$p}}' \
+    | CLAUDE_PROJECT_DIR="$s2t" ./hooks/reference-cap.sh >/dev/null 2>&1
+  s2b=$(wc -l < "$s2t/logs/arbiter-audit.jsonl")
+  { [ "$s2a" = 0 ] && [ "$s2b" = 1 ]; } \
+    && ok "CR-022 reference-cap flags an over-cap dispatch and leaves an at-cap one alone ($s2a -> $s2b)" \
+    || no "CR-022 reference-cap mis-triggered (at-cap=$s2a over-cap=$s2b, want 0 -> 1)"
+  [ -z "$s2out" ] && ok "CR-022 reference-cap never denies (no decision object on stdout)" \
+                  || no "CR-022 reference-cap emitted a decision object: $s2out"
+  # The flag must NOT be able to satisfy the arbiter's own coverage obligation — C-12 through a new
+  # writer. It carries event:"FLAG" and both correlations exclude that field.
+  jq -e 'select(.event=="FLAG")' "$s2t/logs/arbiter-audit.jsonl" >/dev/null 2>&1 \
+    && ok "CR-022 flag lines carry event:FLAG so coverage can exclude them" \
+    || no "CR-022 flag line has no event discriminator — a hook could satisfy arbiter coverage"
+  rm -rf "$s2t"
 }
 cases_F4 () {
   echo "== F4 — router + tier lock =="

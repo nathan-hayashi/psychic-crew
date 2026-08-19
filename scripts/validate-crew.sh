@@ -230,7 +230,13 @@ if [ -f logs/tooluse-audit.jsonl ] && [ -f logs/arbiter-audit.jsonl ]; then
   disp=$(jq -r --arg s "$SPEC" 'select(.tool=="Agent" or .tool=="Task")
            | select((.task_id // "") != "") | select((.target // "") | test($s)) | .task_id' \
          logs/tooluse-audit.jsonl 2>/dev/null | sort -u)
-  cov=$(jq -r 'select((.task_id // "") != "") | .task_id' logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
+  # CR-022 hardening: the coverage set must contain only genuine arbiter coverage. The
+  # reference-cap hook now also writes into this trail, and any line carrying a task_id used to
+  # count as coverage regardless of who wrote it — so a hook could have satisfied the arbiter's own
+  # obligation. That is precisely C-12's defect arriving through a new writer. Excluded BY FIELD,
+  # not by pattern (the C-14 and C-24 precedent); existing lines carry no `event` and are unaffected.
+  cov=$(jq -r 'select((.event // "") != "FLAG") | select((.task_id // "") != "") | .task_id' \
+        logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
   if [ -z "$disp" ]; then
     skip "no identified specialist dispatch recorded yet (arbiter coverage untestable)"
   else
@@ -243,6 +249,38 @@ if [ -f logs/tooluse-audit.jsonl ] && [ -f logs/arbiter-audit.jsonl ]; then
   fi
 else
   skip "no audit logs yet (F2/F3 own logs/)"
+fi
+
+# C-25 (CR-025): identity coverage from the platform's own attribution, correlated as a SET
+# DIFFERENCE alongside the task_id correlation above — never a count.
+#
+# What this adds that task_id correlation cannot: C-12 observed live that two FAILED Agent calls
+# produced zero PostToolUse records, because that hook cannot fire for a tool that never executed.
+# The coverage denominator silently shrank and a true-positive FAIL flipped to PASS with nothing
+# remediated. SubagentStart fires at CREATION, independently of whether the call then succeeds, so
+# a failed dispatch stays visible to the auditor instead of vanishing from the denominator.
+#
+# Stated plainly and matching plan v3.0.1: this is attribution and detection-at-creation. It is NOT
+# prevention — SubagentStart cannot block subagent creation [V] — and nothing here claims it is.
+if [ -f logs/subagent-starts.jsonl ] && [ -f logs/arbiter-audit.jsonl ]; then
+  SPEC25='security-reviewer|quality-reviewer|fixer|test-runner|integration-runner'
+  sstart=$(jq -r --arg s "$SPEC25" 'select((.agent_id // "") != "")
+             | select((.agent_type // "") | test($s)) | .agent_id' \
+           logs/subagent-starts.jsonl 2>/dev/null | sort -u)
+  scov=$(jq -r 'select((.event // "") != "FLAG") | select((.agent_id // "") != "") | .agent_id' \
+         logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
+  if [ -z "$sstart" ]; then
+    skip "C-25: no specialist subagent start recorded yet (identity coverage untestable)"
+  else
+    sunc=$(comm -23 <(printf '%s\n' "$sstart") <(printf '%s\n' "$scov") | sed '/^$/d')
+    if [ -z "$sunc" ]; then
+      pass "C-25: every specialist subagent start is covered by an arbiter line of the same agent_id"
+    else
+      fail "C-25: specialist subagent start(s) with no arbiter coverage: $(printf '%s' "$sunc" | tr '\n' ' ')"
+    fi
+  fi
+else
+  skip "C-25: no subagent-starts trail yet (SubagentStart hook owns logs/subagent-starts.jsonl)"
 fi
 
 # C-19: coverage that cannot be ORDERED is coverage that cannot be trusted. A task_id match proves

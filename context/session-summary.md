@@ -40,7 +40,7 @@ Live numbers: crew suite **144 PASS / 0 FAIL** · validate-crew **37 PASS / 0 SK
 
 ## Open items carried past v1.0.0
 
-**verified** — **C-05**, the largest available upgrade: bypass detection is audit-based, caught at the gate rather than blocked at the call. `SubagentStart`/`SubagentStop` carry `agent_type`, which would make it deterministic. Operator decision.
+**verified** — **C-05 acted on at a gate as C-25 (2026-08-19).** `SubagentStart` supplies `agent_id` and `agent_type`, so attribution is deterministic and specialist creations are correlated by identity against the arbiter trail — which also closes coverage of dispatches that FAILED, the hole C-12 observed where `PostToolUse` cannot fire for a tool that never ran. **Prevention at the call is NOT available**: `SubagentStart` cannot block subagent creation. Detection moved from the gate to the moment; blocking remains impossible, and this file previously implied otherwise.
 
 **verified** — **G-F3 round-2 re-emission** is still owed: branch B's four anchor-verified findings remain quarantined and unreleased.
 
