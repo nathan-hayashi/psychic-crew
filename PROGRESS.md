@@ -479,3 +479,8 @@ sentence alone cannot manufacture that alert.
 - **Counts:** run-crew-tests 153 → 158 · save-context 21 → 23 · tracked 84 → 86. Everything else unchanged, all attributed.
 - **Disclosed:** the tree carried a second modified file (DIRECTORY_GUIDE.md) which is the plan's own §4.3 payload at delta 0 — reported, not treated as a stop.
 - **Next action:** await the exact token `APPROVE CR-026`, then one commit and push to dev.
+
+## CHECKPOINT 2026-08-19T15:35:23Z — CR backlog frozen until S6
+- **Operator decision:** no CR is proposed for action until the S6 planning session completes. No CR gates.
+- **Still in force:** discoveries are registered as they are found (§15.1). The freeze is on doing, not on recording.
+- **Next action:** S6 — the planning session. gastown deep dive first (D1a), then oh-my-claudecode and ruflo, then the Psychic-Crew-Lite Master FIFO Plan (B1a/B2a/B3a/B4b) with CR-028 seams and CR-029 capability classes folded into its config design.

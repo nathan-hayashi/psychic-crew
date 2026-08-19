@@ -10,6 +10,24 @@ byte-pinned file, or a gate rule, and therefore cannot be a quiet commit under
 
 ---
 
+## BACKLOG FROZEN until S6 completes — operator decision, 2026-08-19
+
+**No CR is proposed for action until the S6 planning session is done.** The open items below —
+including CR-033, and CR-003 and CR-006 which ruling R2a deferred — stay registered and stay
+unworked. Do not open a CR gate, and do not ask for one.
+
+**What this does not stop.** Discoveries are still **registered** here the moment they are found.
+§15.1 requires it, an item living only in a session's memory is exactly the breach CR-033 records,
+and registering costs nothing that the freeze is meant to save. The freeze is on *doing*, not on
+*writing down*.
+
+**Why the sequencing.** S6 plans Psychic-Crew-Lite and schedules the corpus deep dives. Several
+entries here — the derivation seams (CR-028), the capability classes (CR-029), and anything
+touching the assertion layer — are inputs to that plan rather than independent work. Working them
+first would decide questions the planning session exists to answer.
+
+---
+
 ## Ranked by value
 
 | CR      | What                                                      | Value     | Effort | Risk | Gate    |
