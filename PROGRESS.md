@@ -454,3 +454,11 @@ sentence alone cannot manufacture that alert.
 - **Registered, not fixed:** CR-034 — the distilled summary carries pre-S1 numbers and a self-contradicting open-items list.
 - **Nothing committed.** The whole session is one gate because it touches the enforcement layer.
 - **Next action:** await the exact token `APPROVE CR-025`. On approval: one commit including the v3.0.1 plan, then push to dev.
+
+## CHECKPOINT 2026-08-19T08:14:49Z — ruling R1d recorded, awaiting token
+- **R1d supersedes C1b.** Bash-native permanently; Windows via WSL2 only. READ FIRST Additions #1-2 excluded-with-why.
+- **Docs-only.** Four files: the rulings register (appended, C1b verbatim), ROADMAP.md, docs/audit/CHANGE_REQUESTS.md (CR-027 facts corrected), Plan.md. **PLATFORM_GAP_POWERSHELL.md untouched by instruction** — it is the evidence.
+- **Suites unchanged as predicted:** 42+1SKIP / 152 / 21 / 22 rows / 18-18. Nothing touched a script, hook, settings.json or agent body.
+- **Two disclosures:** the ROADMAP item to be marked SUPERSEDED did not exist, so the exclusion was recorded in the correct section with the absence stated; and R2a/R3a were recorded beyond the enumerated five, per HC-8.
+- **Registered, not fixed:** two ROADMAP entries are stale in the CR-034 class — the DIRECTORY_GUIDE item still calls the map byte-pinned under EX-01, and the G-F3 item still reads "still owed" though A4 adjudicated all four.
+- **Next action:** await the exact token `APPROVE R1D`, then one commit and push to dev.

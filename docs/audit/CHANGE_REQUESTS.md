@@ -393,6 +393,22 @@ gitignored `logs/` into `context/`, following `context/f7-metrics.md`.
 **CR-027 — README requirements section.** Specified in the A5 section of
 `FINAL_AUDIT_REPORT.md`, with the facts drawn from measured data. _1h, none, no._
 
+**CR-027 facts CORRECTED by ruling R1d (2026-08-19), for when this lands.** The C2a floors recorded
+in the rulings register assumed a native-Windows target and named PowerShell 7.4+ as a runtime
+requirement. R1d makes this project bash-native permanently, so the Windows section reads:
+
+- **Windows 10 22H2 or Windows 11**, with hardware virtualization enabled.
+- **WSL2 with Ubuntu 24.04 LTS** — the measured build host, not merely a supported option.
+- **Node ≥ 20 inside WSL** (the build ran v24.14.0), together with `git`, `npm` and `jq`.
+- **PowerShell's only role is `wsl --install`.** It is not a runtime for anything in this repo, and
+  the README must not imply a native-Windows path exists.
+- **`.gitattributes` (CR-031) stays regardless.** It is not a PowerShell concession — it protects
+  mixed-editor checkouts on the Windows side, where a CRLF write would fail the §4 seed
+  byte-identity check.
+
+Linux and macOS requirements are unchanged, and the plan-tier and token-economics facts in the A5
+draft are unaffected by this ruling.
+
 **CR-028 — Psychic-Crew-Lite seams.** Coupling report in the A5 section. _4h, low, no._
 
 **CR-029 — capability classes over `models.config.json`.** Feasibility note in the A5 section.

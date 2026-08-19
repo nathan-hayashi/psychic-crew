@@ -33,4 +33,15 @@ The operator accepted the default ordering at Q0. Each pack is a set of domain a
 
 ## Not on the roadmap
 
+**Native Windows, in any form — SUPERSEDED and closed by operator ruling R1d (2026-08-19).** This
+project is bash-native end to end, permanently: no PowerShell port of any script, hook or
+assertion, no Node rewrite of the assertion layer, no Git-Bash bridge. **Windows 10/11 is supported
+exclusively through WSL2**, and installing it is a documented prerequisite rather than a limitation
+to engineer around. Why: one codebase and zero assertion divergence — the audit's
+`docs/audit/PLATFORM_GAP_POWERSHELL.md` priced every alternative at either a 3–5 day port carrying
+a dual 144-assertion divergence class, or new host-toolchain assumptions, for a target the operator
+no longer requires. This entry did not previously exist on the roadmap; the work lived in the
+rulings register (C1b) and the audit's gap report, so R1d is recorded here to close it where a
+reader would look for it.
+
 Anything requiring an install, a clone, `npx`, or an MCP server, and any cross-vendor model invocation. Those are excluded by the build's hard constraints, not by preference — lifting one is a change to the constraints, not a roadmap item.

@@ -21,6 +21,47 @@ Recorded verbatim from the operator, 2026-08-16, while the Final Audit session r
 | E1a | Task-Contract intake layer built for BOTH crews as a gated phase | Blueprint = the Army report's contract/intake schemas (untrusted source, patterns only); audit A5.2b specifies it; planning session authors the phase | Audit → planning session |
 | E2a | Capability classes (economy/standard/deep) resolving to the existing aliases inside models.config.json | Single-file rule preserved; CR-scoped config+stamp change with its own gate | Audit CHANGE_REQUESTS.md |
 
+### SUPERSESSION — R1d (2026-08-19): C1b is superseded; this project is bash-native, permanently
+
+**Appended, not rewritten.** The C1b row above stands as the record of what was ruled on
+2026-08-16 and why. This note records what replaced it three days later, and the two must be read
+in that order.
+
+**The ruling.** There will be **no PowerShell port of any script, hook, or assertion** — not the
+full 1:1 parity C1b called for, not a Node rewrite of the assertion layer, and not the Git-Bash
+plus `jq` bridge. Windows 10/11 is supported **exclusively through WSL2**. Installing WSL2 and a
+distribution is a documented prerequisite, not a limitation to engineer around.
+
+**Rationale, for the record.** One codebase, zero assertion divergence. The audit's own
+`PLATFORM_GAP_POWERSHELL.md` priced every alternative and each buys the same class of cost: a 3–5
+day port carrying a dual 144-assertion divergence class, or new host-toolchain assumptions — for a
+native-Windows target the operator no longer requires. The gating `[V?]` C1b was waiting on was
+resolved by that report (hooks route to Git Bash, or PowerShell without it); the answer removed the
+uncertainty without changing the economics.
+
+**Consequently EXCLUDED-WITH-WHY:** READ FIRST Additions #1 (native PowerShell folder) and #2
+(non-bash routing). Excluded by ruling, not deferred — there is no trigger that reopens them short
+of the operator reversing R1d.
+
+**`PLATFORM_GAP_POWERSHELL.md` is deliberately not edited.** It is the immutable audit record whose
+analysis this ruling rests on. Editing it would remove the evidence and leave only the conclusion.
+
+**§4's standing agenda item "PowerShell full-parity phase pending the [V?] resolution (C1b)" is
+closed by this ruling** and is not carried forward.
+
+### R2a and R3a — recorded with R1d (2026-08-19)
+
+Recorded here because a stated operator decision that lives only in a chat window violates HC-8,
+and this session is the ruling record. **Disclosed as an addition** to the five changes the ruling
+prompt enumerated.
+
+- **R2a — diagram scope.** The four mermaid items (CR-001 correct the README dispatch diagram ·
+  CR-005 JML state machine · CR-002 gate FSM · CR-004 §15 continuity layers), all renderable
+  in-repo. **Deferred: CR-003** (d2 — no renderer exists here and HC-5 forbids installing one) and
+  **CR-006** (Vega-Lite — needs its data moved out of the gitignored `logs/`). Scopes S3.
+- **R3a — intake mode.** Hybrid, exactly as specified in `PROMPT_READINESS.md`: blocking only at
+  the `high` and `crit` risk classes, advisory below. Scopes S4.
+
 ## 2. Deployment sequence — DO NOT run while the audit session is mid-flight
 The audit's conformance phase checks the plan byte-pin against the CURRENT canonical (v2.3-named copy). Swapping mid-audit changes ground truth under a running measurement. Sequence:
 1. Wait for the audit to reach and receive `APPROVE AUDIT-GATE-A5`.
