@@ -32,3 +32,9 @@ deep-research-report.md
 # in the repo, while these are working notes about material that never lands on GitHub at all.
 ReportforClaudeWeb*.txt
 Project-Explorer.md
+
+# S6 planning output. Local until the operator promotes it: DIRECTORY_GUIDE.md is byte-pinned to the
+# plan's §4.3 payload, so a tracked file the map does not name is the drift QR-DG-4 recorded, and the
+# map can only gain a path through an upstream re-export. This mirrors how this build's own execution
+# authority lives outside the repo with a copy inside.
+PSYCHIC-CREW-LITE-PLAN.md

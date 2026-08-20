@@ -499,3 +499,12 @@ sentence alone cannot manufacture that alert.
 - **Why it lands here:** plan-corrections.md + its checker IS a hand-rolled witness manifest, and the audit found two detectors attesting nothing. This build has layer 1, a weak layer 2, and no layer 3 at all.
 - **Registered as a [V?]:** OMC states Claude Code 2.1.178+ removed native team creation and that an experimental flag gives each session one implicit team. Consistent with EX-05 as restated, but the flag's effect on that premise is unverified here.
 - **Next action:** S6c — the Psychic-Crew-Lite FIFO plan, folding in B1a/B2a/B3a/B4b, CR-028 seams, CR-029 capability classes, and the verification design this dive surfaced.
+
+## CHECKPOINT 2026-08-20T00:20:59Z — S6 COMPLETE (a, b, c); backlog-freeze condition met
+- **S6c:** Psychic-Crew-Lite plan v0.1 drafted — local and gitignored, mirroring how this build's own execution authority lives outside the repo.
+- **It opens by correcting the audit.** A5.2e priced Lite as practices-without-controls on the assumption the host was not Claude Code. B2a says the runtime IS the Claude Code CLI, with Zed hosting only the terminal — so the enforcement layer travels and Lite means fewer agents and phases, not fewer controls.
+- **Cross-release** resolves the arbiter's absence at four agents without reopening C-12; `released_by` must differ from `from_agent`, asserted mechanically.
+- **Known cost recorded, not smoothed:** one discourse pass loses the second uncontaminated lens, which is the branch that found F7's hardest seeded bug.
+- **Verification designed from the ruflo find:** suites, a witness manifest binding marker plus content hash, and a temporal history for bisecting.
+- **Suites unmoved** by a docs-only session: 42+1 SKIP / 158 / 23 / 22 rows.
+- **Next action:** operator answers the five questions in the Lite plan's §8 before `APPROVE GATE-L0`. The backlog freeze's condition is met — lifting it is the operator's call. The decision-matrix suite over the audit's measured data remains the one unstarted S6 item.
