@@ -492,3 +492,10 @@ sentence alone cannot manufacture that alert.
 - **One deliberate non-adoption:** GUPP/propulsion is the philosophical opposite of a gated build and stays out, but its enabler — agents discovering their own state rather than being briefed — is §15.4 and belongs in Lite.
 - **Next action:** S6b — oh-my-claudecode and ruflo dives, then S6c the Psychic-Crew-Lite FIFO plan. Nothing is blocked.
 - **Note for S6c:** Lite's plan output will be **local and gitignored**, like Project-Explorer.md, because DIRECTORY_GUIDE.md is byte-pinned to plan v3.1 and a new tracked file it does not name is the drift QR-DG-4 recorded. Tracking it needs an operator re-export.
+
+## CHECKPOINT 2026-08-20T00:14:40Z — S6b complete (oh-my-claudecode, ruflo)
+- **Both read targeted per the map.** OMC: the staged loop is F7's, run per-task on demand rather than per-phase behind a gate. ruflo: the map said read it only for swarm topology and warned off general orchestration — correct, but it misses `verification/` entirely.
+- **The find:** ruflo's three-layer regression protection — smoke tests, a cryptographic witness manifest attesting each documented fix's load-bearing code is still present, and a temporal history for bisecting. Motivated by three regressions that passed unit tests and still broke users.
+- **Why it lands here:** plan-corrections.md + its checker IS a hand-rolled witness manifest, and the audit found two detectors attesting nothing. This build has layer 1, a weak layer 2, and no layer 3 at all.
+- **Registered as a [V?]:** OMC states Claude Code 2.1.178+ removed native team creation and that an experimental flag gives each session one implicit team. Consistent with EX-05 as restated, but the flag's effect on that premise is unverified here.
+- **Next action:** S6c — the Psychic-Crew-Lite FIFO plan, folding in B1a/B2a/B3a/B4b, CR-028 seams, CR-029 capability classes, and the verification design this dive surfaced.
