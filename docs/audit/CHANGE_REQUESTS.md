@@ -10,7 +10,41 @@ byte-pinned file, or a gate rule, and therefore cannot be a quiet commit under
 
 ---
 
+## A NOTE ON THE LINE NUMBERS IN THIS FILE (CR-033, 2026-08-20)
+
+**Every `file.sh:NNN` citation below belongs to a change request that has already been
+implemented** — CR-009, CR-013, CR-014, CR-015, CR-016 and CR-024, all landed in S1 — plus two in
+CR-033's own entry that are *deliberately* stale, being its worked examples of staleness.
+
+CR-033 proposed converting "forward-looking" citations to content anchors and annotating the
+historical ones. **Measured at implementation time, the forward-looking set is empty.** Every one of
+these citations now describes *pre-fix* code, so re-pointing it at the current file would make the
+record wrong rather than fresher: it would claim the defect was found where the fix now sits. They
+are therefore annotated, not converted.
+
+**Locate by the quoted content, never by the line number.** Every entry quotes the code it concerns,
+and that quotation is what survives an edit — which is the lesson the citation problem was an
+instance of.
+
+Remaining open CRs — 003, 006, 027, 028, 029, 033 — carry no `file.sh:NNN` citations at all, so
+nothing here misdirects work that is still to be done.
+
+---
+
 ## BACKLOG FROZEN until S6 completes — operator decision, 2026-08-19
+
+**AMENDED 2026-08-20 — the freeze is now CONDITIONAL, not absolute.** S6 completed, and the
+operator's ruling is: *lift the freeze when an item has a requirement that is being blocked for
+build continuity.* So the freeze holds by default and lifts **per item**, on that test — not as a
+blanket release. A CR moves when something already in flight cannot proceed without it; a CR that
+is merely valuable waits. When one is lifted, record which continuity requirement it unblocked, so
+"blocked for build continuity" stays a test rather than a phrase.
+
+**Lifted so far:** CR-033, by direct instruction 2026-08-20 — the audit's citations are the
+navigation surface for every remaining item in this register, so a reader following them lands on
+the wrong lines.
+
+**Original terms, still governing everything not explicitly lifted:**
 
 **No CR is proposed for action until the S6 planning session is done.** The open items below —
 including CR-033, and CR-003 and CR-006 which ruling R2a deferred — stay registered and stay

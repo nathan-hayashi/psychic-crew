@@ -3,6 +3,12 @@
 What was decided, why, what was weighed and dropped, and whether a living control still enforces
 it. Evidence labels as defined in `FINAL_AUDIT_REPORT.md`.
 
+> **Line numbers in this document are as of the audit, 2026-08-17, and have since moved.**
+> Sessions S1–S4 edited the files they cite, so a `file.sh:NNN` reference lands elsewhere today.
+> They are left unchanged deliberately: each records where a defect *was found*, and re-pointing it
+> at current code would describe a present it was never about. Locate by the quoted content, which
+> is stable. (CR-033, 2026-08-20.)
+
 ---
 
 ## A2.1 The decision register
