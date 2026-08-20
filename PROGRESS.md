@@ -508,3 +508,9 @@ sentence alone cannot manufacture that alert.
 - **Verification designed from the ruflo find:** suites, a witness manifest binding marker plus content hash, and a temporal history for bisecting.
 - **Suites unmoved** by a docs-only session: 42+1 SKIP / 158 / 23 / 22 rows.
 - **Next action:** operator answers the five questions in the Lite plan's §8 before `APPROVE GATE-L0`. The backlog freeze's condition is met — lifting it is the operator's call. The decision-matrix suite over the audit's measured data remains the one unstarted S6 item.
+
+## CHECKPOINT 2026-08-20T20:12:41Z — S6 fully complete; operator decisions recorded
+- **All operator answers on disk:** freeze amended to CONDITIONAL (per-item, on "blocked for build continuity"), Lite §8 answered, §2.2 revised to two blind adversarial passes, §7.1 sync correlation added.
+- **CR-033 implemented** — and measurement changed its shape: the forward-looking set was empty, so all four audit documents were annotated and nothing rewritten. 30 citations verified unchanged.
+- **Decision-matrix suite built** at docs/audit/DECISION_MATRICES.md — six matrices, each with a decision column. Two constraints have no mechanical enforcement at all; both are designed into Lite.
+- **Next action:** `APPROVE GATE-L0` is unblocked — §8 is answered. The Lite repo and its §7.1 correlation map should be L0's first act, scoped as its own session. ROADMAP.md's staleness awaits a freeze decision.
