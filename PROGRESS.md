@@ -546,3 +546,9 @@ sentence alone cannot manufacture that alert.
 - **This repo:** CR-003 and CR-006 landed earlier this session at add7ad9; suites 164 / 42+1SKIP / 23. Untouched by the L1 build beyond ledger prose.
 - **Owed here, surfaced by L1:** CR-024 should extend to `hooks/` once a plan re-export lets the map name a correct count (C-26); and this repo's jq detectors should be re-checked for the root-context idiom that made Lite's forbidden-model scan vacuous.
 - **Next action:** await `APPROVE GATE-L1`. Then Lite L2 — continuity layer and the release trail. Still open here: CR-027 (README requirements), ROADMAP.md staleness.
+
+## [F8|2026-08-21T21:56:32Z] LITE L1 CLOSED — this repo unchanged and one owed item resolved
+- **Gate:** `APPROVE GATE-L1` received; Lite at b89e97b, 27 tracked. Verdict in its own ledger.
+- **Owed item CLOSED with a negative result:** this repo does NOT share Lite's root-context jq defect. Every `to_entries` usage here is entry-local; the defect was structural to Lite's three-hop class resolution. Checked, not assumed. No fix owed.
+- **Still owed here:** CR-024 should extend to `hooks/` once a plan re-export lets DIRECTORY_GUIDE.md name a correct count (C-26, half-applied).
+- **Next action:** Lite L2 — continuity layer and the release trail. Open here: CR-027 (README requirements), ROADMAP.md staleness against context/session-summary.md.
