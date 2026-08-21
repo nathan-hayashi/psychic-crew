@@ -514,3 +514,15 @@ sentence alone cannot manufacture that alert.
 - **CR-033 implemented** — and measurement changed its shape: the forward-looking set was empty, so all four audit documents were annotated and nothing rewritten. 30 citations verified unchanged.
 - **Decision-matrix suite built** at docs/audit/DECISION_MATRICES.md — six matrices, each with a decision column. Two constraints have no mechanical enforcement at all; both are designed into Lite.
 - **Next action:** `APPROVE GATE-L0` is unblocked — §8 is answered. The Lite repo and its §7.1 correlation map should be L0's first act, scoped as its own session. ROADMAP.md's staleness awaits a freeze decision.
+
+## [F8|2026-08-21T15:07:54Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 1 file(s) uncommitted
+- **HEAD:** 75df75a
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** `APPROVE GATE-L0` is unblocked — §8 is answered. The Lite repo and its §7.1 correlation map should be L0's first act, scoped as its own session. ROADMAP.md's staleness awaits a freeze decision.
+
+## [F8|2026-08-21T15:11:36Z] LITE L0 BUILT — awaiting the closing token
+- **Built:** psychic-crew-lite, branch dev, commit 997651f, 18 files. Four agents (22-36 lines), capability classes with three-hop resolution, two rules MIRRORED byte-identical from this repo, release-protocol replacing the arbiter protocol, and the §7.1 sync correlation map with its enforcing check.
+- **Verified:** apply-models stamps 4 agents and refuses before stamping on a poisoned config · check-sync 15 PASS / 0 FAIL · all scripts parse · no absolute home prefix, no forbidden vendor names in any tracked file · this repo unchanged at 158 PASS / 0 FAIL.
+- **Decided:** Lite gates are recorded in the LITE ledger, not this one. Two reasons, both measured: this repo's pending-gate toast greps `GATE-F[0-9]+` (hooks/stop.sh:27) and its gate-count assertions grep `G-F[0-4]` (scripts/run-crew-tests.sh:570), so an L0 row here would be a pending gate this build's own machinery cannot see; and a verdict written into two ledgers is two records that can disagree. This repo's Plan.md carries the narrative, the Lite ledger carries the verdict.
+- **Next action:** await `APPROVE GATE-L0` to CLOSE Lite L0. The token was issued once against an empty repository and read as authorisation to begin, per the grammar correction now in the Lite plan §9; closing needs it against work that exists. L1 is Lite enforcement: hooks, deny-list, model guard, secrets guard, release-audit trail.
