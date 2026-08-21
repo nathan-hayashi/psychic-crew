@@ -526,3 +526,9 @@ sentence alone cannot manufacture that alert.
 - **Verified:** apply-models stamps 4 agents and refuses before stamping on a poisoned config · check-sync 15 PASS / 0 FAIL · all scripts parse · no absolute home prefix, no forbidden vendor names in any tracked file · this repo unchanged at 158 PASS / 0 FAIL.
 - **Decided:** Lite gates are recorded in the LITE ledger, not this one. Two reasons, both measured: this repo's pending-gate toast greps `GATE-F[0-9]+` (hooks/stop.sh:27) and its gate-count assertions grep `G-F[0-4]` (scripts/run-crew-tests.sh:570), so an L0 row here would be a pending gate this build's own machinery cannot see; and a verdict written into two ledgers is two records that can disagree. This repo's Plan.md carries the narrative, the Lite ledger carries the verdict.
 - **Next action:** await `APPROVE GATE-L0` to CLOSE Lite L0. The token was issued once against an empty repository and read as authorisation to begin, per the grammar correction now in the Lite plan §9; closing needs it against work that exists. L1 is Lite enforcement: hooks, deny-list, model guard, secrets guard, release-audit trail.
+
+## [F8|2026-08-21T15:30:59Z] LITE L0 CLOSED — this repo unchanged
+- **Gate:** `APPROVE GATE-L0` received; verdict recorded in the Lite ledger, narrative in this repo's Plan.md, per the separation decided and committed at 13ec397.
+- **Published:** github.com/nathan-hayashi/psychic-crew-lite, PUBLIC, default dev, no main — every setting read off this repo rather than assumed.
+- **This repo:** untouched by the Lite build beyond ledger prose. Suites re-run at close.
+- **Next action:** Lite L1 — enforcement layer (hooks, deny-list, model guard, secrets guard, release-audit trail), opening on plain instruction and closing on `APPROVE GATE-L1`. Still open here: CR-003 (d2, deferred), CR-006 (Vega-Lite), CR-027 (README requirements), and ROADMAP.md's staleness against context/session-summary.md.
