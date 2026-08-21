@@ -33,6 +33,7 @@ Discovery path (why this isn't pointed to from CLAUDE.md): CLAUDE.md is a byte-p
 | C-23 | stress assertion skips in a worktree         | F8    | scripts/validate-crew.sh                    |
 | C-24 | §15.5 checker verified hygiene, not fidelity | F8    | save-context.sh behaviour                   |
 | C-25 | bypass detection blind to a failed dispatch  | F8    | subagent-starts.jsonl + validate-crew.sh    |
+| C-26 | map-vs-tree check never policed `hooks/`     | F8    | DIRECTORY_GUIDE.md + run-crew-tests.sh      |
 
 **Table refreshed at CR-011 (audit A0-F1).** It had listed 10 of the then-22 IDs and had not been
 maintained since roughly F4, so the registry's own index disagreed with the registry. It now lists
@@ -450,3 +451,28 @@ The text is unchanged; only its placement in the document was wrong.
 **Applied**: `git rev-parse --is-inside-work-tree` replaces the path-shape test. Verified three ways — the main repo stays 37 PASS / 0 SKIP / 0 FAIL, the worktree moves SKIP → PASS, and a planted absolute path in the worktree fails the assertion. The drill now asserts the check actually ran, so a regression fails the drill instead of passing quietly. Caught live: run against the pre-fix HEAD, the drill reported NOT PORTABLE for this reason.
 
 **Verify**: `sed 's/#.*//' scripts/validate-crew.sh | grep -c is-inside-work-tree` is at least 1, and the drill reports the assertion ran.
+
+## C-26 — the map-vs-tree check polices `scripts/` and `context/` and has never policed `hooks/` (F8, CR-003)
+
+**Why it matters**: `DIRECTORY_GUIDE.md` says "12 tracked hook scripts". The tree holds **14** — 13
+wired plus `_common.sh`, which is sourced rather than wired. The two extra are `subagent-start.sh`
+and `reference-cap.sh`, added at S2 four days ago. CR-024 was built to stop exactly this drift and
+compares the map to the tree **in both directions** — but only for `scripts/` and `context/`, so the
+directory that holds this build's entire enforcement layer was the one directory never compared.
+Eleventh instance of the family: the check looked complete, reported green, and did not cover the
+artifact that mattered most.
+
+**Applied, partially, and the split is the point**: the half that can be fixed here is fixed. The
+CR-003 assertion now compares the tracked `hooks/` tree against `.claude/settings.json` in both
+directions, so a hook that is tracked but unwired, or wired but absent, fails the suite. The half
+that cannot is the map itself: `DIRECTORY_GUIDE.md` is the plan's §4.3 byte-pinned payload at delta
+0, and it can only gain a corrected number through an **operator re-export** of the plan. Writing
+"14" into it here would fail the seed-identity check that the whole build rests on.
+
+**Owed**: the next canonical plan re-export should carry `hooks/  # 14 tracked (13 wired +
+_common.sh)` and, separately, CR-024 should extend to `hooks/` once the map names a count it can be
+compared against. Registered rather than worked around; `README.md`'s own hook count **was** wrong
+in the same way and **is** corrected, because that file is not byte-pinned.
+
+**Verify**: the suite reports "CR-003 every tracked hook is wired and every wired hook exists"; and
+`grep -c 'hooks/' DIRECTORY_GUIDE.md` still shows the map naming 12, which is the open half.

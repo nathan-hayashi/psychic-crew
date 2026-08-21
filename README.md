@@ -111,13 +111,85 @@ what happened once in this build's history and is why the loop is drawn rather t
 
 Two rounds, fixed grammar: `AGREE` (+1) · `CHALLENGE` (defended +1, undefended −1) · `CONNECT` (+1) · `SURFACE` (0). A reviewer may dismiss a suspected issue only with a mitigation it has located and read — "the framework escapes it" is an assumption, and the finding stands.
 
+### The hook pipeline
+
+Eight events, thirteen wired hook scripts, and a shared preamble every one of them sources. Which
+hook fires on which event — and under which matcher — is readable today only by parsing
+`.claude/settings.json`. This is topology rather than flow, which is why it is d2.
+
+**Stated plainly: there is no d2 renderer in this repository and HC-5 forbids installing one.** This
+block is source that reads better than the JSON, not a picture anyone here can render. What makes it
+worth tracking anyway is the next paragraph.
+
+```d2
+# Source of truth is .claude/settings.json. run-crew-tests.sh compares every event -> hook edge
+# below against it in BOTH directions, so this diagram cannot drift from what actually fires.
+
+direction: right
+
+blocking: can block the call {
+  "bash-blocker.sh"
+  "model-guard.sh"
+  "sensitive-guard.sh"
+}
+
+advisory: observes or flags, never denies {
+  "reference-cap.sh"
+  "audit-logger.sh"
+  "auto-format.sh"
+  "provenance-flag.sh"
+  "error-recovery.sh"
+  "notify.sh"
+}
+
+continuity: continuity layer {
+  "pre-compact-checkpoint.sh"
+  "stop.sh"
+  "session-start.sh"
+  "subagent-start.sh"
+}
+
+PreToolUse -> blocking."bash-blocker.sh": Bash
+PreToolUse -> blocking."model-guard.sh": Write|Edit
+PreToolUse -> blocking."sensitive-guard.sh": Write|Edit
+PreToolUse -> advisory."reference-cap.sh": Agent
+PostToolUse -> advisory."audit-logger.sh": *
+PostToolUse -> advisory."auto-format.sh": Write|Edit
+PostToolUse -> advisory."provenance-flag.sh": Write|Edit
+PostToolUseFailure -> advisory."error-recovery.sh": *
+Notification -> advisory."notify.sh": *
+PreCompact -> continuity."pre-compact-checkpoint.sh": auto|manual
+Stop -> continuity."stop.sh": *
+SessionStart -> continuity."session-start.sh": *
+SubagentStart -> continuity."subagent-start.sh": *
+
+preamble: "hooks/_common.sh" {
+  style.stroke-dash: 3
+}
+preamble -> blocking: sourced by
+preamble -> advisory: sourced by
+preamble -> continuity: sourced by
+```
+
+**This is the first diagram in this repository that is checked for being _true_ rather than merely
+well-formed.** Every other one — including the three above — is validated for fence integrity and
+referential integrity only, because binding a picture to the behaviour it depicts is generally not
+mechanically decidable. Here it is, because the depicted thing is a JSON file: the assertion
+extracts every `event -> "hook.sh": matcher` triple from the block above, extracts the same triples
+from `.claude/settings.json`, and fails on any difference in either direction. Add a hook without
+drawing it and the suite fails; draw one that is not wired and the suite fails.
+
+The grouping is a judgement and is **not** checked: only three hooks can actually block a call, and
+reading `reference-cap.sh` as enforcement is the specific misreading that cost this build five
+corrected sentences at S2.
+
 ## Repo map
 
 | Path                                   | What it holds                                                              |
 | -------------------------------------- | -------------------------------------------------------------------------- |
 | `.claude/agents/`                      | the eight agent definitions                                                |
 | `.claude/rules/`                       | binding rules: arbiter protocol, fallback, model policy, security          |
-| `hooks/`                               | 12 hooks — deny-list, model guard, secrets guard, audit logger, continuity |
+| `hooks/`                               | 13 wired hooks + `_common.sh` — deny-list, guards, audit, continuity       |
 | `scripts/`                             | validation, tests, model stamping, context distillation, setup, drills     |
 | `context/`                             | distilled knowledge base; entry point `session-summary.md`                 |
 | `stress-project/`                      | the JML simulator built as the final stress test                           |

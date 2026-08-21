@@ -61,3 +61,308 @@
 **verified** — Cost is driven by how much source an agent reads, which §15.2 reference-passing already minimises. A phase that reads a larger codebase will exceed these numbers regardless of dispatch count; these are calibration points, not caps.
 
 **verified** — Per-dispatch cost was never written to the repo during F7. It was recovered at F8 from session transcripts outside the repo, which is an HC-8 gap in its own right — see **C-21**. Future phases must persist the measurement when it is taken.
+
+## Dispatch-cost distribution (CR-006)
+
+**verified** — The plot below is the only genuine quantitative distribution in this repository. It
+is a Vega-Lite v5 spec with the data **embedded inline**, and that is the whole point of the
+exercise rather than an implementation detail.
+
+### The two constraints this had to clear, and how
+
+**1. The data was gitignored.** `logs/metrics/dispatch-costs.tsv` is the machine artifact and stays
+authoritative, but `logs/` is excluded — so a spec with a `"url"` pointing at it would render an
+empty chart from a fresh clone, which is an unreproducible artifact rather than a diagram. All
+30 rows are therefore embedded as literal `values`. This follows the precedent this file
+already sets for `logs/metrics/f7.json`.
+
+**2. The TSV has no header row**, so column meaning lived only in
+`scripts/measure-dispatch-cost.sh:65`. Recorded here once, from the generator rather than from
+inspection:
+
+| # | Field | Meaning |
+| --- | --- | --- |
+| 1 | `role` | agent role that received the dispatch |
+| 2 | `task` | the dispatch's task id or description |
+| 3 | `tokens` | `toolUseResult.totalTokens` — subagent **context total**, not output produced |
+| 4 | `duration_ms` | `toolUseResult.totalDurationMs` — wall time for that dispatch |
+
+Rows are written sorted ascending by `tokens`. Read the unit note at the top of this file before
+using any number: the same source counted by eight agents appears eight times.
+
+### What it shows
+
+**verified** — 30 dispatches, **3,078,632 tokens** total, mean **102,621**.
+The red tick is the mean. The spread is the finding: the dearest single dispatch is
+**5.6×** the cheapest, so a per-phase
+budget built on a mean is wrong for both tails.
+
+| Role | n | mean | min | max |
+| --- | --- | --- | --- | --- |
+| `arbiter` | 8 | 92,689 | 36,568 | 123,381 |
+| `lead-executor` | 5 | 88,874 | 58,187 | 118,365 |
+| `quality-reviewer` | 4 | 130,495 | 79,846 | 156,265 |
+| `security-reviewer` | 3 | 123,923 | 106,767 | 140,203 |
+| `lead-planner` | 2 | 48,935 | 35,550 | 62,320 |
+| `general-purpose` | 2 | 75,665 | 61,243 | 90,087 |
+| `Explore` | 2 | 83,142 | 73,039 | 93,245 |
+| `fixer` | 2 | 169,410 | 167,905 | 170,915 |
+| `test-runner` | 1 | 46,388 | 46,388 | 46,388 |
+| `integration-runner` | 1 | 198,302 | 198,302 | 198,302 |
+
+**verified** — Ten roles appear, not eight. `general-purpose` and `Explore` are not crew agents;
+they are harness agents used during the audit and are included because excluding them would make
+the total disagree with `logs/`.
+
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Per-dispatch context totals by agent role. Data embedded, not referenced: logs/ is gitignored and a spec pointing at it would plot nothing from a fresh checkout.",
+  "title": {
+    "text": "Dispatch cost distribution",
+    "subtitle": "30 measured dispatches; subagent context totals, not output produced"
+  },
+  "data": {
+    "values": [
+      {
+        "role": "lead-planner",
+        "task": "G-F3 demo: lead produces DISPATCH",
+        "tokens": 35550,
+        "duration_ms": 130272
+      },
+      {
+        "role": "arbiter",
+        "task": "F3-D1-dirguide-risk-scan",
+        "tokens": 36568,
+        "duration_ms": 123378
+      },
+      {
+        "role": "test-runner",
+        "task": "F7-B8-tests",
+        "tokens": 46388,
+        "duration_ms": 197102
+      },
+      {
+        "role": "lead-executor",
+        "task": "F7-A5-readme",
+        "tokens": 58187,
+        "duration_ms": 435162
+      },
+      {
+        "role": "general-purpose",
+        "task": "Peer review via /peer-review",
+        "tokens": 61243,
+        "duration_ms": 364965
+      },
+      {
+        "role": "arbiter",
+        "task": "F3-D1-dirguide-risk-scan",
+        "tokens": 62209,
+        "duration_ms": 217105
+      },
+      {
+        "role": "lead-planner",
+        "task": "F7-P1-jml-simulator-plan",
+        "tokens": 62320,
+        "duration_ms": 295737
+      },
+      {
+        "role": "Explore",
+        "task": "Survey scaffold/verify patterns",
+        "tokens": 73039,
+        "duration_ms": 124736
+      },
+      {
+        "role": "arbiter",
+        "task": "F3-D1-dirguide-risk-scan",
+        "tokens": 73974,
+        "duration_ms": 464973
+      },
+      {
+        "role": "lead-executor",
+        "task": "F7-A2-fixtures",
+        "tokens": 75089,
+        "duration_ms": 460231
+      },
+      {
+        "role": "lead-executor",
+        "task": "F7-A6-suite",
+        "tokens": 75189,
+        "duration_ms": 548162
+      },
+      {
+        "role": "quality-reviewer",
+        "task": "F3-D1-dirguide-risk-scan",
+        "tokens": 79846,
+        "duration_ms": 397479
+      },
+      {
+        "role": "arbiter",
+        "task": "F7-B4-compile1",
+        "tokens": 82381,
+        "duration_ms": 475110
+      },
+      {
+        "role": "general-purpose",
+        "task": "Internal plan review",
+        "tokens": 90087,
+        "duration_ms": 409618
+      },
+      {
+        "role": "Explore",
+        "task": "Audit hiya-crew deployment state",
+        "tokens": 93245,
+        "duration_ms": 251944
+      },
+      {
+        "role": "security-reviewer",
+        "task": "F3-D1-dirguide-risk-scan",
+        "tokens": 106767,
+        "duration_ms": 654902
+      },
+      {
+        "role": "lead-executor",
+        "task": "F7-A3-modules",
+        "tokens": 117542,
+        "duration_ms": 954617
+      },
+      {
+        "role": "lead-executor",
+        "task": "F7-A4-tests",
+        "tokens": 118365,
+        "duration_ms": 733011
+      },
+      {
+        "role": "arbiter",
+        "task": "F7-B6-compile2",
+        "tokens": 118842,
+        "duration_ms": 603682
+      },
+      {
+        "role": "arbiter",
+        "task": "F7-B9-e2e",
+        "tokens": 121025,
+        "duration_ms": 580274
+      },
+      {
+        "role": "arbiter",
+        "task": "F7-P1-jml-simulator-plan",
+        "tokens": 123135,
+        "duration_ms": 428623
+      },
+      {
+        "role": "arbiter",
+        "task": "F7-B7-fix",
+        "tokens": 123381,
+        "duration_ms": 529460
+      },
+      {
+        "role": "security-reviewer",
+        "task": "F7-B3-sec",
+        "tokens": 124800,
+        "duration_ms": 655725
+      },
+      {
+        "role": "quality-reviewer",
+        "task": "F7-B5-qual2",
+        "tokens": 132990,
+        "duration_ms": 692006
+      },
+      {
+        "role": "security-reviewer",
+        "task": "F7-B5-sec2",
+        "tokens": 140203,
+        "duration_ms": 705809
+      },
+      {
+        "role": "quality-reviewer",
+        "task": "Quality review of prep",
+        "tokens": 152880,
+        "duration_ms": 950840
+      },
+      {
+        "role": "quality-reviewer",
+        "task": "F7-B3-qual",
+        "tokens": 156265,
+        "duration_ms": 875961
+      },
+      {
+        "role": "fixer",
+        "task": "F3-D1-dirguide-risk-scan",
+        "tokens": 167905,
+        "duration_ms": 1225648
+      },
+      {
+        "role": "fixer",
+        "task": "F7-B7-fix",
+        "tokens": 170915,
+        "duration_ms": 781106
+      },
+      {
+        "role": "integration-runner",
+        "task": "F7-B9-e2e",
+        "tokens": 198302,
+        "duration_ms": 758461
+      }
+    ]
+  },
+  "encoding": {
+    "y": {
+      "field": "role",
+      "type": "nominal",
+      "sort": "-x",
+      "title": "agent role"
+    },
+    "x": {
+      "field": "tokens",
+      "type": "quantitative",
+      "title": "context total (tokens)"
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "opacity": 0.75,
+        "size": 70
+      },
+      "encoding": {
+        "tooltip": [
+          {
+            "field": "task",
+            "type": "nominal"
+          },
+          {
+            "field": "tokens",
+            "type": "quantitative"
+          },
+          {
+            "field": "duration_ms",
+            "type": "quantitative"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "tick",
+        "color": "firebrick",
+        "thickness": 2,
+        "size": 22
+      },
+      "encoding": {
+        "x": {
+          "field": "tokens",
+          "aggregate": "mean"
+        }
+      }
+    }
+  ]
+}
+```
+
+**No renderer here.** HC-5 forbids installing one and GitHub does not render `vega-lite` fences, so
+this is a spec, not a picture. What is enforced instead is in `run-crew-tests.sh`: the embedded
+`values` are compared against the TSV row by row when it is present, and every field named in the
+`encoding` must exist in the data — the failure that renders an empty chart.

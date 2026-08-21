@@ -532,3 +532,11 @@ sentence alone cannot manufacture that alert.
 - **Published:** github.com/nathan-hayashi/psychic-crew-lite, PUBLIC, default dev, no main — every setting read off this repo rather than assumed.
 - **This repo:** untouched by the Lite build beyond ledger prose. Suites re-run at close.
 - **Next action:** Lite L1 — enforcement layer (hooks, deny-list, model guard, secrets guard, release-audit trail), opening on plain instruction and closing on `APPROVE GATE-L1`. Still open here: CR-003 (d2, deferred), CR-006 (Vega-Lite), CR-027 (README requirements), and ROADMAP.md's staleness against context/session-summary.md.
+
+## [F8|2026-08-21T15:55:25Z] CR-003 + CR-006 DELIVERED — the two diagram CRs R2a deferred
+- **CR-003:** d2 hook topology in README.md, bound to .claude/settings.json by set difference in both directions. No renderer here and that is stated, not engineered around.
+- **CR-006:** Vega-Lite distribution in context/budget-baseline.md with all 30 rows embedded so it survives a fresh clone, compared against the TSV by sum and per-role identity.
+- **Placement forced by the byte-pin:** both landed inside files the map ALREADY names. A new file in context/ or scripts/ fails CR-024, and the map can only gain a path through an operator re-export — the same constraint that moved the S3 diagram validator inline.
+- **Counts:** run-crew-tests 158 -> 164 (+3 CR-003, +3 CR-006). save-context 23 unchanged. Registry 25 -> 26 rows/IDs (+C-26), and the C-24 binding tracked it.
+- **Controls:** 3/3 for CR-003, 4/4 for CR-006 — one of which failed on its first attempt because the suite regenerates the file it was hiding.
+- **Next action:** Lite L1 — enforcement layer. Hooks, deny-list, model guard, secrets guard, release-audit trail, and Lite's own stop hook for L-series gate tokens.

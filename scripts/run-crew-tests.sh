@@ -300,6 +300,95 @@ cases_F2 () {
     && ok "S3 all $dgn mermaid blocks are structurally valid (fences, type, referential integrity)" \
     || no "S3 mermaid: $dgn block(s) found, $dgbad structural error(s) — want >=5 and 0"
 
+  # CR-003 — the d2 hook-pipeline topology, and the FIRST binding here that checks a diagram is
+  # TRUE rather than merely well-formed. Every assertion above it validates fences, types and
+  # referential integrity: a diagram depicting an entirely different system passes them, which is
+  # the state A1-F4 found both then-existing diagrams in.
+  #
+  # It is decidable HERE for exactly one reason: the depicted thing is .claude/settings.json, a
+  # machine-readable file. DO NOT generalise this to the mermaid blocks — binding a picture to
+  # behaviour is not mechanically decidable, and claiming it would be the proxy family this repo
+  # has recorded ten times.
+  #
+  # Compared as a SET DIFFERENCE in both directions, never as a count. C-12 established that a
+  # count is satisfiable by the party being audited: thirteen edges against thirteen wired hooks
+  # agrees perfectly while naming the wrong ones.
+  d2dia=$(awk '/^```d2$/{f=1;next} f&&/^```$/{exit} f' README.md 2>/dev/null \
+          | sed -nE 's/^([A-Za-z]+) -> [a-z]+\."([a-z0-9-]+\.sh)": (.+)$/\1\t\2\t\3/p' | sort)
+  d2cfg=$(jq -r '.hooks | to_entries[] as $e | $e.value[] as $m | $m.hooks[] |
+                 "\($e.key)\t\(.command | sub(".*/";"") | sub("\"$";""))\t\($m.matcher // "*")"' \
+          .claude/settings.json 2>/dev/null | sort)
+  d2nd=$(printf '%s\n' "$d2dia" | grep -c . || true)
+  d2nc=$(printf '%s\n' "$d2cfg" | grep -c . || true)
+  # Vacuity guard first, and it guards BOTH sides. An empty diagram set against an empty config set
+  # is a clean comparison that proves nothing — the exact defect the audit proved twice with a
+  # negative control, and the reason check-sync opens the same way.
+  { [ "${d2nd:-0}" -ge 10 ] && [ "${d2nc:-0}" -ge 10 ]; } \
+    && ok "CR-003 d2 topology and settings.json both parse ($d2nd edges vs $d2nc wired hooks)" \
+    || no "CR-003 extraction is vacuous — diagram:$d2nd config:$d2nc, both must be >=10"
+  d2only=$(comm -23 <(printf '%s\n' "$d2dia") <(printf '%s\n' "$d2cfg") | tr '\t' ':' | tr '\n' ' ')
+  d2miss=$(comm -13 <(printf '%s\n' "$d2dia") <(printf '%s\n' "$d2cfg") | tr '\t' ':' | tr '\n' ' ')
+  { [ -z "$d2only" ] && [ -z "$d2miss" ]; } \
+    && ok "CR-003 every event->hook edge matches settings.json exactly, both directions" \
+    || no "CR-003 diagram diverges from settings.json — drawn but not wired:[$d2only] wired but not drawn:[$d2miss]"
+
+  # Registered at S7, NOT fixed: DIRECTORY_GUIDE.md says 12 hook scripts and the tree holds 14
+  # (13 wired + _common.sh). CR-024 polices scripts/ and context/ in both directions and does not
+  # police hooks/, which is why S2's two additions drifted unseen. The map is the §4.3 byte-pinned
+  # payload and can only gain a number through an operator re-export, so this asserts the TREE
+  # against settings.json — the two artifacts that can both be fixed here — and leaves the map to
+  # the re-export it needs.
+  d2tracked=$(git ls-files 'hooks/*.sh' 2>/dev/null | sed 's|hooks/||' | grep -v '^_common\.sh$' | sort -u)
+  d2wired=$(printf '%s\n' "$d2cfg" | cut -f2 | sort -u)
+  d2unwired=$(comm -23 <(printf '%s\n' "$d2tracked") <(printf '%s\n' "$d2wired") | tr '\n' ' ')
+  d2ghost=$(comm -13 <(printf '%s\n' "$d2tracked") <(printf '%s\n' "$d2wired") | tr '\n' ' ')
+  { [ -z "$d2unwired" ] && [ -z "$d2ghost" ]; } \
+    && ok "CR-003 every tracked hook is wired and every wired hook exists (_common.sh excluded, it is sourced)" \
+    || no "CR-003 hooks/ drift — tracked but unwired:[$d2unwired] wired but absent:[$d2ghost]"
+
+  # CR-006 — the Vega-Lite dispatch-cost distribution. Two failure modes, both real, both checked.
+  #
+  # The audit named the first: logs/ is gitignored, so a spec with a "url" plots nothing from a
+  # fresh clone. The data is embedded instead, which trades reproducibility for staleness — so the
+  # embedded copy is compared against the TSV rather than trusted.
+  #
+  # The second is Vega-Lite's own: an encoding naming a field the data does not carry renders an
+  # EMPTY CHART, silently. That is referential integrity, the same property the mermaid validator
+  # asserts on edge endpoints, and it needs no renderer.
+  vlf="context/budget-baseline.md"
+  vlspec=$(awk '/^```vega-lite$/{f=1;next} f&&/^```$/{exit} f' "$vlf" 2>/dev/null)
+  vln=$(printf '%s' "$vlspec" | jq -r '.data.values | length' 2>/dev/null || echo 0)
+  # Vacuity guard first: a fence that stops parsing makes every comparison below trivially clean.
+  { [ -n "$vlspec" ] && [ "${vln:-0}" -ge 10 ]; } \
+    && ok "CR-006 vega-lite spec parses with $vln embedded rows" \
+    || no "CR-006 spec did not parse or carries too few rows ($vln) — every check below would be vacuous"
+
+  # Referential integrity: every field named anywhere in the encoding must exist in the data.
+  vlfields=$(printf '%s' "$vlspec" | jq -r '[.. | objects | select(has("field")) | .field] | unique[]' 2>/dev/null | sort -u)
+  vlkeys=$(printf '%s' "$vlspec" | jq -r '.data.values[0] | keys[]' 2>/dev/null | sort -u)
+  vlbad=$(comm -23 <(printf '%s\n' "$vlfields") <(printf '%s\n' "$vlkeys") | tr '\n' ' ')
+  { [ -n "$vlfields" ] && [ -z "$vlbad" ]; } \
+    && ok "CR-006 every encoded field exists in the embedded data ($(printf '%s' "$vlfields" | tr '\n' ' '))" \
+    || no "CR-006 encoding names field(s) absent from the data:[$vlbad] — this renders an empty chart"
+
+  # Freshness against the source. The TSV is gitignored, so absence is EXPECTED in a clone and the
+  # skip announces itself rather than passing quietly — C-23 punished exactly the silent version.
+  vlsrc="logs/metrics/dispatch-costs.tsv"
+  if [ ! -f "$vlsrc" ]; then
+    ok "CR-006 source TSV absent (gitignored, expected in a fresh clone) — freshness not checkable here"
+  else
+    vlsn=$(grep -c . "$vlsrc")
+    vlst=$(awk -F'\t' '{s+=$3} END{print s+0}' "$vlsrc")
+    vlet=$(printf '%s' "$vlspec" | jq -r '[.data.values[].tokens] | add' 2>/dev/null)
+    # Correlated by SUM and per-role identity, never by row count alone: thirty rows against thirty
+    # rows agrees perfectly while carrying different numbers (C-12's lesson, applied to data).
+    vlsr=$(awk -F'\t' '{print $1}' "$vlsrc" | sort | uniq -c | awk '{print $2":"$1}' | sort | tr '\n' ' ')
+    vler=$(printf '%s' "$vlspec" | jq -r '.data.values[].role' 2>/dev/null | sort | uniq -c | awk '{print $2":"$1}' | sort | tr '\n' ' ')
+    { [ "$vln" = "$vlsn" ] && [ "$vlet" = "$vlst" ] && [ "$vlsr" = "$vler" ]; } \
+      && ok "CR-006 embedded data matches the TSV — $vln rows, $vlet tokens, per-role counts identical" \
+      || no "CR-006 embedded data is STALE — rows $vln/$vlsn tokens $vlet/$vlst roles[$vler] vs [$vlsr]"
+  fi
+
   # S2 (CR-025 / CR-022): two new hooks touch the enforcement layer, and untested enforcement is a
   # finding by this crew's own reviewer contract — F2 shipped three hooks with zero cases and a
   # denial path that left no record, and both survived every green suite before them.
