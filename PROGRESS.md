@@ -540,3 +540,9 @@ sentence alone cannot manufacture that alert.
 - **Counts:** run-crew-tests 158 -> 164 (+3 CR-003, +3 CR-006). save-context 23 unchanged. Registry 25 -> 26 rows/IDs (+C-26), and the C-24 binding tracked it.
 - **Controls:** 3/3 for CR-003, 4/4 for CR-006 — one of which failed on its first attempt because the suite regenerates the file it was hiding.
 - **Next action:** Lite L1 — enforcement layer. Hooks, deny-list, model guard, secrets guard, release-audit trail, and Lite's own stop hook for L-series gate tokens.
+
+## [F8|2026-08-21T16:04:37Z] LITE L1 BUILT — this repo unchanged
+- **Lite:** b9e1026, 27 tracked files. validate-lite 24 PASS / 1 SKIP / 0 FAIL, check-sync 36 PASS / 0 FAIL. Awaiting `APPROVE GATE-L1` in its own ledger.
+- **This repo:** CR-003 and CR-006 landed earlier this session at add7ad9; suites 164 / 42+1SKIP / 23. Untouched by the L1 build beyond ledger prose.
+- **Owed here, surfaced by L1:** CR-024 should extend to `hooks/` once a plan re-export lets the map name a correct count (C-26); and this repo's jq detectors should be re-checked for the root-context idiom that made Lite's forbidden-model scan vacuous.
+- **Next action:** await `APPROVE GATE-L1`. Then Lite L2 — continuity layer and the release trail. Still open here: CR-027 (README requirements), ROADMAP.md staleness.
