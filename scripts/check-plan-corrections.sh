@@ -320,7 +320,13 @@ if [ -n "$c24tmp" ] && [ -f scripts/save-context.sh ]; then
   sed 's/was received @ [0-9T:-]*Z/was received @ 1999-01-01T00:00:00Z/' \
       context/session-summary.md > "$c24tmp/context/session-summary.md" 2>/dev/null
   c24out=$( cd "$c24tmp" && ./scripts/save-context.sh check 2>&1 )
-  if printf '%s' "$c24out" | grep -q 'C-24 fidelity: summary says'; then
+    # Bound to the BEHAVIOUR, not the wording. This matched the literal string
+    # "C-24 fidelity: summary says" — the OLD hand-written binding's message — so when the
+    # mechanism became declared bindings (C-28) the detector reported PENDING for a checker that
+    # rejects the planted timestamp exactly as before. A detector pinned to a message is pinned to
+    # an implementation, which is the proxy family this registry exists to record.
+    c24rc=$( cd "$c24tmp" && ./scripts/save-context.sh check >/dev/null 2>&1; echo $? )
+    if [ "$c24rc" != 0 ] && printf '%s' "$c24out" | grep -q '1999-01-01T00:00:00Z'; then
     report C-24 F8 APPLIED "the §15.5 checker rejects a distilled gate timestamp that disagrees with the gate ledger"
   else
     report C-24 F8 PENDING "the §15.5 checker accepts a distilled claim its own source contradicts — hygiene only, no fidelity"
@@ -392,6 +398,28 @@ elif [ -n "${fixt:-}" ]; then
   report C-14 F3 PENDING "tooluse trail carries fixture-written records (task_id=$fixt) — tests polluting the artifact they audit"
 else
   report C-14 F3 PENDING "build-errors trail carries fixture-written records (first at $befix) — tests polluting the artifact they audit"
+fi
+
+# C-28 — the detector reads the BINDING LOGIC, never a token. A script that merely mentions
+# "CLAIMS-MANIFEST" satisfies a grep and binds nothing; that is the shape the audit found twice.
+# Three properties, all behavioural: the manifest parses to rows under a VERSIONED anchor, an
+# unbound claim planted in a scratch summary FAILS, and a bound-but-stale number FAILS.
+c28t=$(mktemp -d); mkdir -p "$c28t/context" "$c28t/scripts"
+cp scripts/save-context.sh "$c28t/scripts/" 2>/dev/null
+# The manifest opens as `CLAIMS_BLOCK='# CLAIMS-MANIFEST v1`, so the anchor is the VERSIONED token
+# wherever it appears on that line — not a line-start match, which found nothing and reported the
+# whole mechanism missing.
+c28rows=$(awk '/CLAIMS-MANIFEST v[0-9]+$/{f=1;next} f&&/^PB-[0-9]/{n++} END{print n+0}' scripts/save-context.sh)
+printf '# s\n\n**verified** — x. The tree holds **4242 widgets** today.\n\n## Next action\nX\n' \
+  > "$c28t/context/session-summary.md"
+( cd "$c28t" && ./scripts/save-context.sh check >/dev/null 2>&1 ); c28unbound=$?
+printf '# s\n\n**verified** — x.\n\n## Next action\nX\n' > "$c28t/context/session-summary.md"
+( cd "$c28t" && ./scripts/save-context.sh check >/dev/null 2>&1 ); c28clean=$?
+rm -rf "$c28t"
+if [ "${c28rows:-0}" -ge 5 ] && [ "$c28unbound" != 0 ] && [ "$c28clean" = 0 ]; then
+  report C-28 F8 APPLIED "declared bindings live: $c28rows manifest rows, an unbound claim FAILS the check and a claim-free summary passes"
+else
+  report C-28 F8 PENDING "declared-binding logic not demonstrated (rows=$c28rows unbound_exit=$c28unbound clean_exit=$c28clean)"
 fi
 
 printf '\n== %s APPLIED / %s PENDING / %s SUPERSEDED ==\n' "$APPL" "$PEND" "$NA"

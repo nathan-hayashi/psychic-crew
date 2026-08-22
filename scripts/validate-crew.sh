@@ -322,6 +322,11 @@ else
   skip "no arbiter audit log yet (F3 owns logs/arbiter-audit.jsonl)"
 fi
 
+# ONE shared total for both closing bindings. Each previously did its own +1 arithmetic, which
+# broke twice: once when the C-14 canary was added after the README binding, and again when the
+# C-28 binding was moved last and the README binding stopped counting it. The +2 is the two
+# assertions below, which are the last things this script emits.
+SUITE_TOTAL=$((P + S + F + 2))
 # CR-027 — this script's own count in the README, bound here for the reason given at the foot of
 # run-crew-tests.sh. SKIP is included because this suite reports one and the README's figure is the
 # number of assertions, not the number that happened to pass today.
@@ -336,7 +341,7 @@ if [ ! -d .git ] || [ ! -d logs ]; then
   pass "CR-027 README count describes the primary checkout; this is not one (assertions vary with which optional artifacts exist)"
 else
 # Every claim, for the reason given at the foot of run-crew-tests.sh.
-vct=$((P + S + F + 1))
+vct=$SUITE_TOTAL
 vcall=$(grep -oE '[0-9]+ structural assertions' README.md 2>/dev/null | grep -oE '^[0-9]+' | sort -u)
 vcn=$(printf '%s\n' "$vcall" | grep -c . || true)
 if [ "${vcn:-0}" = 0 ]; then
@@ -346,6 +351,20 @@ else
   [ -z "$vcbad" ] && pass "CR-027 every structural-assertion claim in README agrees ($vcn distinct value(s)) and matches this run ($vct)" \
                   || fail "CR-027 README carries stale structural-assertion count(s):[$vcbad] — this run has $vct"
 fi
+fi
+
+# C-28 — this script also binds its own claim in context/session-summary.md. save-context cannot
+# compute it: check-plan-corrections runs save-context under a temp root, so a call back into a
+# suite would recurse. The suite is the only component that knows its own total.
+ssum="context/session-summary.md"
+ssgot=$(grep -oE 'validate-crew \*\*([^*]+)\*\*' "$ssum" 2>/dev/null | head -1 | sed -E 's/^validate-crew \*\*//; s/\*\*$//')
+sswant="$((SUITE_TOTAL - S)) PASS / $S SKIP / 0 FAIL"
+if [ -z "$ssgot" ]; then
+  pass "C-28 summary makes no validate-crew claim — nothing to bind"
+elif [ "$ssgot" = "$sswant" ]; then
+  pass "C-28 summary's validate-crew figure matches this run ($sswant)"
+else
+  fail "C-28 summary says validate-crew '$ssgot', this run is '$sswant'"
 fi
 
 printf '\n== validate-crew: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"

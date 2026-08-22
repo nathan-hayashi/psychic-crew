@@ -35,6 +35,7 @@ Discovery path (why this isn't pointed to from CLAUDE.md): CLAUDE.md is a byte-p
 | C-25 | bypass detection blind to a failed dispatch  | F8    | subagent-starts.jsonl + validate-crew.sh    |
 | C-26 | map-vs-tree check never policed `hooks/`     | F8    | DIRECTORY_GUIDE.md + run-crew-tests.sh      |
 | C-27 | C-14 recurred on a second audit trail        | F8    | run-crew-tests.sh + check-plan-corrections.sh |
+| C-28 | fidelity bound claims one at a time          | F8    | save-context.sh CLAIMS-MANIFEST             |
 
 **Table refreshed at CR-011 (audit A0-F1).** It had listed 10 of the then-22 IDs and had not been
 maintained since roughly F4, so the registry's own index disagreed with the registry. It now lists
@@ -478,6 +479,24 @@ in the same way and **is** corrected, because that file is not byte-pinned.
 **Verify**: the suite reports "CR-003 every tracked hook is wired and every wired hook exists"; and
 `grep -c 'hooks/' DIRECTORY_GUIDE.md` still shows the map naming 12, which is the open half.
 
+**CLOSED (PARENT-SYNC-1, 2026-08-22).** The open half is closed: plan **v3.2**'s §4.3 payload
+enumerates all fourteen `hooks/` files **by name** rather than carrying a count, and CR-024's
+map-vs-tree correlation is extended to `hooks/` in both directions. Enumeration is what makes the
+comparison possible at all — a count cannot be correlated to identity, and C-12 established that a
+count is satisfiable by the party being audited. `_common.sh` is **included, not special-cased**:
+the map names it and marks it the shared library, and exempting it in code would be the check
+disagreeing with the map it checks.
+
+**Citation verified, not corrected (PARENT-SYNC-1).** The heading cites `CR-003`. Checked against
+`docs/audit/DIAGRAM_AUDIT.md` and `CHANGE_REQUESTS.md`: CR-003 is the d2 hook-pipeline topology, and
+this finding was discovered while building it and half-fixed by its assertion — which is literally
+named `CR-003 every tracked hook is wired`. The citation is correct lineage, not a mislabel. Recorded
+because a citation that is checked and found sound is worth as much as one corrected.
+
+**Verify (closed form)**: the suite reports "C-26 map hooks/ matches the tree both ways (14 files,
+_common.sh included as the map names it)"; a phantom hook on disk FAILs naming it, and a name
+removed from a scratch map copy FAILs naming it.
+
 ## C-27 — C-14 recurred on a second trail, and the canary written for the first never saw it (F8, L4)
 
 **Why it matters**: C-14 was raised when test fixtures wrote **178 fabricated records into
@@ -511,3 +530,40 @@ indistinguishable from tampering, which is C-14's own rule applied to its own re
 
 **Verify**: the suite reports "C-14 canary: all N live audit trail(s) unchanged by this run", and
 pointing any fixture back at the live root makes it FAIL naming the trail that moved.
+
+## C-28 — fidelity bound claims one at a time; the class was never closed (F8, PARENT-SYNC-1)
+
+**Why it matters**: C-24 found the §15.5 checker asserted tidiness and never truth — twenty
+assertions, every one a property of the summary considered alone, all green against a summary that
+dated the closing gate to a timestamp belonging to the next ledger entry. CR-034 then bound **two
+more claims by hand**. Both were instance fixes. Every *other* number in `context/session-summary.md`
+stayed unbound, and the live-numbers line drifted until the crew-suite figure read **157** against a
+real **169** — while the prose beside it claimed the line "cannot silently rot again".
+
+**Applied — ported from `psychic-crew-lite`, adapted rather than copied.** Bindings are now
+**declared** in a versioned `CLAIMS-MANIFEST v1` block inside `scripts/save-context.sh`, each naming
+a locator and a source extractor, and the completeness check **FAILS on any bold numeric span the
+manifest does not cover**. Adding an unbound number is what breaks.
+
+Adaptations forced by this repo, not present in the source:
+- Lite writes claims as `**value** label`; this repo writes them four ways — label before the bold,
+  label inside it, and two composite spans carrying two numbers each. A row therefore declares a
+  **locator** (an ERE whose first group is the claimed span) rather than a label.
+- Two claims cannot be computed here without recursion: `check-plan-corrections.sh` runs
+  `save-context.sh` under a temp root, so calling a suite back would loop. Those are declared
+  `elsewhere:<script>` and bound by the only component that can compute them — the suite itself —
+  and the assertion **reads that script's binding logic**, not a token.
+- Every extraction anchor is **versioned** (`CLAIMS-MANIFEST v1`), per the d1d90b8 lesson where a
+  prefix anchor also matched a document's own title and a rewriter destroyed the file it parsed.
+- The manifest lives inside the script because `context/` is byte-pinned by the §4.3 payload: a new
+  `context/CLAIMS.md` would fail CR-024, the same constraint that moved the S3 diagram validator
+  inline.
+
+**Found by the port, in this repo**: the registry-rows claim was stale (22 against 27), the
+save-context figure stale (23 against 30), the crew-suite figure stale (157 against 169) and the
+validate-crew figure stale (42 against 44). Four unbound claims, all silently wrong.
+
+**Verify**: the detector reads the binding LOGIC — `save-context.sh` must parse a versioned
+`CLAIMS-MANIFEST`, and the check must fail on an unbound span. An unbound claim planted in the
+summary FAILs naming it; a bound-but-stale number FAILs via its binding; a row naming an unknown
+extractor FAILs as binding nothing.

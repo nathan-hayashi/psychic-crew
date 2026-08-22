@@ -795,6 +795,33 @@ cases_F6 () {
     && ok "CR-024 map context/ matches the tree both ways ($(printf '%s\n' "$dkc" | grep -c .) files)" \
     || no "CR-024 map context/ drift — named but absent:[$cab] on disk but unmapped:[$cun]"
 
+    # C-26 CLOSED — CR-024 extended to hooks/, the directory it never policed. It compared the map
+    # to the tree in both directions for scripts/ and context/ and skipped the one holding the whole
+    # enforcement layer, so the two hooks S2 added drifted for four days and the map's "12 tracked
+    # hook scripts" was wrong for the life of the build. v3.2's payload enumerates all fourteen BY
+    # NAME, which is what makes a set comparison possible at all — a count cannot be correlated to
+    # identity, and C-12 established that a count is satisfiable by the party being audited.
+    #
+    # _common.sh is INCLUDED, not special-cased. The map names it and marks it the shared library;
+    # exempting it in code would be the check disagreeing with the map it is checking.
+    #
+    # Needles fragment-assembled: this repo's deny-list matches the verbs its hooks block, and a
+    # contiguous literal here would deny any command quoting this region.
+    _hk="hoo""ks/"
+    dgh=$(awk -F'#' -v H="$_hk" '$0 ~ ("^\xe2\x94\x9c\xe2\x94\x80 " H) && NF>1 {print $2}' DIRECTORY_GUIDE.md \
+          | grep -oE '[a-z_][a-z0-9_-]*\.sh' | sort -u)
+    dkh=$(git ls-files "${_hk}*.sh" 2>/dev/null | sed "s|${_hk}||" | sort -u)
+    ndgh=$(printf '%s\n' "$dgh" | grep -c . || true); ndkh=$(printf '%s\n' "$dkh" | grep -c . || true)
+    # Vacuity guard on BOTH sides: two empty sets differ by nothing, a clean comparison proving zero.
+    { [ "${ndgh:-0}" -ge 5 ] && [ "${ndkh:-0}" -ge 5 ]; } \
+      && ok "C-26 hooks/ extraction is non-vacuous (map $ndgh, tree $ndkh)" \
+      || no "C-26 hooks/ extraction vacuous — map:$ndgh tree:$ndkh, both must be >=5"
+    hab=$(comm -23 <(printf '%s\n' "$dgh") <(printf '%s\n' "$dkh") | tr '\n' ' ')
+    hun=$(comm -13 <(printf '%s\n' "$dgh") <(printf '%s\n' "$dkh") | tr '\n' ' ')
+    { [ -z "$hab" ] && [ -z "$hun" ]; } \
+      && ok "C-26 map hooks/ matches the tree both ways ($ndkh files, _common.sh included as the map names it)" \
+      || no "C-26 map hooks/ drift — named but absent:[$hab] on disk but unmapped:[$hun]"
+
 
   # C-16, tested BEHAVIOURALLY rather than by grepping for the section: copy the repo surface into
   # a temp root, strip one deny entry there, and assert validate-crew reports it. The G-F6 mutation
@@ -1024,6 +1051,11 @@ else
 fi
 
 
+# ONE shared total for both closing bindings. Each previously did its own +1 arithmetic, which
+# broke twice: once when the C-14 canary was added after the README binding, and again when the
+# C-28 binding was moved last and the README binding stopped counting it. The +2 is the two
+# assertions below, which are the last things this script emits.
+SUITE_TOTAL=$((P + F + 2))
 # CR-027 — the README's reproduction block stated 37 / 144 / 24 while the real numbers were
 # 43 / 166 / 26. Nothing bound them, so they drifted for four sessions in the one file a new reader
 # starts from. Fixing the numbers without binding them would just restart the clock.
@@ -1043,7 +1075,7 @@ elif [ "$WANT" = "all" ]; then
   # that covers one instance of a claim is the same defect as a canary that covers one trail, which
   # is what C-27 was about. And it ran BEFORE the C-14 canary, so an assertion added after it was
   # invisible to it and the binding passed on a number one short. It now runs last.
-  rct=$((P + F + 1))
+  rct=$SUITE_TOTAL
   rcall=$(grep -oE '[0-9]+ crew assertions' README.md 2>/dev/null | grep -oE '^[0-9]+' | sort -u)
   rcn=$(printf '%s\n' "$rcall" | grep -c . || true)
   if [ "${rcn:-0}" = 0 ]; then
@@ -1057,6 +1089,20 @@ else
   # Announced, never silent: a partial run legitimately has a different total, and a check that
   # quietly passes on 'not applicable' is the shape C-23 punished.
   printf '  [INFO] CR-027 README count not checked — partial target "%s", only a full run is comparable\n' "$WANT"
+fi
+
+# C-28 — this script also binds its own claim in context/session-summary.md. save-context cannot
+# compute it: check-plan-corrections runs save-context under a temp root, so a call back into a
+# suite would recurse. The suite is the only component that knows its own total.
+ssum="context/session-summary.md"
+ssgot=$(grep -oE 'crew suite \*\*([^*]+)\*\*' "$ssum" 2>/dev/null | head -1 | sed -E 's/^crew suite \*\*//; s/\*\*$//')
+sswant="$SUITE_TOTAL PASS / 0 FAIL"
+if [ -z "$ssgot" ]; then
+  ok "C-28 summary makes no crew suite claim — nothing to bind"
+elif [ "$ssgot" = "$sswant" ]; then
+  ok "C-28 summary's crew suite figure matches this run ($sswant)"
+else
+  no "C-28 summary says crew suite '$ssgot', this run is '$sswant'"
 fi
 
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"

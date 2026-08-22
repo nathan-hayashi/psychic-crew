@@ -23,6 +23,75 @@ no () { F=$((F+1)); printf '  [FAIL] %s\n' "$1"; }
 # burned two red gates on a file that merely QUOTED the token it checks for.
 ABS=$(printf '/%s/' home)
 
+
+# ── DECLARED BINDINGS (C-28, ported from psychic-crew-lite) ─────────────────────────────────────
+# CR-034 was the observation that fidelity is not a property you finish: C-24 bound ONE claim — the
+# gate timestamp — and every other number in the summary drifted freely until it was three sessions
+# stale. CR-034's repair bound two more BY HAND. That fixed the instance; this closes the class.
+#
+# Every claim is DECLARED below with the source that produces it, and the completeness check FAILS
+# on any bold numeric span the manifest does not cover. Adding an unbound number is what breaks,
+# rather than something nobody notices for three sessions.
+#
+# ADAPTED, not copied. Lite writes claims as `**value** label`; this repo writes them four different
+# ways — label before the bold, label inside it, and two composite spans carrying two numbers each.
+# So a row declares a LOCATOR (an ERE whose first group is the claimed span) rather than a label.
+#
+# Extraction anchors are VERSIONED — the d1d90b8 lesson, where an anchor matching a prefix also
+# matched a document's own title and a rewriter then destroyed the file it was parsing.
+#
+# `elsewhere:<script>` marks a claim this script CANNOT compute without recursion: check-plan-
+# corrections.sh runs THIS script under a temp root for the C-24 detector, so calling a suite back
+# would recurse. Those two are bound by the only component that can compute them without recursion
+# — the suite itself — and the assertion here reads that script's binding LOGIC, not a token.
+CLAIMS_BLOCK='# CLAIMS-MANIFEST v1
+PB-01	crew suite \*\*([^*]+)\*\*	elsewhere:scripts/run-crew-tests.sh
+PB-02	validate-crew \*\*([^*]+)\*\*	elsewhere:scripts/validate-crew.sh
+PB-03	save-context \*\*([^*]+)\*\*	sc_self
+PB-04	app suite \*\*([^*]+)\*\*	app_suite
+PB-05	corrections \*\*([^*]+)\*\*	corrections
+PB-06	\*\*([0-9]+ tracked files)\*\*	tracked
+PB-07	\*\*([0-9,]+ across [0-9]+ dispatches [^*]+)\*\*	f7_tokens
+PB-08	APPROVE GATE-F8` was received @ ([0-9T:Z-]+)	gate_ts'
+
+# Every extractor prints the FULL expected span, so a composite claim carrying two numbers is
+# checked as one string and cannot half-drift.
+truth () {
+  case "$1" in
+    sc_self)     printf '%s PASS / %s FAIL' "$SC_P" "$SC_F" ;;
+    # STATIC count of declared cases, not a run. Executing the app suite from here would be a heavy
+    # side effect inside a checker that check-plan-corrections invokes under a temp root where
+    # stress-project does not exist. Bound to the declarations in the test files, and the limit is
+    # stated: this counts cases DECLARED, and a declared case that fails is caught by the app suite,
+    # not by this. Absent tree returns nothing, which the caller reports rather than passes.
+    app_suite)   n=$(grep -rhcE '^[[:space:]]*test\(' stress-project/test/*.js 2>/dev/null | paste -sd+ | bc 2>/dev/null)
+                 [ "${n:-0}" -gt 0 ] && printf '%s/%s' "$n" "$n" ;;
+    corrections) r=$(grep -c '^| C-[0-9]' "$CTX/plan-corrections.md" 2>/dev/null)
+                 i=$(grep -oE 'C-[0-9]{2}' "$CTX/plan-corrections.md" 2>/dev/null | sort -u | grep -c .)
+                 printf '%s rows across %s registered correction IDs' "$r" "$i" ;;
+    # Returns EMPTY, not failure, when there is no work tree. "unknown extractor" is a manifest
+    # error and "source unavailable in this environment" is not — conflating them made ccs-02 fail,
+    # a fixture that legitimately runs this under a bare temp root. The caller only complains about
+    # an empty source when the summary actually MAKES the claim (the C-23 lesson).
+    tracked)     git rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+                   && printf '%s tracked files' "$(git ls-files | grep -c .)" ;;
+    # Composed from the SOURCE line rather than pattern-matched out of a restatement:
+    # budget-baseline.md records "18 dispatches, **2,045,319 tokens**" and the ratio separately.
+    f7_tokens)   f7sec=$(awk '/^## F7 —/{f=1;next} f&&/^## /{exit} f' context/budget-baseline.md 2>/dev/null)
+                 d=$(printf '%s' "$f7sec" | grep -oE '[0-9]+ dispatches, \*\*[0-9,]+ tokens\*\*' | grep -oE '^[0-9]+' | head -1)
+                 k=$(printf '%s' "$f7sec" | grep -oE '\*\*[0-9,]+ tokens\*\*' | grep -oE '[0-9,]+' | head -1)
+                 r=$(printf '%s' "$f7sec" | grep -oE '\*\*[0-9]+\.[0-9]+×\*\*' | head -1 | tr -d '*')
+                 { [ -n "$k" ] && [ -n "$d" ] && [ -n "$r" ]; } && printf '%s across %s dispatches (%s)' "$k" "$d" "$r" ;;
+    gate_ts)     grep -oE 'APPROVE GATE-F8` @ [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' GATES.md 2>/dev/null \
+                   | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' | head -1 ;;
+    *)           return 1 ;;
+  esac
+  # Always succeed for a known name. Without this the last command's exit status leaks out, so an
+  # extractor whose SOURCE is missing reported "unknown extractor" — a manifest error — and ccs-02,
+  # which legitimately runs this under a bare temp root, failed six ways for the wrong reason.
+  return 0
+}
+
 case "$MODE" in
 prepare)
   mkdir -p "$CTX"
@@ -75,67 +144,102 @@ check)
     && ok "entry point declares a Next action" \
     || no "entry point has no '## Next action' section"
 
-  # CR-032 / C-24 (audit A0-F3) — FIDELITY, not hygiene. Every assertion above is a property of the
-  # distilled file considered ALONE: no absolute paths, no raw logs, labels present, a Next action
-  # declared. All twenty passed for three days against a summary that dated the closing gate to a
-  # timestamp belonging to the NEXT ledger entry — a conflation, not a typo, and one no hygiene check
-  # can reach by construction. A distillation whose whole job is to be the authoritative cold-start
-  # read was checked for tidiness and never for truth.
-  # Bind to the source: the gate ledger is where an approval timestamp actually lives.
-  # Vacuity-guarded first, because a claim this cannot find is a claim it cannot check, and silently
-  # passing on "not found" is how a fidelity check becomes decorative.
-  fid_src=$(grep -oE 'APPROVE GATE-F8` @ [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' GATES.md 2>/dev/null \
-            | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' | head -1)
-  fid_cls=$(grep -oE 'APPROVE GATE-F8` was received @ [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' "$ENTRY" 2>/dev/null \
-            | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z' | head -1)
-  # The guard fires on "a claim with no source", never on "no claim". Caught by the ccs-02 fixture,
-  # which builds a temp root with an empty ledger and a summary that makes no gate claim at all — a
-  # legitimate state that the first version of this check treated as failure. An absent claim is
-  # reported rather than skipped silently, so it cannot become the way this check quietly stops
-  # meaning anything; an unverifiable claim is what actually fails.
-  if [ -z "$fid_cls" ]; then
-    ok "C-24 fidelity: the summary makes no GATE-F8 approval claim — nothing to bind"
-  elif [ -z "$fid_src" ]; then
-    no "C-24 fidelity: the summary claims a GATE-F8 approval timestamp but the gate ledger carries none to check it against"
-  elif [ "$fid_src" = "$fid_cls" ]; then
-    ok "C-24 fidelity: the summary's GATE-F8 approval timestamp matches the gate ledger ($fid_src)"
-  else
-    no "C-24 fidelity: summary says $fid_cls, the gate ledger says $fid_src — a distilled claim its source does not support"
-  fi
-  # CR-034: C-24 bound ONE claim, the gate timestamp, and everything else in this file drifted
-  # freely — by S4 it still advertised the closure numbers, three sessions out of date. Fidelity is
-  # not a property you finish; each claim needs its own binding. Two more, both cheap static
-  # comparisons against artifacts that cannot lie about themselves.
-  #
-  # Deliberately NOT bound by shelling out to check-plan-corrections.sh: that script's own C-24
-  # detector runs THIS script under a temp root, so calling it back would recurse. Read the registry
-  # file directly instead — the same fact, without the loop.
+  # C-28 — DECLARED BINDINGS replace the three hand-written ones that stood here (C-24 + CR-034).
+  # Those bound the gate timestamp, the tracked-file count and the registered-ID count, one block of
+  # bespoke code each. They worked, and they were the instance fix: every OTHER number in the
+  # summary stayed unbound, which is how the live-numbers line reached three sessions stale while
+  # its own prose claimed it "cannot silently rot again". One mechanism now, declared above.
+  CROWS=$(printf '%s\n' "$CLAIMS_BLOCK" | awk '/^# CLAIMS-MANIFEST v[0-9]+$/{f=1;next} f&&NF')
+  CN=$(printf '%s\n' "$CROWS" | grep -c . || true)
+  # Vacuity guard first: a manifest that parses to nothing binds nothing and reports clean.
+  [ "${CN:-0}" -ge 5 ] && ok "C-28 claims manifest parses to $CN declared binding(s)" \
+                       || no "C-28 manifest parsed to ${CN:-0} rows — every fidelity check below would be vacuous"
 
-  # Binding B — tracked file count. Guarded on work-tree membership for the C-23 reason: the C-24
-  # detector runs this under a mktemp root that is not a repo, and a silent skip there is exactly
-  # what C-23 punished, so the skip announces itself.
-  fid_tc=$(grep -oE '[0-9]+ tracked files' "$ENTRY" 2>/dev/null | grep -oE '[0-9]+' | head -1)
-  if [ -z "$fid_tc" ]; then
-    ok "C-24 fidelity: the summary makes no tracked-file claim — nothing to bind"
-  elif git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    fid_ta=$(git ls-files 2>/dev/null | wc -l)
-    [ "$fid_tc" = "$fid_ta" ] && ok "C-24 fidelity: tracked-file count matches the tree ($fid_ta)" \
-                              || no "C-24 fidelity: summary claims $fid_tc tracked files, the tree has $fid_ta"
-  else
-    ok "C-24 fidelity: tracked-file count needs a work tree (not one here) — claim not checkable"
-  fi
+  covered=""
+  while IFS="$(printf '\t')" read -r cid loc ex; do
+    [ -n "${cid:-}" ] || continue
+    covered="$covered$loc
+"
+    got=$(grep -oE "$loc" "$ENTRY" 2>/dev/null | head -1 | sed -E "s/^$loc\$/\1/")
+    case "$ex" in
+      elsewhere:*)
+        # A claim this script cannot compute without recursion — check-plan-corrections runs THIS
+        # script under a temp root, so calling a suite back would loop. Bound by the only component
+        # that can compute it: the suite itself. Asserted by reading that script's binding LOGIC,
+        # never a token, so a script that merely mentions the label does not satisfy it.
+        scr=${ex#elsewhere:}
+        scrbody=$(sed 's/#.*//' "$scr" 2>/dev/null)
+        n1=$(printf '%s\n' "$scrbody" | grep -cF -- 'session-summary.md' || true)
+        n2=$(printf '%s\n' "$scrbody" | grep -cF -- "$loc" || true)
+        if [ -z "$got" ]; then
+          ok "$cid: summary makes no such claim — nothing to bind"
+        elif [ ! -f "$scr" ]; then
+          no "$cid: '$scr' is named as the binder and does not exist"
+        # CAPTURE, THEN TEST. `sed file | grep -q` under `set -o pipefail` reports FAILURE even when
+        # grep matched: grep -q exits the moment it matches, sed takes SIGPIPE, and pipefail
+        # surfaces sed's status. It is SIZE-DEPENDENT — validate-crew.sh is short enough that sed
+        # finishes first and the bug hides, while run-crew-tests.sh at ~1000 lines reproduces it
+        # every time. That is the fourth pipefail incident recorded in this build, and the first
+        # where the same code passed on one input and failed on another purely by file length.
+        elif [ "${n1:-0}" -gt 0 ] && [ "${n2:-0}" -gt 0 ]; then
+          ok "$cid: bound by $scr (its own total; binding logic present, not just a mention)"
+        else
+          no "$cid: $scr does not carry binding logic for this claim — the claim is effectively unbound"
+        fi ;;
+      sc_self) : ;;   # handled last, once this script's own total is final
+      *)
+        want=$(truth "$ex") || { no "$cid: unknown extractor '$ex' — a binding that names no source binds nothing"; continue; }
+        if [ -z "$got" ]; then
+          ok "$cid: summary makes no such claim — nothing to bind"
+        elif [ -z "$want" ]; then
+          no "$cid: summary claims '$got' but the source produced nothing to check it against"
+        elif [ "$got" = "$want" ]; then
+          ok "$cid: claim matches its source ($want)"
+        else
+          no "$cid: summary says '$got', the source says '$want'"
+        fi ;;
+    esac
+  done <<CLAIMSEOF
+$CROWS
+CLAIMSEOF
 
-  # Binding C — registered correction IDs, read straight out of the registry.
-  fid_cc=$(grep -oE '[0-9]+ registered correction IDs' "$ENTRY" 2>/dev/null | grep -oE '[0-9]+' | head -1)
-  fid_ca=$(grep -oE 'C-[0-9]{2}' "$CTX/plan-corrections.md" 2>/dev/null | sort -u | wc -l)
-  if [ -z "$fid_cc" ]; then
-    ok "C-24 fidelity: the summary makes no registered-ID claim — nothing to bind"
-  elif [ "${fid_ca:-0}" = 0 ]; then
-    no "C-24 fidelity: the summary claims $fid_cc registered IDs but the registry could not be read"
-  elif [ "$fid_cc" = "$fid_ca" ]; then
-    ok "C-24 fidelity: registered correction IDs match the registry ($fid_ca)"
+  # COMPLETENESS — the class fix. Every bold span opening with a digit must be covered by a declared
+  # locator. Adding an unbound number to the summary is what fails.
+  # STATED LIMIT: only bold spans are checked. A number in running prose is invisible here, and that
+  # is a real gap rather than a hidden one.
+  unbound=""
+  while IFS= read -r span; do
+    [ -n "$span" ] || continue
+    hit=0
+    while IFS= read -r loc; do
+      [ -n "$loc" ] || continue
+      # The locator is matched against the SUMMARY and the span must fall inside what it matched.
+      # Matching the locator against the bare span cannot work: the anchoring text ("crew suite ")
+      # lives outside the bold. The first version did exactly that and reported five bound claims
+      # as unbound — a completeness check that cries wolf gets switched off, which is worse than
+      # one that is silent.
+      grep -oE "$loc" "$ENTRY" 2>/dev/null | grep -qF -- "$span" && { hit=1; break; }
+    done <<COVEOF
+$covered
+COVEOF
+    [ "$hit" = 1 ] || unbound="$unbound [$span]"
+  done <<SPANEOF
+$(grep -oE '\*\*[0-9][^*]*\*\*' "$ENTRY" 2>/dev/null | sort -u)
+SPANEOF
+  [ -z "$unbound" ] && ok "C-28 every numeric claim in the summary is covered by a declared binding" \
+                    || no "C-28 UNBOUND claim(s):$unbound — declare them in CLAIMS-MANIFEST or remove them"
+
+  # sc_self last, so this script's own total is final. The +1 is THIS assertion.
+  SC_P=$P; SC_F=$F
+  scloc=$(printf '%s\n' "$CROWS" | awk -F'\t' '$3=="sc_self"{print $2}')
+  scgot=$(grep -oE "$scloc" "$ENTRY" 2>/dev/null | head -1 | sed -E "s/^$scloc\$/\1/")
+  scwant="$((P + F + 1)) PASS / 0 FAIL"
+  if [ -z "$scgot" ]; then
+    ok "PB-03: summary makes no save-context claim — nothing to bind"
+  elif [ "$scgot" = "$scwant" ]; then
+    ok "PB-03: save-context claim matches this run ($scwant)"
   else
-    no "C-24 fidelity: summary claims $fid_cc registered correction IDs, the registry holds $fid_ca"
+    no "PB-03: summary says '$scgot', this run is '$scwant'"
   fi
 
   printf '\n== save-context: %s PASS / %s FAIL ==\n' "$P" "$F"

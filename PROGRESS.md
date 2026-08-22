@@ -596,3 +596,11 @@ sentence alone cannot manufacture that alert.
 - **This repo:** C-27 landed. validate-crew 43+1SKIP · run-crew-tests **166** · save-context 23 · PORTABLE · 27 registered IDs.
 - **Still owed here:** port the declared-binding distillation (finishes CR-034 structurally); CR-024 extension to `hooks/` needs an operator plan re-export (C-26).
 - **Next action:** no phase is open in either repo. The two owed items above are the remaining work.
+
+## [F8|2026-08-22T23:43:10Z] PARENT-SYNC-1 — declared bindings ported, C-26 closed, plan v3.2
+- **C-28:** declared-binding distillation ported from psychic-crew-lite. Versioned `CLAIMS-MANIFEST v1` in save-context.sh, 8 bindings, completeness FAILS on any unbound numeric span. Closes CR-034 as a class where C-24 and CR-034 each fixed an instance.
+- **Found by the port:** four silently wrong claims — registry 22/27, save-context 23/30, crew suite **157/169**, validate-crew 42/44.
+- **C-26 CLOSED:** CR-024 extended to `hooks/` both ways against v3.2's by-name enumeration; `_common.sh` included as the map names it.
+- **Counts, all attributed:** validate-crew 44→45 total · run-crew-tests 166→**169** · save-context 23→**30** · corrections 27→**28 rows/IDs**, 21 APPLIED / 0 PENDING · app 18/18 · drill PORTABLE · EX-01 delta 0.
+- **Disclosed:** the precondition allowed one uncommitted file and the tree carried two; the second was verified to be the matching v3.2 payload at delta 0.
+- **Next action:** operator replaces MASTER_FIFO_PLAN_CLAUDE.md and DIRECTORY_GUIDE.md with the v3.2 pair so the triple is byte-identical again. No phase is open in either repo.
