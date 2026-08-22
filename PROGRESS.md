@@ -552,3 +552,11 @@ sentence alone cannot manufacture that alert.
 - **Owed item CLOSED with a negative result:** this repo does NOT share Lite's root-context jq defect. Every `to_entries` usage here is entry-local; the defect was structural to Lite's three-hop class resolution. Checked, not assumed. No fix owed.
 - **Still owed here:** CR-024 should extend to `hooks/` once a plan re-export lets DIRECTORY_GUIDE.md name a correct count (C-26, half-applied).
 - **Next action:** Lite L2 — continuity layer and the release trail. Open here: CR-027 (README requirements), ROADMAP.md staleness against context/session-summary.md.
+
+## [F8|2026-08-22T02:05:08Z] CR-027 + ROADMAP STALENESS — both closed before the next gate
+- **CR-027:** README requirements section from measured data. Platform per R1d, footprint re-measured (1,020,568 tracked bytes, not the audit draft's 723,222), token economics with the unit caveat.
+- **Bound, not just fixed:** the reproduction counts were stale by 7 and 21; each script now asserts its own figure. Controls 3/3 including the removed-claim case.
+- **ROADMAP:** two entries corrected in place — the EX-01-era `DIRECTORY_GUIDE.md` drift (resolved, but re-pointed at the different drift C-26 found) and G-F3 round-2 (closed at A4). Neither deleted.
+- **Counts:** validate-crew 42+1SKIP -> **43+1SKIP** (+1 self-binding) · run-crew-tests 164 -> **165** (+1 self-binding).
+- **Escalation held for a local session:** nothing binds ROADMAP.md to the distilled summary, and making it bindable needs a status vocabulary neither file has. Not improvised from a remote prompt.
+- **Next action:** Lite L2 — continuity layer and the release trail. No gate token requested for this work.

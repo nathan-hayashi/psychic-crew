@@ -989,5 +989,31 @@ case "$WANT" in
   F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;; F5) cases_F5;; F6) cases_F6;; F7) cases_F7;;
   *)    echo "unknown target: $WANT"; exit 64;;
 esac
+# CR-027 — the README's reproduction block stated 37 / 144 / 24 while the real numbers were
+# 43 / 166 / 26. Nothing bound them, so they drifted for four sessions in the one file a new reader
+# starts from. Fixing the numbers without binding them would just restart the clock.
+#
+# Each script asserts its OWN number. That is deliberate: a cross-script check would have to invoke
+# the other suite, and validate-crew invoking run-crew-tests invoking validate-crew is a cycle. A
+# script always knows its own total, so the binding needs nothing external.
+#
+# The +1 is THIS assertion, which has not been counted yet at the moment it runs. Stated rather than
+# left as a magic number for someone to "fix" later.
+if [ "$WANT" = "all" ]; then
+  rcw=$(grep -oE '\./scripts/run-crew-tests\.sh[[:space:]]+#[[:space:]]*[0-9]+ crew assertions' README.md 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  rct=$((P + F + 1))
+  if [ -z "$rcw" ]; then
+    no "CR-027 README states no run-crew-tests count to bind — the claim was removed, not updated"
+  elif [ "$rcw" = "$rct" ]; then
+    ok "CR-027 README's crew-assertion count matches this run ($rct)"
+  else
+    no "CR-027 README says $rcw crew assertions, this run has $rct"
+  fi
+else
+  # Announced, never silent: a partial run legitimately has a different total, and a check that
+  # quietly passes on 'not applicable' is the shape C-23 punished.
+  printf '  [INFO] CR-027 README count not checked — partial target "%s", only a full run is comparable\n' "$WANT"
+fi
+
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"
 [ "$F" = 0 ] || exit 1

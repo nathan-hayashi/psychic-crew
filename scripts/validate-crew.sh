@@ -322,5 +322,18 @@ else
   skip "no arbiter audit log yet (F3 owns logs/arbiter-audit.jsonl)"
 fi
 
+# CR-027 — this script's own count in the README, bound here for the reason given at the foot of
+# run-crew-tests.sh. SKIP is included because this suite reports one and the README's figure is the
+# number of assertions, not the number that happened to pass today.
+vcw=$(grep -oE '\./scripts/validate-crew\.sh[[:space:]]+#[[:space:]]*[0-9]+ structural assertions' README.md 2>/dev/null | grep -oE '[0-9]+' | head -1)
+vct=$((P + S + F + 1))
+if [ -z "$vcw" ]; then
+  fail "CR-027 README states no validate-crew count to bind — the claim was removed, not updated"
+elif [ "$vcw" = "$vct" ]; then
+  pass "CR-027 README's structural-assertion count matches this run ($vct)"
+else
+  fail "CR-027 README says $vcw structural assertions, this run has $vct"
+fi
+
 printf '\n== validate-crew: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
 [ "$F" = 0 ] || exit 1

@@ -16,21 +16,79 @@ cd psychic-crew
 
 **A human runs that first line; an agent working inside this repo cannot.** The in-repo deny-list blocks the clone verb under the no-installs constraint, and the guard matches the whole command string, so it refuses regardless of intent. That is deliberate and is why the portability drill proves the same property with `git archive` and a detached worktree instead — see the constraints section below and C-22.
 
-**Requirements:** `git`, `node` ≥ 22, `npm`, `jq`. `gh` is optional. Tested on Node v24.14.0 / npm 11.9.0 under WSL2 Ubuntu 24.04.
+**Requirements:** `git`, `node` ≥ 22, `npm`, `jq`. `gh` is optional. Tested on Node v24.14.0 / npm 11.9.0 under WSL2 Ubuntu 24.04. The full picture — hardware, disk, and what it actually costs to run — is in [Requirements](#requirements-measured) below.
 
 **Auth:** this repo holds no secrets and needs none for anything above. Claude Code authentication is per-machine, not per-repo — check it with `claude auth status`, or `/status` inside a session. `gh auth status` matters only if you use the GitHub lanes. `.env`, `.env.*` and `secrets/` are both gitignored and blocked by `hooks/sensitive-guard.sh`; that guard is a backstop, not permission to put secrets in the tree.
+
+## Requirements (measured)
+
+Every figure here is measured from this build, not estimated from a template. `[E]` is measured
+evidence; `[I]` is inference drawn from it and labelled as such.
+
+### Platform
+
+| Platform | What is required |
+| --- | --- |
+| **Linux** | `git`, `node` ≥ 22, `npm`, `jq`. Nothing else. |
+| **macOS** | the same. No platform-specific code exists. |
+| **Windows 10 22H2 / 11** | **WSL2 with Ubuntu 24.04**, hardware virtualization enabled. |
+
+**On Windows, WSL2 is the runtime, not a fallback.** This project is bash-native end to end by
+operator ruling (R1d): there is no PowerShell port of any script, hook or assertion, and no
+Git-Bash bridge. PowerShell's only role is the one command `wsl --install`. If you are looking for a
+native-Windows path, there isn't one, and that is a decision rather than an omission — the analysis
+behind it is in `docs/audit/PLATFORM_GAP_POWERSHELL.md`.
+
+`.gitattributes` pins `eol=lf` and stays regardless. It is not a Windows concession: a CRLF checkout
+would fail the §4 seed byte-identity check that the whole build rests on.
+
+### Footprint
+
+| Fact | Value | |
+| --- | --- | --- |
+| Node / npm actually used | v24.14.0 / 11.9.0 | `[E]` |
+| Tracked files / bytes | 87 files, ~1.0 MB | `[E]` |
+| Runtime dependencies | **zero** — `stress-project/` is Node stdlib only | `[E]` |
+| Disk beyond the checkout | `logs/` grows unbounded; ~2.5 MB after nine phases plus an audit | `[E]` |
+
+### What it costs to run — the part no requirements section carries
+
+This is the section a prospective user actually needs, and it is here because this build's own
+budgets were wrong by nearly ten times. Publishing the measured figures is the honest correction.
+
+| Fact | Value | |
+| --- | --- | --- |
+| Mean cost of one specialist dispatch | **~102,621 tokens** (30 dispatches, all phases) | `[E]` |
+| Cheapest / dearest single dispatch | 35,550 / 198,302 — a **5.6×** spread | `[E]` |
+| Cost of one full review round | ~250K tokens (two reviewers + arbiter) | `[I]` |
+| Cost of a phase shaped like F7 | **~2.05M tokens** across 18 dispatches | `[E]` |
+| Plan-tier implication | a phase of F7's shape is **not** a light-usage workload | `[I]` |
+
+**Read the unit before using any of these.** They are subagent *context totals*, not output
+produced: the same source read by eight agents is counted eight times. That is the right unit for
+"what did this phase cost to run" and the wrong one for "how much work came out". Orchestrator
+tokens are not measurable from inside a session and are excluded, so every figure is a **lower
+bound**. The full derivation, the per-role distribution and the plot are in
+`context/budget-baseline.md`.
+
+**Auth:** this repo holds no secrets and needs none. Claude Code authentication is per-machine, not
+per-repo.
 
 ## Verify it yourself
 
 Every claim below is reproducible from a clean checkout:
 
 ```bash
-./scripts/validate-crew.sh            # 37 structural assertions
-./scripts/run-crew-tests.sh           # 144 crew assertions
-./scripts/check-plan-corrections.sh   # plan-vs-reality registry, 24 entries
+./scripts/validate-crew.sh            # 44 structural assertions
+./scripts/run-crew-tests.sh           # 165 crew assertions
+./scripts/check-plan-corrections.sh   # plan-vs-reality registry, 26 registered ids
 ./scripts/portability-drill.sh        # proves the shipped file set works elsewhere
 cd stress-project && npm test         # 18 cases, the JML simulator
 ```
+
+The first two numbers are **asserted by the scripts themselves** — each one compares this line
+against its own total and fails if they disagree. They were stale by 7 and 21 when this section was
+written, which is the drift a number nobody checks always reaches.
 
 ## What the crew is
 
