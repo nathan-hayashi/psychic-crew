@@ -590,3 +590,9 @@ sentence alone cannot manufacture that alert.
 - **Redacted:** 5,860 records removed with an `AuditRedaction` event carrying counts, method and stated cost. Trail 7,944 → 2,085 lines; 413 genuine denials remain.
 - **Counts:** run-crew-tests 165 → **166** (+1 generalised canary); registry 26 → **27 IDs**; validate-crew 43+1SKIP and save-context 23 unchanged.
 - **Next action:** close GATE-L4 in the Lite ledger.
+
+## [F8|2026-08-22T22:38:48Z] LITE L4 CLOSED — the Lite build is complete
+- **Lite:** a8922a6, phase L4, 0 gates pending. Five phases, five gates.
+- **This repo:** C-27 landed. validate-crew 43+1SKIP · run-crew-tests **166** · save-context 23 · PORTABLE · 27 registered IDs.
+- **Still owed here:** port the declared-binding distillation (finishes CR-034 structurally); CR-024 extension to `hooks/` needs an operator plan re-export (C-26).
+- **Next action:** no phase is open in either repo. The two owed items above are the remaining work.
