@@ -353,18 +353,28 @@ else
 fi
 fi
 
-# C-28 — this script also binds its own claim in context/session-summary.md. save-context cannot
-# compute it: check-plan-corrections runs save-context under a temp root, so a call back into a
-# suite would recurse. The suite is the only component that knows its own total.
-ssum="context/session-summary.md"
-ssgot=$(grep -oE 'validate-crew \*\*([^*]+)\*\*' "$ssum" 2>/dev/null | head -1 | sed -E 's/^validate-crew \*\*//; s/\*\*$//')
-sswant="$((SUITE_TOTAL - S)) PASS / $S SKIP / 0 FAIL"
-if [ -z "$ssgot" ]; then
-  pass "C-28 summary makes no validate-crew claim — nothing to bind"
-elif [ "$ssgot" = "$sswant" ]; then
-  pass "C-28 summary's validate-crew figure matches this run ($sswant)"
+# ENVIRONMENT GUARD — the same one the README binding already carries, and which I failed to apply
+# here. The assertion total is NOT invariant: a git-archive extract runs 38+5, a detached worktree
+# 41+3, and the primary checkout 44+1, because blocks are gated on optional runtime artifacts. The
+# summary's figure describes the primary checkout, so the comparison is scoped to it and ANNOUNCED
+# elsewhere. Caught by the portability drill immediately after the gate — the fourth appearance of
+# equality-on-a-varying-count in this build, and the second in this session.
+if [ ! -d .git ] || [ ! -d logs ]; then
+  pass "C-28 summary figure describes the primary checkout; this is not one"
 else
-  fail "C-28 summary says validate-crew '$ssgot', this run is '$sswant'"
+  # C-28 — this script also binds its own claim in context/session-summary.md. save-context cannot
+  # compute it: check-plan-corrections runs save-context under a temp root, so a call back into a
+  # suite would recurse. The suite is the only component that knows its own total.
+  ssum="context/session-summary.md"
+  ssgot=$(grep -oE 'validate-crew \*\*([^*]+)\*\*' "$ssum" 2>/dev/null | head -1 | sed -E 's/^validate-crew \*\*//; s/\*\*$//')
+  sswant="$((SUITE_TOTAL - S)) PASS / $S SKIP / 0 FAIL"
+  if [ -z "$ssgot" ]; then
+    pass "C-28 summary makes no validate-crew claim — nothing to bind"
+  elif [ "$ssgot" = "$sswant" ]; then
+    pass "C-28 summary's validate-crew figure matches this run ($sswant)"
+  else
+    fail "C-28 summary says validate-crew '$ssgot', this run is '$sswant'"
+  fi
 fi
 
 printf '\n== validate-crew: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
