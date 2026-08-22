@@ -577,3 +577,9 @@ sentence alone cannot manufacture that alert.
 - **Gate:** `APPROVE GATE-L3` received; Lite at 05b6802, 37 tracked, phase L3. Verdict in its own ledger.
 - **This repo:** 165 / 43+1SKIP / 23, unchanged. Owed: port Lite's declared-binding distillation (finishes CR-034 structurally); CR-024 extension to `hooks/` still needs an operator plan re-export (C-26).
 - **Next action:** Lite L4 — the stress phase, and the first live exercise of the cross-release law.
+
+## [F8|2026-08-22T22:24:45Z] LITE L4 BUILT — this repo unchanged
+- **Lite:** ef5e836, 40 tracked. verify.sh layer1 31/1/0 · sync 50/0 · distill 11/0 · stress 14/0 · layer2 28/0/0, no signal. Awaiting `APPROVE GATE-L4` in its own ledger.
+- **This repo:** 165 / 43+1SKIP / 23, unchanged since 57e06d7.
+- **Owed here:** port the declared-binding distillation (finishes CR-034); CR-024 extension to `hooks/` still needs an operator plan re-export (C-26); and generalise C-13 from one incident to a class — a harness exercising an audited artifact writes to a run-scoped copy.
+- **Next action:** await `APPROVE GATE-L4`, which closes the Lite build.
