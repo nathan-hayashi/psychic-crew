@@ -560,3 +560,9 @@ sentence alone cannot manufacture that alert.
 - **Counts:** validate-crew 42+1SKIP -> **43+1SKIP** (+1 self-binding) · run-crew-tests 164 -> **165** (+1 self-binding).
 - **Escalation held for a local session:** nothing binds ROADMAP.md to the distilled summary, and making it bindable needs a status vocabulary neither file has. Not improvised from a remote prompt.
 - **Next action:** Lite L2 — continuity layer and the release trail. No gate token requested for this work.
+
+## [F8|2026-08-22T21:33:45Z] LITE L2 BUILT — this repo unchanged
+- **Lite:** 7df5080, 31 tracked. verify.sh layer1 24/1/0 · sync 41/0 · layer2 17/0/0, no signal. Awaiting `APPROVE GATE-L2` in its own ledger.
+- **This repo:** 44 / 165 / 23 / PORTABLE, unchanged since 8cf02af.
+- **Owed here, surfaced by L2:** hash-pin and comment-strip this repo's correction markers; this repo has no verification layer 3; and sweep for the `grep -c . || echo 0` idiom that silently emptied an audit write in Lite.
+- **Next action:** await `APPROVE GATE-L2`. Then Lite L3 — continuity (§6): ledgers, distillation, checkpoint/restore, stall detection, plus `pre-compact-checkpoint`.
