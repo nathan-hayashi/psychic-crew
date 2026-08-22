@@ -566,3 +566,9 @@ sentence alone cannot manufacture that alert.
 - **This repo:** 44 / 165 / 23 / PORTABLE, unchanged since 8cf02af.
 - **Owed here, surfaced by L2:** hash-pin and comment-strip this repo's correction markers; this repo has no verification layer 3; and sweep for the `grep -c . || echo 0` idiom that silently emptied an audit write in Lite.
 - **Next action:** await `APPROVE GATE-L2`. Then Lite L3 — continuity (§6): ledgers, distillation, checkpoint/restore, stall detection, plus `pre-compact-checkpoint`.
+
+## [F8|2026-08-22T22:11:16Z] LITE L3 BUILT — this repo unchanged
+- **Lite:** 5ab130a, 37 tracked. verify.sh layer1 31/1/0 · sync 47/0 · distill 11/0 · layer2 23/0/0, no signal. Awaiting `APPROVE GATE-L3` in its own ledger.
+- **This repo:** 165 / 43+1SKIP / 23 / PORTABLE, unchanged since d1d90b8.
+- **Owed here:** port Lite's declared-binding distillation. save-context.sh binds 3 claims by hand and leaves every other number unbound — the drift CR-034 recorded. Lite fails on any undeclared claim.
+- **Next action:** await `APPROVE GATE-L3`. Then Lite L4 — the stress phase across all four agents and the cross-release law.
