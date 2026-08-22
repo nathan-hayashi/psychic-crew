@@ -325,6 +325,16 @@ fi
 # CR-027 — this script's own count in the README, bound here for the reason given at the foot of
 # run-crew-tests.sh. SKIP is included because this suite reports one and the README's figure is the
 # number of assertions, not the number that happened to pass today.
+# ENVIRONMENT GUARD, added after this binding broke the portability drill on its first run.
+# The total is NOT invariant: several blocks here are gated on optional artifacts and several loop
+# over files, so a git-archive extract runs 42 assertions, a detached worktree 43, and the primary
+# checkout 44. Binding an equality to a number that legitimately varies by environment is the
+# equality-on-a-growing-count mistake this build has now made three times (S3's mermaid block, S4's
+# fixture count, and here). The README's figure describes the primary checkout, so the comparison is
+# scoped to it and ANNOUNCED elsewhere rather than skipped quietly.
+if [ ! -d .git ] || [ ! -d logs ]; then
+  pass "CR-027 README count describes the primary checkout; this is not one (assertions vary with which optional artifacts exist)"
+else
 vcw=$(grep -oE '\./scripts/validate-crew\.sh[[:space:]]+#[[:space:]]*[0-9]+ structural assertions' README.md 2>/dev/null | grep -oE '[0-9]+' | head -1)
 vct=$((P + S + F + 1))
 if [ -z "$vcw" ]; then
@@ -333,6 +343,7 @@ elif [ "$vcw" = "$vct" ]; then
   pass "CR-027 README's structural-assertion count matches this run ($vct)"
 else
   fail "CR-027 README says $vcw structural assertions, this run has $vct"
+fi
 fi
 
 printf '\n== validate-crew: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"

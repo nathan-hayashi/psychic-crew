@@ -86,9 +86,14 @@ Every claim below is reproducible from a clean checkout:
 cd stress-project && npm test         # 18 cases, the JML simulator
 ```
 
-The first two numbers are **asserted by the scripts themselves** — each one compares this line
-against its own total and fails if they disagree. They were stale by 7 and 21 when this section was
-written, which is the drift a number nobody checks always reaches.
+The first two numbers are **asserted by the scripts themselves** — each compares this line against
+its own total and fails if they disagree. They were stale by 7 and 21 when this section was written,
+which is the drift a number nobody checks always reaches.
+
+Both figures describe **a primary checkout**. Several assertions are gated on optional runtime
+artifacts and several loop over files, so a `git archive` extract legitimately runs fewer — 42
+rather than 44 for `validate-crew.sh`. The bindings say so instead of failing an environment that is
+behaving correctly; `./scripts/portability-drill.sh` exercises exactly those environments.
 
 ## What the crew is
 

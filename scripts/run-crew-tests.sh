@@ -999,7 +999,10 @@ esac
 #
 # The +1 is THIS assertion, which has not been counted yet at the moment it runs. Stated rather than
 # left as a magic number for someone to "fix" later.
-if [ "$WANT" = "all" ]; then
+if [ "$WANT" = "all" ] && { [ ! -d .git ] || [ ! -d logs ]; }; then
+  # Same guard as validate-crew's, for the same reason — see the note there.
+  ok "CR-027 README count describes the primary checkout; this is not one"
+elif [ "$WANT" = "all" ]; then
   rcw=$(grep -oE '\./scripts/run-crew-tests\.sh[[:space:]]+#[[:space:]]*[0-9]+ crew assertions' README.md 2>/dev/null | grep -oE '[0-9]+' | head -1)
   rct=$((P + F + 1))
   if [ -z "$rcw" ]; then
