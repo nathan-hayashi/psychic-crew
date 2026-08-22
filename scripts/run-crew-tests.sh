@@ -25,6 +25,13 @@ BAK=$(mktemp -d); trap 'cp -f "$BAK"/models.config.json models.config.json 2>/de
 cp models.config.json "$BAK"/
 cp .claude/agents/quality-reviewer.md "$BAK"/ 2>/dev/null || true
 cp PROGRESS.md "$BAK"/ 2>/dev/null || true
+# C-14 GENERALISED — the canary covers EVERY live audit trail, not the one that happened to get
+# burned. CR-013 added a canary for logs/build-errors.jsonl after fixtures wrote 178 fabricated
+# records into it (95% of the file). The identical defect then ran on logs/tooluse-audit.jsonl
+# undetected until L4, by which point 5,817 of 6,177 denial records — 94% — were fixture-shaped.
+# A canary written for one artifact is not a control over the class. This one enumerates whatever
+# trails exist, so a trail added later is covered on the day it appears.
+TRAILS_BEFORE=$(for f in logs/*.jsonl; do [ -f "$f" ] && printf '%s:%s\n' "$f" "$(wc -l < "$f")"; done | sort)
 
 cases_F0 () {
   echo "== F0 — scaffold integrity =="
@@ -85,11 +92,24 @@ cases_F2 () {
   # Capture, THEN test. A denying hook exits 2, and under `set -o pipefail` that poisons the
   # whole pipeline's status even when grep matched — so a piped form reports "not denied" for a
   # guard that denied correctly. Third pipefail incident in this build; see the registry note.
-  denies () { o=$(printf '%s' "$2" | "./hooks/$1.sh" 2>/dev/null || true)
+  # ISOLATED ROOT. These fixtures drive the real guards, and deny() writes a PreToolUse.deny record
+  # to $ROOT/logs/tooluse-audit.jsonl. Without an isolated root that is the LIVE trail, so every
+  # suite run appended ~25 denials describing blocks that never happened in real work.
+  #
+  # This is C-14 exactly, on a second artifact. C-14 was raised when fixtures wrote 178 fabricated
+  # records into logs/build-errors.jsonl — 95% of that file — and CR-013 fixed THAT fixture and
+  # added a canary for THAT trail. The identical defect ran here undetected the whole time, because
+  # the canary was written for the artifact that happened to get burned rather than for the class.
+  # Measured before the fix: 5,817 of 6,177 denial records in the live trail were fixture-shaped.
+  # 94%, against C-14's 95%. An evidence trail of invented events is worse than one with gaps,
+  # because every downstream check and every gate report treats it as ground truth.
+  F2T=$(mktemp -d); mkdir -p "$F2T/logs"
+  cp GATES.md models.config.json "$F2T/" 2>/dev/null || true
+  denies () { o=$(printf '%s' "$2" | CLAUDE_PROJECT_DIR="$F2T" "./hooks/$1.sh" 2>/dev/null || true)
               printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
-  allows () { o=$(printf '%s' "$2" | "./hooks/$1.sh" 2>/dev/null || true)
+  allows () { o=$(printf '%s' "$2" | CLAUDE_PROJECT_DIR="$F2T" "./hooks/$1.sh" 2>/dev/null || true)
               ! printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
-  feed   () { printf '%s' "$2" | "./hooks/$1.sh"; }
+  feed   () { printf '%s' "$2" | CLAUDE_PROJECT_DIR="$F2T" "./hooks/$1.sh"; }
 
   denies bash-blocker '{"tool_input":{"command":"rm -rf ~"}}'                 && ok "denies rm -rf ~"        || no "rm -rf ~ not denied"
   denies bash-blocker '{"tool_input":{"command":"git clone https://x/y"}}'    && ok "denies git clone"       || no "git clone not denied"
@@ -107,11 +127,11 @@ cases_F2 () {
   allows model-guard '{"tool_input":{"file_path":"models.config.json","content":"  \"model\": \"claude-opus-5\""}}'  && ok "model-guard allows a clean model write" || no "clean model write wrongly denied"
   allows model-guard '{"tool_input":{"file_path":"README.md","content":"the fable model is banned"}}' && ok "model-guard ignores prose outside the config surface" || no "prose wrongly denied"
 
-  n0=$( [ -f logs/tooluse-audit.jsonl ] && wc -l < logs/tooluse-audit.jsonl || echo 0 )
-  printf '%s' '{"tool_name":"Write","tool_input":{"file_path":"x.txt"}}' | ./hooks/audit-logger.sh >/dev/null 2>&1
-  n1=$( [ -f logs/tooluse-audit.jsonl ] && wc -l < logs/tooluse-audit.jsonl || echo 0 )
+  n0=$( [ -f "$F2T/logs/tooluse-audit.jsonl" ] && wc -l < "$F2T/logs/tooluse-audit.jsonl" || echo 0 )
+  printf '%s' '{"tool_name":"Write","tool_input":{"file_path":"x.txt"}}' | CLAUDE_PROJECT_DIR="$F2T" ./hooks/audit-logger.sh >/dev/null 2>&1
+  n1=$( [ -f "$F2T/logs/tooluse-audit.jsonl" ] && wc -l < "$F2T/logs/tooluse-audit.jsonl" || echo 0 )
   [ "$n1" -gt "$n0" ] && ok "audit line appended after a benign tool use" || no "no audit line appended"
-  tail -1 logs/tooluse-audit.jsonl 2>/dev/null | jq -e . >/dev/null 2>&1 && ok "audit line is valid JSON" || no "audit line malformed"
+  tail -1 "$F2T/logs/tooluse-audit.jsonl" 2>/dev/null | jq -e . >/dev/null 2>&1 && ok "audit line is valid JSON" || no "audit line malformed"
 
   # ccs-01 (§15.7)
   rm -f .claude/state/compact-pending
@@ -154,11 +174,11 @@ cases_F2 () {
   # A denial that leaves no record is a silent control. PostToolUse cannot cover it: the blocked
   # tool never runs, so the guard has to write its own line. The first live stress produced six
   # denials and zero audit entries, failing G-F2's "6 denies + 6 audit entries" as written.
-  n0=$(wc -l < logs/tooluse-audit.jsonl 2>/dev/null || echo 0)
+  n0=$(wc -l < "$F2T/logs/tooluse-audit.jsonl" 2>/dev/null || echo 0)
   denies bash-blocker '{"tool_name":"Bash","tool_input":{"command":"git clone https://x/y"}}' >/dev/null 2>&1
-  n1=$(wc -l < logs/tooluse-audit.jsonl 2>/dev/null || echo 0)
+  n1=$(wc -l < "$F2T/logs/tooluse-audit.jsonl" 2>/dev/null || echo 0)
   [ "$n1" -gt "$n0" ] && ok "denial writes an audit record" || no "denial left no audit record"
-  tail -1 logs/tooluse-audit.jsonl | jq -e '.event=="PreToolUse.deny" and (.reason|length)>0' >/dev/null 2>&1 \
+  tail -1 "$F2T/logs/tooluse-audit.jsonl" | jq -e '.event=="PreToolUse.deny" and (.reason|length)>0' >/dev/null 2>&1 \
     && ok "denial record carries event + reason" || no "denial record malformed"
 
   # auto-format, error-recovery and notify had no coverage at all until now.
@@ -1016,6 +1036,20 @@ else
   # Announced, never silent: a partial run legitimately has a different total, and a check that
   # quietly passes on 'not applicable' is the shape C-23 punished.
   printf '  [INFO] CR-027 README count not checked — partial target "%s", only a full run is comparable\n' "$WANT"
+fi
+
+# The generalised canary, asserted at the end of every run. Bound to the FILES, not to a count of
+# them: a trail that appears mid-run is a new entry and shows as drift rather than being skipped.
+TRAILS_AFTER=$(for f in logs/*.jsonl; do [ -f "$f" ] && printf '%s:%s\n' "$f" "$(wc -l < "$f")"; done | sort)
+tb=$(printf '%s\n' "$TRAILS_BEFORE" | grep -c . || true)
+if [ "${tb:-0}" = 0 ]; then
+  # Announced, not silent: with no trails on disk the canary proves nothing, and a quiet pass here
+  # is how it would stop meaning anything in a fresh clone.
+  ok "C-14 canary: no live audit trail on disk to protect (fresh checkout)"
+elif [ "$TRAILS_BEFORE" = "$TRAILS_AFTER" ]; then
+  ok "C-14 canary: all $tb live audit trail(s) unchanged by this run"
+else
+  no "C-14 canary: a fixture wrote to a LIVE audit trail — before[$(printf '%s' "$TRAILS_BEFORE" | tr '\n' ' ')] after[$(printf '%s' "$TRAILS_AFTER" | tr '\n' ' ')]"
 fi
 
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"

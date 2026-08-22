@@ -583,3 +583,10 @@ sentence alone cannot manufacture that alert.
 - **This repo:** 165 / 43+1SKIP / 23, unchanged since 57e06d7.
 - **Owed here:** port the declared-binding distillation (finishes CR-034); CR-024 extension to `hooks/` still needs an operator plan re-export (C-26); and generalise C-13 from one incident to a class — a harness exercising an audited artifact writes to a run-scoped copy.
 - **Next action:** await `APPROVE GATE-L4`, which closes the Lite build.
+
+## [F8|2026-08-22T22:34:56Z] C-27 — C-14 generalised from an incident to a class
+- **Found:** C-14 had recurred on `logs/tooluse-audit.jsonl`. **5,817 of 6,177 denial records (94%) were fixture-generated**, against C-14's original 95% on a different file.
+- **Fixed:** fixtures isolated to a temp root, the seven trail-reading assertions follow them, and the canary now covers **every** `logs/*.jsonl` rather than the one that got burned.
+- **Redacted:** 5,860 records removed with an `AuditRedaction` event carrying counts, method and stated cost. Trail 7,944 → 2,085 lines; 413 genuine denials remain.
+- **Counts:** run-crew-tests 165 → **166** (+1 generalised canary); registry 26 → **27 IDs**; validate-crew 43+1SKIP and save-context 23 unchanged.
+- **Next action:** close GATE-L4 in the Lite ledger.

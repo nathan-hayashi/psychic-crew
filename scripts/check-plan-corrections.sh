@@ -47,11 +47,16 @@ else
   j1='{"tool_input":{"command":"git clone https://example/x"}}'
   j2='{"tool_input":{"file_path":"models.config.json","content":"  \"model\": \"claude-fable-5\""}}'
   j3='{"tool_input":{"file_path":"/x/.env","content":"K=v"}}'
+  # ISOLATED ROOT — C-14 on a second artifact. These payloads trigger real denials, and deny()
+  # writes its record to $ROOT/logs/tooluse-audit.jsonl. At the live root that is fiction in the
+  # evidence trail: denials describing blocks that never happened in real work.
+  c3t=$(mktemp -d); mkdir -p "$c3t/logs"; cp GATES.md models.config.json "$c3t/" 2>/dev/null || true
   for pair in "bash-blocker:$j1" "model-guard:$j2" "sensitive-guard:$j3"; do
     g=${pair%%:*}; j=${pair#*:}
-    o=$(printf '%s' "$j" | "./hooks/$g.sh" 2>/dev/null || true)
+    o=$(printf '%s' "$j" | CLAUDE_PROJECT_DIR="$c3t" "./hooks/$g.sh" 2>/dev/null || true)
     printf '%s' "$o" | grep -q '"permissionDecision":"deny"' || { c3=0; c3why="$c3why $g"; }
   done
+  rm -rf "$c3t"
   if [ "$c3" = 1 ]; then report C-03 F2 APPLIED "all three PreToolUse guards emit permissionDecision:deny on a real trigger"
   else report C-03 F2 PENDING "guards not denying via the JSON contract:$c3why"; fi
 fi

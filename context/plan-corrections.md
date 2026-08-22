@@ -34,6 +34,7 @@ Discovery path (why this isn't pointed to from CLAUDE.md): CLAUDE.md is a byte-p
 | C-24 | §15.5 checker verified hygiene, not fidelity | F8    | save-context.sh behaviour                   |
 | C-25 | bypass detection blind to a failed dispatch  | F8    | subagent-starts.jsonl + validate-crew.sh    |
 | C-26 | map-vs-tree check never policed `hooks/`     | F8    | DIRECTORY_GUIDE.md + run-crew-tests.sh      |
+| C-27 | C-14 recurred on a second audit trail        | F8    | run-crew-tests.sh + check-plan-corrections.sh |
 
 **Table refreshed at CR-011 (audit A0-F1).** It had listed 10 of the then-22 IDs and had not been
 maintained since roughly F4, so the registry's own index disagreed with the registry. It now lists
@@ -476,3 +477,37 @@ in the same way and **is** corrected, because that file is not byte-pinned.
 
 **Verify**: the suite reports "CR-003 every tracked hook is wired and every wired hook exists"; and
 `grep -c 'hooks/' DIRECTORY_GUIDE.md` still shows the map naming 12, which is the open half.
+
+## C-27 — C-14 recurred on a second trail, and the canary written for the first never saw it (F8, L4)
+
+**Why it matters**: C-14 was raised when test fixtures wrote **178 fabricated records into
+`logs/build-errors.jsonl` — 95% of that file**. CR-013 fixed that fixture and added a canary. The
+canary was written for *the artifact that happened to get burned*, not for the class.
+
+The identical defect was running the whole time on `logs/tooluse-audit.jsonl`. Every fixture in
+`cases_F2` and the C-03 detector in `check-plan-corrections.sh` drove the real guards at the **live**
+root, and `deny()` writes its record to `$ROOT/logs/tooluse-audit.jsonl` — so each suite run
+appended ~25 `PreToolUse.deny` records describing blocks that never happened in real work.
+
+Measured at discovery: **5,817 of 6,177 denial records were fixture-shaped — 94%**, against C-14's
+95%. The same defect, the same proportion, on a different file, for the entire life of the build.
+
+This is not tidiness. `.claude/rules/security.md` requires that a denial leave a record, and G-F2's
+stress was scored on "six denials AND six audit entries". Any claim about denial evidence drawn from
+that trail was drawn from a file that was 94% invention.
+
+**Applied**: fixtures in `cases_F2` and the C-03 detector now run under an isolated
+`CLAUDE_PROJECT_DIR`; the assertions that read the trail follow them there, so the property they
+prove — a denial writes its own record, because `PostToolUse` cannot fire for a blocked tool — is
+unchanged and is now proven without inventing evidence. **The canary is generalised**: it enumerates
+whatever `logs/*.jsonl` exist and compares every one across the run, so a trail added later is
+covered on the day it appears rather than after it is burned.
+
+**Redaction, recorded**: 5,860 fabricated records were removed and an `AuditRedaction` event was
+appended to the trail carrying the per-target counts, the matching method, and the stated cost —
+that a genuine denial whose target string equalled a fixture payload would have been removed with
+them, and none is distinguishable from the record alone. A redaction that is not recorded is
+indistinguishable from tampering, which is C-14's own rule applied to its own recurrence.
+
+**Verify**: the suite reports "C-14 canary: all N live audit trail(s) unchanged by this run", and
+pointing any fixture back at the live root makes it FAIL naming the trail that moved.
