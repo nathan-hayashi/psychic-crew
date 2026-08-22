@@ -604,3 +604,10 @@ sentence alone cannot manufacture that alert.
 - **Counts, all attributed:** validate-crew 44→45 total · run-crew-tests 166→**169** · save-context 23→**30** · corrections 27→**28 rows/IDs**, 21 APPLIED / 0 PENDING · app 18/18 · drill PORTABLE · EX-01 delta 0.
 - **Disclosed:** the precondition allowed one uncommitted file and the tree carried two; the second was verified to be the matching v3.2 payload at delta 0.
 - **Next action:** operator replaces MASTER_FIFO_PLAN_CLAUDE.md and DIRECTORY_GUIDE.md with the v3.2 pair so the triple is byte-identical again. No phase is open in either repo.
+
+## [F8|2026-08-22T23:51:31Z] TRIPLE BYTE-IDENTICAL — PARENT-SYNC-1 closed
+- **Confirmed:** operator placed the v3.2 pair; the working tree is clean, so the placed files are byte-identical to what the gate committed. Plan sha256 e01256a3faabaf88 — the same hash measured at the precondition check, so the canonical copy, the repo copy and the §4.3-derived map now agree.
+- **EX-01 delta 0** on all three §4 payloads (CLAUDE.md, CLAUDE_DESIGN.md, DIRECTORY_GUIDE.md).
+- **Parent:** validate-crew 44+1SKIP · run-crew-tests **169** · save-context **30** · corrections **21 APPLIED / 0 PENDING** · app 18/18 · **PORTABLE** · 87 tracked.
+- **Lite:** phase L4, 5 gates approved, 0 pending, 40 tracked, verify green with no signal.
+- **Next action:** no phase or gate is open in either repo. Registry is at 0 PENDING. Remaining known items are operator decisions, not owed work: whether Lite's runtime state (heartbeats, seance log) should become durable, and whether skill-packs open under the §7.1 correlation.
