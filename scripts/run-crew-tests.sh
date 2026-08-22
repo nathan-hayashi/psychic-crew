@@ -1009,6 +1009,21 @@ case "$WANT" in
   F0)   cases_F0;; F1) cases_F1;; F2) cases_F2;; F3) cases_F3;; F4) cases_F4;; F5) cases_F5;; F6) cases_F6;; F7) cases_F7;;
   *)    echo "unknown target: $WANT"; exit 64;;
 esac
+# The generalised canary, asserted at the end of every run. Bound to the FILES, not to a count of
+# them: a trail that appears mid-run is a new entry and shows as drift rather than being skipped.
+TRAILS_AFTER=$(for f in logs/*.jsonl; do [ -f "$f" ] && printf '%s:%s\n' "$f" "$(wc -l < "$f")"; done | sort)
+tb=$(printf '%s\n' "$TRAILS_BEFORE" | grep -c . || true)
+if [ "${tb:-0}" = 0 ]; then
+  # Announced, not silent: with no trails on disk the canary proves nothing, and a quiet pass here
+  # is how it would stop meaning anything in a fresh clone.
+  ok "C-14 canary: no live audit trail on disk to protect (fresh checkout)"
+elif [ "$TRAILS_BEFORE" = "$TRAILS_AFTER" ]; then
+  ok "C-14 canary: all $tb live audit trail(s) unchanged by this run"
+else
+  no "C-14 canary: a fixture wrote to a LIVE audit trail — before[$(printf '%s' "$TRAILS_BEFORE" | tr '\n' ' ')] after[$(printf '%s' "$TRAILS_AFTER" | tr '\n' ' ')]"
+fi
+
+
 # CR-027 — the README's reproduction block stated 37 / 144 / 24 while the real numbers were
 # 43 / 166 / 26. Nothing bound them, so they drifted for four sessions in the one file a new reader
 # starts from. Fixing the numbers without binding them would just restart the clock.
@@ -1023,33 +1038,25 @@ if [ "$WANT" = "all" ] && { [ ! -d .git ] || [ ! -d logs ]; }; then
   # Same guard as validate-crew's, for the same reason — see the note there.
   ok "CR-027 README count describes the primary checkout; this is not one"
 elif [ "$WANT" = "all" ]; then
-  rcw=$(grep -oE '\./scripts/run-crew-tests\.sh[[:space:]]+#[[:space:]]*[0-9]+ crew assertions' README.md 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  # EVERY claim, not the first. The first version bound only the count inside the fenced Quickstart
+  # block and left README:311's "144 crew assertions" unbound and four sessions stale — a binding
+  # that covers one instance of a claim is the same defect as a canary that covers one trail, which
+  # is what C-27 was about. And it ran BEFORE the C-14 canary, so an assertion added after it was
+  # invisible to it and the binding passed on a number one short. It now runs last.
   rct=$((P + F + 1))
-  if [ -z "$rcw" ]; then
-    no "CR-027 README states no run-crew-tests count to bind — the claim was removed, not updated"
-  elif [ "$rcw" = "$rct" ]; then
-    ok "CR-027 README's crew-assertion count matches this run ($rct)"
+  rcall=$(grep -oE '[0-9]+ crew assertions' README.md 2>/dev/null | grep -oE '^[0-9]+' | sort -u)
+  rcn=$(printf '%s\n' "$rcall" | grep -c . || true)
+  if [ "${rcn:-0}" = 0 ]; then
+    no "CR-027 README states no crew-assertion count to bind — the claim was removed, not updated"
   else
-    no "CR-027 README says $rcw crew assertions, this run has $rct"
+    rcbad=$(printf '%s\n' "$rcall" | grep -vxF "$rct" | tr '\n' ' ')
+    [ -z "$rcbad" ] && ok "CR-027 every crew-assertion claim in README agrees ($rcn distinct value(s)) and matches this run ($rct)" \
+                    || no "CR-027 README carries stale crew-assertion count(s):[$rcbad] — this run has $rct"
   fi
 else
   # Announced, never silent: a partial run legitimately has a different total, and a check that
   # quietly passes on 'not applicable' is the shape C-23 punished.
   printf '  [INFO] CR-027 README count not checked — partial target "%s", only a full run is comparable\n' "$WANT"
-fi
-
-# The generalised canary, asserted at the end of every run. Bound to the FILES, not to a count of
-# them: a trail that appears mid-run is a new entry and shows as drift rather than being skipped.
-TRAILS_AFTER=$(for f in logs/*.jsonl; do [ -f "$f" ] && printf '%s:%s\n' "$f" "$(wc -l < "$f")"; done | sort)
-tb=$(printf '%s\n' "$TRAILS_BEFORE" | grep -c . || true)
-if [ "${tb:-0}" = 0 ]; then
-  # Announced, not silent: with no trails on disk the canary proves nothing, and a quiet pass here
-  # is how it would stop meaning anything in a fresh clone.
-  ok "C-14 canary: no live audit trail on disk to protect (fresh checkout)"
-elif [ "$TRAILS_BEFORE" = "$TRAILS_AFTER" ]; then
-  ok "C-14 canary: all $tb live audit trail(s) unchanged by this run"
-else
-  no "C-14 canary: a fixture wrote to a LIVE audit trail — before[$(printf '%s' "$TRAILS_BEFORE" | tr '\n' ' ')] after[$(printf '%s' "$TRAILS_AFTER" | tr '\n' ' ')]"
 fi
 
 printf '\n== run-crew-tests: %s PASS / %s FAIL ==\n' "$P" "$F"

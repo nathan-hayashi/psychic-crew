@@ -335,14 +335,16 @@ fi
 if [ ! -d .git ] || [ ! -d logs ]; then
   pass "CR-027 README count describes the primary checkout; this is not one (assertions vary with which optional artifacts exist)"
 else
-vcw=$(grep -oE '\./scripts/validate-crew\.sh[[:space:]]+#[[:space:]]*[0-9]+ structural assertions' README.md 2>/dev/null | grep -oE '[0-9]+' | head -1)
+# Every claim, for the reason given at the foot of run-crew-tests.sh.
 vct=$((P + S + F + 1))
-if [ -z "$vcw" ]; then
-  fail "CR-027 README states no validate-crew count to bind — the claim was removed, not updated"
-elif [ "$vcw" = "$vct" ]; then
-  pass "CR-027 README's structural-assertion count matches this run ($vct)"
+vcall=$(grep -oE '[0-9]+ structural assertions' README.md 2>/dev/null | grep -oE '^[0-9]+' | sort -u)
+vcn=$(printf '%s\n' "$vcall" | grep -c . || true)
+if [ "${vcn:-0}" = 0 ]; then
+  fail "CR-027 README states no structural-assertion count to bind — the claim was removed, not updated"
 else
-  fail "CR-027 README says $vcw structural assertions, this run has $vct"
+  vcbad=$(printf '%s\n' "$vcall" | grep -vxF "$vct" | tr '\n' ' ')
+  [ -z "$vcbad" ] && pass "CR-027 every structural-assertion claim in README agrees ($vcn distinct value(s)) and matches this run ($vct)" \
+                  || fail "CR-027 README carries stale structural-assertion count(s):[$vcbad] — this run has $vct"
 fi
 fi
 
