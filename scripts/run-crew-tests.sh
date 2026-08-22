@@ -480,7 +480,7 @@ cases_F4 () {
 
   # Vocabulary parity. No fragment assembly needed and the reason is worth stating: the four class
   # tokens are severity words, not deny-listed verbs, so a contiguous literal here denies nothing.
-  iktab=$(awk '/^# INTAKE-CLASSIFIER/{f=1;next} f&&/^```/{exit} f&&NF' "$ikp" 2>/dev/null)
+  iktab=$(awk '/^# INTAKE-CLASSIFIER v[0-9]+$/{f=1;next} f&&/^```/{exit} f&&NF' "$ikp" 2>/dev/null)
   ikcls=$(printf '%s\n' "$iktab" | cut -f1 | sort -u | tr '\n' ' ')
   iksec=$(grep -oE '^\| `(crit|high|med|low)`' .claude/rules/security.md | grep -oE 'crit|high|med|low' | sort -u | tr '\n' ' ')
   { [ -n "$ikcls" ] && [ "$ikcls" = "$iksec" ]; } \
