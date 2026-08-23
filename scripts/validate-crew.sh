@@ -199,7 +199,7 @@ _d="dd"; _n5="$_d if="
 DENY=$(jq -r '.permissions.deny[]?' "$SETTINGS" 2>/dev/null)
 dmiss=""
 for needle in "$_n1" "$_n2" "npx" "sudo" "$_n3" "$_n4" "$_n5"; do
-  printf '%s\n' "$DENY" | grep -qF -- "$needle" || dmiss="$dmiss [$needle]"
+  grep -qF -- "$needle" <<<"$DENY" || dmiss="$dmiss [$needle]"
 done
 [ -z "$dmiss" ] && pass "all HC-5 deny entries present ($(printf '%s\n' "$DENY" | grep -c .) rules)" \
                 || fail "deny-list missing:$dmiss — a removed prohibition is invisible once committed"
@@ -215,7 +215,7 @@ done
 # during the audit. Describe the set, never spell it.
 rmiss=""
 for needle in ".env" "secrets"; do
-  printf '%s\n' "$DENY" | grep '^Read(' | grep -qF -- "$needle" || rmiss="$rmiss [$needle]"
+  grep -qF -- "$needle" <<<"$(printf '%s\n' "$DENY" | grep '^Read(')" || rmiss="$rmiss [$needle]"
 done
 [ -z "$rmiss" ] && pass "secret-path Read denials retained by name (.env, secrets)" \
                 || fail "secret-path Read denial missing:$rmiss — a removed prohibition is invisible once committed"

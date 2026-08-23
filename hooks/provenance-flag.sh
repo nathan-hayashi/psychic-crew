@@ -34,7 +34,7 @@ set -uo pipefail
 
   # Attribution already present means the writer did the required marking. Checked first so the
   # common, correct case costs nothing.
-  printf '%s' "$C" | grep -qE '0\.2d|Handling note|relayed|quoted from|source=|untrusted:' && exit 0
+  grep -qE '0\.2d|Handling note|relayed|quoted from|source=|untrusted:' <<<"$C" && exit 0
 
   spans=$(
     for pf in "$CORPUS"/*/*.json "$CORPUS"/*.json; do
@@ -48,7 +48,7 @@ set -uo pipefail
   hits=0; sample=""
   while IFS= read -r span; do
     [ "${#span}" -ge 60 ] || continue
-    if printf '%s' "$C" | grep -qF -- "$span" 2>/dev/null; then
+    if grep -qF -- "$span" 2>/dev/null <<<"$C"; then
       hits=$((hits+1)); [ -n "$sample" ] || sample=$(printf '%s' "$span" | cut -c1-90)
     fi
   done <<SPANEOF

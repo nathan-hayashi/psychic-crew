@@ -633,3 +633,11 @@ sentence alone cannot manufacture that alert.
 - **This repo:** 320bbe2 — validate-crew 44+1SKIP · run-crew-tests **171** · save-context 30 · corrections 21 APPLIED / 0 PENDING · PORTABLE · 88 tracked.
 - **Open, operator-side:** R-SP-1 skill-packs. The block required a pasted ruling line and none was given, while v3.3's D18 describes the ruling as ratified. Step 3 was skipped and the conflict reported rather than resolved unilaterally.
 - **Next action:** none open. Resolve the R-SP-1 discrepancy if skill-packs are to proceed; the operator's AFTER step (replace the plan/map pair with v3.3) is already satisfied at delta 0.
+
+## [F8|2026-08-23T08:37:32Z] GUIDANCE-2 — pipe-to-grep-q class swept, shell-discipline v2, plan v3.4
+- **Rule v2:** rules 1–4 unchanged; **5** adds the pipeline-status class, **6** adds probe fidelity. Written byte-for-byte for the Lite mirror.
+- **Sweep:** 29 sites converted across 7 files; census **0**. Ruling-time census 31 reconciles as 3 fixed at b77fbec + 29 here.
+- **The census found its own blind spot:** one site hid because the census comment-stripped with `s/#.*//` — the same idiom the line contained. The assertion now strips only whitespace-introduced hashes.
+- **Behaviour verified across the sweep:** every suite at its pre-sweep number; swept hooks exercised for deny/allow/exit-0 directly.
+- **Counts:** run-crew-tests 171 → **172** (+1 rule-5 assertion). validate-crew 45, save-context 30, corrections 21/0, tracked 88 — all unchanged.
+- **Next action:** BLOCK 2 (LITE-SYNC-2) — re-mirror the rule, census and sweep Lite, add its second class assertion.

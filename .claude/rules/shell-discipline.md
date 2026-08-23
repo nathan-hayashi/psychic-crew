@@ -1,8 +1,9 @@
-# shell-discipline.md — standing write-path idioms (R-SD-1, 2026-08-22)
-Born from five recurrences across two builds of one defect class; the instance
-fixes live in the correction registries (parent: the C-27 sweep; Lite: the L2
-clean-tree write, f03835f). These are standing rules, enforced by a class
-assertion in each repo's suite.
+# shell-discipline.md — standing write-path idioms (R-SD-1 v2, 2026-08-22)
+Born from five recurrences across two builds of one defect class, widened after
+a sixth from its sibling class: the SIGPIPE flake fixed at b77fbec, where
+C-09 failed one-in-four on unchanged inputs. Instance
+fixes live in the correction registries; these are standing rules, enforced by
+class assertions in each repo's suite.
 1. Count-then-default composites are forbidden. `$(cmd || echo DEFAULT)` is
    illegal wherever cmd can print before failing. Canonical offender:
    `grep -c PAT FILE || echo 0` — grep -c prints its count and THEN exits
@@ -20,6 +21,21 @@ assertion in each repo's suite.
    class). Durable means tracked, append-only, commit-stamped; any query over
    mixed stores labels every hit [durable] or [runtime] and states plainly when
    an answer does not travel off this machine.
-Enforcement: the suite's class assertion scans comment-stripped shell for the
-forbidden composite using fragment-assembled needles. The allowlist is empty
-and stays empty.
+5. A pipeline whose status is consumed must not have a signal-able producer.
+   `producer FILE | grep -q PAT` under pipefail is forbidden: grep -q exits the
+   instant it matches, the producer's next write takes SIGPIPE (141), and
+   pipefail reports the producer's death as the pipeline's verdict — a race
+   that scales with file size and load. Remedy, uniformly and with no
+   small-input exemption: here-strings (`grep -q PAT <<<"$(producer FILE)"`)
+   or capture-then-test. Uniformity is the guard; a risk-tiered allowlist is a
+   future defect with paperwork.
+6. A diagnostic must exercise the exact construct under test. Probing a
+   SIGPIPE-sensitive `grep -q` pipeline with `grep -c` observes a different
+   program — grep -c reads to EOF and cannot take the signal it is hunting —
+   and returned a confident negative on a live defect. A near-miss probe's
+   clean result is void, not reassuring; this has now happened twice.
+Enforcement: two class assertions per repo, comment-stripped, fragment-assembled
+needles, empty allowlists — one for the rule-1 composite, one for any
+`| grep -q` in tracked shell. Stated scanner gap: other early-exit consumers
+(head -n, grep -m, sed q) are covered by rule 5's class in prose and gain
+needles when evidence produces an instance, not before.

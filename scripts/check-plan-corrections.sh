@@ -54,7 +54,7 @@ else
   for pair in "bash-blocker:$j1" "model-guard:$j2" "sensitive-guard:$j3"; do
     g=${pair%%:*}; j=${pair#*:}
     o=$(printf '%s' "$j" | CLAUDE_PROJECT_DIR="$c3t" "./hooks/$g.sh" 2>/dev/null || true)
-    printf '%s' "$o" | grep -q '"permissionDecision":"deny"' || { c3=0; c3why="$c3why $g"; }
+    grep -q '"permissionDecision":"deny"' <<<"$o" || { c3=0; c3why="$c3why $g"; }
   done
   rm -rf "$c3t"
   if [ "$c3" = 1 ]; then report C-03 F2 APPLIED "all three PreToolUse guards emit permissionDecision:deny on a real trigger"
@@ -85,9 +85,9 @@ else
 # that form entirely with assignment-position matching, under which the bug cannot occur — so its
 # detection pattern legitimately no longer exists. Superseded, not unfixed.
 CODE_AM=$(sed 's/#.*//' scripts/apply-models.sh 2>/dev/null)
-if printf '%s' "$CODE_AM" | grep -q 'grep -ril'; then
+if grep -q 'grep -ril' <<<"$CODE_AM"; then
   report C-06 F0 PENDING "HC-2 still uses grep -ril (filenames); the -v filter can never suppress"
-elif printf '%s' "$CODE_AM" | grep -q 'ascii_downcase | contains'; then
+elif grep -q 'ascii_downcase | contains' <<<"$CODE_AM"; then
   report C-06 F0 SUPERSEDED "subsumed by C-09; the grep -ril form no longer exists"
 else
   report C-06 F0 PENDING "HC-2 implementation unrecognised — re-verify by hand"
@@ -341,7 +341,7 @@ if [ -n "$c24tmp" ] && [ -f scripts/save-context.sh ]; then
     # rejects the planted timestamp exactly as before. A detector pinned to a message is pinned to
     # an implementation, which is the proxy family this registry exists to record.
     c24rc=$( cd "$c24tmp" && ./scripts/save-context.sh check >/dev/null 2>&1; echo $? )
-    if [ "$c24rc" != 0 ] && printf '%s' "$c24out" | grep -q '1999-01-01T00:00:00Z'; then
+    if [ "$c24rc" != 0 ] && grep -q '1999-01-01T00:00:00Z' <<<"$c24out"; then
     report C-24 F8 APPLIED "the §15.5 checker rejects a distilled gate timestamp that disagrees with the gate ledger"
   else
     report C-24 F8 PENDING "the §15.5 checker accepts a distilled claim its own source contradicts — hygiene only, no fidelity"
@@ -371,7 +371,7 @@ if [ -n "$c25tmp" ] && [ -x hooks/subagent-start.sh ] && [ -f scripts/validate-c
            agent_id:"c25-unrelated",original_sha256:"x",mutation:"RELEASE",reason:"surplus"}' \
     > "$c25tmp/logs/arbiter-audit.jsonl" 2>/dev/null
   c25out=$( cd "$c25tmp" && ./scripts/validate-crew.sh 2>&1 )
-  if printf '%s' "$c25out" | grep -q 'C-25: specialist subagent start(s) with no arbiter coverage: c25-uncovered'; then
+  if grep -q 'C-25: specialist subagent start(s) with no arbiter coverage: c25-uncovered' <<<"$c25out"; then
     report C-25 F8 APPLIED "subagent starts are correlated to arbiter coverage by agent_id as a set difference; a surplus line does not mask a missing one"
   else
     report C-25 F8 PENDING "subagent-start coverage does not correlate identity — a failed dispatch leaves no record the auditor can see (C-12 hole)"

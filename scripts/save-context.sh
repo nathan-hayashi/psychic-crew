@@ -218,7 +218,7 @@ CLAIMSEOF
       # lives outside the bold. The first version did exactly that and reported five bound claims
       # as unbound — a completeness check that cries wolf gets switched off, which is worse than
       # one that is silent.
-      grep -oE "$loc" "$ENTRY" 2>/dev/null | grep -qF -- "$span" && { hit=1; break; }
+      grep -qF -- "$span" <<<"$(grep -oE "$loc" "$ENTRY" 2>/dev/null)" && { hit=1; break; }
     done <<COVEOF
 $covered
 COVEOF

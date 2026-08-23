@@ -14,7 +14,7 @@ case "$F" in
 esac
 BAD=$(jq -r '.forbidden_substrings[]' "$ROOT/models.config.json" 2>/dev/null || echo fable)
 for b in $BAD; do
-  if printf '%s' "$C" | grep -qiE "^[[:space:]]*\"?model\"?[[:space:]]*:[[:space:]]*\"?[^\",}]*${b}"; then
+  if grep -qiE "^[[:space:]]*\"?model\"?[[:space:]]*:[[:space:]]*\"?[^\",}]*${b}" <<<"$C"; then
     deny "HC-2: write assigns a forbidden ($b) model into the config surface"
   fi
 done

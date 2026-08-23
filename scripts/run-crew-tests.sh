@@ -106,9 +106,9 @@ cases_F2 () {
   F2T=$(mktemp -d); mkdir -p "$F2T/logs"
   cp GATES.md models.config.json "$F2T/" 2>/dev/null || true
   denies () { o=$(printf '%s' "$2" | CLAUDE_PROJECT_DIR="$F2T" "./hooks/$1.sh" 2>/dev/null || true)
-              printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
+              grep -q '"permissionDecision":"deny"' <<<"$o"; }
   allows () { o=$(printf '%s' "$2" | CLAUDE_PROJECT_DIR="$F2T" "./hooks/$1.sh" 2>/dev/null || true)
-              ! printf '%s' "$o" | grep -q '"permissionDecision":"deny"'; }
+              ! grep -q '"permissionDecision":"deny"' <<<"$o"; }
   feed   () { printf '%s' "$2" | CLAUDE_PROJECT_DIR="$F2T" "./hooks/$1.sh"; }
 
   denies bash-blocker '{"tool_input":{"command":"rm -rf ~"}}'                 && ok "denies rm -rf ~"        || no "rm -rf ~ not denied"
@@ -159,13 +159,13 @@ cases_F2 () {
 
   # Stop: refreshes latest.md AND consumes the flag exactly once
   o=$(printf '%s' '{}' | ./hooks/stop.sh 2>/dev/null || true)
-  printf '%s' "$o" | grep -q '"decision":"block"' && ok "Stop emits decision:block while the flag is armed" || no "Stop did not block on armed flag"
+  grep -q '"decision":"block"' <<<"$o" && ok "Stop emits decision:block while the flag is armed" || no "Stop did not block on armed flag"
   [ -f .claude/state/checkpoints/latest.md ] && ok "ccs-03 Stop refreshed latest.md" || no "latest.md not refreshed"
   o=$(printf '%s' '{}' | ./hooks/stop.sh 2>/dev/null || true)
-  printf '%s' "$o" | grep -q '"decision":"block"' && no "Stop blocked twice — flag not consumed exactly once" || ok "flag consumed exactly once, no loop"
+  grep -q '"decision":"block"' <<<"$o" && no "Stop blocked twice — flag not consumed exactly once" || ok "flag consumed exactly once, no loop"
 
   check "restore-context.sh latest exits 0" 0 ./scripts/restore-context.sh latest
-  ./scripts/restore-context.sh latest 2>/dev/null | grep -q 'RELOAD INSTRUCTION' && ok "restore-context prints the reload instruction" || no "reload instruction missing"
+  grep -q 'RELOAD INSTRUCTION' <<<"$(./scripts/restore-context.sh latest 2>/dev/null)" && ok "restore-context prints the reload instruction" || no "reload instruction missing"
 
   o=$(printf '%s' '{}' | ./hooks/session-start.sh 2>/dev/null || true)
   printf '%s' "$o" | jq -e '.hookSpecificOutput.additionalContext' >/dev/null 2>&1 && ok "SessionStart emits additionalContext (§15.4)" || no "SessionStart output malformed"
@@ -208,7 +208,7 @@ cases_F2 () {
   [ -s "$er/logs/build-errors.jsonl" ] && ok "error-recovery wrote build-errors.jsonl under an isolated root" \
                                        || no "error-recovery wrote no record"
   ehint=$(printf '%s' "$erj" | CLAUDE_PROJECT_DIR="$er" ./hooks/error-recovery.sh 2>&1 >/dev/null); erc=$?
-  { printf '%s' "$ehint" | grep -q 'minimal-shell' && [ "$erc" = 2 ]; } \
+  { grep -q 'minimal-shell' <<<"$ehint" && [ "$erc" = 2 ]; } \
     && ok "CR-018 §9 hint DELIVERED on stderr with exit 2 (not merely emitted)" \
     || no "CR-018 §9 hint not delivered (exit=$erc stderr='$ehint')"
   [ "$(wc -l < logs/build-errors.jsonl 2>/dev/null || echo 0)" = "$erb" ] \
@@ -422,7 +422,7 @@ cases_F2 () {
     || no "CR-025 subagent-start lost the supplied identity (id='$s2id' type='$s2ty')"
   # The identity is SUPPLIED, never inferred: the hook reads no outcome field, so it cannot depend
   # on the dispatch succeeding. That is the whole point — it covers the failed ones.
-  sed 's/#.*//' hooks/subagent-start.sh | grep -qE 'tool_response|\.error|success' \
+  grep -qE 'tool_response|\.error|success' <<<"$(sed 's/#.*//' hooks/subagent-start.sh)" \
     && no "CR-025 subagent-start reads an outcome field — it must fire regardless of success" \
     || ok "CR-025 subagent-start depends on no outcome field (covers failed dispatches)"
   # CR-022: flag-mode only. Over-cap flags, at-cap does not, and it NEVER denies.
@@ -465,7 +465,7 @@ cases_F4 () {
   [ "$(pvrun Plan.md "The router must never skip a step or ignore a gate; leads must not override the lock.")" = 0 ] && ok "C-13 does not keyword-match imperatives" || no "C-13 tripped on ordinary prose"
   [ "$(pvrun README.md "$pvspan")" = 0 ] && ok "C-13 ignores writes outside the continuity files" || no "C-13 fired out of scope"
   o=$(printf '%s' '{"tool_input":{"file_path":"/x/Plan.md","content":"y"}}' | ./hooks/provenance-flag.sh 2>/dev/null; echo "exit=$?")
-  printf '%s' "$o" | grep -q 'exit=0' && ok "C-13 never blocks (exit 0)" || no "C-13 returned non-zero — it must only flag"
+  grep -q 'exit=0' <<<"$o" && ok "C-13 never blocks (exit 0)" || no "C-13 returned non-zero — it must only flag"
   rm -rf "$pv"
   # §5.3 router contract. The lock path and the scoring path must BOTH be reachable: a router
   # whose rule 1 is unconditional would announce T3 even with the lock removed, which makes
@@ -565,7 +565,7 @@ cases_F3 () {
     tl=$(grep -m1 '^tools:' ".claude/agents/$a.md" 2>/dev/null || true)
     if [ -z "$tl" ]; then
       no "$a declares no tools: line at all — that inherits every tool, it is not read-only"
-    elif printf '%s' "$tl" | grep -qE 'Write|Edit|Bash'; then
+    elif grep -qE 'Write|Edit|Bash' <<<"$tl"; then
       no "$a holds a mutating tool — read-only by contract"
     else
       ok "$a is read-only"
@@ -602,14 +602,14 @@ cases_F3 () {
   printf '%s' "{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"export MY_API_TOKEN=$SEC\"}}" \
     | CLAUDE_PROJECT_DIR="$SCR" ./hooks/audit-logger.sh >/dev/null 2>&1
   l=$(tail -1 "$SL" 2>/dev/null)
-  printf '%s' "$l" | grep -q "$SEC" && no "SEC-DG-01 audit-logger wrote a credential verbatim" \
+  grep -q "$SEC" <<<"$l" && no "SEC-DG-01 audit-logger wrote a credential verbatim" \
                                     || ok "SEC-DG-01 audit-logger redacts a credential-bearing command"
-  printf '%s' "$l" | grep -q 'REDACTED' && ok "SEC-DG-01 audit-logger leaves a redaction marker" \
+  grep -q 'REDACTED' <<<"$l" && ok "SEC-DG-01 audit-logger leaves a redaction marker" \
                                         || no "SEC-DG-01 audit-logger left no redaction marker"
   printf '%s' "{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"/x/secrets/$SEC.pem\",\"content\":\"k\"}}" \
     | CLAUDE_PROJECT_DIR="$SCR" ./hooks/sensitive-guard.sh >/dev/null 2>&1
   l=$(tail -1 "$SL" 2>/dev/null)
-  printf '%s' "$l" | grep -q "$SEC" && no "SEC-DG-01 deny() wrote a credential verbatim" \
+  grep -q "$SEC" <<<"$l" && no "SEC-DG-01 deny() wrote a credential verbatim" \
                                     || ok "SEC-DG-01 deny() redacts the blocked target"
   printf '%s' "$l" | jq -e '.event=="PreToolUse.deny" and (.reason|length)>0' >/dev/null 2>&1 \
     && ok "SEC-DG-01 denial record still well-formed after scrub" || no "SEC-DG-01 denial record malformed"
@@ -641,7 +641,7 @@ cases_F5 () {
   # the build after apply-models, check-plan-corrections and denies() — the registry's rule is
   # "never branch on the status of a pipeline whose stage exits nonzero meaningfully".
   o=$(./scripts/save-context.sh prepare 2>/dev/null || true)
-  printf '%s' "$o" | grep -q 'DISTILL INSTRUCTION' \
+  grep -q 'DISTILL INSTRUCTION' <<<"$o" \
     && ok "save-context emits the 15.5 distill instruction" || no "no distill instruction emitted"
   # 15.5 keeps the merge judgement in-session. Asserted BEHAVIOURALLY: prepare must not alter the
   # summary. The first version grepped the script's own comment for 'NOT a rewriter', which is both
@@ -674,7 +674,7 @@ cases_F5 () {
   rm -rf "$st"
   grep -q 'GATE READY' hooks/stop.sh && ok "Stop hook carries the GATE READY message" || no "no GATE READY message"
   # Ledger shape and backfill (G-F5 demo).
-  head -5 GATES.md | grep -q 'Operator token line' && ok "GATES.md carries the five-column format" \
+  grep -q 'Operator token line' <<<"$(head -5 GATES.md)" && ok "GATES.md carries the five-column format" \
                                                    || no "ledger header missing a column"
   gn=$(grep -cE '^\| G-F[0-4] ' GATES.md)
   [ "$gn" -ge 5 ] && ok "ledger backfilled F0-F4 ($gn rows)" || no "ledger has only $gn of 5 rows"
@@ -683,7 +683,7 @@ cases_F5 () {
   grep -q 'Checkpoint discipline' PROGRESS.md && ok "PROGRESS.md carries the checkpoint-discipline section" \
                                               || no "checkpoint-discipline section absent"
   # ccs-02 shape: a cold reader must recover the next action from the tail alone.
-  tail -40 PROGRESS.md | grep -qE '^- \*\*Next action:' \
+  grep -qE '^- \*\*Next action:' <<<"$(tail -40 PROGRESS.md)" \
     && ok "next_action recoverable from the PROGRESS.md tail alone" || no "tail carries no next_action"
   check "plan corrections: F5 clean" 0 ./scripts/check-plan-corrections.sh F5
 }
@@ -847,7 +847,7 @@ cases_F6 () {
   : > "$cs/GATES.md"
   printf '# s\n\n**verified** — fixture decision retained.\n\n**proposed** — fixture hypothesis retained.\n\n## Next action\nCCS02-SENTINEL-RESUME-HERE\n' > "$cs/context/session-summary.md"
   cold=$(printf '%s' '{}' | CLAUDE_PROJECT_DIR="$cs" "$cs/hooks/session-start.sh" 2>/dev/null || true)
-  printf '%s' "$cold" | grep -q 'CCS02-SENTINEL-RESUME-HERE' \
+  grep -q 'CCS02-SENTINEL-RESUME-HERE' <<<"$cold" \
     && ok "ccs-02 cold start reproduces the recorded next_action from disk alone" \
     || no "ccs-02 cold start did NOT surface the recorded next_action"
   ( cd "$cs" && ./scripts/save-context.sh check >/dev/null 2>&1 ) \
@@ -957,7 +957,7 @@ cases_F7 () {
   # against a real 14 at A5, because mermaid arrows share lines with their messages.
   f7fen=$(grep -c '^```mermaid' "$sp/README.md" || true)
   f7mmd=$(awk '/^```mermaid$/{b=1;next} b&&/^```$/{exit} b' "$sp/README.md")
-  f7seq=0; printf '%s\n' "$f7mmd" | grep -q '^[[:space:]]*sequenceDiagram' && f7seq=1
+  f7seq=0; grep -q '^[[:space:]]*sequenceDiagram' <<<"$f7mmd" && f7seq=1
   f7par=$(printf '%s\n' "$f7mmd" | grep -c '^[[:space:]]*participant ' || true)
   f7arr=$(printf '%s\n' "$f7mmd" | grep -o -E '[A-Za-z]+-?->>' | wc -l)
   # S3: this required EXACTLY one fenced block, which CR-005 legitimately broke by adding the
@@ -1077,6 +1077,28 @@ fi
   [ -z "$sdbad" ] \
     && ok "R-SD-1 no count-then-default composite in any tracked shell file" \
     || no "R-SD-1 VIOLATION — count-then-default composite at: $(printf '%s' "$sdbad" | tr '\n' ' ')"
+
+  # R-SD-1 rule 5 — the SIBLING class, added at v2 after the b77fbec flake. `producer | grep -q PAT`
+  # under pipefail: grep -q exits the instant it matches, the producer's next write takes SIGPIPE
+  # (141), and pipefail reports the producer's death as the pipeline's verdict. Measured at 2 of 42
+  # invocations on a 381-line file with the match at line 28 — a race that scales with size and load,
+  # and cost a one-in-four red suite on unchanged inputs.
+  #
+  # NO SMALL-INPUT EXEMPTION, per the rule: uniformity is the guard, and a risk-tiered allowlist is
+  # a future defect with paperwork. The allowlist is empty and stays empty.
+  #
+  # COMMENT STRIPPING IS DELIBERATELY MORE ACCURATE THAN `s/#.*//`, and this is not pedantry: the
+  # naive form destroys any line carrying a `#` inside a string, and one of the 29 swept sites was
+  # `sed 's/#.*//' FILE | grep -qE ...` — it hid from a naive census of its own class. Stripping
+  # only a hash introduced by whitespace, or a whole-line comment, keeps such lines visible.
+  _sd5="| gr""ep -"
+  sd5bad=$(git ls-files '*.sh' 2>/dev/null | while read -r sd5f; do
+             sed -E 's/^[[:space:]]*#.*$//; s/[[:space:]]#.*$//' "$sd5f" \
+               | grep -nE '\|[[:space:]]*grep[[:space:]]+-[a-zA-Z]*q' | sed "s|^|$sd5f:|"
+           done)
+  [ -z "$sd5bad" ] \
+    && ok "R-SD-1 rule 5: no status-consumed pipeline with a signal-able producer ($sdn files, census 29 -> 0)" \
+    || no "R-SD-1 rule 5 VIOLATION — pipe-to-grep-q at: $(printf '%s' "$sd5bad" | tr '\n' ' ')"
 
 # ONE shared total for both closing bindings. Each previously did its own +1 arithmetic, which
 # broke twice: once when the C-14 canary was added after the README binding, and again when the
