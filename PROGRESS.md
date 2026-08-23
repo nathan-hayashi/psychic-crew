@@ -649,3 +649,9 @@ sentence alone cannot manufacture that alert.
 - **Lite:** d99a958 — layer1 41/1/0 · sync 52/0 · distill 11/0 · stress 14/0 · layer2 38/0/0 · 42 tracked.
 - **R-SD-1 v2 enforced in both builds**, rule text byte-identical (0298d9759f6a2589), two class assertions each, pipe-to-grep-q census **0 / 0**.
 - **Next action:** no phase or gate is open in either repo. Open operator decision: R-SP-1 skill-packs, where the block's pasted-ruling mechanism and the plan's D18 disagree.
+
+## [F8|2026-08-23T09:02:30Z] R-SP-1 closed in Lite — the last open decision is settled
+- **Lite:** f67cc92, 43 tracked. Skill-packs open under §7.1, class-guarded disk→map, A4a intact. verify green across three clean-tree runs.
+- **This repo:** unchanged at 9bc765b — 44+1SKIP / **172** / 30 / 21 APPLIED / PORTABLE / 88 tracked.
+- **Cross-build state:** R-SD-1 v2 byte-identical (0298d9759f6a2589); pipe-to-grep-q census 0/0; four class assertions in the parent, five in Lite.
+- **Next action:** none open. The first skill-pack, when it lands, needs a `PACK` row, a recorded why, and its own per-pack gate under A4a.
