@@ -664,3 +664,8 @@ sentence alone cannot manufacture that alert.
 - **Counts:** run-crew-tests 172 → **177** (+2 H0a, +3 H2a) · tracked 88 → **91**. validate-crew 45, save-context 30, corrections 21/0 unchanged. EX-01 delta 0.
 - **Registered, not fixed:** the map covers `docs/audit/` only, so the two new `docs/` files sit outside any mapped path — C-26's shape; needs a re-export.
 - **Next action:** BLOCK 2 (LITE-GUARD-1), then BLOCK 3 (PACK-CONFLUENCE-1).
+
+## [F8|2026-08-23T09:39:26Z] All three GUARD/PACK blocks closed
+- **Parent:** e0445e0 — gate guard (H0a) live and fronting every gated commit; CR-006 closed (H2a). 177 / 44+1SKIP / 30 / 21 APPLIED / PORTABLE / 91 tracked.
+- **Lite:** 423daf8 — guard mirrored; first skill-pack live under R-SP-1. layer1 55/1/0 · sync 56/0 · distill 11/0 · stress 14/0 · layer2 48/0/0 · 48 tracked.
+- **Next action:** operator replaces `MASTER_FIFO_PLAN_CLAUDE.md` and `DIRECTORY_GUIDE.md` with the v3.5 pair, then exports one internal document into the pack inbox for the first real run.
