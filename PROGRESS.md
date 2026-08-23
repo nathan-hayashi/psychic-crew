@@ -626,3 +626,10 @@ sentence alone cannot manufacture that alert.
 - **Counts, attributed:** run-crew-tests 169 → **171** (+2 R-SD-1); tracked 87 → **88** (+1 rule file). validate-crew 45, save-context 30, corrections 28/28 unchanged. EX-01 delta 0.
 - **Disclosed:** precondition allowed one uncommitted file, two present; the second verified as the matching v3.3 payload at delta 0. The first attempt was stopped outright when v3.3 was absent.
 - **Next action:** BLOCK 2 (LITE-SYNC-1) in `~/projects/psychic-crew-lite`. **Step 3 (skill-packs) will be SKIPPED** — no R-SP-1 ruling line was pasted, though v3.3's D18 describes it as ratified; the block's own mechanism governs unless the operator says otherwise.
+
+## [F8|2026-08-23T00:44:07Z] LITE-SYNC-1 closed — R-SD-1 now enforced in both builds
+- **Lite:** 4b2ba82, 42 tracked. Rule MIRRORED byte-identical (sha256 c38813323b9a9066 both sides); class assertion live; verify green.
+- **The rule earned itself immediately:** Lite's class assertion found **two live violations** in `continuity.sh` on its first run — the third and fourth occurrence of the idiom in that repo, after two already fixed as instances.
+- **This repo:** 320bbe2 — validate-crew 44+1SKIP · run-crew-tests **171** · save-context 30 · corrections 21 APPLIED / 0 PENDING · PORTABLE · 88 tracked.
+- **Open, operator-side:** R-SP-1 skill-packs. The block required a pasted ruling line and none was given, while v3.3's D18 describes the ruling as ratified. Step 3 was skipped and the conflict reported rather than resolved unilaterally.
+- **Next action:** none open. Resolve the R-SP-1 discrepancy if skill-packs are to proceed; the operator's AFTER step (replace the plan/map pair with v3.3) is already satisfied at delta 0.
