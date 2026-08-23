@@ -611,3 +611,10 @@ sentence alone cannot manufacture that alert.
 - **Parent:** validate-crew 44+1SKIP · run-crew-tests **169** · save-context **30** · corrections **21 APPLIED / 0 PENDING** · app 18/18 · **PORTABLE** · 87 tracked.
 - **Lite:** phase L4, 5 gates approved, 0 pending, 40 tracked, verify green with no signal.
 - **Next action:** no phase or gate is open in either repo. Registry is at 0 PENDING. Remaining known items are operator decisions, not owed work: whether Lite's runtime state (heartbeats, seance log) should become durable, and whether skill-packs open under the §7.1 correlation.
+
+## [F8|2026-08-23T00:02:38Z] Lite durability resolved — closes an open operator decision
+- **Answered:** the previous entry listed "whether Lite's runtime state should become durable" as an open decision. Operator directed it; resolved as a **split** — raw heartbeat log stays runtime/gitignored, a recorded checkpoint is durable in Lite's `docs/session-history.jsonl`.
+- **Lite:** f03835f, 41 tracked, validate-lite **37 PASS / 1 SKIP / 0 FAIL**, 32 attested corrections, verify green.
+- **This repo:** unchanged at 4e28be2 — 44+1SKIP / 169 / 30 / 21 APPLIED / PORTABLE.
+- **Worth carrying here:** the `grep -c … || echo 0` idiom broke a history write for the fifth time in this build, again only on a CLEAN tree. This repo was swept and is clean of it (recorded at C-27), but the recurrence rate says it belongs in guidance, not only in a correction entry.
+- **Next action:** no phase or gate open. Remaining operator decision: whether skill-packs open under the §7.1 correlation.
