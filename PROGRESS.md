@@ -618,3 +618,11 @@ sentence alone cannot manufacture that alert.
 - **This repo:** unchanged at 4e28be2 — 44+1SKIP / 169 / 30 / 21 APPLIED / PORTABLE.
 - **Worth carrying here:** the `grep -c … || echo 0` idiom broke a history write for the fifth time in this build, again only on a CLEAN tree. This repo was swept and is clean of it (recorded at C-27), but the recurrence rate says it belongs in guidance, not only in a correction entry.
 - **Next action:** no phase or gate open. Remaining operator decision: whether skill-packs open under the §7.1 correlation.
+
+## [F8|2026-08-23T00:38:13Z] GUIDANCE-1 — R-SD-1 standing rule + class assertion + plan v3.3
+- **R-SD-1:** `.claude/rules/shell-discipline.md` written byte-for-byte (upstream-authored; will be MIRRORED into Lite). Promotes a five-times-recurring defect from registry memory to standing guidance.
+- **Class assertion:** comment-stripped scan of all 23 tracked shell files, fragment-assembled needles, **empty allowlist**. C-27 fixed the instances; this stops the next one entering.
+- **Controls 2/2:** planted composite FAILs naming file and line; the correct `|| true` form is NOT flagged.
+- **Counts, attributed:** run-crew-tests 169 → **171** (+2 R-SD-1); tracked 87 → **88** (+1 rule file). validate-crew 45, save-context 30, corrections 28/28 unchanged. EX-01 delta 0.
+- **Disclosed:** precondition allowed one uncommitted file, two present; the second verified as the matching v3.3 payload at delta 0. The first attempt was stopped outright when v3.3 was absent.
+- **Next action:** BLOCK 2 (LITE-SYNC-1) in `~/projects/psychic-crew-lite`. **Step 3 (skill-packs) will be SKIPPED** — no R-SP-1 ruling line was pasted, though v3.3's D18 describes it as ratified; the block's own mechanism governs unless the operator says otherwise.

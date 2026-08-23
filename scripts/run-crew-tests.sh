@@ -1051,6 +1051,33 @@ else
 fi
 
 
+  # R-SD-1 — the CLASS assertion for .claude/rules/shell-discipline.md. Five recurrences across two
+  # builds of one defect: `grep -c` prints its count and THEN exits nonzero on zero matches, so a
+  # `|| echo DEFAULT` fallback fires too and the composite emits TWO lines. It corrupts any numeric
+  # consumer, and it misbehaves only when the count is zero — a clean tree, which is the state a
+  # gate run is in. It broke a history write twice, the second time three lines below the comment
+  # citing the first.
+  #
+  # This is a CLASS assertion, not an instance fix. C-27 swept the existing occurrences; this stops
+  # the next one entering. `|| true` is deliberately NOT matched: grep prints "0" and true adds
+  # nothing, which is the correct form the rule points at.
+  #
+  # NEEDLES FRAGMENT-ASSEMBLED so this assertion and the rule file never match themselves — the
+  # guard-trips-on-its-own-documentation family, recorded seven times here. The allowlist is empty
+  # and stays empty; an exemption is how a class assertion decays back into an instance fix.
+  _sd1="gre""p -c"; _sd2="|| ec""ho"
+  sdbad=$(git ls-files '*.sh' 2>/dev/null | while read -r sdf; do
+            sed 's/#.*//' "$sdf" | grep -nF -- "$_sd1" | grep -F -- "$_sd2" | sed "s|^|$sdf:|"
+          done)
+  sdn=$(git ls-files '*.sh' 2>/dev/null | grep -c .)
+  # Vacuity guard: a scan over no files is trivially clean, which is how this would switch off.
+  [ "${sdn:-0}" -ge 5 ] \
+    && ok "R-SD-1 class scan covers $sdn tracked shell file(s)" \
+    || no "R-SD-1 scan is vacuous — only ${sdn:-0} shell file(s) enumerated"
+  [ -z "$sdbad" ] \
+    && ok "R-SD-1 no count-then-default composite in any tracked shell file" \
+    || no "R-SD-1 VIOLATION — count-then-default composite at: $(printf '%s' "$sdbad" | tr '\n' ' ')"
+
 # ONE shared total for both closing bindings. Each previously did its own +1 arithmetic, which
 # broke twice: once when the C-14 canary was added after the README binding, and again when the
 # C-28 binding was moved last and the README binding stopped counting it. The +2 is the two

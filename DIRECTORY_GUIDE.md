@@ -14,7 +14,7 @@ psychic-crew/
 ├─ .claude/
 │  ├─ settings.json             # permissions + hooks + env (project scope)
 │  ├─ agents/                   # 8 agent definitions (frontmatter stamped by apply-models.sh)
-│  ├─ rules/                    # arbiter-protocol · fallback-protocol · model-policy · security
+│  ├─ rules/                    # arbiter-protocol · fallback-protocol · model-policy · security · shell-discipline (standing write-path idioms, promoted from a 5× recurrence)
 │  ├─ skills/threshold-router/SKILL.md
 │  └─ skills/intake/SKILL.md    # CR-026 user-facing task-contract intake (R3a: blocking only at high/crit; advisory below)
 ├─ hooks/                       # 14 tracked files — _common.sh (shared library, not a hook) · audit-logger.sh · auto-format.sh · bash-blocker.sh · error-recovery.sh · model-guard.sh · notify.sh · pre-compact-checkpoint.sh · provenance-flag.sh · reference-cap.sh · sensitive-guard.sh · session-start.sh · stop.sh · subagent-start.sh
