@@ -641,3 +641,11 @@ sentence alone cannot manufacture that alert.
 - **Behaviour verified across the sweep:** every suite at its pre-sweep number; swept hooks exercised for deny/allow/exit-0 directly.
 - **Counts:** run-crew-tests 171 → **172** (+1 rule-5 assertion). validate-crew 45, save-context 30, corrections 21/0, tracked 88 — all unchanged.
 - **Next action:** BLOCK 2 (LITE-SYNC-2) — re-mirror the rule, census and sweep Lite, add its second class assertion.
+
+## [F8|2026-08-23T08:52:40Z] v3.4 triple byte-identical — GUIDANCE-2 / LITE-SYNC-2 closed
+- **Confirmed:** operator placed v3.4; the working tree is clean, so the placed file is byte-identical to what the gate committed. Plan sha256 c9f4e458f822ee8b — the same hash measured at the GUIDANCE-2 precondition check. `DIRECTORY_GUIDE.md` untouched, as the revision specifies.
+- **EX-01 delta 0** on all three §4 payloads.
+- **Parent:** validate-crew 44+1SKIP · run-crew-tests **172** · save-context 30 · corrections 21 APPLIED / 0 PENDING · PORTABLE · 88 tracked.
+- **Lite:** d99a958 — layer1 41/1/0 · sync 52/0 · distill 11/0 · stress 14/0 · layer2 38/0/0 · 42 tracked.
+- **R-SD-1 v2 enforced in both builds**, rule text byte-identical (0298d9759f6a2589), two class assertions each, pipe-to-grep-q census **0 / 0**.
+- **Next action:** no phase or gate is open in either repo. Open operator decision: R-SP-1 skill-packs, where the block's pasted-ruling mechanism and the plan's D18 disagree.
