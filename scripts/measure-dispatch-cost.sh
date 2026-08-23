@@ -85,3 +85,38 @@ awk -F'\t' '{ rn[$1]++; rt[$1]+=$3 }
 echo
 echo "wrote logs/metrics/dispatch-costs.tsv ($(wc -l < logs/metrics/dispatch-costs.tsv) dispatches)"
 echo "NOTE: these are subagent CONTEXT totals, not output produced, and exclude orchestrator tokens."
+
+# ── H2a / CR-006 ─────────────────────────────────────────────────────────────────────────────────
+# The TSV above lives in gitignored logs/, so a spec pointing at it plots nothing from a fresh
+# clone. Emit a TRACKED snapshot beside the spec instead. Phase is derived from the task id, because
+# the ruling asks for a phase-labelled distribution and the TSV carries no phase column.
+SNAP="docs/metrics-snapshot.json"
+mkdir -p docs
+before=0
+if [ -f "$SNAP" ]; then before=$(wc -c < "$SNAP"); fi
+case "$before" in ''|*[!0-9]*) before=0 ;; esac
+
+awk -F'\t' '
+  BEGIN { print "[" ; first = 1 }
+  NF >= 3 {
+    task = $2; phase = "other"
+    if (match(task, /F[0-9]+/)) phase = substr(task, RSTART, RLENGTH)
+    gsub(/\\/, "\\\\", $1); gsub(/"/, "\\\"", $1)
+    gsub(/\\/, "\\\\", task); gsub(/"/, "\\\"", task)
+    if (!first) printf ",\n"; first = 0
+    printf "  {\"role\":\"%s\",\"task\":\"%s\",\"phase\":\"%s\",\"tokens\":%d,\"duration_ms\":%d}", $1, task, phase, $3, $4
+  }
+  END { print "\n]" }' logs/metrics/dispatch-costs.tsv > "$SNAP"
+
+# R-SD-1 rule 3 — a write is not a write until it is read back. Printing "wrote" is not writing.
+after=0
+if [ -f "$SNAP" ]; then after=$(wc -c < "$SNAP"); fi
+case "$after" in ''|*[!0-9]*) after=0 ;; esac
+if [ "$after" -le 0 ]; then
+  echo "[FAIL] $SNAP did not land (0 bytes)"; exit 1
+elif ! jq -e 'type == "array" and length > 0' "$SNAP" >/dev/null 2>&1; then
+  echo "[FAIL] $SNAP landed but is not a non-empty JSON array"; exit 1
+else
+  printf 'wrote %s (%s records, %s bytes, was %s)\n' \
+    "$SNAP" "$(jq 'length' "$SNAP")" "$after" "$before"
+fi

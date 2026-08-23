@@ -18,7 +18,7 @@ psychic-crew/
 │  ├─ skills/threshold-router/SKILL.md
 │  └─ skills/intake/SKILL.md    # CR-026 user-facing task-contract intake (R3a: blocking only at high/crit; advisory below)
 ├─ hooks/                       # 14 tracked files — _common.sh (shared library, not a hook) · audit-logger.sh · auto-format.sh · bash-blocker.sh · error-recovery.sh · model-guard.sh · notify.sh · pre-compact-checkpoint.sh · provenance-flag.sh · reference-cap.sh · sensitive-guard.sh · session-start.sh · stop.sh · subagent-start.sh
-├─ scripts/                     # 9: setup · apply-models · validate-crew · run-crew-tests · save-context (§15.5) · restore-context (§15.9) · portability-drill · measure-dispatch-cost · check-plan-corrections
+├─ scripts/                     # 10: setup · apply-models · validate-crew · run-crew-tests · save-context (§15.5) · restore-context (§15.9) · portability-drill · measure-dispatch-cost · check-plan-corrections · gate-guard (H0a: refuses a gated commit until the session's APPROVED token line exists in GATES.md)
 ├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/ · rounds/
 ├─ context/                     # tracked knowledge base — session-summary.md (entry) · plan-corrections.md (WINS for implementation) · budget-baseline.md · f2-readiness.md · f7-metrics.md · f7-plan.md
 ├─ docs/audit/                  # final-audit outputs (created by the audit session)

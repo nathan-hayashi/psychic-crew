@@ -482,6 +482,23 @@ mermaid, all renderable in-repo, plus a structural validator over every fenced b
 **CR-003 and CR-006 remain deferred** for the reasons ruled: no d2 renderer under HC-5, and
 CR-006's data still sits in the gitignored `logs/`.
 
+**CR-006 CLOSED (ruling H2a, 2026-08-23; appended — nothing above is rewritten).** Built twice, and
+the second form is the one that answers the original objection. The first embedded its rows inside
+`context/budget-baseline.md`: reproducible from a clone, but with the data living in prose. The
+ruling's form separates them. `scripts/measure-dispatch-cost.sh` now emits a **tracked** generated
+snapshot at `docs/metrics-snapshot.json` under confirm-landed discipline, and
+`docs/dispatch-cost.vl.json` is a Vega-Lite v5 spec, phase-labelled, whose data URL points at that
+snapshot. The suite asserts the spec parses, declares a schema, an encoding and a mark, and that its
+**data URL resolves to a tracked file** — which is precisely the objection that deferred this CR,
+now checked rather than remembered.
+
+**Stated rather than implied:** GitHub does not render Vega-Lite in Markdown and HC-5 forbids
+installing a renderer, so the README says how to view it in the Vega editor. This ships as a
+specification, not an image. The suite checks that it is well-formed; it does not and cannot check
+that the picture is a good one.
+
+**CR-003 remains deferred by ruling H1b** — nothing in its record is touched.
+
 **CR-001 to CR-006 — diagrams.** Specified in full in `DIAGRAM_AUDIT.md` §A1.3, including the
 DIAGRAM-WORTH reasoning for each and the two concepts deliberately **not** recommended. CR-003
 carries a real constraint: there is no d2 renderer here and HC-5 forbids installing one, so a `.d2`

@@ -64,6 +64,21 @@ budgets were wrong by nearly ten times. Publishing the measured figures is the h
 | Cost of a phase shaped like F7 | **~2.05M tokens** across 18 dispatches | `[E]` |
 | Plan-tier implication | a phase of F7's shape is **not** a light-usage workload | `[I]` |
 
+**The chart.** `docs/dispatch-cost.vl.json` plots the same numbers: per-dispatch context cost by
+agent role, bars showing the mean per phase, individual dispatches as points, and a red rule at the
+overall mean. It reads `docs/metrics-snapshot.json`, which is **tracked and generated** by
+`./scripts/measure-dispatch-cost.sh` — the spec deliberately does not point at the measurement log,
+because `logs/` is gitignored and a chart that renders empty from a fresh clone is not a
+reproducible artifact.
+
+**To view it you must paste it somewhere that renders Vega-Lite — GitHub does not.** Open
+[vega.github.io/editor](https://vega.github.io/editor/), paste the spec, and load the snapshot
+alongside it. There is no renderer in this repo and installing one is forbidden by the
+no-installs constraint, so the honest position is that this ships as a *specification* you can
+render elsewhere, not as an image. The suite validates that it parses, declares a schema, an
+encoding and a mark, and that its data URL resolves to a tracked file; it does not and cannot
+validate that the picture is a good one.
+
 **Read the unit before using any of these.** They are subagent *context totals*, not output
 produced: the same source read by eight agents is counted eight times. That is the right unit for
 "what did this phase cost to run" and the wrong one for "how much work came out". Orchestrator
@@ -80,7 +95,7 @@ Every claim below is reproducible from a clean checkout:
 
 ```bash
 ./scripts/validate-crew.sh            # 45 structural assertions
-./scripts/run-crew-tests.sh           # 172 crew assertions
+./scripts/run-crew-tests.sh           # 177 crew assertions
 ./scripts/check-plan-corrections.sh   # plan-vs-reality registry, 26 registered ids
 ./scripts/portability-drill.sh        # proves the shipped file set works elsewhere
 cd stress-project && npm test         # 18 cases, the JML simulator
@@ -308,7 +323,7 @@ The in-repo deny-list blocks the clone verb during agent work, which is why the 
 
 ## What is proven, and what is not
 
-**Proven.** 172 crew assertions and 45 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by two mechanisms.
+**Proven.** 177 crew assertions and 45 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by two mechanisms.
 
 **Not proven, stated plainly.**
 

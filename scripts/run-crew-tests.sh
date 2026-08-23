@@ -320,6 +320,39 @@ cases_F2 () {
     && ok "S3 all $dgn mermaid blocks are structurally valid (fences, type, referential integrity)" \
     || no "S3 mermaid: $dgn block(s) found, $dgbad structural error(s) — want >=5 and 0"
 
+  # H2a — CR-006 CLOSED within HC-5 honesty. The earlier form embedded its data inside a context
+  # file because logs/ is gitignored and a spec pointing there plots nothing from a clone. This is
+  # the tracked-file form the ruling asks for: a generated snapshot beside the spec, so the chart is
+  # reproducible AND the data has one home rather than being pasted into prose.
+  vlf="docs/dispatch-cost.vl.json"
+  vlok=1; vlwhy=""
+  [ -f "$vlf" ] || { vlok=0; vlwhy="$vlwhy [spec absent]"; }
+  if [ -f "$vlf" ]; then
+    jq -e . "$vlf" >/dev/null 2>&1 || { vlok=0; vlwhy="$vlwhy [does not parse]"; }
+    jq -e '.["$schema"] | test("vega-lite")' "$vlf" >/dev/null 2>&1 || { vlok=0; vlwhy="$vlwhy [no vega-lite \$schema]"; }
+    jq -e '.encoding // (.layer[]?.encoding)' "$vlf" >/dev/null 2>&1 || { vlok=0; vlwhy="$vlwhy [no encoding]"; }
+    # A LAYERED spec declares its marks inside the layers, so requiring a top-level `mark` would
+    # fail a correct spec. Accept either, and require at least one.
+    jq -e '(.mark // ([.layer[]?.mark] | map(select(. != null)) | .[0])) != null' "$vlf" >/dev/null 2>&1 \
+      || { vlok=0; vlwhy="$vlwhy [no mark at top level or in any layer]"; }
+  fi
+  [ "$vlok" = 1 ] && ok "H2a CR-006 spec parses and declares \$schema, encoding and a mark" \
+                  || no "H2a CR-006 spec malformed:$vlwhy"
+  # THE BINDING THAT MATTERS: the data URL must resolve to a TRACKED file. A spec whose data is
+  # gitignored renders empty from a fresh clone, which is the defect that deferred CR-006 for weeks.
+  vlurl=$(jq -r '.data.url // ""' "$vlf" 2>/dev/null)
+  vldat="$(dirname "$vlf")/$vlurl"
+  vltracked=$(git ls-files --error-unmatch "$vldat" 2>/dev/null | grep -c .)
+  case "$vltracked" in ''|*[!0-9]*) vltracked=0 ;; esac
+  { [ -n "$vlurl" ] && [ -f "$vldat" ] && [ "$vltracked" -gt 0 ]; } \
+    && ok "H2a CR-006 data URL resolves to a TRACKED file ($vlurl -> $vldat)" \
+    || no "H2a CR-006 data URL '$vlurl' does not resolve to a tracked file (exists:$([ -f "$vldat" ] && echo yes || echo no) tracked:$vltracked)"
+  # And the snapshot must be real data, not an empty scaffold.
+  vlrec=$(jq 'length' "$vldat" 2>/dev/null)
+  case "$vlrec" in ''|*[!0-9]*) vlrec=0 ;; esac
+  [ "$vlrec" -ge 10 ] && ok "H2a CR-006 snapshot carries $vlrec records with phase labels" \
+                      || no "H2a CR-006 snapshot has only $vlrec record(s) — the chart would be vacuous"
+
   # CR-003 — the d2 hook-pipeline topology, and the FIRST binding here that checks a diagram is
   # TRUE rather than merely well-formed. Every assertion above it validates fences, types and
   # referential integrity: a diagram depicting an entirely different system passes them, which is
@@ -778,7 +811,17 @@ cases_F6 () {
   # never names — and a one-way check would have reported clean through it.
   # The extracted set is asserted non-empty first: a set difference against an empty set is
   # vacuously clean, which is how a parser change would silently turn this check off.
-  dgs=$(awk -F'#' '/scripts\// && NF>1 {print $2}' DIRECTORY_GUIDE.md | grep -oE '[a-z][a-z0-9-]*' | sort -u)
+  # ADJUDICATED against the v3.5 map as authority (the PLAN-V3 precedent). The old form pulled
+  # every lowercase WORD out of the comment, which worked only while that comment was a bare
+  # middot-separated list. v3.5's entry carries a parenthetical explaining the gate guard, so a
+  # word-level extractor began reporting "commit", "refuses", "token" and "until" as missing
+  # scripts. The map is the byte-pinned payload and is right; the detector was reading it at the
+  # wrong granularity. Split on the list separator, drop the leading count, take each entry's
+  # first token, keep only name-shaped results.
+  dgs=$(awk -F'#' '/scripts\// && NF>1 {print $2}' DIRECTORY_GUIDE.md \
+        | sed 's/\xc2\xb7/\n/g' \
+        | sed -E 's/^[[:space:]]*[0-9]+:[[:space:]]*//; s/^[[:space:]]+//; s/[[:space:]].*$//' \
+        | grep -E '^[a-z][a-z0-9-]+$' | sort -u)
   dsk=$(ls -1 scripts/*.sh 2>/dev/null | xargs -n1 basename | sed 's/\.sh$//' | sort -u)
   dgc=$(awk -F'#' '/context\// && NF>1 {print $2}' DIRECTORY_GUIDE.md | grep -oE '[a-z0-9-]+\.md' | sort -u)
   dkc=$(ls -1 context/ 2>/dev/null | sort -u)
@@ -1077,6 +1120,28 @@ fi
   [ -z "$sdbad" ] \
     && ok "R-SD-1 no count-then-default composite in any tracked shell file" \
     || no "R-SD-1 VIOLATION — count-then-default composite at: $(printf '%s' "$sdbad" | tr '\n' ' ')"
+
+  # H0a — the gate-order guard. It exists because THIS session's predecessor committed before the
+  # operator's token at LITE-SYNC-2; one breach of a constitutional control earns a mechanical guard
+  # rather than a promise. Bound to the MAPPED path, not a literal, for CR-024's reason: a check
+  # naming its own target cannot notice the map drifting away from it.
+  ggp=$(awk -F'#' '/scripts\// && NF>1 {print $2}' DIRECTORY_GUIDE.md | grep -oE 'gate-guard' | head -1)
+  ggf="scripts/${ggp:-gate-guard}.sh"
+  { [ -n "$ggp" ] && [ -x "$ggf" ]; } \
+    && ok "H0a gate-guard present and executable at the path the map names ($ggf)" \
+    || no "H0a gate-guard missing from the mapped path (map said '${ggp:-nothing}')"
+  # The REFUSAL BRANCH must read the ledger. A guard that exits 0 unconditionally satisfies every
+  # caller and guards nothing — the proxy family recorded ten times here. Needles fragment-assembled
+  # so this assertion and the guard's own prose never match themselves.
+  _gg1="GATE""S.md"; _gg2="REFU""SED"; _gg3="APPRO""VED"
+  ggbody=$(sed -E 's/^[[:space:]]*#.*$//; s/[[:space:]]#.*$//' "$ggf" 2>/dev/null)
+  ggmiss=""
+  for nd in "$_gg1" "$_gg2" "$_gg3"; do
+    grep -qF -- "$nd" <<<"$ggbody" || ggmiss="$ggmiss [$nd]"
+  done
+  [ -z "$ggmiss" ] \
+    && ok "H0a gate-guard's refusal branch reads the ledger and keys on the approval marker" \
+    || no "H0a gate-guard is missing load-bearing logic:$ggmiss — it would pass every caller"
 
   # R-SD-1 rule 5 — the SIBLING class, added at v2 after the b77fbec flake. `producer | grep -q PAT`
   # under pipefail: grep -q exits the instant it matches, the producer's next write takes SIGPIPE

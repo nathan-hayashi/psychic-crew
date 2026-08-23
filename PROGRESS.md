@@ -655,3 +655,12 @@ sentence alone cannot manufacture that alert.
 - **This repo:** unchanged at 9bc765b — 44+1SKIP / **172** / 30 / 21 APPLIED / PORTABLE / 88 tracked.
 - **Cross-build state:** R-SD-1 v2 byte-identical (0298d9759f6a2589); pipe-to-grep-q census 0/0; four class assertions in the parent, five in Lite.
 - **Next action:** none open. The first skill-pack, when it lands, needs a `PACK` row, a recorded why, and its own per-pack gate under A4a.
+
+## [F8|2026-08-23T09:26:28Z] GUARD-1 — gate-order guard (H0a) + CR-006 closed (H2a) + plan v3.5
+- **H0a:** `scripts/gate-guard.sh` — repo-agnostic, obeys R-SD-1 v2, refuses unless GATES.md carries the token's APPROVED row. Every gated commit is guard-fronted from now on, starting with this one.
+- **Stated limit:** defeats ordering mistakes, **not forgery**. A fabricated APPROVED line defeats it; that class stays a ledger-vs-memory audit.
+- **H2a / CR-006 CLOSED:** tracked confirm-landed snapshot `docs/metrics-snapshot.json` + phase-labelled spec `docs/dispatch-cost.vl.json` whose data URL must resolve to a tracked file. Ships as a specification, not an image.
+- **Adjudicated:** CR-024's script extractor, against v3.5's parenthetical map line (PLAN-V3 precedent).
+- **Counts:** run-crew-tests 172 → **177** (+2 H0a, +3 H2a) · tracked 88 → **91**. validate-crew 45, save-context 30, corrections 21/0 unchanged. EX-01 delta 0.
+- **Registered, not fixed:** the map covers `docs/audit/` only, so the two new `docs/` files sit outside any mapped path — C-26's shape; needs a re-export.
+- **Next action:** BLOCK 2 (LITE-GUARD-1), then BLOCK 3 (PACK-CONFLUENCE-1).
