@@ -72,7 +72,7 @@ v=0
 # reported the correction regressed while the behaviour was intact. Test that both tool names are
 # actually matched, in whatever form, and strip comments so prose about the rule cannot satisfy it.
 CODE_VC=$(sed 's/#.*//' scripts/validate-crew.sh 2>/dev/null)
-printf '%s' "$CODE_VC" | grep -q 'Task' && printf '%s' "$CODE_VC" | grep -q 'Agent' || v=1
+grep -q 'Task' <<<"$CODE_VC" && grep -q 'Agent' <<<"$CODE_VC" || v=1
 if [ -f .claude/rules/arbiter-protocol.md ]; then
   grep -q 'Agent' .claude/rules/arbiter-protocol.md || v=1
   [ "$v" = 0 ] && report C-05 F3 APPLIED "both Task and Agent matched in detection and rule" \
@@ -101,8 +101,23 @@ for id in \
   else report "$i" F0 PENDING "$desc — EX-02 fix missing from apply-models.sh"; fi
 done
 
-if sed 's/#.*//' scripts/validate-crew.sh 2>/dev/null | grep -q 'ascii_downcase | contains' \
-   && printf '%s' "$CODE_AM" | grep -q 'ascii_downcase | contains'; then
+# THE run-crew-tests FLAKE, diagnosed 2026-08-23. This condition was
+#   sed FILE | grep -q PATTERN   under `set -o pipefail`
+# and it returned 141 — 128+13, SIGPIPE — on roughly 5% of invocations, DESPITE the pattern
+# matching every time. grep -q exits the instant it matches; the match sits at line 28 of a
+# 381-line file, so sed still has 353 lines to write and its next write takes SIGPIPE. pipefail
+# then surfaces sed's status as the pipeline's, the && is false, and C-09 reports PENDING —
+# "HC-2 is still a bare substring scan" — failing GATE F1 and the suite's F1 assertion.
+#
+# It is a RACE, so it is load- and size-dependent: six invocations per suite run made it about a
+# one-in-four chance of a red suite on identical inputs. It surfaced now because validate-crew.sh
+# grew this session, widening the window after the match.
+#
+# Fixed per R-SD-1 rule 2 — capture, then test. A here-string has no producer process, so there is
+# nothing left to signal. Measured after: 0 in 42 probe samples, 0 flakes in repeated suite runs.
+CODE_VC_STRIPPED=$(sed 's/#.*//' scripts/validate-crew.sh 2>/dev/null)
+if grep -q 'ascii_downcase | contains' <<<"$CODE_VC_STRIPPED" \
+   && grep -q 'ascii_downcase | contains' <<<"$CODE_AM"; then
   if grep -q 'HITS=' scripts/apply-models.sh 2>/dev/null; then
     report C-09 F1 APPLIED "HC-2 matches assignment positions; guard captures hits (pipefail-safe)"
   else
@@ -157,7 +172,7 @@ fi
 # three; a comment cannot supply any of them.
 c12=0
 for needle in 'tooluse-audit.jsonl' 'arbiter-audit.jsonl' 'task_id' 'comm -23'; do
-  printf '%s' "$CODE_VC" | grep -qF -- "$needle" || c12=1
+  grep -qF -- "$needle" <<<"$CODE_VC" || c12=1
 done
 if [ "$c12" = 0 ]; then
   report C-12 F3 APPLIED "bypass coverage correlates dispatch identity by set difference over both logs, not raw line counts"
