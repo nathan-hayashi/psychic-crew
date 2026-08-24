@@ -21,7 +21,15 @@ HINT=""
   mkdir -p "$ROOT/logs"
   T=$(printf '%s' "$INPUT" | jq -r '.tool_name // "unknown"' 2>/dev/null || echo unknown)
   E=$(printf '%s' "$INPUT" | jq -r '.tool_response.error // .error // ""' 2>/dev/null || true)
-  jq -cn --arg ts "$(now)" --arg t "$T" --arg e "$(printf '%s' "$E" | cut -c1-400)" --arg p "$PHASE" \
+  # R-SEC-1 rule 3 — SCRUB, do not merely truncate. This wrote the tool's error text through
+  # `cut -c1-400`, which is a LENGTH limit and not a redaction: a failing command whose error echoes
+  # a token put that token into logs/build-errors.jsonl verbatim, and that file is durable, is read
+  # at gates, and is pasted into gate evidence. Demonstrated at SECURITY-1 with a planted ghp_ shape
+  # — it landed unredacted here while deny() and audit-logger, which both call scrub(), redacted the
+  # identical value. This repo had already recorded that exact defect once (SEC-DG-01, where the old
+  # form was cut -c1-200) and fixed it in _common.sh only; the third writer kept the original.
+  # scrub() redacts by SHAPE first and truncates second, which is the order that matters.
+  jq -cn --arg ts "$(now)" --arg t "$T" --arg e "$(scrub "$E")" --arg p "$PHASE" \
      '{ts:$ts,tool:$t,error:$e,phase:$p}' >> "$ROOT/logs/build-errors.jsonl"
   # A brace group, not a subshell: HINT set here survives past the closing brace.
   case "$E" in

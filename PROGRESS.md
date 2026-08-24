@@ -669,3 +669,14 @@ sentence alone cannot manufacture that alert.
 - **Parent:** e0445e0 — gate guard (H0a) live and fronting every gated commit; CR-006 closed (H2a). 177 / 44+1SKIP / 30 / 21 APPLIED / PORTABLE / 91 tracked.
 - **Lite:** 423daf8 — guard mirrored; first skill-pack live under R-SP-1. layer1 55/1/0 · sync 56/0 · distill 11/0 · stress 14/0 · layer2 48/0/0 · 48 tracked.
 - **Next action:** operator replaces `MASTER_FIFO_PLAN_CLAUDE.md` and `DIRECTORY_GUIDE.md` with the v3.5 pair, then exports one internal document into the pack inbox for the first real run.
+
+## [F8|2026-08-24T01:10:47Z] SECURITY-1 — threat model, R-SEC-1, red-team pass — awaiting the token
+- **3 findings, all fixed in-session:** error-recovery leaked tokens (length limit ≠ redaction); model-guard blind to indirection (Lite was already ahead); `.gitignore` didn't cover what `security.md` claimed.
+- **28 probes executed** and recorded in `docs/security/redteam-1.md`; 12 surfaces in `docs/security/threat-model.md` with honest residuals.
+- **Counts:** run-crew-tests 177 → **179** (+2 R-SEC-1 rule-3) · tracked 91 → **94** · settings.json **untouched**.
+- **NOT COMMITTED — awaiting `APPROVE SECURITY-1`;** the guard enforces it.
+
+## [F8|2026-08-24T01:12:43Z] GATE SECURITY-1 CLOSED — APPROVED
+- **Token:** `APPROVE SECURITY-1` @ 2026-08-24T01:12:43Z, guard-fronted.
+- **Verified:** run-crew-tests **179 PASS / 0 FAIL** · validate-crew 44+1SKIP · save-context 30 · corrections 21 APPLIED / 0 PENDING · 94 tracked.
+- **Next action:** BLOCK 2 — LITE-SECURITY-1: mirror the contract, untrusted-input contract in PACK.md, tracked attack fixtures, live drill.

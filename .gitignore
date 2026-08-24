@@ -38,3 +38,18 @@ Project-Explorer.md
 # map can only gain a path through an upstream re-export. This mirrors how this build's own execution
 # authority lives outside the repo with a copy inside.
 PSYCHIC-CREW-LITE-PLAN.md
+
+# R-SEC-1 (SECURITY-1, 2026-08-23). .claude/rules/security.md states that ".env, secrets/ and .ssh/
+# are blocked by hooks/sensitive-guard.sh AND covered by .gitignore". The first half was true; the
+# second was not — only .env and .env.* were listed here. The guard blocks WRITES through Write|Edit,
+# which is one path in; a file arriving by any other route was neither ignored nor guarded, and a
+# `git add -A` would have staged it into a repo whose remote is public.
+#
+# Found by the SECURITY-1 publication probe. The fix is to make the artifact match the rule rather
+# than soften the rule to match the artifact.
+secrets/
+.ssh/
+*.pem
+*.key
+id_rsa*
+credentials.json

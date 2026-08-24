@@ -1121,6 +1121,55 @@ fi
     && ok "R-SD-1 no count-then-default composite in any tracked shell file" \
     || no "R-SD-1 VIOLATION — count-then-default composite at: $(printf '%s' "$sdbad" | tr '\n' ' ')"
 
+  # R-SEC-1 RULE 3 — redaction is enforced, not promised. Every writer that appends to a log or
+  # ledger must strip token-shaped values, and this proves it by writing planted fakes THROUGH each
+  # writer and reading the trail back. Grepping the writers for the word "scrub" would report green
+  # for a writer that calls it on the wrong variable, which is the proxy family recorded ten times
+  # here — error-recovery passed exactly that reading while leaking a token verbatim.
+  #
+  # Shapes are GENERIC and fragment-assembled: real values never appear even in tests (rule 3), and
+  # a contiguous literal would trip this repo's own scanners.
+  rsg="gh""p_"; rsx="xox""b-"; rsa="AKI""A"; rsj="ey""J"
+  rst="${rsg}RSEC1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  rsroot=$(mktemp -d); mkdir -p "$rsroot/logs"; cp GATES.md models.config.json "$rsroot/" 2>/dev/null
+  rsleak=""
+  # deny() — the worst case: the commands a guard blocks are the likeliest to carry a credential.
+  g1=git; g2=clone
+  printf '%s' "$(jq -cn --arg c "$g1 $g2 https://x@h.invalid/r?t=$rst" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+    | CLAUDE_PROJECT_DIR="$rsroot" ./hooks/bash-blocker.sh >/dev/null 2>&1
+  grep -qF -- "$rst" "$rsroot/logs/tooluse-audit.jsonl" 2>/dev/null && rsleak="$rsleak [deny]"
+  # audit-logger — every ordinary tool use.
+  printf '%s' "$(jq -cn --arg c "ec""ho $rst" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+    | CLAUDE_PROJECT_DIR="$rsroot" ./hooks/audit-logger.sh >/dev/null 2>&1
+  grep -qF -- "$rst" "$rsroot/logs/tooluse-audit.jsonl" 2>/dev/null && rsleak="$rsleak [audit-logger]"
+  # error-recovery — F-1 at SECURITY-1: it truncated instead of redacting and leaked verbatim.
+  printf '%s' "$(jq -cn --arg e "auth failed using token $rst" '{tool_name:"Bash",tool_response:{error:$e}}')" \
+    | CLAUDE_PROJECT_DIR="$rsroot" ./hooks/error-recovery.sh >/dev/null 2>&1
+  grep -qF -- "$rst" "$rsroot/logs/build-errors.jsonl" 2>/dev/null && rsleak="$rsleak [error-recovery]"
+  [ -z "$rsleak" ] \
+    && ok "R-SEC-1 rule 3: a planted token survives no log writer (deny, audit-logger, error-recovery)" \
+    || no "R-SEC-1 rule 3 VIOLATED — planted token written verbatim by:$rsleak"
+  # The scrubber must cover the shapes the contract names, not just the one tested above.
+  # Each planted value must be a REAL instance of its shape. The first version of this probe used a
+  # bare `eyJ` prefix with no dots and reported the scrubber broken — but a JWT is
+  # header.payload.signature, and the pattern correctly declines to redact something that is not one.
+  # The probe was wrong, not the guard. R-SD-1 rule 6: exercise the exact construct.
+  rsmiss=""
+  rsvals="${rsg}ZZZZZZZZZZZZZZZZZZZZ ${rsx}ZZZZZZZZZZZZZZZZZZZZ ${rsa}ZZZZZZZZZZZZZZZZ ${rsj}ZZZZZZZZ.${rsj}ZZZZZZZZ.ZZZZZZZZ"
+  for sh in $rsvals; do
+    printf '%s' "$(jq -cn --arg c "tok""en=$sh" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+      | CLAUDE_PROJECT_DIR="$rsroot" ./hooks/audit-logger.sh >/dev/null 2>&1
+    # Capture, then test — R-SD-1 rule 5. The class assertion caught this line as a pipe-to-grep-q
+    # within the same session that wrote it, which is the second time this run the enforcement has
+    # found my code before I did.
+    rsline=$(tail -1 "$rsroot/logs/tooluse-audit.jsonl")
+    grep -qF -- "$sh" <<<"$rsline" && rsmiss="$rsmiss [${sh%%Z*}]"
+  done
+  [ -z "$rsmiss" ] \
+    && ok "R-SEC-1 rule 3: every shape the contract names is redacted by the scrubber" \
+    || no "R-SEC-1 rule 3: shape(s) not redacted:$rsmiss"
+  rm -rf "$rsroot"
+
   # H0a — the gate-order guard. It exists because THIS session's predecessor committed before the
   # operator's token at LITE-SYNC-2; one breach of a constitutional control earns a mechanical guard
   # rather than a promise. Bound to the MAPPED path, not a literal, for CR-024's reason: a check

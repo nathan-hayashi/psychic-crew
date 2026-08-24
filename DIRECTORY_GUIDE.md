@@ -14,13 +14,13 @@ psychic-crew/
 ├─ .claude/
 │  ├─ settings.json             # permissions + hooks + env (project scope)
 │  ├─ agents/                   # 8 agent definitions (frontmatter stamped by apply-models.sh)
-│  ├─ rules/                    # arbiter-protocol · fallback-protocol · model-policy · security · shell-discipline (standing write-path idioms, promoted from a 5× recurrence)
+│  ├─ rules/                    # arbiter-protocol · fallback-protocol · model-policy · security · shell-discipline · secrets-contract (R-SEC-1: the rules a credential must live under BEFORE any pack ever holds one)
 │  ├─ skills/threshold-router/SKILL.md
 │  └─ skills/intake/SKILL.md    # CR-026 user-facing task-contract intake (R3a: blocking only at high/crit; advisory below)
 ├─ hooks/                       # 14 tracked files — _common.sh (shared library, not a hook) · audit-logger.sh · auto-format.sh · bash-blocker.sh · error-recovery.sh · model-guard.sh · notify.sh · pre-compact-checkpoint.sh · provenance-flag.sh · reference-cap.sh · sensitive-guard.sh · session-start.sh · stop.sh · subagent-start.sh
 ├─ scripts/                     # 10: setup · apply-models · validate-crew · run-crew-tests · save-context (§15.5) · restore-context (§15.9) · portability-drill · measure-dispatch-cost · check-plan-corrections · gate-guard (H0a: refuses a gated commit until the session's APPROVED token line exists in GATES.md)
 ├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/ · rounds/
 ├─ context/                     # tracked knowledge base — session-summary.md (entry) · plan-corrections.md (WINS for implementation) · budget-baseline.md · f2-readiness.md · f7-metrics.md · f7-plan.md
-├─ docs/audit/                  # final-audit outputs (created by the audit session)
+├─ docs/                        # audit/ (final-audit outputs) · security/ (threat model spanning both repos, red-team records) · metrics-snapshot.json + dispatch-cost.vl.json (CR-006)
 └─ stress-project/              # F7 JML simulator (22 files)
 Navigation rule: any fix or anomaly → append to Plan.md first (what/where/why/fix), then act. Runtime flags and auto-snapshots (.claude/state/compact-pending · .claude/state/checkpoints/) are gitignored; the context/ tree is tracked and merge-distilled, never appended-to raw (§15.5/§15.9).
