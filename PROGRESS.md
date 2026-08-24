@@ -680,3 +680,17 @@ sentence alone cannot manufacture that alert.
 - **Token:** `APPROVE SECURITY-1` @ 2026-08-24T01:12:43Z, guard-fronted.
 - **Verified:** run-crew-tests **179 PASS / 0 FAIL** · validate-crew 44+1SKIP · save-context 30 · corrections 21 APPLIED / 0 PENDING · 94 tracked.
 - **Next action:** BLOCK 2 — LITE-SECURITY-1: mirror the contract, untrusted-input contract in PACK.md, tracked attack fixtures, live drill.
+
+## [F8|2026-08-24T01:19:50Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 1 file(s) uncommitted
+- **HEAD:** d2cdc36
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** BLOCK 2 — LITE-SECURITY-1: mirror the contract, untrusted-input contract in PACK.md, tracked attack fixtures, live drill.
+
+## [F8|2026-08-24T01:48:32Z] v3.6 pair confirmed delta 0; BLOCK 2 (Lite) closed
+- **Plan pair:** `MASTER_FIFO_PLAN_CLAUDE.md` sha256 `990ce5e42ca5df97` (404 lines) · `DIRECTORY_GUIDE.md` sha256 `bbcd740c42f56f8b` (26 lines). Both **byte-identical to HEAD** — the placed pair introduces no change.
+- **EX-01 delta 0** on all three pinned payloads: `CLAUDE.md`, `CLAUDE_DESIGN.md`, `DIRECTORY_GUIDE.md`.
+- **CR-024 / C-26 map↔tree both directions**, each with its vacuity guard non-empty: scripts/ 10, context/ 6, hooks/ 14.
+- **The one FAIL was a dirty tree, not a delta** — `hooks/pre-compact-checkpoint.sh` had written its own emergency checkpoint at 01:19:50Z and left it uncommitted. The assertion flipped PASS→FAIL with the total unchanged at 179, which is the count discipline working: no assertion disappeared.
+- **BLOCK 2 closed in Lite:** `APPROVE LITE-SECURITY-1` @ 2026-08-24T01:36:16Z, commits `416ac4d` + `713a3bf` pushed. Four findings fixed; the closing gate itself found the fourth — the R-PD-1 cap keyed on a token the ledger never writes, so it could never have lifted.
+- **Next action:** none pending. Both repos green, both trees clean, no open gate.
