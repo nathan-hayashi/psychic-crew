@@ -771,3 +771,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **In-flight changes:** the 7 enumerated entries, uncommitted.
 - **Closed avenues:** reading the eight BARRED corpus directories (M4's law, no named question); asserting cross-repo rows (parent suite stays twin-independent); invoking the corrections checker from the new suite (H2a generator loop).
 - **Next action:** operator issues `APPROVE H3B-1`; then guard-fronted commit, push, post-commit suites (expect 181/0 · 49+1SKIP/0 · 30/0), the post-commit next-action refresh. After that the active ledger is EMPTY — PACK-2 skipped, every remaining item a recorded deferral with a wake condition.
+
+## [F8|2026-08-25T18:17:42Z] H3B-1 CLOSED at 176f668 — post-commit refresh
+- **Post-commit suites:** run-crew-tests **181 PASS / 0 FAIL** · validate-crew **49 PASS / 1 SKIP / 0 FAIL** · save-context **30 PASS / 0 FAIL** · **PORTABLE at 176f668** · **97 tracked** · pushed.
+- **Next action:** none scheduled — the active ledger is EMPTY. PACK-2 skipped by operator instruction (reopens only on a new one); every other item is a recorded deferral with a named wake condition (H1b renderer half, Q2/R-SEC-1, WORKAROUND-01, the two dormant lanes, OQ-2, C-25 prevention). The operator's next instruction opens the next phase.
