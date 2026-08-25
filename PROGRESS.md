@@ -718,3 +718,15 @@ sentence alone cannot manufacture that alert.
 - **run-crew-tests `177 PASS / 2 FAIL` — both expected, both boundary conditions, neither a defect.** One is the dirty-tree canary over **8** entries, all enumerated in the gate row (it grew from five as these ledgers were written). The other is `save-context check` exiting 1 on **PB-06**: the summary records the **post-commit** tracked count 95 while the file is not tracked yet, so the binding is wrong on exactly one side of a gate the token defers. Recording 94 instead would be green now and wrong forever after. Expected **179/0** and **30/0** after the gated commit.
 - **NOT COMMITTED — awaiting `APPROVE CONTEXT-TRANSFER-1`;** the guard enforces it.
 - **Next action:** operator issues `APPROVE CONTEXT-TRANSFER-1`; then the guard-fronted commit, push, and a re-run to confirm 179/0 · 30/0 · 95 tracked.
+
+## [F8|2026-08-25T09:18:34Z] R-CH-1 — upstream channel retired; the plan is authored here now
+- **Ruled:** the Claude.ai web project is closed. All work continues in Claude Code.
+- **Plan authority replaced, not relaxed:** `MASTER_FIFO_PLAN_CLAUDE.md` is editable **here**, only inside a gated commit with its own token. Kept: §4 payloads at delta 0, a **hand-authored** `DIRECTORY_GUIDE.md`, and CR-024 policing map against tree both ways. Rejected: generating the guide from the tree — it would make CR-024 vacuous.
+- **Why it mattered:** "never edited locally" assumed an external author. Without one it would have frozen §4.3's map permanently — `scripts/` at 10, `context/` at 6 — the constraint that already forced S3's validator inline.
+- **First exercise fixed its own subject:** the map line read `v3.0 canonical; never edited locally` on a **v3.6** plan, stale in both halves and on both sides of the pinned pair. Corrected in plan and guide together; **EX-01 delta 0** verified on all three payloads.
+- **SYNC is VOID**, not done — closed by the disappearance of its destination. **H3b re-homed** into Claude Code, still queued; the corpus is already local behind the fence.
+- **A claim from 597cd0e is falsified and corrected:** `source_files/` was recorded as a recoverable gap "since the web project still holds them". R-CH-1 removes that ground. Category kept, reason restated — those files exist and will not be fetched; the other four no longer exist anywhere.
+- **Counts:** plan **v3.6 → v3.7** (D22) · validate-crew **48 PASS / 1 SKIP / 0 FAIL** · save-context **30/0** · tracked **95** — all unchanged; this ruling adds no assertion and no file.
+- **run-crew-tests `178 PASS / 1 FAIL`** — the dirty-tree canary over 8 entries: GATES.md, IRECTORY_GUIDE.md, MASTER_FIFO_PLAN_CLAUDE.md, PROGRESS.md, Plan.md, ROADMAP.md, context/session-summary.md, docs/context-transfer-reconciliation.md. Not a delta.
+- **NOT COMMITTED — awaiting `APPROVE R-CH-1`.**
+- **Next action:** operator issues `APPROVE R-CH-1`; then the guard-fronted commit and push. Open ledger after that: **PACK-2** (gated, IAM first) and **H3b** (queued here).

@@ -1,6 +1,6 @@
 # DIRECTORY_GUIDE.md
 psychic-crew/
-├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (v3.0 canonical; never edited locally)
+├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (v3.7 canonical; edited HERE under its own gate — R-CH-1)
 ├─ CLAUDE.md                    # standing context (loaded every session)
 ├─ CLAUDE_DESIGN.md             # architecture rationale + attributions
 ├─ DIRECTORY_GUIDE.md           # this map (matches the v1.0.0 tree + audit outputs)

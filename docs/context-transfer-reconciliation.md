@@ -172,15 +172,17 @@ post-security reconciliation pair is newer, and the triple is **not** synced: th
 carries v3.0 while repo and upstream carry v3.6. Recorded as confirmed because the bundle already
 caught its own memory layer — which is the behaviour that makes the rest of it trustworthy.
 
-## X-12 — open item #1, "SYNC" — **CONFIRMED, still open**
+## X-12 — open item #1, "SYNC" — **VOID (superseded by R-CH-1, 2026-08-25)**
 
 **Bundle says** the web project's plan pair must be replaced v3.0 → v3.6, that the bundle does not
 satisfy this, and that until it lands the escalation channel reasons from an authority missing
 R-SD-1's promotion, H0a, and the whole security phase.
 
-**Repo ground truth** confirmed on both counts. The repo pair is v3.6 and was verified delta 0.
-**Nothing here is actionable by a Code session** — the direction of travel is repo → web, and only
-the operator can perform it.
+**Repo ground truth** the description was accurate when written, and the item is now **void**.
+Ruling R-CH-1 retired the upstream channel: there is no web project to sync a plan pair to. SYNC is
+not closed by completion — it is closed by the disappearance of its destination, which is a different
+thing, and recorded as such so nobody reads a resolved item and assumes an upstream copy exists
+somewhere. The plan is authored in this repo now, under its own gate, at v3.7.
 
 ---
 
@@ -192,9 +194,12 @@ and are gone from both sides.
 ### Never delivered
 
 - **`source_files/`** — the bundle's index promises verbatim copies of all 21 project-knowledge
-  files. That directory is not present; the drop is six files. This is a **gap in the transfer**,
-  not a loss of the underlying material: the web project still holds those files, so a future export
-  can supply them. Recorded so nobody reads the index and assumes the archive is on disk.
+  files. That directory is not present; the drop is six files. This was recorded as a **gap in the
+  transfer** rather than a loss, on the ground that the web project still held the files.
+  **R-CH-1 removed that ground the same day**: the channel is retired and the archive will not be
+  fetched. The category is kept because the distinction remains true and still matters — these
+  twenty-one files exist and simply will not be retrieved, where the four below no longer exist
+  anywhere. Recorded so nobody reads the bundle's index and assumes the archive is on disk.
 
 ### Lost from both sides
 
