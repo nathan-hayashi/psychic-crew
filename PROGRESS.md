@@ -758,3 +758,16 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **In-flight changes:** everything above, uncommitted.
 - **Closed avenues:** retro-editing D20 or the frozen audit record (corrections ride D23 and this ledger instead); editing gate-guard.sh (MIRRORED — a parent-side change would break the Lite mirror and witness hashes).
 - **Next action:** operator issues `APPROVE CLEANUP-1`; then gate-guard-fronted commit and push, post-commit suites (expect 180/0 · 49+1SKIP/0 · 30/0), the post-commit next-action refresh line this very phase added — then H3b opens as the next phase. PACK-2 stays skipped.
+
+## [F8|2026-08-25T17:04:28Z] CLEANUP-1 CLOSED at 3a529de — post-commit refresh (the R2-03 line, practiced on its first outing)
+- **Post-commit suites:** run-crew-tests **180 PASS / 0 FAIL** · validate-crew **49 PASS / 1 SKIP / 0 FAIL** · save-context **30 PASS / 0 FAIL** · **PORTABLE at 3a529de** · **96 tracked** · pushed.
+- **Next action:** open H3b (operator-ordered): census which corpus deep-dives S6 already covered, run the remaining ones, and build the standalone decision-matrix suite over docs/audit/ outputs. PACK-2 stays skipped.
+
+## [F8|2026-08-25T17:10:57Z] H3B-1 built — awaiting the token
+- **Task:** execute H3b (operator-ordered after CLEANUP-1): close the deep-dive half by census under M4's law; deliver the standalone decision-matrix suite.
+- **Workflow status:** at STOP by design: rct 178/3 · validate 48/1/1 · save-context 29/1 (the commit straddle: README/summary carry post-commit 97 tracked / 181 crew); new suite 13/0/9-noted; census negative control fired by name; EX-01 delta 0 at plan v3.9.
+- **Active artifact:** scripts/check-decision-matrices.sh (new, untracked) + 6 modified tracked files.
+- **Open decisions:** none — the token is the only outstanding input.
+- **In-flight changes:** the 7 enumerated entries, uncommitted.
+- **Closed avenues:** reading the eight BARRED corpus directories (M4's law, no named question); asserting cross-repo rows (parent suite stays twin-independent); invoking the corrections checker from the new suite (H2a generator loop).
+- **Next action:** operator issues `APPROVE H3B-1`; then guard-fronted commit, push, post-commit suites (expect 181/0 · 49+1SKIP/0 · 30/0), the post-commit next-action refresh. After that the active ledger is EMPTY — PACK-2 skipped, every remaining item a recorded deferral with a wake condition.

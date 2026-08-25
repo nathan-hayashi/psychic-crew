@@ -37,6 +37,7 @@ cases_F0 () {
   echo "== F0 — scaffold integrity =="
   check "validate-crew all green"                 0 ./scripts/validate-crew.sh
   check "plan corrections: F0 clean"              0 ./scripts/check-plan-corrections.sh F0
+  check "decision matrices: structure, census and citations hold (H3b)" 0 ./scripts/check-decision-matrices.sh
   check "settings.json parses"                    0 jq -e . .claude/settings.json
   check "models.config.json parses"               0 jq -e . models.config.json
   # v3.0 (operator ruling A1b, 2026-08-16): EX-01 is RETIRED. The rename was applied UPSTREAM in the
