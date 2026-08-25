@@ -6,7 +6,7 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 **verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
-Live numbers (post-S4): crew suite **179 PASS / 0 FAIL** · validate-crew **47 PASS / 1 SKIP / 0 FAIL** · save-context **30 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **94 tracked files**.
+Live numbers (post-S4): crew suite **179 PASS / 0 FAIL** · validate-crew **48 PASS / 1 SKIP / 0 FAIL** · save-context **30 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **95 tracked files**.
 
 The one SKIP is honest and named: C-25's identity coverage has no live trail until a subagent is dispatched in-session. These figures are bound — `save-context.sh check` compares the tracked-file count against the tree and the registered-ID count against the registry, so this line cannot silently rot again (C-24, extended at CR-034).
 
@@ -51,6 +51,8 @@ The one SKIP is honest and named: C-25's identity coverage has no live trail unt
 **verified — the `DIRECTORY_GUIDE.md` drift is RESOLVED and EX-01 is retired.** Ruling A1b re-exported the plan under the permanent name, so the map now matches the tree and every §4 seed sits at delta 0. The map is still byte-pinned — to plan v3.1 — so it can only gain a path through an operator re-export, which is exactly how the intake skill's path arrived (D16). A tenth script was rejected by that constraint during S3 and had to move inline.
 
 **verified — `REPLAYED` is now PROVEN live (CR-017, S4).** It was not merely undemonstrated but *unreachable*: the parked MOVE belongs to `EMP-30442` and no shipped fixture hired that employee, so no pair of deliveries in any order could drain the lot. `fixtures/edge-hire-drains-parked.json` closes it, and the suite asserts the full path — two runs sharing one `--out` produce `PARKED` then `REPLAYED` with the parking lot empty. Control: removing that fixture returns the assertion to failing.
+
+**verified — the upstream channel's open ledger, reconciled against this repo (2026-08-25).** The Claude.ai web project carried four post-v1.0.0 items. **PACK-1 LIVE is DONE** — a real operator document ran through the Confluence pack on 2026-08-24 and the own-documents-only caution lifted when `APPROVE LITE-SECURITY-1` closed; the channel's record still listed it as pending. **SYNC remains open and is operator-side**: the web project's plan pair is still v3.0 against a repo at v3.6, and the direction of travel is repo → web, so no Code session can close it. **PACK-2** is gated and ordered by Q6 with IAM first. **H3b** is web-side. Twelve further claims in that record were checked against repo ground truth — four corrected, one a precision fix, four confirmed — in `docs/context-transfer-reconciliation.md`. The bundle itself is fenced under `Context-Transfer*/` and backed up outside the repo; it is a record, never an authority.
 
 **verified** — **OQ-2**: the orchestrator ran a context-variant model id that `.pinned` cannot express. Alias mode unaffected; a pinned reproducibility run would not reproduce the variant.
 

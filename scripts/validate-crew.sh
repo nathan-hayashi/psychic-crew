@@ -139,6 +139,23 @@ else
   skip ".gitignore effectiveness needs a work tree (archive extract has no .git)"
 fi
 
+# The reconciliation record at docs/context-transfer-reconciliation.md corrects an EXTERNAL record —
+# a bundle that is gitignored precisely because it carries private conversation URLs, a memory export
+# and employer identifiers. A tracked file quoting that bundle back would defeat the fence that
+# documents it, and nothing else would notice: save-context's hygiene checks cover context/ only, and
+# the threat model states plainly that no check reads prose for confidentiality. So the crossing rule
+# is ENFORCED here rather than promised in the record's own header — R-SEC-1 rule 3 applied to prose.
+xrec="docs/context-transfer-reconciliation.md"
+if [ -f "$xrec" ]; then
+  xurl=$(grep -cE 'claude\.ai/(chat|project)/' "$xrec")
+  case "$xurl" in ''|*[!0-9]*) xurl=0 ;; esac
+  [ "$xurl" = 0 ] \
+    && pass "reconciliation record carries no upstream conversation URL (crossing rule enforced)" \
+    || fail "PUBLICATION RISK — reconciliation record carries $xurl conversation URL(s) from the fenced bundle"
+else
+  skip "reconciliation record absent (owned by CONTEXT-TRANSFER-1)"
+fi
+
 echo "== no absolute machine paths in tracked files (§5.2.4) =="
 # C-23: this tested [ -d .git ], which is FALSE in a git worktree, where .git is a file pointing at
 # the parent. The G-F8 portability drill runs in exactly such a checkout, so the one assertion that
