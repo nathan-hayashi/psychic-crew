@@ -694,3 +694,16 @@ sentence alone cannot manufacture that alert.
 - **The one FAIL was a dirty tree, not a delta** — `hooks/pre-compact-checkpoint.sh` had written its own emergency checkpoint at 01:19:50Z and left it uncommitted. The assertion flipped PASS→FAIL with the total unchanged at 179, which is the count discipline working: no assertion disappeared.
 - **BLOCK 2 closed in Lite:** `APPROVE LITE-SECURITY-1` @ 2026-08-24T01:36:16Z, commits `416ac4d` + `713a3bf` pushed. Four findings fixed; the closing gate itself found the fourth — the R-PD-1 cap keyed on a token the ledger never writes, so it could never have lifted.
 - **Next action:** none pending. Both repos green, both trees clean, no open gate.
+
+## [F8|2026-08-25T08:35:24Z] CONTEXT-TRANSFER Phase A — fence landed, suite repaired, awaiting the token
+- **Hazard closed:** `Context-Transfer*/` fenced. Measured before: `git add -A -n` staged all six bundle files on a PUBLIC repo. Measured after: **zero**. The glob also ignores `Context-Transfer-2/`, verified.
+- **Backed up first** to `$HOME/context-transfer-backup/`, byte-identical per file — `git clean -fdx` deletes ignored files and no suite control would have noticed.
+- **Three new assertions**, all with firing negative controls: check-ignore on a **non-existent** path under the fence; the stage-everything probe the parent never had; and the `git ls-files` companion that catches a force-add.
+- **My own probe was vacuous and Control A caught it** — the regex anchored on `(^|/)` could never match `add '<path>'`. Fixed by normalising to bare paths so one regex serves both assertions.
+- **CR-006 repaired at the right file:** the stale copy was the hand-maintained `vega-lite` fence in `context/budget-baseline.md`, **not** `docs/dispatch-cost.vl.json` (url-backed, embeds nothing). Fence, prose role table and totals all re-derived from the 33-row TSV. `measure-dispatch-cost.sh` was **not** re-run to fix it.
+- **Registered, not fixed:** `check-plan-corrections.sh:289` executes the generator, so the standard verification set is what stales the fence. Options recorded; H2a is an operator ruling and redesign needs its own gate.
+- **Counts:** validate-crew 44 → **47 PASS / 1 SKIP / 0 FAIL** (+1 ignore probe, +1 stage probe, +1 tracked companion) · README structural-assertion count 45 → **48** at both CR-027-bound sites · save-context **30/0** unchanged · tracked **94** unchanged (Phase A adds no tracked file).
+- **run-crew-tests `178 PASS / 1 FAIL`** — the single FAIL is the dirty-tree canary over **nine** entries, all enumerated in the gate row (the count grew from six as these ledgers were written). Not a delta. Expected to read **179/0** after the gated commit.
+- **The portability drill did not exercise the new guard** — it runs `git archive HEAD`, so it tested the committed validate-crew, not this one. Proven directly instead: a no-`.git` extract of the working tree announces `[SKIP]`, and an 11-file work tree FAILs `publication probe is VACUOUS`. Re-confirm through the drill post-commit.
+- **NOT COMMITTED — awaiting `APPROVE CONTEXT-TRANSFER-FENCE`;** the guard enforces it.
+- **Next action:** operator issues `APPROVE CONTEXT-TRANSFER-FENCE`; then the guard-fronted commit and push, then Phase B (`APPROVE CONTEXT-TRANSFER-1`) writes the reconciliation record.

@@ -31,16 +31,16 @@
 | ------------------ | --- | ------- | ------- | ------- |
 | integration-runner | 1   | 198,302 | 198,302 | 198,302 |
 | fixer              | 2   | 169,410 | 167,905 | 170,915 |
-| quality-reviewer   | 4   | 130,495 | 79,846  | 156,265 |
+| quality-reviewer   | 4   | 130,495 | 79,846 | 156,265 |
 | security-reviewer  | 3   | 123,923 | 106,767 | 140,203 |
-| arbiter            | 8   | 92,689  | 36,568  | 123,381 |
-| lead-executor      | 5   | 88,874  | 58,187  | 118,365 |
-| Explore            | 2   | 83,142  | 73,039  | 93,245  |
-| general-purpose    | 2   | 75,665  | 61,243  | 90,087  |
-| lead-planner       | 2   | 48,935  | 35,550  | 62,320  |
-| test-runner        | 1   | 46,388  | 46,388  | 46,388  |
+| Explore            | 3   | 115,936 | 73,039 | 181,524 |
+| general-purpose    | 4   | 102,430 | 61,243 | 139,483 |
+| arbiter            | 8   | 92,689 | 36,568 | 123,381 |
+| lead-executor      | 5   | 88,874 | 58,187 | 118,365 |
+| lead-planner       | 2   | 48,935 | 35,550 | 62,320 |
+| test-runner        | 1   | 46,388 | 46,388 | 46,388 |
 
-**verified** — All measured dispatches, all phases: **30 dispatches, 3,078,632 tokens, mean 102,621.**
+**verified** — All measured dispatches, all phases: **33 dispatches, 3,518,549 tokens, mean 106,622.**
 
 ## The baseline a future phase should budget against
 
@@ -120,7 +120,7 @@ the total disagree with `logs/`.
   "description": "Per-dispatch context totals by agent role. Data embedded, not referenced: logs/ is gitignored and a spec pointing at it would plot nothing from a fresh checkout.",
   "title": {
     "text": "Dispatch cost distribution",
-    "subtitle": "30 measured dispatches; subagent context totals, not output produced"
+    "subtitle": "33 measured dispatches; subagent context totals, not output produced"
   },
   "data": {
     "values": [
@@ -239,6 +239,12 @@ the total disagree with `logs/`.
         "duration_ms": 603682
       },
       {
+        "role": "general-purpose",
+        "task": "Peer review of plan",
+        "tokens": 118910,
+        "duration_ms": 496319
+      },
+      {
         "role": "arbiter",
         "task": "F7-B9-e2e",
         "tokens": 121025,
@@ -269,6 +275,12 @@ the total disagree with `logs/`.
         "duration_ms": 692006
       },
       {
+        "role": "general-purpose",
+        "task": "Internal plan review",
+        "tokens": 139483,
+        "duration_ms": 423964
+      },
+      {
         "role": "security-reviewer",
         "task": "F7-B5-sec2",
         "tokens": 140203,
@@ -297,6 +309,12 @@ the total disagree with `logs/`.
         "task": "F7-B7-fix",
         "tokens": 170915,
         "duration_ms": 781106
+      },
+      {
+        "role": "Explore",
+        "task": "Survey reconciliation patterns",
+        "tokens": 181524,
+        "duration_ms": 739356
       },
       {
         "role": "integration-runner",

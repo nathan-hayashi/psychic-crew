@@ -94,7 +94,7 @@ per-repo.
 Every claim below is reproducible from a clean checkout:
 
 ```bash
-./scripts/validate-crew.sh            # 45 structural assertions
+./scripts/validate-crew.sh            # 48 structural assertions
 ./scripts/run-crew-tests.sh           # 179 crew assertions
 ./scripts/check-plan-corrections.sh   # plan-vs-reality registry, 26 registered ids
 ./scripts/portability-drill.sh        # proves the shipped file set works elsewhere
@@ -323,7 +323,7 @@ The in-repo deny-list blocks the clone verb during agent work, which is why the 
 
 ## What is proven, and what is not
 
-**Proven.** 179 crew assertions and 45 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by two mechanisms.
+**Proven.** 179 crew assertions and 48 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by two mechanisms.
 
 **Not proven, stated plainly.**
 

@@ -33,6 +33,26 @@ deep-research-report.md
 ReportforClaudeWeb*.txt
 Project-Explorer.md
 
+# Upstream channel export, dropped at the root 2026-08-25. Six files carrying the Claude.ai web
+# project's identity and state, Claude's project-scoped memory of it, both web conversations, the
+# full ruling/delta/correction surface, and an inventory of its 21 knowledge files. This repo is
+# PUBLIC and those files hold private claude.ai/chat/ conversation URLs, a memory export naming the
+# operator's employer, and the complete internal decision history; without this rule a `git add -A`
+# stages all six, which is exactly what it did when the drop was measured.
+#
+# Globbed rather than named, for the reason recorded above the report rule: a literal filename lost
+# to its own sequel once already, and Context-Transfer-2/ is that recurrence waiting to happen. The
+# glob also covers the source_files/ subdirectory the bundle promises but did not deliver, if it
+# ever arrives.
+#
+# The bundle describes itself as "a RECORD of the upstream web channel, not a new execution
+# authority" — the plan remains the authority, so this is read here and never published. Note the
+# asymmetry with docs/context-transfer-reconciliation.md, which IS tracked: the corrections belong
+# in the repo, the material being corrected does not. Copied to $HOME/context-transfer-backup/
+# BEFORE this rule landed, because `git clean -fdx` deletes ignored files without warning and no
+# control in either suite would have noticed it gone.
+Context-Transfer*/
+
 # S6 planning output. Local until the operator promotes it: DIRECTORY_GUIDE.md is byte-pinned to the
 # plan's §4.3 payload, so a tracked file the map does not name is the drift QR-DG-4 recorded, and the
 # map can only gain a path through an upstream re-export. This mirrors how this build's own execution

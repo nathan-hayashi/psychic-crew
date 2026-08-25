@@ -88,10 +88,53 @@ echo "== .gitignore coverage =="
 # archive` extract with no .git at all, where check-ignore cannot answer. That is a genuine SKIP, and
 # announcing it is what C-23 punished the absence of.
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  for p in "logs/probe.log" ".env"; do
+  # The probe paths DO NOT EXIST on disk, deliberately. A rule that only works on files already
+  # present is a rule that arrives after the leak.
+  for p in "logs/probe.log" ".env" "Context-Transfer/probe-does-not-exist.md"; do
     git check-ignore -q "$p" 2>/dev/null && pass ".gitignore effectively ignores $p" \
                                          || fail ".gitignore does not ignore $p"
   done
+
+  # PUBLICATION SAFETY, asserted rather than claimed. DIRECTORY_GUIDE.md, GATES.md, Plan.md and
+  # docs/audit/FINAL_AUDIT_REPORT.md have all reported "stage-everything probe: 0 paths" since F8,
+  # and until now NOTHING checked it — the figure was a gate-time measurement someone typed. That is
+  # SECURITY-1's F-3 shape exactly, a document describing coverage the artifact did not provide, and
+  # Lite has carried this assertion since PACK-CONFLUENCE-1 while the parent went without.
+  #
+  # STATED LIMIT: this alternation is ENUMERATIVE, not structural. Lite's probe binds to a shape every
+  # future pack satisfies by construction; the parent's fences share no shape, so this lists today's
+  # and will report ZERO for tomorrow's unfenced drop — the one case the probe exists to catch.
+  # Extend it with every new fence. Recorded as a limit rather than left to be discovered.
+  fenced='(^|/)(Context-Transfer[^/]*|[^ ]*-main|secrets|\.ssh)/|\.(pdf|pem|key)$|(^|/)(deep-research-report\.md|Project-Explorer\.md|PSYCHIC-CREW-LITE-PLAN\.md|credentials\.json|id_rsa[^ ]*|ReportforClaudeWeb[^ ]*)$'
+  # Vacuity guard FIRST. Where git cannot answer, every count below is 0 and the probe reports a
+  # confident pass having measured nothing — this build has recorded that class four times.
+  gtracked=$(git ls-files | grep -c .)
+  case "$gtracked" in ''|*[!0-9]*) gtracked=0 ;; esac
+  if [ "$gtracked" -lt 50 ]; then
+    fail "publication probe is VACUOUS — git ls-files returned $gtracked tracked files; the counts below would prove nothing"
+  else
+    # Capture, then count, then validate (R-SD-1 rule 2). The composite `$(… | grep -c … || echo 0)`
+    # is rule 1 and the class scanner in run-crew-tests would name this file for it.
+    # NORMALISE FIRST. `git add -A -n` prints `add '<path>'`, not a bare path, so a regex anchored
+    # on (^|/) can never match — it is preceded by a quote. Built that way, the probe reported ZERO
+    # regardless of what was staged and the negative control caught it: removing the fence left this
+    # assertion green. Stripping the wrapper lets ONE regex serve both this probe and the tracked
+    # companion below, which is also why they cannot drift apart.
+    stage_out=$(git add -A -n 2>/dev/null | sed -E "s/^add '(.*)'$/\\1/")
+    staged_fenced=$(printf '%s\n' "$stage_out" | grep -cE "$fenced")
+    case "$staged_fenced" in ''|*[!0-9]*) staged_fenced=0 ;; esac
+    [ "$staged_fenced" = 0 ] \
+      && pass "stage-everything probe stages ZERO fenced paths ($gtracked tracked files scanned)" \
+      || fail "PUBLICATION RISK — stage-everything would stage $staged_fenced fenced path(s)"
+    # The companion the probe above is BLIND to: `git add -A -n` reports what WOULD be staged and says
+    # nothing about what already IS. One `git add -f` makes a fenced file tracked and the probe then
+    # reports ZERO forever after — the blind spot that defeated a live control at PACK-CONFLUENCE-1.
+    tracked_fenced=$(git ls-files | grep -cE "$fenced")
+    case "$tracked_fenced" in ''|*[!0-9]*) tracked_fenced=0 ;; esac
+    [ "$tracked_fenced" = 0 ] \
+      && pass "no TRACKED file under any fenced path (a force-add is caught here, not by the probe above)" \
+      || fail "PUBLICATION RISK — $tracked_fenced fenced path(s) are TRACKED"
+  fi
 else
   skip ".gitignore effectiveness needs a work tree (archive extract has no .git)"
 fi
