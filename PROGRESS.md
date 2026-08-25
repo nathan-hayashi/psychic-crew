@@ -26,6 +26,12 @@ A checkpoint that says "done" without numbers is not a checkpoint. Gate-readines
 `GATES.md`, which is the authority the Stop hook reads for its GATE READY toast — a checkpoint
 sentence alone cannot manufacture that alert.
 
+**After a gated commit lands (added at CLEANUP-1, closing audit item R2-03):** append a one-line
+post-commit checkpoint refreshing **Next action** to the genuinely next step. The close ritual
+commits the awaiting-token checkpoint, so without this line the newest recorded next action
+describes an already-completed step until the next phase's first checkpoint — and §15.4's cold
+reader plus the PreCompact carry-forward (C-15) both faithfully propagate that stale pointer.
+
 
 ## [F0|2026-08-11T03:54:36Z] checkpoint — step 3 complete
 - **Task:** F0 — Verify, Question, Scaffold. Budget 12K tokens (§6) / 45 min wall (Q5).
@@ -730,3 +736,25 @@ sentence alone cannot manufacture that alert.
 - **run-crew-tests `178 PASS / 1 FAIL`** — the dirty-tree canary over 8 entries: GATES.md, IRECTORY_GUIDE.md, MASTER_FIFO_PLAN_CLAUDE.md, PROGRESS.md, Plan.md, ROADMAP.md, context/session-summary.md, docs/context-transfer-reconciliation.md. Not a delta.
 - **NOT COMMITTED — awaiting `APPROVE R-CH-1`.**
 - **Next action:** operator issues `APPROVE R-CH-1`; then the guard-fronted commit and push. Open ledger after that: **PACK-2** (gated, IAM first) and **H3b** (queued here).
+
+## [F8|2026-08-25T09:28:48Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 1 file(s) uncommitted
+- **HEAD:** 562dd65
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** operator issues `APPROVE R-CH-1`; then the guard-fronted commit and push. Open ledger after that: **PACK-2** (gated, IAM first) and **H3b** (queued here).
+
+## [F8|2026-08-25T10:23:23Z] PROJECT-AUDIT-1 — full-history audit checklist created, executed, on disk; awaiting operator read
+- **Deliverable:** docs/audit/PROJECT_AUDIT_CHECKLIST_2026-08-25.md — untracked, 987 lines, 71 checks (CHECK==LIVE==71), 0 skipped, 0 deferred. Zero subagent dispatches, so C-25's SKIP and the CR-006 metrics surface are untouched (idempotency sandwich on record).
+- **Baselines (this session):** run-crew-tests 178/1 (the 1 = dirty-tree canary over this file's own PreCompact entry) · validate-crew 48/1/0 · save-context 30/0 · corrections 21 APPLIED / 0 PENDING / 2 SUPERSEDED at 33 TSV rows · PORTABLE at 562dd65 · app suite 18/18 · Lite verify 62-1-0 / 60-0 / 12-0 / 14-0 / 48-0-0, no signal.
+- **Headline:** zero unbound drift in either repo; 14 stale-doc sites REPORTED not corrected (per the task's non-goal); 3 MISSING; 16 unenforced gaps (6 newly recorded); the deliverable's R-registers and NEXT-PLAN INPUTS carry the successor-plan feed.
+- **Counts:** tree = M PROGRESS.md (pre-existing checkpoint + this entry) + the untracked deliverable; nothing else moved.
+- **Next action:** operator reads the checklist, replies with numbered corrections, or issues a token in the AUDIT-CHECKLIST shape if it should be tracked (PB-06 then moves 95 -> 96 at that commit). Open ledger otherwise unchanged: PACK-2 (gated, IAM first) and H3b (queued here).
+
+## [F8|2026-08-25T15:34:52Z] CLEANUP-1 built — awaiting the token
+- **Task:** execute the PROJECT-AUDIT-1 cleanup slate (R1 x14, R2 x3, R4-11/12/14 bindings+widening); record PACK-2 skipped, H3b next.
+- **Workflow status:** at STOP by design: validate-crew 48/1/1 · run-crew-tests 177/3 · save-context 29/1 — all three the commit straddle (README/summary carry the post-commit 96/180/50 truths); R4-11 negative control fired and restored; EX-01 delta 0 at plan v3.8.
+- **Active artifact:** 13 modified tracked files + the audit checklist becoming tracked (dirty enumeration in the gate row).
+- **Open decisions:** none inside this phase; the token is the only outstanding input.
+- **In-flight changes:** everything above, uncommitted.
+- **Closed avenues:** retro-editing D20 or the frozen audit record (corrections ride D23 and this ledger instead); editing gate-guard.sh (MIRRORED — a parent-side change would break the Lite mirror and witness hashes).
+- **Next action:** operator issues `APPROVE CLEANUP-1`; then gate-guard-fronted commit and push, post-commit suites (expect 180/0 · 49+1SKIP/0 · 30/0), the post-commit next-action refresh line this very phase added — then H3b opens as the next phase. PACK-2 stays skipped.

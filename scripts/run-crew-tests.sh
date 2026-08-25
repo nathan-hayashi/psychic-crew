@@ -385,12 +385,11 @@ cases_F2 () {
     && ok "CR-003 every event->hook edge matches settings.json exactly, both directions" \
     || no "CR-003 diagram diverges from settings.json — drawn but not wired:[$d2only] wired but not drawn:[$d2miss]"
 
-  # Registered at S7, NOT fixed: DIRECTORY_GUIDE.md says 12 hook scripts and the tree holds 14
-  # (13 wired + _common.sh). CR-024 polices scripts/ and context/ in both directions and does not
-  # police hooks/, which is why S2's two additions drifted unseen. The map is the §4.3 byte-pinned
-  # payload and can only gain a number through an operator re-export, so this asserts the TREE
-  # against settings.json — the two artifacts that can both be fixed here — and leaves the map to
-  # the re-export it needs.
+  # Historical note, refreshed at CLEANUP-1 (audit R1-10): written when the map still said 12
+  # hook scripts against a tree of 14 and hooks/ was the one directory CR-024 never policed. Both
+  # halves closed long since — D17's payload enumerates all fourteen by name and the C-26 block
+  # below polices map against tree in both directions — so this tree-vs-settings comparison is
+  # one leg of a three-way agreement now, not the only coverage.
   d2tracked=$(git ls-files 'hooks/*.sh' 2>/dev/null | sed 's|hooks/||' | grep -v '^_common\.sh$' | sort -u)
   d2wired=$(printf '%s\n' "$d2cfg" | cut -f2 | sort -u)
   d2unwired=$(comm -23 <(printf '%s\n' "$d2tracked") <(printf '%s\n' "$d2wired") | tr '\n' ' ')
@@ -441,6 +440,22 @@ cases_F2 () {
       && ok "CR-006 embedded data matches the TSV — $vln rows, $vlet tokens, per-role counts identical" \
       || no "CR-006 embedded data is STALE — rows $vln/$vlsn tokens $vlet/$vlst roles[$vler] vs [$vlsr]"
   fi
+
+  # R4-11 (PROJECT-AUDIT-1, CLEANUP-1): the section's own narrating sentence went stale against
+  # the fence it introduces — "30 dispatches" prose beside 33 embedded rows — and nothing bound it:
+  # the assertions above compare fence to TSV and never read the prose. Bind the sentence to the
+  # fence. Scoped to the distribution section so the F7 line earlier in the file (a different,
+  # C-28-bound figure) is never matched.
+  vlsec=$(awk '/^## Dispatch-cost distribution/{f=1} f' "$vlf")
+  vlpd=$(printf '%s\n' "$vlsec" | grep -oE '[0-9]+ dispatches, \*\*[0-9,]+ tokens\*\*' | head -1)
+  vlpn=$(printf '%s' "$vlpd" | grep -oE '^[0-9]+')
+  vlpt=$(printf '%s' "$vlpd" | grep -oE '[0-9,]+ tokens' | tr -d ',' | grep -oE '[0-9]+')
+  case "$vlpn" in ''|*[!0-9]*) vlpn=-1 ;; esac
+  case "$vlpt" in ''|*[!0-9]*) vlpt=-1 ;; esac
+  vlft=$(printf '%s' "$vlspec" | jq -r '[.data.values[].tokens] | add' 2>/dev/null)
+  { [ "$vlpn" = "$vln" ] && [ "$vlpt" = "$vlft" ]; } \
+    && ok "R4-11 the section's narrating sentence matches the fence ($vlpn dispatches, $vlpt tokens)" \
+    || no "R4-11 section prose says $vlpn dispatches / $vlpt tokens, the fence carries $vln / $vlft"
 
   # S2 (CR-025 / CR-022): two new hooks touch the enforcement layer, and untested enforcement is a
   # finding by this crew's own reviewer contract — F2 shipped three hooks with zero cases and a

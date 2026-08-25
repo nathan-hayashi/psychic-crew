@@ -182,7 +182,7 @@ R-SD-1's promotion, H0a, and the whole security phase.
 Ruling R-CH-1 retired the upstream channel: there is no web project to sync a plan pair to. SYNC is
 not closed by completion — it is closed by the disappearance of its destination, which is a different
 thing, and recorded as such so nobody reads a resolved item and assumes an upstream copy exists
-somewhere. The plan is authored in this repo now, under its own gate, at v3.7.
+somewhere. The plan is authored in this repo now, under its own gate (v3.7 at this record's writing; the version lives in the plan's header alone).
 
 ---
 
@@ -216,6 +216,15 @@ the bundle placed it in the absent `source_files/`. The audit's _findings_ survi
 `docs/audit/FINAL_AUDIT_REPORT.md`, `DECISION_AUDIT.md`, `DIAGRAM_AUDIT.md`, `DECISION_MATRICES.md`
 and `CHANGE_REQUESTS.md`. What is unrecoverable is the _argument_ — the pushback exchanges and the
 audit prompt's own wording.
+
+### Unreachable, category undecidable (registered at CLEANUP-1, 2026-08-25)
+
+- **`MASTER_FIFO_PLAN_USER.pdf` v2** — the plan header's cited human counterpart. Found by
+  PROJECT-AUDIT-1 (CK-E0-03): absent from both repos and their entire histories, from the bundle's
+  21-file inventory, and from the backup. It was authored upstream for the operator to read, so an
+  operator-side copy may survive outside the repos — not decidable from repo evidence, which is why
+  it sits in its own category rather than in either above. The plan header now carries the
+  annotation; registered so nobody re-derives the search.
 
 **Not chased, by operator decision.** No re-export was requested. Fixed forward, unrecoverable
 backward. Nothing to decide, recorded so nobody re-derives it.

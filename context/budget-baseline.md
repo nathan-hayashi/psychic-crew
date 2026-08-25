@@ -52,7 +52,7 @@
 
 ## Scale of the original error
 
-**verified** — The plan budgets **319K for the entire nine-phase build**. Measured subagent spend across the phases that ran is 3,078,632 — **9.65×** the whole-build budget, in subagent context alone, excluding all orchestrator tokens. The defect is not F7-specific; every phase budget in §6 was authored on the same uncalibrated basis.
+**verified** — The plan budgets **319K for the entire nine-phase build**. Measured subagent spend across the phases that ran was 3,078,632 at the 30-dispatch measurement (2026-08-21; the growing all-time set is in the distribution section below) — **9.65×** the whole-build budget, in subagent context alone, excluding all orchestrator tokens. The defect is not F7-specific; every phase budget in §6 was authored on the same uncalibrated basis.
 
 ## What this file does not establish
 
@@ -73,7 +73,7 @@ exercise rather than an implementation detail.
 **1. The data was gitignored.** `logs/metrics/dispatch-costs.tsv` is the machine artifact and stays
 authoritative, but `logs/` is excluded — so a spec with a `"url"` pointing at it would render an
 empty chart from a fresh clone, which is an unreproducible artifact rather than a diagram. All
-30 rows are therefore embedded as literal `values`. This follows the precedent this file
+rows are therefore embedded as literal `values` — all of them; the count lives in the suite's fence-vs-TSV assertion rather than in this sentence. This follows the precedent this file
 already sets for `logs/metrics/f7.json`.
 
 **2. The TSV has no header row**, so column meaning lived only in
@@ -92,23 +92,14 @@ using any number: the same source counted by eight agents appears eight times.
 
 ### What it shows
 
-**verified** — 30 dispatches, **3,078,632 tokens** total, mean **102,621**.
+**verified** — 33 dispatches, **3,518,549 tokens** total, mean **106,622** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
 The red tick is the mean. The spread is the finding: the dearest single dispatch is
 **5.6×** the cheapest, so a per-phase
 budget built on a mean is wrong for both tails.
 
-| Role | n | mean | min | max |
-| --- | --- | --- | --- | --- |
-| `arbiter` | 8 | 92,689 | 36,568 | 123,381 |
-| `lead-executor` | 5 | 88,874 | 58,187 | 118,365 |
-| `quality-reviewer` | 4 | 130,495 | 79,846 | 156,265 |
-| `security-reviewer` | 3 | 123,923 | 106,767 | 140,203 |
-| `lead-planner` | 2 | 48,935 | 35,550 | 62,320 |
-| `general-purpose` | 2 | 75,665 | 61,243 | 90,087 |
-| `Explore` | 2 | 83,142 | 73,039 | 93,245 |
-| `fixer` | 2 | 169,410 | 167,905 | 170,915 |
-| `test-runner` | 1 | 46,388 | 46,388 | 46,388 |
-| `integration-runner` | 1 | 198,302 | 198,302 | 198,302 |
+Per-role counts for the embedded set are the measured-cost table at the top of this file. The two
+were once separate snapshots of different eras and drifted apart silently (the audit's R1-07); one
+table now serves both, and the suite compares the fence's per-role counts against the TSV directly.
 
 **verified** — Ten roles appear, not eight. `general-purpose` and `Explore` are not crew agents;
 they are harness agents used during the audit and are included because excluding them would make

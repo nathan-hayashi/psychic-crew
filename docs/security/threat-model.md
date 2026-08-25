@@ -67,7 +67,7 @@ right thing**. Most rows below are about the second.
 | 9 | Shell write-path defects | R-SD-1 v1+v2, two class assertions per repo, empty allowlists | 4 class assertions | **Stated scanner gap:** other early-exit consumers (`head -n`, `grep -m`, `sed q`) are covered by rule 5 in prose only and gain needles when evidence produces an instance. |
 | 10 | Cross-release integrity | `released_by ≠ from_agent`, enforced at the write | Lite release-guard, 5 behaviours; stress 14/14 | Guard sees only payloads it can read; a line assembled from shell variables is invisible to it and caught by the trail scan at the gate. Both stated. |
 | 11 | Corpus / reference material | Read-only; `provenance-flag` correlates ledger writes against `logs/rounds/` | C-13 detector | Verbatim relay only. **Paraphrase is not detected**, by construction — paraphrase implies a judgement was applied. |
-| 12 | Publication to public remote | Ignore rules + stage-everything probe + tracked-under-workspace | Lite pack assertions | Irreversible. Residual is human: nothing prevents an operator pasting content into a tracked file by hand, and no check reads prose for confidentiality. |
+| 12 | Publication to public remote | Ignore rules + stage-everything probe + tracked-under-workspace | Lite pack assertions | Irreversible. Residual is human: nothing prevents an operator pasting content into a tracked file by hand. Since CONTEXT-TRANSFER-1 exactly one check reads one prose file for one confidentiality class (the reconciliation record's conversation-URL assertion); beyond that, no check reads prose for confidentiality. |
 
 ## What would change this model
 

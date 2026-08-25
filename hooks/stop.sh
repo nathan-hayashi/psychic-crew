@@ -24,7 +24,10 @@ fi
 # the authority, not PROGRESS.md prose — the ledger is what the gate token is actually recorded
 # against, so a stale checkpoint sentence cannot manufacture a GATE READY alert.
 MSG="turn complete"
-PEND=$(grep -oE 'awaiting `APPROVE (GATE-F[0-9]+)`' "$ROOT/GATES.md" 2>/dev/null | grep -oE 'GATE-F[0-9]+' | head -1 || true)
+# Widened at CLEANUP-1 (audit R4-14): post-build gates carry named tokens, not GATE-Fn, so the
+# F-only pattern meant no toast for any gate since F8. Any awaiting APPROVE row now qualifies —
+# still ledger-anchored, same one-token extraction.
+PEND=$(grep -oE 'awaiting `APPROVE [A-Z0-9-]+`' "$ROOT/GATES.md" 2>/dev/null | sed -E 's/^awaiting `APPROVE ([A-Z0-9-]+)`$/\1/' | head -1 || true)
 [ -n "${PEND:-}" ] && MSG="GATE READY — $PEND awaiting your token"
 command -v wsl-notify-send.exe >/dev/null 2>&1 && wsl-notify-send.exe "psychic-crew" "$MSG" >/dev/null 2>&1 || true
 exit 0

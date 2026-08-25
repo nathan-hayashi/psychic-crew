@@ -382,6 +382,28 @@ else
   skip "no arbiter audit log yet (F3 owns logs/arbiter-audit.jsonl)"
 fi
 
+echo "== README footprint binding (R4-12, CLEANUP-1) =="
+# PROJECT-AUDIT-1 found the README footprint count four sessions stale (87 against a real 95) — the
+# same rot CR-027 closed for the assertion counts, on a row CR-027 never covered. Bound to what git
+# actually tracks. Work-tree guarded for the C-23 reason, announced: the archive extract has no git
+# to ask. The byte figure in the same row stays prose — approximate by nature and stated as such.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  rfrow=$(grep -m1 '^| Tracked files / bytes |' README.md)
+  rfc=$(printf '%s' "$rfrow" | grep -oE '[0-9]+ files' | grep -oE '[0-9]+')
+  case "$rfc" in ''|*[!0-9]*) rfc="" ;; esac
+  rlc=$(git ls-files | grep -c .)
+  case "$rlc" in ''|*[!0-9]*) rlc=0 ;; esac
+  if [ -z "$rfc" ]; then
+    fail "R4-12 README states no tracked-file count to bind — the claim was removed, not updated"
+  elif [ "$rfc" = "$rlc" ]; then
+    pass "R4-12 README tracked-file count matches the tree ($rlc)"
+  else
+    fail "R4-12 README says $rfc tracked files, the tree has $rlc"
+  fi
+else
+  skip "R4-12 README footprint needs a work tree to compare against"
+fi
+
 # ONE shared total for both closing bindings. Each previously did its own +1 arithmetic, which
 # broke twice: once when the C-14 canary was added after the README binding, and again when the
 # C-28 binding was moved last and the README binding stopped counting it. The +2 is the two

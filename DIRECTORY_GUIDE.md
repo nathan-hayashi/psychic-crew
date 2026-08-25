@@ -1,6 +1,6 @@
 # DIRECTORY_GUIDE.md
 psychic-crew/
-├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (v3.7 canonical; edited HERE under its own gate — R-CH-1)
+├─ MASTER_FIFO_PLAN_CLAUDE.md   # execution authority (canonical; edited HERE under its own gate — R-CH-1; the version lives in this file's header alone)
 ├─ CLAUDE.md                    # standing context (loaded every session)
 ├─ CLAUDE_DESIGN.md             # architecture rationale + attributions
 ├─ DIRECTORY_GUIDE.md           # this map (matches the v1.0.0 tree + audit outputs)
@@ -19,7 +19,7 @@ psychic-crew/
 │  └─ skills/intake/SKILL.md    # CR-026 user-facing task-contract intake (R3a: blocking only at high/crit; advisory below)
 ├─ hooks/                       # 14 tracked files — _common.sh (shared library, not a hook) · audit-logger.sh · auto-format.sh · bash-blocker.sh · error-recovery.sh · model-guard.sh · notify.sh · pre-compact-checkpoint.sh · provenance-flag.sh · reference-cap.sh · sensitive-guard.sh · session-start.sh · stop.sh · subagent-start.sh
 ├─ scripts/                     # 10: setup · apply-models · validate-crew · run-crew-tests · save-context (§15.5) · restore-context (§15.9) · portability-drill · measure-dispatch-cost · check-plan-corrections · gate-guard (H0a: refuses a gated commit until the session's APPROVED token line exists in GATES.md)
-├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · metrics/ · rounds/
+├─ logs/                        # gitignored: arbiter-audit.jsonl · tooluse-audit.jsonl · build-errors.jsonl · subagent-starts.jsonl · intake-contracts.jsonl · metrics/ · rounds/
 ├─ context/                     # tracked knowledge base — session-summary.md (entry) · plan-corrections.md (WINS for implementation) · budget-baseline.md · f2-readiness.md · f7-metrics.md · f7-plan.md
 ├─ docs/                        # audit/ (final-audit outputs) · security/ (threat model spanning both repos, red-team records) · metrics-snapshot.json + dispatch-cost.vl.json (CR-006)
 └─ stress-project/              # F7 JML simulator (22 files)
