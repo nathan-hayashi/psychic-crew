@@ -841,3 +841,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** matrix 7-EXISTS/2-GENERALIZE/1-BUILD/0-REJECT; tiers unified on existing vocabulary; Compliance-API six-criteria legal gate defined; STOP straddle rct 178/3 · validate 49/1/1 (102-vs-100) · save-context 29/1.
 - **Active artifact:** docs/research/RSCH-3-tei-matrix.md + TEI-PREPLAN.md (new) + README + summary.
 - **Next action:** operator issues `APPROVE RSCH-3`; commit+push (102 tracked); the research trilogy closes; SIDE-0 (Psychic-Templates + the promptbuilder audit) opens on the operator's word.
+
+## [F8|2026-08-26T17:48:31Z] RSCH-3 CLOSED at efea5e1 — the research trilogy is complete
+- **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · 102 tracked · pushed.
+- **Next action:** the SIDE ladder awaits the operator's word — SIDE-0 (Psychic-Templates sibling repo + the promptbuilder.cc head-to-head acceptance audit) is next in the approved HELIX order.
