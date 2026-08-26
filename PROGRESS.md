@@ -835,3 +835,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T17:36:52Z] RSCH-2 CLOSED at d9b6023 — post-commit refresh
 - **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · 100 tracked · pushed.
 - **Next action:** RSCH-3 — the TEI decision matrix + pre-plan (verify the six citations, map the ten components to crew artifacts, risk tiers, Compliance-API legal criteria, first-workflow selection) to its STOP awaiting APPROVE RSCH-3.
+
+## [F8|2026-08-26T17:42:57Z] RSCH-3 built — awaiting the token
+- **Task:** TEI decision matrix + pre-plan; six citations verified; first workflow selected.
+- **Workflow status:** matrix 7-EXISTS/2-GENERALIZE/1-BUILD/0-REJECT; tiers unified on existing vocabulary; Compliance-API six-criteria legal gate defined; STOP straddle rct 178/3 · validate 49/1/1 (102-vs-100) · save-context 29/1.
+- **Active artifact:** docs/research/RSCH-3-tei-matrix.md + TEI-PREPLAN.md (new) + README + summary.
+- **Next action:** operator issues `APPROVE RSCH-3`; commit+push (102 tracked); the research trilogy closes; SIDE-0 (Psychic-Templates + the promptbuilder audit) opens on the operator's word.
