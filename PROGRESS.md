@@ -809,3 +809,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Open decisions:** none.
 - **In-flight changes:** the 4 entries + this ledger trio, uncommitted.
 - **Next action:** operator issues `APPROVE HELIX-0`; commit+push; then RSCH-1 (Claude-native + graph-context sweep) opens as the next HELIX gate.
+
+## [F8|2026-08-26T07:57:02Z] HELIX-0 CLOSED at 4348b87 — post-commit refresh
+- **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · fence live, screenshots invisible to porcelain · pushed.
+- **Next action:** RSCH-1 — the Claude-native + graph-context research sweep (cookbook KG guide, claude-code.graph, Hermes quickstart, the four capture threads) to its own STOP awaiting APPROVE RSCH-1.
