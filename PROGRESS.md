@@ -821,3 +821,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Open decisions:** none — token only.
 - **In-flight changes:** 2 modified + the new research file + ledgers, uncommitted.
 - **Next action:** operator issues `APPROVE RSCH-1`; commit+push (99 tracked); then RSCH-2 — the full 50-item ecosystem triage — opens.
+
+## [F8|2026-08-26T15:11:38Z] RSCH-1 CLOSED at 173c1e7 — post-commit refresh
+- **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · 99 tracked · pushed.
+- **Next action:** RSCH-2 — the 50-item ecosystem triage (every option a verdict row; dives only on named questions) to its own STOP awaiting APPROVE RSCH-2.
