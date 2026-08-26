@@ -784,3 +784,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **In-flight changes:** 5 parent + 6 Lite entries with the ledger writes counted (2 + 3 at verification), uncommitted.
 - **Closed avenues:** fixing Lite's stop.sh toast here (recorded sibling of R4-14, future Lite phase); restating suite counts in Lite's README (made agnostic instead — bind one, delete the rest).
 - **Next action:** operator issues `APPROVE README-SYNC-1`; guard-fronted commits in BOTH repos, pushes, post-commit suites (parent 181/0 · 49+1/0 · 30/0; Lite no signal), post-commit refresh lines.
+
+## [F8|2026-08-26T05:09:45Z] README-SYNC-1 CLOSED at fddbe27 (parent) / f863479 (Lite) — post-commit refresh
+- **Post-commit suites:** run-crew-tests **181 PASS / 0 FAIL** · validate-crew **49 PASS / 1 SKIP / 0 FAIL** · save-context **30 PASS / 0 FAIL**; Lite verify green, no signal; both pushed.
+- **Next action:** none scheduled — the active ledger is EMPTY in both repos. Recorded deferrals with wake conditions stand (Lite stop-toast sibling joins them). The operator opens the next phase.
