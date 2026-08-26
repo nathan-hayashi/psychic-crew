@@ -825,3 +825,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T15:11:38Z] RSCH-1 CLOSED at 173c1e7 — post-commit refresh
 - **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · 99 tracked · pushed.
 - **Next action:** RSCH-2 — the 50-item ecosystem triage (every option a verdict row; dives only on named questions) to its own STOP awaiting APPROVE RSCH-2.
+
+## [F8|2026-08-26T15:17:05Z] RSCH-2 built — awaiting the token
+- **Task:** full 50-item ecosystem triage + 5 named-question dives.
+- **Workflow status:** 50/50 rows; 4 web-verified (dated); HC-5/HC-7 filtered 11 to DISCARD as designed; Supermemory downgraded (closed-source); STOP straddle rct 178/3 · validate 49/1/1 · save-context 29/1 (100-vs-99).
+- **Active artifact:** docs/research/RSCH-2-ecosystem.md (new) + README + summary.
+- **Next action:** operator issues `APPROVE RSCH-2`; commit+push (100 tracked); then RSCH-3 — the TEI decision matrix + pre-plan — opens.
