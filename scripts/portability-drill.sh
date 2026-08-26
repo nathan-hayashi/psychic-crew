@@ -95,7 +95,11 @@ else
   printf '  [FAIL] setup.sh NOT READY in the clone-shaped checkout (the operator-laptop class):\n'
   grep -E '\[FAIL\]|NOT READY' "$TMP/c.out" | sed 's/^/         /' | tail -6; FAIL=$((FAIL + 1))
 fi
-grep -qE 'primary checkout' "$TMP/c.out" \
+# Probe the construct, not a compression of it (R-SD-1 rule 6, caught by this leg's own first
+# committed run): setup.sh swallows validate's detail into a one-line summary, so the announced
+# non-primary passes never appear in c.out. Run validate directly, as leg B already does for C-23.
+( cd "$CS" && ./scripts/validate-crew.sh ) > "$TMP/c-validate.out" 2>&1 || true
+grep -qE 'primary checkout' "$TMP/c-validate.out" \
   && printf '  [ok]   binding guards announced the non-primary environment instead of firing\n' \
   || { printf '  [FAIL] no announced non-primary pass — the guards bound where they must not\n'; FAIL=$((FAIL + 1)); }
 
