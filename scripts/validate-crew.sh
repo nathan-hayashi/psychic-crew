@@ -419,7 +419,15 @@ SUITE_TOTAL=$((P + S + F + 2))
 # equality-on-a-growing-count mistake this build has now made three times (S3's mermaid block, S4's
 # fixture count, and here). The README's figure describes the primary checkout, so the comparison is
 # scoped to it and ANNOUNCED elsewhere rather than skipped quietly.
-if [ ! -d .git ] || [ ! -d logs ]; then
+# ONBOARD-1 (2026-08-26): this guard used to read path shapes — [ -d .git ] and [ -d logs ] —
+# and a REAL fresh clone defeated both at once: .git is a directory there (unlike the drill's
+# worktree, where it is a file), and setup.sh creates logs/ in step 2 before validating in step 5.
+# An operator's first-ever setup on a new laptop hit exactly that: classified "primary", bound
+# against totals that legitimately differ without runtime trails (C-19 emits two lines with a
+# trail, one without), NOT READY on a perfectly good clone. Bind to the variable that actually
+# moves the totals — the arbiter trail — and ask git for work-tree status (the C-23 rule this
+# guard itself had skipped). The drill's clone-shaped leg now proves this exact environment.
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1 || [ ! -f logs/arbiter-audit.jsonl ]; then
   pass "CR-027 README count describes the primary checkout; this is not one (assertions vary with which optional artifacts exist)"
 else
 # Every claim, for the reason given at the foot of run-crew-tests.sh.
@@ -441,7 +449,15 @@ fi
 # summary's figure describes the primary checkout, so the comparison is scoped to it and ANNOUNCED
 # elsewhere. Caught by the portability drill immediately after the gate — the fourth appearance of
 # equality-on-a-varying-count in this build, and the second in this session.
-if [ ! -d .git ] || [ ! -d logs ]; then
+# ONBOARD-1 (2026-08-26): this guard used to read path shapes — [ -d .git ] and [ -d logs ] —
+# and a REAL fresh clone defeated both at once: .git is a directory there (unlike the drill's
+# worktree, where it is a file), and setup.sh creates logs/ in step 2 before validating in step 5.
+# An operator's first-ever setup on a new laptop hit exactly that: classified "primary", bound
+# against totals that legitimately differ without runtime trails (C-19 emits two lines with a
+# trail, one without), NOT READY on a perfectly good clone. Bind to the variable that actually
+# moves the totals — the arbiter trail — and ask git for work-tree status (the C-23 rule this
+# guard itself had skipped). The drill's clone-shaped leg now proves this exact environment.
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1 || [ ! -f logs/arbiter-audit.jsonl ]; then
   pass "C-28 summary figure describes the primary checkout; this is not one"
 else
   # C-28 — this script also binds its own claim in context/session-summary.md. save-context cannot

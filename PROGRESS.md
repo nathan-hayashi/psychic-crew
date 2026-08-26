@@ -788,3 +788,12 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T05:09:45Z] README-SYNC-1 CLOSED at fddbe27 (parent) / f863479 (Lite) — post-commit refresh
 - **Post-commit suites:** run-crew-tests **181 PASS / 0 FAIL** · validate-crew **49 PASS / 1 SKIP / 0 FAIL** · save-context **30 PASS / 0 FAIL**; Lite verify green, no signal; both pushed.
 - **Next action:** none scheduled — the active ledger is EMPTY in both repos. Recorded deferrals with wake conditions stand (Lite stop-toast sibling joins them). The operator opens the next phase.
+
+## [F8|2026-08-26T06:54:09Z] ONBOARD-1 built — awaiting the token
+- **Task:** fix the fresh-clone guard defect the operator's laptop found; add the drill's clone-shaped leg C; ship plain-language GETTING-STARTED docs + README pointers, both repos.
+- **Workflow status:** clone-shaped repro NOT READY pre-fix / READY post-fix; primary validate 49/1/0 with bindings live; STOP straddles: validate 48/1/1 (R4-12 98-vs-97) · rct 178/3 · save-context 29/1 (PB-06); drill leg C RED at pre-fix HEAD by design, green at commit; Lite: sync 61/0 · distill 11/1 (CL-01 straddle) · layer1 64/1/0.
+- **Active artifact:** parent validate-crew.sh + portability-drill.sh + README + summary + docs/GETTING-STARTED.md; Lite README + SYNC-CORRELATION + summary + docs/GETTING-STARTED.md.
+- **Open decisions:** none — the token is the only outstanding input.
+- **In-flight changes:** 5 parent + 4 Lite entries plus these ledgers, uncommitted.
+- **Closed avenues:** loosening the bindings instead of fixing the guards (the bindings are right; the classifier was wrong); making the drill clone (HC-5 stands — the clone's SHAPE is built instead).
+- **Next action:** operator issues `APPROVE ONBOARD-1`; guard-fronted commits + pushes both repos; post-commit expect parent 181/0 · 49+1/0 · 30/0 · PORTABLE (three legs) and Lite fully green incl. distill 12/0; then the laptop unblocks with git pull (+ PSYCHIC_CREW_PARENT for its ~/dev layout).

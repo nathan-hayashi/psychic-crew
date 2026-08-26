@@ -76,9 +76,32 @@ d=$(cd "$WT" && git status --porcelain | wc -l)
 if [ "$d" -eq 0 ]; then printf '  [ok]   setup.sh left the checkout clean (apply-models idempotent)\n'
 else printf '  [FAIL] setup.sh dirtied %s file(s) in a clean checkout\n' "$d"; FAIL=$((FAIL + 1)); fi
 
+printf '\n== C. clone-shaped consumer — .git is a DIRECTORY and trails are empty ==\n'
+# ONBOARD-1 (2026-08-26). An operator's first real clone on a new laptop failed setup while both
+# legs above stayed green, because both dodge the environment a consumer actually has: the extract
+# carries no .git at all, and a worktree's .git is a FILE. A genuine clone has a .git DIRECTORY
+# plus the empty runtime trails, and validate-crew's binding guards misclassified exactly that.
+# HC-5 forbids this drill from cloning, so the clone's shape is built instead: the tracked
+# byte-set, its own git history, no trails. setup.sh must reach READY here or a consumer's first
+# ten minutes are a red herring.
+CS="$TMP/clone-shaped"
+rm -rf "$CS"; mkdir -p "$CS"
+git archive --format=tar HEAD | tar -x -C "$CS"
+( cd "$CS" && git init -q -b dev && git add -A \
+  && git -c user.email=drill@local -c user.name=drill commit -qm "clone-shaped" ) >/dev/null 2>&1
+if ( cd "$CS" && ./scripts/setup.sh ) > "$TMP/c.out" 2>&1; then
+  printf '  [ok]   setup.sh READY in the clone-shaped checkout — %s\n' "$(grep -E 'validate-crew:' "$TMP/c.out" | tail -1 | sed 's/^ *\[ok\] *//')"
+else
+  printf '  [FAIL] setup.sh NOT READY in the clone-shaped checkout (the operator-laptop class):\n'
+  grep -E '\[FAIL\]|NOT READY' "$TMP/c.out" | sed 's/^/         /' | tail -6; FAIL=$((FAIL + 1))
+fi
+grep -qE 'primary checkout' "$TMP/c.out" \
+  && printf '  [ok]   binding guards announced the non-primary environment instead of firing\n' \
+  || { printf '  [FAIL] no announced non-primary pass — the guards bound where they must not\n'; FAIL=$((FAIL + 1)); }
+
 printf '\n== result ==\n'
 if [ "$FAIL" -eq 0 ]; then
-  printf '  PORTABLE — both mechanisms green at %s\n\n' "$(git rev-parse --short HEAD)"
+  printf '  PORTABLE — all three mechanisms green at %s\n\n' "$(git rev-parse --short HEAD)"
   exit 0
 else
   printf '  NOT PORTABLE — %s check(s) failed\n\n' "$FAIL"

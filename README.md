@@ -4,6 +4,8 @@ A from-scratch AI agent crew for IT-automation orchestration: eight specialised 
 
 Built to a fixed execution plan (`MASTER_FIFO_PLAN_CLAUDE.md`) with zero runtime dependencies. Nothing here installs anything.
 
+**New here, or not technical?** Start with **[docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)** — the plain-language guide. This README is the full technical reference.
+
 ## Quickstart
 
 ```bash
@@ -53,7 +55,7 @@ would fail the §4 seed byte-identity check that the whole build rests on.
 | Fact | Value | |
 | --- | --- | --- |
 | Node / npm actually used | v24.14.0 / 11.9.0 | `[E]` |
-| Tracked files / bytes | 97 files, ~1.1 MB | `[E]` |
+| Tracked files / bytes | 98 files, ~1.1 MB | `[E]` |
 | Runtime dependencies | **zero** — `stress-project/` is Node stdlib only | `[E]` |
 | Disk beyond the checkout | `logs/` grows unbounded; ~2.5 MB after nine phases plus an audit | `[E]` |
 
@@ -329,7 +331,7 @@ The in-repo deny-list blocks the clone verb during agent work, which is why the 
 
 ## What is proven, and what is not
 
-**Proven.** 181 crew assertions and 50 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by two mechanisms.
+**Proven.** 181 crew assertions and 50 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by three mechanisms — archive extract, detached worktree, and a clone-shaped consumer checkout.
 
 **Not proven, stated plainly.**
 
