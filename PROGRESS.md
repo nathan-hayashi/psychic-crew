@@ -851,3 +851,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **HEAD:** 08a503f
 - **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
 - **Next action:** the SIDE ladder awaits the operator's word — SIDE-0 (Psychic-Templates sibling repo + the promptbuilder.cc head-to-head acceptance audit) is next in the approved HELIX order.
+
+## [F8|2026-08-26T18:13:09Z] SIDE-0 built — awaiting the token
+- **Task:** psychic-templates sibling (SCHEMA 22 fields, 4 doctrine-bound templates, validator 30/0 with live controls) + the promptbuilder.cc acceptance audit (7/2/1, criteria pre-fixed).
+- **Workflow status:** sibling uncommitted at the projects root; parent dirty with ledger appends only; validator defect (vacuous control on missing fixture) caught and hardened same-gate.
+- **Active artifact:** sibling repo root; docs/AUDIT-vs-promptbuilder.md; parent ledgers.
+- **Next action:** operator issues `APPROVE SIDE-0`; both ledgers stamp on the one token; sibling initial commit + PRIVATE remote + push; then SIDE-1 Psychic-Sidekick opens.
