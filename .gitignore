@@ -73,3 +73,13 @@ secrets/
 *.key
 id_rsa*
 credentials.json
+
+# Research screenshot drops, first arrivals 2026-08-26: four X-thread captures (context-graph
+# engineering, graph-roadmap, second-brain-compiler, agent-bench study) placed at the root as
+# HELIX/RSCH-1 source material. This repo is PUBLIC; without this rule a stage-everything would
+# publish them. Globbed rather than enumerated, per the standing precedent (a literal filename
+# lost to its own sequel twice already): the next screenshot drop is covered on arrival. Zero
+# .png files are tracked today, so the glob costs nothing; a future tracked image would be a
+# deliberate gated exception, not a quiet add. Asymmetry as always: the RESEARCH FINDINGS built
+# from these land tracked under docs/research/; the captures themselves never ship.
+*.png

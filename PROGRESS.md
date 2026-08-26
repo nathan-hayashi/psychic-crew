@@ -801,3 +801,11 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T06:56:32Z] ONBOARD-1 CLOSED at f7bb0f1 (parent) / ab0b809 (Lite) — post-commit refresh
 - **Post-commit suites:** run-crew-tests **181/0** · validate-crew **49/1/0** · save-context **30/0** · **PORTABLE, all THREE legs** (the clone-shaped leg green at its first committed HEAD); Lite fully green, no signal; both pushed.
 - **Next action:** none scheduled — active ledger empty both repos. Consumer laptops unblock with git pull (+ PSYCHIC_CREW_PARENT when repos live outside ~/projects).
+
+## [F8|2026-08-26T07:41:14Z] HELIX-0 built — awaiting the token
+- **Task:** fence the four research screenshots (public repo, *.png never covered); extend probes; cascade 50→51.
+- **Workflow status:** validate 50/1/0 · rct 180/1 (canary over 4 modified entries) · save-context 30/0 · negative control fired both assertions by name · fence restore defect caught and repaired in-gate.
+- **Active artifact:** .gitignore · scripts/validate-crew.sh · README.md · context/session-summary.md.
+- **Open decisions:** none.
+- **In-flight changes:** the 4 entries + this ledger trio, uncommitted.
+- **Next action:** operator issues `APPROVE HELIX-0`; commit+push; then RSCH-1 (Claude-native + graph-context sweep) opens as the next HELIX gate.
