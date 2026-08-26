@@ -983,5 +983,24 @@ confidence sentence above; none was found in this pass.
 
 ## CORRECTIONS
 
-(Empty. Filled only by numbered operator corrections; only what is named will change, and any error
-either side finds in settled material gets flagged here the moment it is discovered.)
+**Correction 1 (2026-08-25, operator-triggered at README-SYNC-1).** The operator asked why the
+READMEs carried no cross-repo setup guidance and whether that exposed a falsified audit claim. The
+adjudication, recorded here per item 7 of the task spec:
+
+- **No check result was fabricated** — every one of the 71 LIVE lines reports a command genuinely
+  executed on 2026-08-25.
+- **But R6e and the Method section overstated the Lite read depth.** They label Lite's scripts,
+  hooks, rules, agents, docs and pack machinery FULL; in fact Lite's README, most of its hooks and
+  agents, and several scripts were read structurally or not opened. Read those two passages with
+  this correction.
+- **The overstatement had a measurable cost:** Lite's README carried six stale figures (its layer
+  counts frozen at the L2 era, a six-vs-seven wired-hook contradiction, a dated parent-registry
+  count) and a dangling `[psychic-crew]` reference — the exact stale-figure class this audit found
+  and reported in the parent's README (R1-08) — and the audit missed all of it because the file it
+  claimed to have read was not read. Found by the operator, fixed and bound at README-SYNC-1.
+- **Consequence for the core conclusion:** the zero-unbound-drift finding stands for every surface
+  verified live (both repos' suites, ledgers, seeds, enforcement); its Lite prose leg is downgraded
+  from [E] to [I] pending nothing — the README staleness was figure-rot, not unbound drift, and the
+  R4-12-class binding now ported to Lite closes the class there too.
+
+(Further entries: numbered operator corrections only; only what is named changes.)

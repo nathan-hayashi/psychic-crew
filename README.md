@@ -20,6 +20,12 @@ cd psychic-crew
 
 **Auth:** this repo holds no secrets and needs none for anything above. Claude Code authentication is per-machine, not per-repo — check it with `claude auth status`, or `/status` inside a session. `gh auth status` matters only if you use the GitHub lanes. `.env`, `.env.*` and `secrets/` are both gitignored and blocked by `hooks/sensitive-guard.sh`; that guard is a backstop, not permission to put secrets in the tree.
 
+## The twin repo
+
+This build has a sibling: [psychic-crew-lite](https://github.com/nathan-hayashi/psychic-crew-lite) — a four-agent variant with no arbiter, a cross-release law in its place, and its own three-layer verification stack. It is not a subset: several of its mechanisms (the witness manifest, temporal history, declared claim bindings, stall detection) were built there first and ported back here.
+
+Clone it **beside** this repo — its `check-sync.sh` correlates every shared artifact against this one and defaults to finding the parent at `../psychic-crew` under `$HOME/projects`; anywhere else, set `PSYCHIC_CREW_PARENT`. Its own README carries its quickstart. The correlation map (`docs/SYNC-CORRELATION.md` there) is the contract for what is byte-identical, deliberately different, or deliberately absent between the two.
+
 ## Requirements (measured)
 
 Every figure here is measured from this build, not estimated from a template. `[E]` is measured

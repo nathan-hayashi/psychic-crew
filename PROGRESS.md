@@ -775,3 +775,12 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-25T18:17:42Z] H3B-1 CLOSED at 176f668 — post-commit refresh
 - **Post-commit suites:** run-crew-tests **181 PASS / 0 FAIL** · validate-crew **49 PASS / 1 SKIP / 0 FAIL** · save-context **30 PASS / 0 FAIL** · **PORTABLE at 176f668** · **97 tracked** · pushed.
 - **Next action:** none scheduled — the active ledger is EMPTY. PACK-2 skipped by operator instruction (reopens only on a new one); every other item is a recorded deferral with a named wake condition (H1b renderer half, Q2/R-SEC-1, WORKAROUND-01, the two dormant lanes, OQ-2, C-25 prevention). The operator's next instruction opens the next phase.
+
+## [F8|2026-08-26T01:19:54Z] README-SYNC-1 built — awaiting the token
+- **Task:** cross-link the repos; Lite quickstart + figure de-rot + two new bindings; audit CORRECTIONS entry 1.
+- **Workflow status:** parent 180/1 (canary: README + checklist) · 49+1/0 · 30/0; Lite verify layer1 64/1/0 · no signal; witness re-stamped 48/0/0; F2 negative control fired.
+- **Active artifact:** parent README + audit checklist; Lite README + validate-lite.sh + WITNESS-MANIFEST.md.
+- **Open decisions:** none — one token covers both guard-fronted commits.
+- **In-flight changes:** 5 parent + 6 Lite entries with the ledger writes counted (2 + 3 at verification), uncommitted.
+- **Closed avenues:** fixing Lite's stop.sh toast here (recorded sibling of R4-14, future Lite phase); restating suite counts in Lite's README (made agnostic instead — bind one, delete the rest).
+- **Next action:** operator issues `APPROVE README-SYNC-1`; guard-fronted commits in BOTH repos, pushes, post-commit suites (parent 181/0 · 49+1/0 · 30/0; Lite no signal), post-commit refresh lines.
