@@ -877,3 +877,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** plugins validator 28/0/0 incl. live `claude plugin validate .` acceptance; sibling uncommitted; parent dirty with research doc + cascade + ledgers.
 - **Active artifact:** docs/research/SIDE-2-plugin-surfaces.md; the sibling repo root; parent ledgers.
 - **Next action:** operator issues `APPROVE SIDE-2`; both ledgers stamp; parent commit (103 tracked) + sibling initial commit + PRIVATE remote; then SIDE-3 ARMY selector opens.
+
+## [F8|2026-08-26T20:47:15Z] SIDE-2 CLOSED — parent 7471be9 (103 tracked), plugins 11a8433 pushed PRIVATE (default dev)
+- **Post-commit:** parent suites verified below; plugins validator 28/0/0 exit 0 incl. platform acceptance.
+- **Next action:** SIDE-3 — the ARMY selector, per the ratified plan an intake/threshold-router EXTENSION inside the parent (typed request-type × specialist effectiveness table, machine-readable, suite-bound to the real agents), NOT a new repo; §4.3 map + DIRECTORY_GUIDE pair-edit under EX-01 delta-0 if the map enumerates skills.
