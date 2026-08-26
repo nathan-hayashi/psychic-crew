@@ -813,3 +813,11 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T07:57:02Z] HELIX-0 CLOSED at 4348b87 — post-commit refresh
 - **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · fence live, screenshots invisible to porcelain · pushed.
 - **Next action:** RSCH-1 — the Claude-native + graph-context research sweep (cookbook KG guide, claude-code.graph, Hermes quickstart, the four capture threads) to its own STOP awaiting APPROVE RSCH-1.
+
+## [F8|2026-08-26T08:09:26Z] RSCH-1 built — awaiting the token
+- **Task:** Claude-native + graph-context sweep; findings register + graph-lane pilot decision.
+- **Workflow status:** 8 sources ([E], dated); graph lane = PILOT; the "14-step" thread confirmed as an independent re-derivation of the crew's own doctrine; STOP straddle rct 178/3 · validate 49/1/1 · save-context 29/1 (99-vs-98, resolves at commit).
+- **Active artifact:** docs/research/RSCH-1-claude-native.md (new) + README + summary.
+- **Open decisions:** none — token only.
+- **In-flight changes:** 2 modified + the new research file + ledgers, uncommitted.
+- **Next action:** operator issues `APPROVE RSCH-1`; commit+push (99 tracked); then RSCH-2 — the full 50-item ecosystem triage — opens.
