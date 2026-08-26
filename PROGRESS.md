@@ -845,3 +845,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T17:48:31Z] RSCH-3 CLOSED at efea5e1 — the research trilogy is complete
 - **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · 102 tracked · pushed.
 - **Next action:** the SIDE ladder awaits the operator's word — SIDE-0 (Psychic-Templates sibling repo + the promptbuilder.cc head-to-head acceptance audit) is next in the approved HELIX order.
+
+## [F8|2026-08-26T17:50:19Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 1 file(s) uncommitted
+- **HEAD:** 08a503f
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** the SIDE ladder awaits the operator's word — SIDE-0 (Psychic-Templates sibling repo + the promptbuilder.cc head-to-head acceptance audit) is next in the approved HELIX order.
