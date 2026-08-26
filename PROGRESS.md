@@ -871,3 +871,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T20:25:19Z] SIDE-1 CLOSED — parent ff888e6, sidekick f748d82 pushed PRIVATE (default dev)
 - **Post-commit:** parent suites verified below; sidekick validator 37/0/0 exit 0 (status captured, not piped).
 - **Next action:** SIDE-2 — Psychic-Plugins, research-first: verify what plugin/skill surfaces Claude.ai web, desktop, and Claude Code actually expose today (current docs, never memory), then define the minimal useful plugin set; research deliverable lands in parent docs/research/ with its count cascade.
+
+## [F8|2026-08-26T20:31:42Z] SIDE-2 built — awaiting the token
+- **Task:** plugin-surface research (3 dated fetches; docs host migration caught; cross-surface law quoted) + psychic-plugins sibling (3 prose-first skills, self-marketplace, platform constraints mechanized).
+- **Workflow status:** plugins validator 28/0/0 incl. live `claude plugin validate .` acceptance; sibling uncommitted; parent dirty with research doc + cascade + ledgers.
+- **Active artifact:** docs/research/SIDE-2-plugin-surfaces.md; the sibling repo root; parent ledgers.
+- **Next action:** operator issues `APPROVE SIDE-2`; both ledgers stamp; parent commit (103 tracked) + sibling initial commit + PRIVATE remote; then SIDE-3 ARMY selector opens.
