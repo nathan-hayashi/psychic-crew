@@ -867,3 +867,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** validator 37/0/0 incl. rendered-DOM proof via cached chromium (zero installs); sidekick uncommitted; parent dirty with ledger appends only.
 - **Active artifact:** sibling repo root; docs/INTEGRATION-CONTRACT.md; parent ledgers.
 - **Next action:** operator issues `APPROVE SIDE-1`; both ledgers stamp on the one token; initial commit + PRIVATE remote + push; then SIDE-2 Psychic-Plugins (research-first) opens.
+
+## [F8|2026-08-26T20:25:19Z] SIDE-1 CLOSED — parent ff888e6, sidekick f748d82 pushed PRIVATE (default dev)
+- **Post-commit:** parent suites verified below; sidekick validator 37/0/0 exit 0 (status captured, not piped).
+- **Next action:** SIDE-2 — Psychic-Plugins, research-first: verify what plugin/skill surfaces Claude.ai web, desktop, and Claude Code actually expose today (current docs, never memory), then define the minimal useful plugin set; research deliverable lands in parent docs/research/ with its count cascade.
