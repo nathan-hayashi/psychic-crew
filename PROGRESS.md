@@ -861,3 +861,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T19:17:17Z] SIDE-0 CLOSED — parent b1ed594, sibling d050429 pushed PRIVATE
 - **Post-commit:** parent 181/0 · 50+1SKIP/0 · 30/0 expected-verified below; sibling validator 30/0; remote visibility PRIVATE confirmed via gh.
 - **Next action:** SIDE-1 — Psychic-Sidekick (sibling repo #2, the Request-Contract front end; fill-in/multiple-choice UI compiling SCHEMA contracts; per-department presets grounded in RSCH-3) proceeds next in the approved HELIX FIFO.
+
+## [F8|2026-08-26T19:26:11Z] SIDE-1 built — awaiting the token
+- **Task:** psychic-sidekick sibling (contract-compiler UI, UNKNOWN mechanized, vendored 22-field vocabulary + live sync, presets-not-policy boundary, integration contract).
+- **Workflow status:** validator 37/0/0 incl. rendered-DOM proof via cached chromium (zero installs); sidekick uncommitted; parent dirty with ledger appends only.
+- **Active artifact:** sibling repo root; docs/INTEGRATION-CONTRACT.md; parent ledgers.
+- **Next action:** operator issues `APPROVE SIDE-1`; both ledgers stamp on the one token; initial commit + PRIVATE remote + push; then SIDE-2 Psychic-Plugins (research-first) opens.
