@@ -857,3 +857,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** sibling uncommitted at the projects root; parent dirty with ledger appends only; validator defect (vacuous control on missing fixture) caught and hardened same-gate.
 - **Active artifact:** sibling repo root; docs/AUDIT-vs-promptbuilder.md; parent ledgers.
 - **Next action:** operator issues `APPROVE SIDE-0`; both ledgers stamp on the one token; sibling initial commit + PRIVATE remote + push; then SIDE-1 Psychic-Sidekick opens.
+
+## [F8|2026-08-26T19:17:17Z] SIDE-0 CLOSED — parent b1ed594, sibling d050429 pushed PRIVATE
+- **Post-commit:** parent 181/0 · 50+1SKIP/0 · 30/0 expected-verified below; sibling validator 30/0; remote visibility PRIVATE confirmed via gh.
+- **Next action:** SIDE-1 — Psychic-Sidekick (sibling repo #2, the Request-Contract front end; fill-in/multiple-choice UI compiling SCHEMA contracts; per-department presets grounded in RSCH-3) proceeds next in the approved HELIX FIFO.
