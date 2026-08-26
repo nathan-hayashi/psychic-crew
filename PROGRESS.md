@@ -831,3 +831,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** 50/50 rows; 4 web-verified (dated); HC-5/HC-7 filtered 11 to DISCARD as designed; Supermemory downgraded (closed-source); STOP straddle rct 178/3 · validate 49/1/1 · save-context 29/1 (100-vs-99).
 - **Active artifact:** docs/research/RSCH-2-ecosystem.md (new) + README + summary.
 - **Next action:** operator issues `APPROVE RSCH-2`; commit+push (100 tracked); then RSCH-3 — the TEI decision matrix + pre-plan — opens.
+
+## [F8|2026-08-26T17:36:52Z] RSCH-2 CLOSED at d9b6023 — post-commit refresh
+- **Post-commit:** 181/0 · 50+1SKIP/0 · 30/0 · 100 tracked · pushed.
+- **Next action:** RSCH-3 — the TEI decision matrix + pre-plan (verify the six citations, map the ten components to crew artifacts, risk tiers, Compliance-API legal criteria, first-workflow selection) to its STOP awaiting APPROVE RSCH-3.
