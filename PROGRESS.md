@@ -797,3 +797,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **In-flight changes:** 5 parent + 4 Lite entries plus these ledgers, uncommitted.
 - **Closed avenues:** loosening the bindings instead of fixing the guards (the bindings are right; the classifier was wrong); making the drill clone (HC-5 stands — the clone's SHAPE is built instead).
 - **Next action:** operator issues `APPROVE ONBOARD-1`; guard-fronted commits + pushes both repos; post-commit expect parent 181/0 · 49+1/0 · 30/0 · PORTABLE (three legs) and Lite fully green incl. distill 12/0; then the laptop unblocks with git pull (+ PSYCHIC_CREW_PARENT for its ~/dev layout).
+
+## [F8|2026-08-26T06:56:32Z] ONBOARD-1 CLOSED at f7bb0f1 (parent) / ab0b809 (Lite) — post-commit refresh
+- **Post-commit suites:** run-crew-tests **181/0** · validate-crew **49/1/0** · save-context **30/0** · **PORTABLE, all THREE legs** (the clone-shaped leg green at its first committed HEAD); Lite fully green, no signal; both pushed.
+- **Next action:** none scheduled — active ledger empty both repos. Consumer laptops unblock with git pull (+ PSYCHIC_CREW_PARENT when repos live outside ~/projects).
