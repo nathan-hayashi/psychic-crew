@@ -907,3 +907,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** verdict doc landed (+105 cascade); straddle expected 105-vs-104 trio.
 - **Active artifact:** docs/research/SIDE-5-compliance-verdict.md.
 - **Next action:** operator issues `APPROVE SIDE-5`; commit closes the SIDE ladder; STRESS-1 (final, hot-bench, owns the metrics cascade) opens on the operator's word.
+
+## [F8|2026-08-27T02:03:18Z] SIDE-5 CLOSED at 113930f — THE SIDE LADDER IS COMPLETE (105 tracked)
+- **Post-commit:** 190/0 · 50+1SKIP/0 · 30/0 · clean.
+- **HELIX state:** HELIX-0 + RSCH-1/2/3 + SIDE-0/1/2/3/4/5 all CLOSED. Estate: parent (105) · Lite · psychic-templates · psychic-sidekick · psychic-plugins · psychic-repurpose (all four siblings PRIVATE, dev default, validators green).
+- **Next action:** STRESS-1 — the FINAL HELIX phase — opens ONLY on the operator's word: the sanctioned hot run of the full 8-agent bench (cats-and-dogs site vs the pre-fixed CrewAI rubric), owning the metrics cascade in-gate per the registered H2a procedure.
