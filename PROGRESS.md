@@ -887,3 +887,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** straddle at final shape 187/3 · 49/1/1 · 29/1, all rooted in 104-vs-103; CR-027/C-28 agree at 190; EX-01 delta 0 live.
 - **Active artifact:** .claude/skills/army-selector/SKILL.md; MASTER_FIFO_PLAN_CLAUDE.md D25; scripts/run-crew-tests.sh F5 block.
 - **Next action:** operator issues `APPROVE SIDE-3`; commit (104 tracked) + push; then SIDE-4 Psychic-Repurpose (blueprint gallery) opens.
+
+## [F8|2026-08-27T01:34:29Z] SIDE-3 CLOSED at 4ea19e5 — 104 tracked, plan v3.10, suite 190
+- **Post-commit:** verified above this entry's commit; tree clean below.
+- **Next action:** SIDE-4 — Psychic-Repurpose, the blueprint gallery: sibling repo of re-instantiation blueprints (what/why/when/where/how + the defect that taught it) abstracted from every pattern this program has proven; PRIVATE at creation; own validator from birth.
