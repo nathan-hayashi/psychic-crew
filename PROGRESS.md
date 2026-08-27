@@ -897,3 +897,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** validator 39/0 after its own sweep caught the assembled-needles blueprint spelling its needle (fixed by description; first fix refused for guessed bytes); sibling uncommitted; parent dirty with ledger appends only.
 - **Active artifact:** the sibling repo root; parent ledgers.
 - **Next action:** operator issues `APPROVE SIDE-4`; both ledgers stamp; initial commit + PRIVATE remote; then SIDE-5 Compliance API opens as a CRITERIA EVALUATION, not a build (RSCH-3 §D law).
+
+## [F8|2026-08-27T01:46:07Z] SIDE-4 CLOSED — parent f3506c6, repurpose 960cb8e pushed PRIVATE (default dev)
+- **Post-commit:** parent 190/0 · 50+1SKIP/0 · 30/0; repurpose validator 39/0 exit 0.
+- **Next action:** SIDE-5 — Compliance API opens as a CRITERIA EVALUATION, never a build (RSCH-3 §D: six ALL-required legal criteria; criterion 1 = sanctioned export surface verified against current vendor docs, criteria 2–6 = operator/legal groundwork evaluated honestly); deliverable = a per-criterion verdict doc in parent docs/research/ with the 104→105 cascade; expected outcome is BLOCKED-with-wake-conditions unless evidence says otherwise.
