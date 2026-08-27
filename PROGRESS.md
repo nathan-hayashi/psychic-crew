@@ -891,3 +891,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-27T01:34:29Z] SIDE-3 CLOSED at 4ea19e5 — 104 tracked, plan v3.10, suite 190
 - **Post-commit:** verified above this entry's commit; tree clean below.
 - **Next action:** SIDE-4 — Psychic-Repurpose, the blueprint gallery: sibling repo of re-instantiation blueprints (what/why/when/where/how + the defect that taught it) abstracted from every pattern this program has proven; PRIVATE at creation; own validator from birth.
+
+## [F8|2026-08-27T01:39:16Z] SIDE-4 built — awaiting the token
+- **Task:** psychic-repurpose gallery (10 five-section blueprints; provenance spans all 5 program repos both directions).
+- **Workflow status:** validator 39/0 after its own sweep caught the assembled-needles blueprint spelling its needle (fixed by description; first fix refused for guessed bytes); sibling uncommitted; parent dirty with ledger appends only.
+- **Active artifact:** the sibling repo root; parent ledgers.
+- **Next action:** operator issues `APPROVE SIDE-4`; both ledgers stamp; initial commit + PRIVATE remote; then SIDE-5 Compliance API opens as a CRITERIA EVALUATION, not a build (RSCH-3 §D law).
