@@ -1,0 +1,15 @@
+{
+  "name": "stress-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kettle Lane Cats & Dogs — a static two-page landing site served from loopback by the Node standard library. Zero dependencies, nothing to install, no build step (HC-5).",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test": "node --test --test-reporter=tap 'test/**/*.test.js'",
+    "start": "node bin/serve.js"
+  }
+}
