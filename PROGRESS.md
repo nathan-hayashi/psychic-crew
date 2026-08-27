@@ -901,3 +901,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-27T01:46:07Z] SIDE-4 CLOSED — parent f3506c6, repurpose 960cb8e pushed PRIVATE (default dev)
 - **Post-commit:** parent 190/0 · 50+1SKIP/0 · 30/0; repurpose validator 39/0 exit 0.
 - **Next action:** SIDE-5 — Compliance API opens as a CRITERIA EVALUATION, never a build (RSCH-3 §D: six ALL-required legal criteria; criterion 1 = sanctioned export surface verified against current vendor docs, criteria 2–6 = operator/legal groundwork evaluated honestly); deliverable = a per-criterion verdict doc in parent docs/research/ with the 104→105 cascade; expected outcome is BLOCKED-with-wake-conditions unless evidence says otherwise.
+
+## [F8|2026-08-27T01:48:50Z] SIDE-5 evaluated — awaiting the token
+- **Task:** six-criteria evaluation: 1 MET (Compliance API verified, dated; inference hooks bonus→TEI-1), 4 NOT MET, 1 PARTIAL — BLOCKED with per-criterion wake conditions; no build.
+- **Workflow status:** verdict doc landed (+105 cascade); straddle expected 105-vs-104 trio.
+- **Active artifact:** docs/research/SIDE-5-compliance-verdict.md.
+- **Next action:** operator issues `APPROVE SIDE-5`; commit closes the SIDE ladder; STRESS-1 (final, hot-bench, owns the metrics cascade) opens on the operator's word.
