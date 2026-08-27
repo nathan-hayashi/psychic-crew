@@ -881,3 +881,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-26T20:47:15Z] SIDE-2 CLOSED — parent 7471be9 (103 tracked), plugins 11a8433 pushed PRIVATE (default dev)
 - **Post-commit:** parent suites verified below; plugins validator 28/0/0 exit 0 incl. platform acceptance.
 - **Next action:** SIDE-3 — the ARMY selector, per the ratified plan an intake/threshold-router EXTENSION inside the parent (typed request-type × specialist effectiveness table, machine-readable, suite-bound to the real agents), NOT a new repo; §4.3 map + DIRECTORY_GUIDE pair-edit under EX-01 delta-0 if the map enumerates skills.
+
+## [F8|2026-08-26T20:54:12Z] SIDE-3 built — awaiting the token
+- **Task:** army-selector skill (ARMY-TABLE v1: 9×5 over the real bench), D25 map valve (plan v3.10, guide delta 0), intake pointer, 9 binding assertions (crew suite 181→190).
+- **Workflow status:** straddle at final shape 187/3 · 49/1/1 · 29/1, all rooted in 104-vs-103; CR-027/C-28 agree at 190; EX-01 delta 0 live.
+- **Active artifact:** .claude/skills/army-selector/SKILL.md; MASTER_FIFO_PLAN_CLAUDE.md D25; scripts/run-crew-tests.sh F5 block.
+- **Next action:** operator issues `APPROVE SIDE-3`; commit (104 tracked) + push; then SIDE-4 Psychic-Repurpose (blueprint gallery) opens.

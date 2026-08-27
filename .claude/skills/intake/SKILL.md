@@ -72,6 +72,12 @@ med	write
 low	*
 ```
 
+### Specialist fit — a separate lookup (SIDE-3)
+
+Who WOULD do the work if dispatched is not a classification question and does not live in
+the table above: it is a typed lookup in `.claude/skills/army-selector/SKILL.md`. That skill
+returns advice, never a license to dispatch — the zero-dispatch default stands.
+
 ## 4. Emit the contract
 
 Append exactly one JSON line to `logs/intake-contracts.jsonl` (gitignored):

@@ -734,6 +734,41 @@ cases_F5 () {
   # ccs-02 shape: a cold reader must recover the next action from the tail alone.
   grep -qE '^- \*\*Next action:' <<<"$(tail -40 PROGRESS.md)" \
     && ok "next_action recoverable from the PROGRESS.md tail alone" || no "tail carries no next_action"
+  # SIDE-3 — the ARMY selector: specialist fit as data, not vibes. Same doctrine as CR-026
+  # above: classification behaviour is model-interpreted and deliberately unasserted; what IS
+  # asserted is the table — mapped path (CR-024), shape, real agents only, exercised rows, and
+  # the caveat that keeps the whole thing lawful under the zero-dispatch default.
+  akp=$(awk -F'#' '/skills\/army-selector\/SKILL\.md/ {print $1}' DIRECTORY_GUIDE.md \
+        | grep -oE '\.claude/skills/[a-z-]+/SKILL\.md|skills/[a-z-]+/SKILL\.md' | head -1)
+  case "$akp" in .claude/*) : ;; skills/*) akp=".claude/$akp" ;; esac
+  [ -n "$akp" ] && [ -f "$akp" ] \
+    && ok "SIDE-3 army skill present at the path the map names ($akp)" \
+    || no "SIDE-3 army skill missing from the mapped path (map said '${akp:-nothing}')"
+  aktab=$(awk '/^# ARMY-TABLE v[0-9]+$/{f=1;next} f&&/^```/{exit} f&&NF' "$akp" 2>/dev/null)
+  aknr=$(printf '%s\n' "$aktab" | grep -c .)
+  [[ "$aknr" =~ ^[0-9]+$ ]] || aknr=0
+  [ "$aknr" -ge 9 ] && ok "SIDE-3 table non-vacuous ($aknr rows)" || no "SIDE-3 table vacuous: $aknr rows"
+  akbad=$(printf '%s\n' "$aktab" | awk -F'\t' 'NF!=5{print NR}' | tr '\n' ' ')
+  [ -z "$akbad" ] && ok "SIDE-3 every row carries 5 tab-separated fields" || no "SIDE-3 malformed rows: $akbad"
+  akag=$(ls .claude/agents/ | sed 's/\.md$//' | sort -u)
+  akref=$(printf '%s\n' "$aktab" | cut -f2,3,4 | tr '\t' '\n' | sort -u | grep -vE '^(none|all)$')
+  akundef=$(comm -23 <(printf '%s\n' "$akref") <(printf '%s\n' "$akag") | tr '\n' ' ')
+  [ -z "$akundef" ] && ok "SIDE-3 every named specialist is a real agent file" \
+    || no "SIDE-3 phantom specialists: $akundef"
+  akx=$(printf '%s\n' "$aktab" | awk -F'\t' '$1=="security-review"{print $2}')
+  [ "$akx" = security-reviewer ] && ok "SIDE-3 fixture: security-review -> security-reviewer" \
+    || no "SIDE-3 fixture security-review resolved to '$akx'"
+  akx=$(printf '%s\n' "$aktab" | awk -F'\t' '$1=="test-run"{print $2}')
+  [ "$akx" = test-runner ] && ok "SIDE-3 fixture: test-run -> test-runner" \
+    || no "SIDE-3 fixture test-run resolved to '$akx'"
+  akx=$(printf '%s\n' "$aktab" | awk -F'\t' '$1=="ambiguous"{print $2}')
+  [ "$akx" = none ] && ok "SIDE-3 fixture: ambiguous -> none (FALLBACK, not a guess)" \
+    || no "SIDE-3 fixture ambiguous resolved to '$akx'"
+  grep -qF "not a license to dispatch" "$akp" \
+    && ok "SIDE-3 zero-dispatch caveat present verbatim" || no "SIDE-3 caveat line missing"
+  grep -qF "army-selector" .claude/skills/intake/SKILL.md \
+    && ok "SIDE-3 intake points at the selector" || no "SIDE-3 intake pointer missing"
+
   check "plan corrections: F5 clean" 0 ./scripts/check-plan-corrections.sh F5
 }
 
