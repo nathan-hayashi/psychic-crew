@@ -15,6 +15,7 @@
   "use strict";
 
   var DEFAULT_PET = "both";
+  var INDEX_PAGE = "index.html";
 
   // A card is shown when the reader asked for everything, when the card itself
   // applies to everything, or when the two simply agree.
@@ -64,12 +65,26 @@
     applyFilter(group, DEFAULT_PET);
   }
 
+  // The document a pathname is asking for. A directory URL ends in a slash and
+  // names no file, which is the front page: "/" and "/index.html" have to reach
+  // the same answer or the front page can never mark itself.
+  function pageFromPath(pathname) {
+    var last = pathname.split("/").pop();
+    return last === "" ? INDEX_PAGE : last;
+  }
+
+  // Whether one nav href points at the page the reader is already on. Pure on
+  // purpose: it takes two strings and touches no DOM, so the suite can drive it
+  // with the real hrefs from the real markup instead of trusting a copy.
+  function linkIsCurrent(href, pathname) {
+    return href === pageFromPath(pathname);
+  }
+
   function markCurrentPage() {
-    var last = document.location.pathname.split("/").pop();
-    var page = last === "" ? "index.html" : last;
+    var pathname = document.location.pathname;
     var links = document.querySelectorAll("nav a[href]");
     for (var i = 0; i < links.length; i += 1) {
-      if (links[i].getAttribute("href") === page) {
+      if (linkIsCurrent(links[i].getAttribute("href"), pathname)) {
         links[i].setAttribute("aria-current", "page");
       }
     }

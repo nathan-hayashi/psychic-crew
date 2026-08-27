@@ -8,6 +8,12 @@
  * Each case also carries a floor on how much it examined. A loop that finds
  * nothing to check passes silently, and a check that can pass vacuously is not
  * a check.
+ *
+ * One case here does run something: the nav case executes the shipped app.js
+ * against the shipped markup in a bare context with a hand-built stand-in for
+ * the few DOM calls that file makes. It is written that way so the assertion
+ * binds to the two artifacts as served rather than to a copy of the logic,
+ * which is the failure mode that let a matcher which matched nothing ship.
  */
 
 import assert from "node:assert/strict";
@@ -15,6 +21,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
+import { runInNewContext } from "node:vm";
 
 import { DEFAULT_TYPE, contentTypeFor, declaredExtensions } from "../src/mime.js";
 import { resolveAsset } from "../src/safepath.js";
@@ -142,4 +149,76 @@ test("both-pages-share-one-stylesheet-and-no-inline-script", () => {
     assert.doesNotMatch(text, / on[a-z]+="/, page + " carries an inline event handler");
   }
   assert.equal(sheets.size, 1, "the pages link different stylesheets: " + [...sheets].join(", "));
+});
+
+// The hrefs of a page's nav, in document order, read out of the real markup.
+function navHrefs(pageText) {
+  const opened = pageText.indexOf("<nav");
+  const closed = pageText.indexOf("</nav>", opened);
+  assert.ok(opened !== -1 && closed !== -1, "the page has no <nav> to read");
+  return refsIn(pageText.slice(opened, closed));
+}
+
+// Run the shipped app.js against a stand-in for the handful of DOM calls it
+// makes, and hand back the links so the case can inspect what it marked.
+// querySelector returns null so the filter half short-circuits: this case is
+// about the nav and should not depend on the cards.
+function markNav(pathname, hrefs) {
+  const links = hrefs.map((href) => {
+    const attributes = { href };
+    return {
+      getAttribute: (name) => (name in attributes ? attributes[name] : null),
+      setAttribute: (name, value) => {
+        attributes[name] = value;
+      },
+      attributes,
+    };
+  });
+  const document = {
+    location: { pathname },
+    querySelectorAll: (selector) => (selector === "nav a[href]" ? links : []),
+    querySelector: () => null,
+  };
+  runInNewContext(assetText("app.js"), { document });
+  return links;
+}
+
+function currentHrefs(links) {
+  return links
+    .filter((link) => link.attributes["aria-current"] === "page")
+    .map((link) => link.attributes.href);
+}
+
+test("nav-marks-the-current-page-on-both-pages", () => {
+  // styles.css styles nav a[aria-current="page"]. If no page can ever set it,
+  // that rule is dead and the reader is never told where they are.
+  assert.ok(
+    assetText("styles.css").includes('aria-current="page"'),
+    "the stylesheet no longer styles the current nav link, so this case guards nothing",
+  );
+
+  let examined = 0;
+  for (const page of PAGES) {
+    const hrefs = navHrefs(assetText(page));
+    assert.ok(hrefs.length >= 4, page + " nav offers only " + hrefs.length + " links");
+
+    // Every URL shape a reader can arrive by must reach the same answer.
+    const arrivals = page === "index.html" ? ["/", "/index.html"] : ["/" + page];
+    for (const pathname of arrivals) {
+      const marked = currentHrefs(markNav(pathname, hrefs));
+      assert.deepEqual(
+        marked,
+        [page],
+        page + " visited as " + pathname + " marked " + JSON.stringify(marked) + ", expected exactly [" + page + "]",
+      );
+      examined += 1;
+    }
+
+    // The other page's entry must NOT be marked, or "current" means nothing.
+    assert.ok(
+      hrefs.includes(page),
+      page + " nav never names itself, so no link on it can ever be current",
+    );
+  }
+  assert.equal(examined, 3, "expected 3 page/URL combinations, examined " + examined);
 });
