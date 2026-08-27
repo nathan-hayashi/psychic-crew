@@ -912,3 +912,24 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Post-commit:** 190/0 · 50+1SKIP/0 · 30/0 · clean.
 - **HELIX state:** HELIX-0 + RSCH-1/2/3 + SIDE-0/1/2/3/4/5 all CLOSED. Estate: parent (105) · Lite · psychic-templates · psychic-sidekick · psychic-plugins · psychic-repurpose (all four siblings PRIVATE, dev default, validators green).
 - **Next action:** STRESS-1 — the FINAL HELIX phase — opens ONLY on the operator's word: the sanctioned hot run of the full 8-agent bench (cats-and-dogs site vs the pre-fixed CrewAI rubric), owning the metrics cascade in-gate per the registered H2a procedure.
+
+## [F8|2026-08-27T02:35:45Z] STRESS-1 OPEN — mid-gate STOP (arbiter's order-check honored: this checkpoint closes the silent tail)
+- **Task:** final HELIX phase; budgets/tokens/rubric fixed pre-run in Plan.md (mid-gate `APPROVE STRESS-1a`, close `APPROVE STRESS-1`, 250K/≤14, five frozen axes, CC branch-proxy admitted to app suite only).
+- **State:** lead-planner packet (18-case contract, threshold 8, stages 6+8) persisted and arbiter-RELEASED (audit line 20, STRESS1-A1, read back; 15/15 clauses). Dispatches measured: A1 128,098 + ARB1 136,427 — the 250K phase ceiling is BREACHED pre-build; option-A trigger fires INTO this mid-gate; re-budget question is with the operator.
+- **Active artifacts:** logs/rounds/stress1-plan/lead-planner.md · docs/metrics-snapshot.json (dirty, owned in-gate) · GATES.md STRESS-1 + STRESS-1a rows.
+- **Next action:** operator issues `APPROVE STRESS-1a` (ratifying the site plan AND the re-fixed phase budget — recommended 1.4M total, ≤14 dispatches unchanged — or names their own number with the token); then orchestrator creates tag stress1-a0, persists the plan to context/stress1-plan.md, and dispatches Stage A.
+
+## [F8|2026-08-27T03:17:58Z] STRESS-1 wall gate — site BUILT and GREEN, rounds pending
+- **State:** Stage A (7af0026, tag stress1-a) + Stage B (933af01) complete; app suite 18/18 TAP ×10 identical runs; 4 of 14 dispatches spent ≈465K of the ratified 1.4M; tracked already 122 (plan file rode a swept index — orchestrator fault, ruled accepted, correction candidate registered).
+- **Next action:** on the operator's word (F7 two-session precedent, no new token): discourse R1 (sec+qual parallel) → arb release → R2 → arb compile → fixer → test-runner → integration-runner → arb final → report + rubric verdict → gate-owned cascade → STOP for `APPROVE STRESS-1`.
+
+## [F8|2026-08-27T05:03:21Z] STRESS-1 discourse complete — fixer next (checkpoint closes the stale-tail class, 4th instance)
+- **State:** R1 released (SEC-1 + QUAL-01..09; recal ×3; M01 merge), R2 released (14 entries: 9 AGREE / 0 CHALLENGE / 3 CONNECT / 2 SURFACE — zero challenges compiled as a stated weakness), discourse.md written + released (11 items: 10 fixer-ordered M01→QUAL-06, 1 gate-owned QUAL-09+CR-024-widening); arbiter self-corrected QUAL-03 to P1 against the primary artifact; ORDER-2 dedupe (one test serves QUAL-02+R2-2); ORDER-4 open question (--root asymmetry).
+- **Budget truth:** ≈1.71M measured vs the ratified 1.4M — BREACHED mid-phase as pre-recorded; final number presents at the close gate. Dispatches 10 of 14; fixer+2 runners+arb-final = exactly 14, zero slack.
+- **Escalations carried to close:** arbiter Edit-scoped-to-logs grant (3rd ask; permission change = operator gate item); audit-append hazard; eight-keys schema bind (done in the fixer dispatch below).
+- **Next action:** fixer (190K line, C-18 expectation recorded that it triggers) → test-runner + integration-runner → arb-final → report + rubric + cascade → STOP for `APPROVE STRESS-1`.
+
+## [F8|2026-08-27T06:29:51Z] STRESS-1 TRUE STOP — awaiting the token against real scope
+- **State:** 14/14 dispatches, 8/8 coverage, 15/15 release lines, C-05 zero; site 33/33; E2E 11/12 + ruled script defect; cascade fully resolved — pre-commit reds reduced to the dirty-tree canary alone (189/1 · 51/0/0 · 33/0).
+- **Deliverables staged:** docs/research/STRESS-1-report.md (rubric 4–1, budget finding, 8 correction candidates) · stress-site/ 17 files · D26 map growth · fence at 47 rows · counts 124.
+- **Next action:** operator issues `APPROVE STRESS-1` against THIS state; commit+push closes the phase AND the HELIX program (11 of 11 gates); then the recorded next decision is the operator's: the corrections gate for the 8 registered candidates (incl. the arbiter-Edit permission item), or PACK-2's standing skip, or whatever the operator names.

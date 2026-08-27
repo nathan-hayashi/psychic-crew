@@ -327,6 +327,14 @@ if [ -f logs/subagent-starts.jsonl ] && [ -f logs/arbiter-audit.jsonl ]; then
   sstart=$(jq -r --arg s "$SPEC25" 'select((.agent_id // "") != "")
              | select((.agent_type // "") | test($s)) | .agent_id' \
            logs/subagent-starts.jsonl 2>/dev/null | sort -u)
+  # STRESS-1 (2026-08-27, gate STRESS-1): four R1/R2 reviewer starts are covered by task_id at
+  # arbiter-audit records 21-24 but carry no agent_id, because the arbiter line schema predates
+  # the field. Grandfathered by ENUMERATION per the C-14 precedent (an explicit set, not a
+  # guessable rule); the schema correction candidate (agent_id becomes a MUST in arbiter.md) is
+  # registered at the same gate. The arbiter itself REFUSED to mint these ids retroactively —
+  # attesting another instance's unwitnessed work is the C-12 defect this check exists to catch.
+  GF25='a4f295d070424acd5|af874ad04149b823f|ada37838165f94538|a91c1e1c42d6597b6'
+  sstart=$(printf '%s\n' "$sstart" | grep -vE "^($GF25)$" || true)
   scov=$(jq -r 'select((.event // "") != "FLAG") | select((.agent_id // "") != "") | .agent_id' \
          logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
   if [ -z "$sstart" ]; then

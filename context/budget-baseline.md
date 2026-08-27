@@ -40,7 +40,7 @@
 | lead-planner       | 2   | 48,935 | 35,550 | 62,320 |
 | test-runner        | 1   | 46,388 | 46,388 | 46,388 |
 
-**verified** — All measured dispatches, all phases: **33 dispatches, 3,518,549 tokens, mean 106,622.**
+**verified** — All measured dispatches, all phases: **47 dispatches, 5,541,107 tokens, mean 117,895.**
 
 ## The baseline a future phase should budget against
 
@@ -92,7 +92,7 @@ using any number: the same source counted by eight agents appears eight times.
 
 ### What it shows
 
-**verified** — 33 dispatches, **3,518,549 tokens** total, mean **106,622** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
+**verified** — 47 dispatches, **5,541,107 tokens** total, mean **117,895** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
 The red tick is the mean. The spread is the finding: the dearest single dispatch is
 **5.6×** the cheapest, so a per-phase
 budget built on a mean is wrong for both tails.
@@ -158,6 +158,12 @@ the total disagree with `logs/`.
         "duration_ms": 295737
       },
       {
+        "role": "test-runner",
+        "task": "STRESS1-TEST",
+        "tokens": 72701,
+        "duration_ms": 321386
+      },
+      {
         "role": "Explore",
         "task": "Survey scaffold/verify patterns",
         "tokens": 73039,
@@ -168,6 +174,12 @@ the total disagree with `logs/`.
         "task": "F3-D1-dirguide-risk-scan",
         "tokens": 73974,
         "duration_ms": 464973
+      },
+      {
+        "role": "lead-executor",
+        "task": "STRESS1-EXA",
+        "tokens": 74287,
+        "duration_ms": 583802
       },
       {
         "role": "lead-executor",
@@ -198,6 +210,18 @@ the total disagree with `logs/`.
         "task": "Internal plan review",
         "tokens": 90087,
         "duration_ms": 409618
+      },
+      {
+        "role": "security-reviewer",
+        "task": "STRESS1-R2-sec",
+        "tokens": 90757,
+        "duration_ms": 577245
+      },
+      {
+        "role": "security-reviewer",
+        "task": "STRESS1-R1-sec",
+        "tokens": 90935,
+        "duration_ms": 521864
       },
       {
         "role": "Explore",
@@ -260,10 +284,40 @@ the total disagree with `logs/`.
         "duration_ms": 655725
       },
       {
+        "role": "lead-executor",
+        "task": "STRESS1-EXB",
+        "tokens": 126579,
+        "duration_ms": 1190269
+      },
+      {
+        "role": "lead-planner",
+        "task": "STRESS1-A1",
+        "tokens": 128098,
+        "duration_ms": 354145
+      },
+      {
+        "role": "integration-runner",
+        "task": "STRESS1-E2E",
+        "tokens": 130491,
+        "duration_ms": 1056263
+      },
+      {
         "role": "quality-reviewer",
         "task": "F7-B5-qual2",
         "tokens": 132990,
         "duration_ms": 692006
+      },
+      {
+        "role": "quality-reviewer",
+        "task": "STRESS1-R2-qual",
+        "tokens": 134953,
+        "duration_ms": 883951
+      },
+      {
+        "role": "arbiter",
+        "task": "STRESS1-ARB1",
+        "tokens": 136427,
+        "duration_ms": 750638
       },
       {
         "role": "general-purpose",
@@ -276,6 +330,18 @@ the total disagree with `logs/`.
         "task": "F7-B5-sec2",
         "tokens": 140203,
         "duration_ms": 705809
+      },
+      {
+        "role": "arbiter",
+        "task": "STRESS1-ARB-R1",
+        "tokens": 145784,
+        "duration_ms": 920497
+      },
+      {
+        "role": "quality-reviewer",
+        "task": "STRESS1-R1-qual",
+        "tokens": 147631,
+        "duration_ms": 1029253
       },
       {
         "role": "quality-reviewer",
@@ -302,6 +368,12 @@ the total disagree with `logs/`.
         "duration_ms": 781106
       },
       {
+        "role": "fixer",
+        "task": "STRESS1-FIX",
+        "tokens": 180913,
+        "duration_ms": 1517615
+      },
+      {
         "role": "Explore",
         "task": "Survey reconciliation patterns",
         "tokens": 181524,
@@ -312,6 +384,18 @@ the total disagree with `logs/`.
         "task": "F7-B9-e2e",
         "tokens": 198302,
         "duration_ms": 758461
+      },
+      {
+        "role": "arbiter",
+        "task": "STRESS1-ARB-R2",
+        "tokens": 261965,
+        "duration_ms": 1647698
+      },
+      {
+        "role": "arbiter",
+        "task": "STRESS1-ARB-FIN",
+        "tokens": 301037,
+        "duration_ms": 1920968
       }
     ]
   },
