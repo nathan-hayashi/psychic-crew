@@ -222,3 +222,34 @@ test("nav-marks-the-current-page-on-both-pages", () => {
   }
   assert.equal(examined, 3, "expected 3 page/URL combinations, examined " + examined);
 });
+
+test("unknown-and-missing-extensions-are-served-as-the-declared-default", () => {
+  // mime.js's header calls the unknown case a security question rather than a
+  // cosmetic one. The suite asserted only the negative half - that declared
+  // extensions are NOT the fallback - so the fallback itself was never checked
+  // to actually be the fallback.
+  assert.equal(DEFAULT_TYPE, "application/octet-stream");
+  for (const path of [
+    "file.unknownext",
+    "notes.xyz",
+    "README",
+    "/deep/path/with-no-dot",
+    "archive.tar.gz",
+    ".hiddenrc",
+  ]) {
+    assert.equal(
+      contentTypeFor(path),
+      DEFAULT_TYPE,
+      path + " was typed as " + contentTypeFor(path) + " instead of the fallback",
+    );
+  }
+  // The other side of the same line: a declared extension must not reach the
+  // fallback, including when it is spelled in capitals.
+  for (const path of ["page.html", "page.HTML", "sheet.CSS", "code.mjs"]) {
+    assert.notEqual(
+      contentTypeFor(path),
+      DEFAULT_TYPE,
+      path + " fell through to the fallback despite being declared",
+    );
+  }
+});

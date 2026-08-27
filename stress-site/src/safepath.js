@@ -72,6 +72,35 @@ export function refuses(urlPath) {
   return decoded.split("/").includes("..");
 }
 
+/**
+ * Whether target lies at or under root, as text.
+ *
+ * NOT REDUNDANT WITH refuses(), which is the mistake this comment exists to
+ * prevent. A target beginning with two slashes, such as "//etc/passwd", passes
+ * refuses() completely: it starts with "/", decodes to itself, and carries no
+ * NUL, no backslash and no ".." segment. resolve(root, relative) then DISCARDS
+ * root entirely, because the relative part is itself absolute - it hands back
+ * "/etc/passwd" - and this comparison is what rejects the result.
+ *
+ * VERIFIED BY EXECUTION rather than by reading, which is the only reason this
+ * paragraph is allowed to assert it: refuses("//etc/passwd") === false,
+ * resolve(root, "/etc/passwd") === "/etc/passwd", and the request answers 404
+ * (this check) and not 400 (refuses). The status code is the observable
+ * difference and the transport suite asserts it.
+ *
+ * Called TWICE by resolveAsset, on purpose, and neither call is spare:
+ *   - on the resolved text, before the filesystem is consulted at all. That
+ *     ordering is the point: a path that has already failed containment is
+ *     never stat()ed, so a hostile absolute target cannot turn a refusal into
+ *     an error. Measured, not assumed - a target naming a symlink loop makes
+ *     statSync throw ELOOP, which throwIfNoEntry does not suppress, so a fence
+ *     that looked first would answer 500 where this one answers 404. That is
+ *     the case pinning this call site.
+ *   - on the real path, after resolution, which is what makes containment
+ *     survive symlinks (see the header).
+ * Deleting either call turns a different test red. Deleting the function
+ * breaks both.
+ */
 function isInside(target, root) {
   return target === root || target.startsWith(root + sep);
 }

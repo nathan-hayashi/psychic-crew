@@ -7,19 +7,21 @@
  * without a port registry and without the flake that a fixed port guarantees
  * the first time something else is already holding it.
  *
- * Three of the five cases carry the edge- prefix. They are the ones that are
+ * Three of the six cases carry the edge- prefix. They are the ones that are
  * about the server surviving something rather than answering something.
  */
 
 import assert from "node:assert/strict";
 import { once } from "node:events";
-import { readFileSync, statSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, statSync, symlinkSync } from "node:fs";
 import { request } from "node:http";
 import { connect } from "node:net";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { refuses } from "../src/safepath.js";
 import { LOOPBACK_HOST, close, createSiteServer, listen } from "../src/server.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -131,4 +133,47 @@ test("edge-aborted-request-does-not-kill-the-server", async () => {
   const after = await fetchPath("/");
   assert.equal(after.status, 200);
   assert.ok(after.body.equals(readFileSync(join(ROOT, "index.html"))));
+});
+
+test("doubled-leading-slash-is-caught-by-root-confinement-not-by-refusal", async () => {
+  const target = "//etc/passwd";
+  // The claim this case exists to pin: refuses() does NOT catch this shape.
+  // Asserted directly, because if refuses() ever started catching it the status
+  // assertions below would still pass while testing something else entirely.
+  assert.equal(
+    refuses(target),
+    false,
+    "refuses() now rejects the doubled slash, so this case no longer proves which gate holds",
+  );
+  const response = await fetchPath(target);
+  // 404 and not 400 is the whole point. 400 would mean the text was refused.
+  // 404 means the request was considered, resolve() dropped the root because
+  // the relative part was absolute, and the root-confinement check rejected it.
+  assert.equal(response.status, 404, target + " answered " + response.status + ", expected 404");
+  assert.ok(!response.body.includes("root:"), "the response carried passwd-shaped content");
+  // The control that makes the two gates distinguishable over one transport: a
+  // shape refuses() DOES catch answers 400 on the same server.
+  assert.equal(
+    (await fetchPath("/../package.json")).status,
+    400,
+    "the refusal gate no longer answers 400, so 404 above distinguishes nothing",
+  );
+
+  // The same class, aimed at a symlink loop, pins the ORDER of the check: the
+  // containment decision must be made before the filesystem is consulted.
+  // statSync on a loop throws ELOOP and throwIfNoEntry does not suppress it, so
+  // a fence that stat()ed first would answer 500 here instead of 404.
+  const scratch = mkdtempSync(join(tmpdir(), "stress-site-loop-"));
+  try {
+    symlinkSync(join(scratch, "b"), join(scratch, "a"));
+    symlinkSync(join(scratch, "a"), join(scratch, "b"));
+    const looped = await fetchPath("/" + join(scratch, "a"));
+    assert.equal(
+      looped.status,
+      404,
+      "an absolute-form target was stat()ed before containment was decided: answered " + looped.status,
+    );
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
 });

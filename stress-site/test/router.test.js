@@ -1,7 +1,7 @@
 /*
  * router.test.js — every status this server can produce, with no port bound.
  *
- * These seven cases talk to route() directly. Nothing here opens a socket, so a
+ * These twelve cases talk to route() directly. Nothing here opens a socket, so a
  * red line in this file means the decision is wrong, not that the transport
  * is. test/server.test.js proves the other half separately, and keeping the
  * two apart is what stops a routing bug and a transport bug from taking turns
@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 
 import { route } from "../src/router.js";
+import { decodeUrlPath, refuses } from "../src/safepath.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
 
@@ -136,4 +137,78 @@ test("symlink-escaping-the-root-is-refused-and-one-staying-inside-is-served", ()
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
+});
+
+// refuses() names six reasons to say no. Only the ".." one was ever driven, so
+// each of the rest gets a case that reaches it AND rules out the others - a
+// refusal proves nothing about which branch produced it unless the case says.
+function refusedFor(target, reason) {
+  const decision = route("GET", target, ROOT);
+  assert.equal(decision.status, 400, JSON.stringify(target) + " answered " + decision.status);
+  assert.equal(decision.filePath, null, "a refused target still resolved to a file");
+  assert.ok(
+    !String(target).split("/").includes(".."),
+    JSON.stringify(target) + " contains a dot-dot segment, so it drives the already-covered branch and not " + reason,
+  );
+}
+
+test("refusal-reason-a-target-that-does-not-start-with-a-slash-returns-400", () => {
+  refusedFor("index.html", "the leading-slash reason");
+  refusedFor("package.json", "the leading-slash reason");
+  // A target that is nothing but a query string: splitTarget cuts it to the
+  // empty string, which does not begin with a slash either.
+  refusedFor("?utm_source=a", "the leading-slash reason");
+  // Ruling the other reasons out: this text decodes cleanly and is otherwise
+  // ordinary, so only the leading-slash branch can be refusing it.
+  assert.equal(decodeUrlPath("index.html"), "index.html");
+});
+
+test("refusal-reason-malformed-percent-encoding-returns-400", () => {
+  refusedFor("/%zz", "the malformed-encoding reason");
+  refusedFor("/%", "the malformed-encoding reason");
+  refusedFor("/%e0%a4%a", "the malformed-encoding reason");
+  // The discriminator: this is the branch that fires only when decoding fails.
+  assert.equal(decodeUrlPath("/%zz"), null, "/%zz decoded, so a different reason refused it");
+});
+
+test("refusal-reason-a-nul-byte-returns-400", () => {
+  refusedFor("/index.html%00.txt", "the NUL reason");
+  refusedFor("/%00", "the NUL reason");
+  // The NUL arrives by decoding, which is why the fence decodes before it
+  // looks. Written as a char code so no tracked file carries a raw NUL byte.
+  const NUL = String.fromCharCode(0);
+  const decoded = decodeUrlPath("/index.html%00.txt");
+  assert.notEqual(decoded, null, "the target failed to decode, so the malformed reason refused it");
+  assert.ok(decoded.includes(NUL), "no NUL survived decoding, so this case drives the wrong branch");
+  // The raw form, for a client that sends the byte rather than encoding it.
+  refusedFor("/index.html" + NUL + ".txt", "the NUL reason");
+});
+
+test("refusal-reason-a-backslash-returns-400", () => {
+  const BACKSLASH = String.fromCharCode(92);
+  refusedFor("/%5cfile.html", "the backslash reason");
+  refusedFor("/sub%5cfile.html", "the backslash reason");
+  refusedFor("/sub" + BACKSLASH + "file.html", "the backslash reason");
+  const decoded = decodeUrlPath("/%5cfile.html");
+  assert.notEqual(decoded, null, "the target failed to decode, so the malformed reason refused it");
+  assert.ok(
+    decoded.includes(BACKSLASH),
+    "no backslash survived decoding, so this case drives the wrong branch",
+  );
+  assert.ok(
+    !decoded.includes(String.fromCharCode(0)),
+    "a NUL is present, so the NUL branch may be the one refusing",
+  );
+});
+
+test("refusal-reason-a-non-string-target-is-refused", () => {
+  // Driven at refuses() directly and deliberately: route() reaches for
+  // indexOf() before the fence sees the value, so the transport cannot express
+  // this input at all. That is exactly why the branch had no coverage.
+  for (const target of [null, undefined, 42, {}, [], ["/index.html"], Symbol("/")]) {
+    assert.equal(refuses(target), true, String(typeof target) + " target was not refused");
+  }
+  // A string that would otherwise be accepted, to show the guard is about the
+  // type and not about everything being refused.
+  assert.equal(refuses("/index.html"), false);
 });
