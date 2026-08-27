@@ -944,3 +944,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** GNU-green; crew 195, validate 53, save-context 33; deny-integrity catches a manifest-vs-settings removal (control fired); STOP straddle = 126-vs-124 tracked-count only (rct 192/3 · validate 52/1 · save 32/1).
 - **Active artifact:** scripts/{run-crew-tests,validate-crew,save-context}.sh · .claude/rules/shell-discipline.md · .claude/deny-manifest.txt (new) · docs/PORTABILITY.md (new).
 - **Next action:** operator issues `APPROVE HARNESS-1`; commit (126 tracked) + push; operator re-runs on the MacBook (current checkout) for the actual BSD certification; then CORRECTIONS-2 (the 8 STRESS-1 §G candidates) opens on the operator's word.
+
+## [F8|2026-08-27T21:52:00Z] HARNESS-1 CLOSED at c33b0c6 — macOS/BSD certification shipped (126 tracked)
+- **Post-commit:** crew 195/0 · validate 53/0 · save-context 33/0 · clean below.
+- **Next action:** operator re-runs on the MacBook (current checkout) for the actual BSD certification per docs/PORTABILITY.md; CORRECTIONS-2 (the 8 STRESS-1 §G candidates, incl. the arbiter Edit-scoped-logs permission item) opens on the operator's word. PACK-2 still skipped.
