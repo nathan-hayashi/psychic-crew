@@ -933,3 +933,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **State:** 14/14 dispatches, 8/8 coverage, 15/15 release lines, C-05 zero; site 33/33; E2E 11/12 + ruled script defect; cascade fully resolved — pre-commit reds reduced to the dirty-tree canary alone (189/1 · 51/0/0 · 33/0).
 - **Deliverables staged:** docs/research/STRESS-1-report.md (rubric 4–1, budget finding, 8 correction candidates) · stress-site/ 17 files · D26 map growth · fence at 47 rows · counts 124.
 - **Next action:** operator issues `APPROVE STRESS-1` against THIS state; commit+push closes the phase AND the HELIX program (11 of 11 gates); then the recorded next decision is the operator's: the corrections gate for the 8 registered candidates (incl. the arbiter-Edit permission item), or PACK-2's standing skip, or whatever the operator names.
+
+## [F8|2026-08-27T15:05:34Z] STRESS-1 CLOSED at a16ec02 — THE HELIX PROGRAM IS COMPLETE (11 of 11 gates)
+- **Post-commit:** 190/0 · 51/0/0 · 33/0 · app 33/33 · 124 tracked · pushed · clean below.
+- **Program ledger:** HELIX-0, RSCH-1/2/3, SIDE-0/1/2/3/4/5, STRESS-1 — all APPROVED on exact tokens; estate = parent + Lite public, four PRIVATE siblings, one bench site; 8 correction candidates registered in the STRESS-1 report §G awaiting an operator-named corrections gate (incl. the arbiter-Edit permission item, which ONLY a gate may grant).
+- **Next action:** the operator's word — nothing auto-opens: candidates gate, PACK-2 (still skipped on standing instruction), or a new program.
