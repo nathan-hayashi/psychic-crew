@@ -938,3 +938,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Post-commit:** 190/0 · 51/0/0 · 33/0 · app 33/33 · 124 tracked · pushed · clean below.
 - **Program ledger:** HELIX-0, RSCH-1/2/3, SIDE-0/1/2/3/4/5, STRESS-1 — all APPROVED on exact tokens; estate = parent + Lite public, four PRIVATE siblings, one bench site; 8 correction candidates registered in the STRESS-1 report §G awaiting an operator-named corrections gate (incl. the arbiter-Edit permission item, which ONLY a gate may grant).
 - **Next action:** the operator's word — nothing auto-opens: candidates gate, PACK-2 (still skipped on standing instruction), or a new program.
+
+## [F8|2026-08-27T15:57:09Z] HARNESS-1 built — awaiting the token
+- **Task:** macOS/BSD portability certification (Families A–D fixed), rule-2 + rule-7 scanners, deny-integrity golden manifest; no deny entry changed.
+- **Workflow status:** GNU-green; crew 195, validate 53, save-context 33; deny-integrity catches a manifest-vs-settings removal (control fired); STOP straddle = 126-vs-124 tracked-count only (rct 192/3 · validate 52/1 · save 32/1).
+- **Active artifact:** scripts/{run-crew-tests,validate-crew,save-context}.sh · .claude/rules/shell-discipline.md · .claude/deny-manifest.txt (new) · docs/PORTABILITY.md (new).
+- **Next action:** operator issues `APPROVE HARNESS-1`; commit (126 tracked) + push; operator re-runs on the MacBook (current checkout) for the actual BSD certification; then CORRECTIONS-2 (the 8 STRESS-1 §G candidates) opens on the operator's word.

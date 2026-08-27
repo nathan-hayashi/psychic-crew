@@ -1,9 +1,11 @@
 # shell-discipline.md — standing write-path idioms (R-SD-1 v2, 2026-08-22)
+
 Born from five recurrences across two builds of one defect class, widened after
 a sixth from its sibling class: the SIGPIPE flake fixed at b77fbec, where
 C-09 failed one-in-four on unchanged inputs. Instance
 fixes live in the correction registries; these are standing rules, enforced by
 class assertions in each repo's suite.
+
 1. Count-then-default composites are forbidden. `$(cmd || echo DEFAULT)` is
    illegal wherever cmd can print before failing. Canonical offender:
    `grep -c PAT FILE || echo 0` — grep -c prints its count and THEN exits
@@ -34,8 +36,32 @@ class assertions in each repo's suite.
    program — grep -c reads to EOF and cannot take the signal it is hunting —
    and returned a confident negative on a live defect. A near-miss probe's
    clean result is void, not reassuring; this has now happened twice.
-Enforcement: two class assertions per repo, comment-stripped, fragment-assembled
-needles, empty allowlists — one for the rule-1 composite, one for any
-`| grep -q` in tracked shell. Stated scanner gap: other early-exit consumers
-(head -n, grep -m, sed q) are covered by rule 5's class in prose and gain
-needles when evidence produces an instance, not before.
+7. Tracked shell is authored against GNU coreutils but MUST run identically on
+   BSD/macOS userland — a MacBook setup produced thirteen false failures, two
+   no-op negative controls, and one silent false-pass, all from GNU-isms. Three
+   are now forbidden. (a) `wc -l` LEFT-PADS its count on BSD, so a count reaching
+   a STRING test (`[ "$n" = 0 ]`) takes the failure branch on a genuine zero;
+   this is rule 2, and a count always reaches a NUMERIC test (`-eq`/`-ge`), which
+   tolerates the padding. (b) `sed -i` with no suffix edits NOTHING on BSD — the
+   script is consumed as the suffix operand — so the portable form is
+   `-i.bak … && rm -f ….bak`, and a negative control that plants nothing must be
+   proven to have planted before the guard is asked to refuse it. (c) `sha256sum`
+   is GNU-only: absent on macOS both captures come back empty and a byte-pin guard
+   passes on `"" = ""`, worse than a red — hash through a helper that falls back to
+   `shasum -a 256` and treat an EMPTY hash as failure. `paste -sd` needs an explicit
+   stdin operand on BSD and drags in `bc`; `awk '{s+=$1} END{print s+0}'` needs
+   neither. The rule is uniform: prove a construct on both userlands, or do not ship
+   it. macOS certification is completed by an operator run on real BSD userland — the
+   scanners below prevent regressions, they do not substitute for that run.
+   Enforcement: four class assertions in the parent suite, comment-stripped,
+   fragment-assembled needles, empty allowlists, each with a live fire-probe — the
+   rule-1 composite, any `| grep -q` (rule 5), the rule-2 `wc -l`→string-compare, and
+   the rule-7 GNU-isms (bare `sed -i`, `sha256sum` outside the portable helper,
+   `paste -sd` without a stdin operand). Deny-list integrity moved from a
+   hand-maintained needle subset to a tracked golden manifest compared by SET
+   DIFFERENCE both ways (`.claude/deny-manifest.txt`, validate-crew). Stated scanner
+   gaps: the rule-2 line scanner catches the inline `wc -l)" =` form but not the
+   two-step `n=$(wc…); [ "$n" = 0 ]` across lines — those were swept at HARNESS-1 and
+   gain a needle when evidence produces one; other early-exit consumers (head -n,
+   grep -m, sed q) remain rule 5 prose; and the twin repo gains the rule-2/rule-7
+   scanners at its own portability gate, not this one.

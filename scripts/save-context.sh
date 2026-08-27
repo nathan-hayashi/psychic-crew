@@ -64,7 +64,9 @@ truth () {
     # stress-project does not exist. Bound to the declarations in the test files, and the limit is
     # stated: this counts cases DECLARED, and a declared case that fails is caught by the app suite,
     # not by this. Absent tree returns nothing, which the caller reports rather than passes.
-    app_suite)   n=$(grep -rhcE '^[[:space:]]*test\(' stress-project/test/*.js 2>/dev/null | paste -sd+ | bc 2>/dev/null)
+    # Sum the per-file counts with awk, not `paste -sd+ | bc`: BSD paste needs an explicit stdin
+    # operand and bc is marginal on macOS — awk needs neither and drops a dependency (R-SD-1 rule 7).
+    app_suite)   n=$(grep -rhcE '^[[:space:]]*test\(' stress-project/test/*.js 2>/dev/null | awk '{s+=$1} END{print s+0}')
                  [ "${n:-0}" -gt 0 ] && printf '%s/%s' "$n" "$n" ;;
     corrections) r=$(grep -c '^| C-[0-9]' "$CTX/plan-corrections.md" 2>/dev/null)
                  i=$(grep -oE 'C-[0-9]{2}' "$CTX/plan-corrections.md" 2>/dev/null | sort -u | grep -c .)

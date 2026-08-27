@@ -245,24 +245,37 @@ grep -qF '[T3 — LOCKED]' CLAUDE.md && pass "CLAUDE.md states the announcement 
                                    || fail "CLAUDE.md does not state the announcement obligation"
 
 echo "== deny-list integrity (HC-5, §4.6) =="
-# C-16: the G-F6 mutation removed a deny entry and the ONLY thing that noticed was the dirty-tree
-# canary — validate-crew itself reported zero failures, so once committed the removal would have
-# been invisible. A permission boundary with no integrity check is not a boundary.
-# Needles are assembled from fragments because bash-blocker matches the WHOLE command string: a
-# contiguous literal here would deny any command that merely greps or edits this file.
-# NOTE: $S is the SKIP counter in this script, not a settings path — reference the file literally.
+# C-16, rewritten at HARNESS-1. The original asserted a HAND-MAINTAINED subset of seven needles
+# (clone, install -g, npx, sudo, rm -rf /, rm -rf ~, dd) — half of the fourteen deny entries. A
+# MacBook setup surfaced the gap: removing an UNLISTED entry (the fork-bomb row, terraform, kubectl,
+# either Read() rule) passed this check silently — the exact failure its own comment warned of
+# ("a removed prohibition is invisible once committed"). The fix is the doctrine this repo runs
+# everywhere else (C-12/C-25/C-27): a TRACKED golden manifest compared by SET DIFFERENCE in BOTH
+# directions, never a hand-picked subset and never a count. A removal shows as manifest-not-in-
+# settings; an addition shows as settings-not-in-manifest and forces a matching, reviewable, gated
+# manifest edit. Neither passes silently. No deny literal is hardcoded here — both sides are read by
+# path — so the fragment-assembly the old block needed is gone with the subset it protected.
 SETTINGS=".claude/settings.json"
-_c="git"; _n1="$_c clone"
-_m="npm"; _n2="$_m install -g"
-_r="rm -rf"; _n3="$_r /"; _n4="$_r ~"
-_d="dd"; _n5="$_d if="
-DENY=$(jq -r '.permissions.deny[]?' "$SETTINGS" 2>/dev/null)
-dmiss=""
-for needle in "$_n1" "$_n2" "npx" "sudo" "$_n3" "$_n4" "$_n5"; do
-  grep -qF -- "$needle" <<<"$DENY" || dmiss="$dmiss [$needle]"
-done
-[ -z "$dmiss" ] && pass "all HC-5 deny entries present ($(printf '%s\n' "$DENY" | grep -c .) rules)" \
-                || fail "deny-list missing:$dmiss — a removed prohibition is invisible once committed"
+MANIFEST=".claude/deny-manifest.txt"
+DENY=$(jq -r '.permissions.deny[]?' "$SETTINGS" 2>/dev/null)   # consumed by the CR-015 Read check below
+if [ ! -f "$MANIFEST" ]; then
+  fail "deny-integrity: $MANIFEST is missing — the golden deny set is gone"
+else
+  dwant=$(sort -u "$MANIFEST" | grep -c .)
+  dhave=$(jq -r '.permissions.deny[]?' "$SETTINGS" 2>/dev/null | sort -u | grep -c .)
+  # Vacuity guard: an empty manifest or empty deny-list makes the diff trivially clean.
+  { [ "${dwant:-0}" -ge 10 ] && [ "${dhave:-0}" -ge 10 ]; } \
+    && pass "deny-integrity manifest and settings both non-vacuous ($dwant manifest / $dhave settings)" \
+    || fail "deny-integrity vacuous — manifest $dwant, settings $dhave (expected >=10 each)"
+  dremoved=$(comm -23 <(sort -u "$MANIFEST") <(jq -r '.permissions.deny[]?' "$SETTINGS" 2>/dev/null | sort -u))
+  dadded=$(comm -13 <(sort -u "$MANIFEST") <(jq -r '.permissions.deny[]?' "$SETTINGS" 2>/dev/null | sort -u))
+  [ -z "$dremoved" ] \
+    && pass "deny-integrity: every manifest entry is present in settings (no silent removal)" \
+    || fail "deny-integrity: deny entry REMOVED from settings without a manifest update: $(printf '%s' "$dremoved" | tr '\n' '|')"
+  [ -z "$dadded" ] \
+    && pass "deny-integrity: settings adds no deny entry absent from the manifest" \
+    || fail "deny-integrity: deny entry ADDED to settings but not the manifest — gate the manifest edit: $(printf '%s' "$dadded" | tr '\n' '|')"
+fi
 # CR-015 (audit A3-F3): this counted `Read(` entries and required >= 2. Demonstrated: swap both for
 # Read(/tmp/nothing) and Read(/tmp/alsonothing) and it passes with neither secret path denied. Ten
 # lines above, every HC-5 Bash prohibition is asserted BY NAME — that is the C-16 fix, and C-16's own

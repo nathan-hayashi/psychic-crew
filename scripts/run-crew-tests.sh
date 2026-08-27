@@ -16,6 +16,11 @@ no () { F=$((F+1)); printf '  [FAIL] %s\n' "$1"; }
 # check <desc> <expected-exit> <cmd...>
 check () { d="$1"; e="$2"; shift 2; "$@" >/dev/null 2>&1; r=$?
            if [ "$r" = "$e" ]; then ok "$d"; else no "$d (exit $r, expected $e)"; fi; }
+# Byte-pin hashing, portable across GNU and BSD/macOS: sha256sum is GNU-only, shasum ships on macOS.
+# Returns EMPTY when neither exists, and every caller treats an empty hash as failure — a byte-pin
+# guard must go red on a missing tool, never pass silently on two empty hashes (the macOS false-pass).
+_sha256 () { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1
+             elif command -v shasum >/dev/null 2>&1; then shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 
 BAK=$(mktemp -d); trap 'cp -f "$BAK"/models.config.json models.config.json 2>/dev/null
                         cp -f "$BAK"/quality-reviewer.md .claude/agents/quality-reviewer.md 2>/dev/null
@@ -54,7 +59,7 @@ cases_F0 () {
   done
   # porcelain, not `git diff` — untracked files are uncommitted state too, and a gate
   # answered against a dirty tree is answered against something not in the repo.
-  [ "$(git status --porcelain | wc -l)" = 0 ] && ok "working tree clean" \
+  [ "$(git status --porcelain | wc -l)" -eq 0 ] && ok "working tree clean" \
                                              || no "working tree dirty ($(git status --porcelain | wc -l) entries)"
 }
 
@@ -68,7 +73,14 @@ cases_F1 () {
     check "HC-2 refuses $v" 2 ./scripts/apply-models.sh
   done
   cp -f "$BAK"/models.config.json models.config.json
-  sed -i 's/^model: sonnet/model: claude-fable-5/' .claude/agents/quality-reviewer.md 2>/dev/null
+  # BSD/macOS sed -i needs a suffix operand; -i.bak is the one form both GNU and BSD accept
+  # (the apply-models.sh idiom). And a negative control that plants nothing tests nothing — so the
+  # plant is CONFIRMED live before the guard is asked to refuse it (R-SD-1 rule 7).
+  sed -i.bak 's/^model: sonnet/model: claude-fable-5/' .claude/agents/quality-reviewer.md \
+    && rm -f .claude/agents/quality-reviewer.md.bak
+  grep -q '^model: claude-fable-5' .claude/agents/quality-reviewer.md \
+    && ok "HC-2 poison planted — the negative control is live" \
+    || no "HC-2 poison NOT planted — the control tests nothing (sed portability)"
   check "HC-2 refuses poisoned agent frontmatter" 2 ./scripts/apply-models.sh
   cp -f "$BAK"/quality-reviewer.md .claude/agents/quality-reviewer.md
   ./scripts/apply-models.sh >/dev/null 2>&1
@@ -184,10 +196,10 @@ cases_F2 () {
 
   # auto-format, error-recovery and notify had no coverage at all until now.
   # auto-format must format ordinary files yet NEVER touch a byte-pinned payload (EX-01 identity).
-  h0=$(sha256sum CLAUDE.md | cut -d' ' -f1)
+  h0=$(_sha256 CLAUDE.md)
   printf '%s' '{"tool_input":{"file_path":"CLAUDE.md"}}' | ./hooks/auto-format.sh >/dev/null 2>&1
-  [ "$(sha256sum CLAUDE.md | cut -d' ' -f1)" = "$h0" ] && ok "auto-format refuses byte-pinned CLAUDE.md" \
-                                                       || no "auto-format mutated a byte-pinned seed"
+  { [ -n "$h0" ] && [ "$(_sha256 CLAUDE.md)" = "$h0" ]; } && ok "auto-format refuses byte-pinned CLAUDE.md" \
+                                                          || no "auto-format mutated a byte-pinned seed (or no sha256 tool)"
   check "auto-format exits 0 on a missing path"  0 feed auto-format '{"tool_input":{"file_path":"/nope/x.md"}}'
   # CR-013 (audit A3-F1): these fixtures ran with the LIVE repo as ROOT, so every suite run appended
   # a fabricated "command not found" record to logs/build-errors.jsonl — 178 of 188 records, 95%,
@@ -212,7 +224,7 @@ cases_F2 () {
   { grep -q 'minimal-shell' <<<"$ehint" && [ "$erc" = 2 ]; } \
     && ok "CR-018 §9 hint DELIVERED on stderr with exit 2 (not merely emitted)" \
     || no "CR-018 §9 hint not delivered (exit=$erc stderr='$ehint')"
-  [ "$(wc -l < logs/build-errors.jsonl 2>/dev/null || echo 0)" = "$erb" ] \
+  [ "$(wc -l < logs/build-errors.jsonl 2>/dev/null || echo 0)" -eq "$erb" ] \
     && ok "CR-013 error-recovery fixtures left the live trail untouched ($erb lines)" \
     || no "CR-013 fixtures wrote to the live logs/build-errors.jsonl — tests polluting the artifact they audit"
   rm -rf "$er"
@@ -489,7 +501,7 @@ cases_F2 () {
   jq -cn --arg p "$s2big" '{tool_name:"Agent",tool_input:{subagent_type:"fixer",prompt:$p}}' \
     | CLAUDE_PROJECT_DIR="$s2t" ./hooks/reference-cap.sh >/dev/null 2>&1
   s2b=$(wc -l < "$s2t/logs/arbiter-audit.jsonl")
-  { [ "$s2a" = 0 ] && [ "$s2b" = 1 ]; } \
+  { [ "$s2a" -eq 0 ] && [ "$s2b" -eq 1 ]; } \
     && ok "CR-022 reference-cap flags an over-cap dispatch and leaves an at-cap one alone ($s2a -> $s2b)" \
     || no "CR-022 reference-cap mis-triggered (at-cap=$s2a over-cap=$s2b, want 0 -> 1)"
   [ -z "$s2out" ] && ok "CR-022 reference-cap never denies (no decision object on stdout)" \
@@ -695,11 +707,11 @@ cases_F5 () {
   # 15.5 keeps the merge judgement in-session. Asserted BEHAVIOURALLY: prepare must not alter the
   # summary. The first version grepped the script's own comment for 'NOT a rewriter', which is both
   # a prose check and line-wrapped — binding a guard to its own documentation, yet again.
-  h0=$(sha256sum context/session-summary.md | cut -d' ' -f1)
+  h0=$(_sha256 context/session-summary.md)
   ./scripts/save-context.sh prepare >/dev/null 2>&1 || true
-  [ "$(sha256sum context/session-summary.md | cut -d' ' -f1)" = "$h0" ] \
+  { [ -n "$h0" ] && [ "$(_sha256 context/session-summary.md)" = "$h0" ]; } \
     && ok "save-context prepare does not rewrite the summary (15.5 judgement stays in-session)" \
-    || no "save-context prepare mutated the summary — that is appending chronology by another name"
+    || no "save-context prepare mutated the summary — that is appending chronology by another name (or no sha256 tool)"
   # Negative control: the guard must reject bad input, not merely pass on good input.
   sc=$(mktemp -d); mkdir -p "$sc/context" "$sc/scripts"
   cp scripts/save-context.sh "$sc/scripts/"
@@ -806,13 +818,13 @@ cases_F6 () {
   # ERR5 — the guide's fix was to SYMLINK rules into $HOME. §5.2.4 forbids that here, so the
   # assertion is inverted: rules must be real files inside the repo, not links out of it.
   lk=$(find .claude/rules -type l 2>/dev/null | wc -l)
-  [ "$lk" = 0 ] && ok "corpus/ERR5 rules are real in-repo files, not symlinks out of the tree" \
+  [ "$lk" -eq 0 ] && ok "corpus/ERR5 rules are real in-repo files, not symlinks out of the tree" \
                 || no "corpus/ERR5 $lk rule(s) are symlinks — §5.2.4 forbids escaping the repo"
 
   # ERR6 — a hardcoded OAuth token committed and caught by push protection. Check what is TRACKED,
   # since that is what would actually be pushed.
   tok=$(git ls-files -z | xargs -0 grep -lE 'gh[pousr]_[A-Za-z0-9]{20,}|xox[abopsr]-[A-Za-z0-9-]{10,}' 2>/dev/null | wc -l)
-  [ "$tok" = 0 ] && ok "corpus/ERR6 no tracked file carries a live token shape" \
+  [ "$tok" -eq 0 ] && ok "corpus/ERR6 no tracked file carries a live token shape" \
                  || no "corpus/ERR6 $tok tracked file(s) carry a token shape"
 
   # mermaid-guide E6/E7 — a PostToolUse hook that fires but fails on PATH, then still fails on
@@ -824,14 +836,14 @@ cases_F6 () {
   # pattern already existed at validate-crew.sh:101 with a comment explaining exactly this trap —
   # a worse duplicate of a check the repo had already solved.
   bb=$(grep -lE '\[\[[^:]' hooks/*.sh 2>/dev/null | wc -l)
-  [ "$bb" = 0 ] && ok "corpus/E7 no hook uses bash-only [[ (POSIX-safe)" || no "corpus/E7 $bb hook(s) use [["
+  [ "$bb" -eq 0 ] && ok "corpus/E7 no hook uses bash-only [[ (POSIX-safe)" || no "corpus/E7 $bb hook(s) use [["
   nx=$(for h in hooks/*.sh; do [ -x "$h" ] || echo "$h"; done | wc -l)
-  [ "$nx" = 0 ] && ok "corpus/E7 all $np hooks are executable" || no "corpus/E7 $nx hook(s) not executable"
+  [ "$nx" -eq 0 ] && ok "corpus/E7 all $np hooks are executable" || no "corpus/E7 $nx hook(s) not executable"
 
   # mermaid-guide E5 — a skill not detected because it is not DIR/SKILL.md (naming contract, §9).
   sk=$(find .claude/skills -mindepth 2 -name 'SKILL.md' 2>/dev/null | wc -l)
   sd=$(find .claude/skills -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-  [ "$sk" = "$sd" ] && ok "corpus/E5 every skill dir contains SKILL.md ($sk/$sd)" \
+  [ "$sk" -eq "$sd" ] && ok "corpus/E5 every skill dir contains SKILL.md ($sk/$sd)" \
                     || no "corpus/E5 $sd skill dir(s) but only $sk SKILL.md"
 
   # mermaid-guide E10 — an MCP server that fails to connect. HC-5 forbids them outright here, so
@@ -842,7 +854,7 @@ cases_F6 () {
 
   # §9 naming contract — agent frontmatter uses tools:, never allowed-tools:.
   at=$(grep -l '^allowed-tools:' .claude/agents/*.md 2>/dev/null | wc -l)
-  [ "$at" = 0 ] && ok "corpus/§9 agents use 'tools:' not 'allowed-tools:'" || no "corpus/§9 $at agent(s) use allowed-tools:"
+  [ "$at" -eq 0 ] && ok "corpus/§9 agents use 'tools:' not 'allowed-tools:'" || no "corpus/§9 $at agent(s) use allowed-tools:"
 
   # §9 phantom deps — nothing is referenced unless it is verified on disk. This is the family that
   # produced save-context.sh and the router skill being cited while absent.
@@ -917,17 +929,19 @@ cases_F6 () {
       || no "C-26 map hooks/ drift — named but absent:[$hab] on disk but unmapped:[$hun]"
 
 
-  # C-16, tested BEHAVIOURALLY rather than by grepping for the section: copy the repo surface into
-  # a temp root, strip one deny entry there, and assert validate-crew reports it. The G-F6 mutation
-  # showed the removal was previously caught only by the dirty-tree canary — invisible once
-  # committed. Needle assembled from fragments; bash-blocker matches whole command strings.
+  # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
+  # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
+  # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new
+  # boundary catches removals the old seven-needle check missed silently — the MacBook finding.
+  # 'terraform' is not an HC-5 verb bash-blocker matches, so no fragment assembly is needed here.
   dl=$(mktemp -d); mkdir -p "$dl/scripts" "$dl/.claude" "$dl/hooks"
-  cp scripts/validate-crew.sh "$dl/scripts/"; cp -r .claude/settings.json "$dl/.claude/" 2>/dev/null
-  _g="git"; _needle="$_g clone"
-  jq --arg p "$_needle" '.permissions.deny |= map(select(test($p)|not))' "$dl/.claude/settings.json" \
+  cp scripts/validate-crew.sh "$dl/scripts/"
+  cp .claude/settings.json "$dl/.claude/" 2>/dev/null
+  cp .claude/deny-manifest.txt "$dl/.claude/" 2>/dev/null
+  jq '.permissions.deny |= map(select(test("terraform")|not))' "$dl/.claude/settings.json" \
      > "$dl/.claude/s.tmp" && mv "$dl/.claude/s.tmp" "$dl/.claude/settings.json"
-  dlout=$("$dl/scripts/validate-crew.sh" 2>/dev/null | grep -c 'deny-list missing' || true)
-  [ "${dlout:-0}" -ge 1 ] && ok "C-16 validate-crew fails on a stripped deny-list (behavioural)" \
+  dlout=$("$dl/scripts/validate-crew.sh" 2>/dev/null | grep -c 'REMOVED from settings' || true)
+  [ "${dlout:-0}" -ge 1 ] && ok "C-16 validate-crew catches a manifest-vs-settings deny removal (behavioural)" \
                           || no "C-16 a removed deny entry goes undetected — the boundary is unguarded"
   rm -rf "$dl"
 
@@ -1009,7 +1023,7 @@ cases_F7 () {
   # D6 containment — a WORKING-TREE scan, not `git grep` (amendment 2). Theme tokens are data
   # in fixtures/ and prose in README/tests; they must never reach the modules or the CLI.
   f7th=$(grep -ril -e charmander -e squirtle -e bulbasaur -- "$sp/src" "$sp/bin" 2>/dev/null | wc -l)
-  [ "$f7th" = 0 ] && ok "D6 no theme token under stress-project/src or bin" \
+  [ "$f7th" -eq 0 ] && ok "D6 no theme token under stress-project/src or bin" \
                   || no "D6 $f7th file(s) under src/ or bin/ carry a theme token"
 
   # Fixtures. The five .json must parse; the malformed one must NOT — it is named .json.txt
@@ -1070,7 +1084,7 @@ cases_F7 () {
   ( cd "$sp" && node bin/jml.js fixtures/edge-duplicate-webhook.json --out "$f7o/dup" \
        --now 2026-01-01T00:00:00Z --seed f7 >/dev/null 2>&1 ); f7rc=$?
   f7tk=$(ls -1 "$f7o/dup/tickets" 2>/dev/null | wc -l)
-  { [ "$f7rc" = 0 ] && [ "$f7tk" = 1 ]; } \
+  { [ "$f7rc" -eq 0 ] && [ "$f7tk" -eq 1 ]; } \
     && ok "F7 edge duplicate: exit 0 with exactly 1 ticket (the redelivery opened none)" \
     || no "F7 edge duplicate: exit $f7rc, $f7tk ticket(s) — want exit 0 and exactly 1"
   ( cd "$sp" && node bin/jml.js fixtures/edge-mover-before-hire.json --out "$f7o/park" \
@@ -1083,7 +1097,7 @@ cases_F7 () {
        --now 2026-01-01T00:00:00Z --seed f7 >/dev/null 2>&1 ); f7rc=$?
   f7al=$(wc -l < "$f7o/bad/audit.jsonl" 2>/dev/null || echo 0)
   f7bt=$(ls -1 "$f7o/bad/tickets" 2>/dev/null | wc -l)
-  { [ "$f7rc" = 2 ] && [ "${f7al:-0}" = 1 ] && [ "$f7bt" = 0 ]; } \
+  { [ "$f7rc" -eq 2 ] && [ "${f7al:-0}" -eq 1 ] && [ "$f7bt" -eq 0 ]; } \
     && ok "F7 edge malformed: exit 2, exactly 1 rejection audit line, no ticket" \
     || no "F7 edge malformed: exit $f7rc, ${f7al:-0} audit line(s), $f7bt ticket(s) — want 2 / 1 / 0"
 
@@ -1108,7 +1122,7 @@ cases_F7 () {
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
   f7tree1=$(git status --porcelain | wc -l)
   f7tmp=$(ls -A "$sp/tmp" 2>/dev/null | wc -l)
-  { [ "$f7tree1" = "$f7tree0" ] && [ "$f7tmp" = "$f7tmp0" ]; } \
+  { [ "$f7tree1" -eq "$f7tree0" ] && [ "$f7tmp" -eq "$f7tmp0" ]; } \
     && ok "F7 auditing the artifact did not modify it (tree $f7tree0 -> $f7tree1, tmp/ $f7tmp0 -> $f7tmp)" \
     || no "F7 the audit polluted its subject (tree $f7tree0 -> $f7tree1, tmp/ $f7tmp0 -> $f7tmp)"
 }
@@ -1171,6 +1185,54 @@ fi
   [ -z "$sdbad" ] \
     && ok "R-SD-1 no count-then-default composite in any tracked shell file" \
     || no "R-SD-1 VIOLATION — count-then-default composite at: $(printf '%s' "$sdbad" | tr '\n' ' ')"
+
+  # R-SD-1 RULE 2 (portability scanner, HARNESS-1) — a count captured from `wc -l` must reach a
+  # NUMERIC test. BSD/macOS `wc` left-pads its count ("       0"), so `[ "$(… wc -l)" = 0 ]` takes
+  # the FAILURE branch on a value that is genuinely zero — thirteen such false failures surfaced on
+  # a MacBook setup. Rule 2's remedy is capture-then-numeric-test. STATED SCOPE, honestly: a line
+  # scanner catches the inline offender (`… wc -l)" =`); it cannot follow the two-step form
+  # (`n=$(… wc -l); [ "$n" = 0 ]`) across lines — every such site was swept at HARNESS-1 and gains a
+  # needle when evidence produces one, exactly as rule 5 states for its own uncovered consumers.
+  # Fragment-assembled so this assertion never matches itself; empty allowlist.
+  _w1="w""c -l"; _w2=')" ='; _w3=')" !='
+  sd2bad=$(git ls-files '*.sh' 2>/dev/null | while read -r sdf; do
+             sed 's/#.*//' "$sdf" | grep -nF -- "$_w1" | grep -F -e "$_w2" -e "$_w3" | sed "s|^|$sdf:|"
+           done)
+  # The scanner must be SEEN to fire — a control that never catches proves nothing (R-SD-1 rule 6).
+  sd2probe='[ "$(git status | '"$_w1"$_w2' 0 ]'
+  { grep -qF -- "$_w1" <<<"$sd2probe" && grep -qF -- "$_w2" <<<"$sd2probe"; } \
+    && ok "R-SD-1 rule 2 scanner fires on a planted inline wc→string offender" \
+    || no "R-SD-1 rule 2 scanner is void — did not match a planted offender"
+  [ -z "$sd2bad" ] \
+    && ok "R-SD-1 rule 2: no wc -l count reaches an inline string test in tracked shell" \
+    || no "R-SD-1 rule 2 VIOLATION — wc -l into string compare at: $(printf '%s' "$sd2bad" | tr '\n' ' ')"
+
+  # R-SD-1 RULE 7 (portability scanner, HARNESS-1) — GNU-isms that misbehave on BSD/macOS userland,
+  # each of which cost a real failure or a SILENT false-pass on a MacBook setup:
+  #   (a) `sed -i` with no suffix — BSD consumes the script as the suffix operand and edits nothing;
+  #       the portable form is `-i.bak … && rm` (the apply-models.sh idiom).
+  #   (b) `sha256sum` reached directly — absent on macOS, both hashes come back empty and the
+  #       byte-pin guard passes on "" = "" — worse than a red; must go through the _sha256 helper.
+  #   (c) `paste -sd` without an explicit stdin operand — BSD paste needs a file/`-` argument; awk
+  #       replaces it and drops the bc dependency too.
+  # Fragment-assembled; the _sha256 DEFINITION and the `-i.bak` portable form are the legitimate
+  # carriers and self-exclude by shape. Empty allowlist. Vacuity is covered by rule 1's sdn≥5 above.
+  _pb="sha256""sum"; _pc="past""e -sd"; _pi="se""d -i "
+  pabad=$(git ls-files '*.sh' 2>/dev/null | while read -r pf; do
+            sc=$(sed 's/#.*//' "$pf")
+            printf '%s\n' "$sc" | grep -nE "${_pi}['\"]"       | sed "s|^|$pf:(a) |"
+            printf '%s\n' "$sc" | grep -nF -- "$_pb" | grep -vF '_sha256 ()' | sed "s|^|$pf:(b) |"
+            printf '%s\n' "$sc" | grep -nF -- "$_pc" | grep -vF -- '-sd+ -'  | sed "s|^|$pf:(c) |"
+          done)
+  # Fire-probe: three planted offenders, one per shape, must each match their needle.
+  { grep -qE "${_pi}['\"]" <<<"${_pi}'x'" \
+      && grep -qF -- "$_pb" <<<"${_pb} f" \
+      && grep -qF -- "$_pc" <<<"${_pc}+ | bc"; } \
+    && ok "R-SD-1 rule 7 scanner fires on planted sed-i / sha256 / paste offenders" \
+    || no "R-SD-1 rule 7 scanner is void — a planted GNU-ism went unmatched"
+  [ -z "$pabad" ] \
+    && ok "R-SD-1 rule 7: no unguarded GNU-ism (sed-i / sha256 / paste) in tracked shell" \
+    || no "R-SD-1 rule 7 VIOLATION — GNU-ism at: $(printf '%s' "$pabad" | tr '\n' ' ')"
 
   # R-SEC-1 RULE 3 — redaction is enforced, not promised. Every writer that appends to a log or
   # ledger must strip token-shaped values, and this proves it by writing planted fakes THROUGH each
