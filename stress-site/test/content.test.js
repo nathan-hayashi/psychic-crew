@@ -58,6 +58,13 @@ function sectionOf(text, id) {
     return "";
   }
   const end = text.indexOf("</section>", start);
+  // Same answer as a missing id, and for the same reason. Without this,
+  // indexOf's -1 becomes slice's "one before the end" and the caller is handed
+  // most of the document as though it were the section it asked for - which
+  // would satisfy every assertion downstream, length floor included.
+  if (end === -1) {
+    return "";
+  }
   return text.slice(start, end);
 }
 
@@ -116,6 +123,7 @@ test("declared-content-types-cover-every-served-extension", () => {
 
 test("privacy-page-states-collection-retention-and-contact", () => {
   const text = assetText("privacy.html");
+  let examined = 0;
   for (const topic of ["collection", "retention", "contact"]) {
     const section = sectionOf(text, topic);
     assert.notEqual(section, "", "the privacy page has no " + topic + " section");
@@ -129,7 +137,9 @@ test("privacy-page-states-collection-retention-and-contact", () => {
       section.length >= 400,
       "the " + topic + " section is " + section.length + " characters and states too little",
     );
+    examined += 1;
   }
+  assert.equal(examined, 3, "expected 3 privacy sections, examined " + examined);
 });
 
 test("both-pages-share-one-stylesheet-and-no-inline-script", () => {
@@ -252,4 +262,31 @@ test("unknown-and-missing-extensions-are-served-as-the-declared-default", () => 
       path + " fell through to the fallback despite being declared",
     );
   }
+});
+
+test("section-slicing-returns-nothing-when-the-closing-tag-is-missing", () => {
+  const body = "x".repeat(500);
+  const balanced = '<section id="collection"><h2>Collection</h2>' + body + "</section><footer>tail</footer>";
+  const unbalanced = '<section id="collection"><h2>Collection</h2>' + body + "<footer>tail</footer>";
+
+  // The control: on well-formed markup the slice stops at its own boundary.
+  assert.ok(sectionOf(balanced, "collection").length >= 400);
+  assert.ok(
+    !sectionOf(balanced, "collection").includes("<footer>"),
+    "the slice ran past the end of its own section",
+  );
+
+  // The point: an unbalanced page must yield nothing, not almost everything.
+  // slice(start, -1) returned the rest of the document, which is long enough
+  // and contains the right heading, so the case above would have passed on
+  // markup it should have failed - the exact vacuous pass this file's own
+  // header forbids.
+  assert.equal(
+    sectionOf(unbalanced, "collection"),
+    "",
+    "a section with no closing tag was sliced to the end of the document",
+  );
+
+  // A missing id and a missing closing tag are the same answer, deliberately.
+  assert.equal(sectionOf(balanced, "no-such-id"), "");
 });
