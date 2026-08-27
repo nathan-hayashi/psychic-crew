@@ -25,10 +25,11 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { THRESHOLD } from "../tools/branch-proxy.mjs";
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SITE = join(HERE, "..");
 const PROXY = join(SITE, "tools", "branch-proxy.mjs");
-const THRESHOLD = 8;
 
 function runProxy(targets, cwd) {
   const result = spawnSync(process.execPath, [PROXY, ...targets], {
@@ -82,6 +83,14 @@ test("complexity-branch-count-proxy-max-8-per-function", () => {
       row.name + " counted " + row.count + ", over the threshold of " + THRESHOLD,
     );
   }
+  // The threshold is the tool's own exported constant rather than a second
+  // copy of the number, and this asserts the two have not drifted apart: the
+  // tool prints the limit it actually enforced, so a re-hardcoded copy here
+  // would stop matching what the run reported.
+  assert.ok(
+    run.output.includes("threshold " + THRESHOLD),
+    "the proxy enforced a different threshold than the suite imported:\n" + run.output,
+  );
   // Floors, so that a run which measured nothing cannot pass as a run which
   // measured everything and found it clean.
   assert.ok(run.rows.length >= 20, "the proxy reported only " + run.rows.length + " units");
