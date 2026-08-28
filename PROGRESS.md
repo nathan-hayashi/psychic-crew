@@ -948,3 +948,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-27T21:52:00Z] HARNESS-1 CLOSED at c33b0c6 — macOS/BSD certification shipped (126 tracked)
 - **Post-commit:** crew 195/0 · validate 53/0 · save-context 33/0 · clean below.
 - **Next action:** operator re-runs on the MacBook (current checkout) for the actual BSD certification per docs/PORTABILITY.md; CORRECTIONS-2 (the 8 STRESS-1 §G candidates, incl. the arbiter Edit-scoped-logs permission item) opens on the operator's word. PACK-2 still skipped.
+
+## [F8|2026-08-28T01:28:21Z] CORRECTIONS-2 built — awaiting the token
+- **Task:** 8 STRESS-1 §G candidates dispositioned (4 FIX / 3 RECORD / 1 CLOSE); planned via /plan-style with a two-reviewer pipeline that caught 4 latent failure modes, all fixed in rev.2.
+- **Workflow status:** crew 195→203 (append-only ×3, staged-index ×2, CR-024-top-level ×3), validate 53 + tracked 126 unchanged; all new guards fire-probed; STOP straddle rct 201/2 (dirty-tree + C-28-red-beside-red — the #5 fix self-demonstrating) · validate 53/0 · save 33/0.
+- **Active artifact:** hooks/{sensitive-guard,reference-cap}.sh · .claude/agents/{arbiter,integration-runner}.md · .claude/rules/{shell-discipline,arbiter-protocol}.md · .claude/skills/intake/SKILL.md · scripts/{run-crew-tests,validate-crew}.sh · docs/research/STRESS-1-report.md §G.
+- **Next action:** operator issues `APPROVE CORRECTIONS-2`; commit (126 tracked, 203 crew) + push; the §G register closes. Then: the MacBook re-run (HARNESS-1) and Lite parity remain open on the operator's word.

@@ -452,6 +452,9 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1 || [ ! -f logs/arbiter-
   pass "CR-027 README count describes the primary checkout; this is not one (assertions vary with which optional artifacts exist)"
 else
 # Every claim, for the reason given at the foot of run-crew-tests.sh.
+# CORRECTIONS-2 (#5): CR-027 legitimately binds the AUTHORED count (SUITE_TOTAL = P+S+F+2), stable
+# red or green — README states how many assertions exist, not how many passed. The pass/fail claim
+# is C-28's job (fixed above). CR-027 is not the defect.
 vct=$SUITE_TOTAL
 vcall=$(grep -oE '[0-9]+ structural assertions' README.md 2>/dev/null | grep -oE '^[0-9]+' | sort -u)
 vcn=$(printf '%s\n' "$vcall" | grep -c . || true)
@@ -486,13 +489,21 @@ else
   # suite would recurse. The suite is the only component that knows its own total.
   ssum="context/session-summary.md"
   ssgot=$(grep -oE 'validate-crew \*\*([^*]+)\*\*' "$ssum" 2>/dev/null | head -1 | sed -E 's/^validate-crew \*\*//; s/\*\*$//')
-  sswant="$((SUITE_TOTAL - S)) PASS / $S SKIP / 0 FAIL"
-  if [ -z "$ssgot" ]; then
+  # CORRECTIONS-2 (#5): bind the clean figure ONLY when the run is clean. The old form hardcoded
+  # "0 FAIL" and folded F into the PASS figure (SUITE_TOTAL-S), so it matched — and read PASS —
+  # beside a red run. Now a red run (F>0 so far) fails here instead of masking; no figure is
+  # recomputed in the red branch, so the +2 self-count cannot go off-by-one.
+  if [ "$F" -ne 0 ]; then
+    fail "C-28 cannot bind a clean summary — this run is red (F=$F); fix the failures first"
+  elif [ -z "$ssgot" ]; then
     pass "C-28 summary makes no validate-crew claim — nothing to bind"
-  elif [ "$ssgot" = "$sswant" ]; then
-    pass "C-28 summary's validate-crew figure matches this run ($sswant)"
   else
-    fail "C-28 summary says validate-crew '$ssgot', this run is '$sswant'"
+    sswant="$((SUITE_TOTAL - S)) PASS / $S SKIP / 0 FAIL"
+    if [ "$ssgot" = "$sswant" ]; then
+      pass "C-28 summary's validate-crew figure matches this run ($sswant)"
+    else
+      fail "C-28 summary says validate-crew '$ssgot', this run is '$sswant'"
+    fi
   fi
 fi
 

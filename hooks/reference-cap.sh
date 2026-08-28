@@ -19,8 +19,19 @@
 set -uo pipefail
 . "$(dirname "$0")/_common.sh" 2>/dev/null || true
 CAP=30
+exec 3>&2   # preserve the real stderr for the #2 warning; the block below suppresses fd 2
 {
   INPUT=$(cat 2>/dev/null || true)
+  # CORRECTIONS-2 (#2): WARN (never deny, exit 0) when lead-executor is dispatched with a STAGED
+  # index — the STRESS-1 root cause was a staged plan file swept into its per-step commit. Flag-only,
+  # per this hook's contract. git is pinned to $ROOT and fail-open on any non-repo/error (so the
+  # temp-root fire-probes and the C-16 fixture never false-warn), exit status used directly (rule 5).
+  if [ "$(printf '%s' "$INPUT" | jq -r '.tool_input.subagent_type // ""' 2>/dev/null)" = "lead-executor" ] \
+     && git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+     && ! git -C "$ROOT" diff --cached --quiet 2>/dev/null; then
+    printf 'WARNING (CORRECTIONS-2 #2): dispatching lead-executor with a STAGED index; these paths may be swept into its commit: %s\n' \
+      "$(git -C "$ROOT" diff --cached --name-only 2>/dev/null | tr '\n' ' ')" >&3
+  fi
   P=$(printf '%s' "$INPUT" | jq -r '.tool_input.prompt // ""' 2>/dev/null || true)
   [ -n "$P" ] || exit 0
   BIG=$(printf '%s\n' "$P" | awk '

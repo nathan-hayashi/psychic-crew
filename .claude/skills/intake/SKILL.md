@@ -40,12 +40,12 @@ interrogation and then gets bypassed.
 Reuses the severity vocabulary from `.claude/rules/security.md` exactly. **There is no second
 scale** — a class here means the same thing it means in a FINDINGS packet.
 
-| Class  | What it means here                                                              | Confirmation |
-| ------ | -------------------------------------------------------------------------------- | ------------ |
-| `low`  | Read-only, or writes confined to `logs/` and scratch                             | none — proceed silently |
-| `med`  | Writes tracked files; no permission or gate surface touched                      | show the contract, proceed on acknowledgement |
+| Class  | What it means here                                                                  | Confirmation                                                              |
+| ------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `low`  | Read-only, or writes confined to `logs/` and scratch                                | none — proceed silently                                                   |
+| `med`  | Writes tracked files; no permission or gate surface touched                         | show the contract, proceed on acknowledgement                             |
 | `high` | Touches `.claude/settings.json`, a byte-pinned seed, or removes a `.gitignore` rule | **explicit operator approval, quoted back. No dispatch until it arrives** |
-| `crit` | Changes a gate rule, a deny-list entry, or model identity                        | **exact gate token, as phases require** |
+| `crit` | Changes a gate rule, a deny-list entry, or model identity                           | **exact gate token, as phases require**                                   |
 
 `low` and `med` never block. `high` and `crit` always do (R3a).
 
@@ -80,7 +80,9 @@ returns advice, never a license to dispatch — the zero-dispatch default stands
 
 ## 4. Emit the contract
 
-Append exactly one JSON line to `logs/intake-contracts.jsonl` (gitignored):
+Append exactly one JSON line to `logs/intake-contracts.jsonl` (gitignored) **via Bash `>>`, never the
+Write tool** — the append-only guard (CORRECTIONS-2 #7, `hooks/sensitive-guard.sh`) denies a
+whole-file Write to this trail, and a Bash append is the correct single-line form regardless:
 
 `{"ts","goal","completion_condition","class","questions_asked","approval"}`
 

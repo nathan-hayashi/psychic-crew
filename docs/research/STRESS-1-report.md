@@ -26,22 +26,22 @@ its no-body expectation), the server correct by two instruments.
 
 ## B. The bench, dispatch by dispatch `[E]`
 
-| # | task_id | agent | measured | line | trigger |
-|---|---|---|---|---|---|
-| 1 | STRESS1-A1 | lead-planner | 128,098 | 15,000 | fired |
-| 2 | STRESS1-ARB1 | arbiter | 136,427 | 10,000 | fired |
-| 3 | STRESS1-EXA | lead-executor | 74,287 | 52,000 | fired |
-| 4 | STRESS1-EXB | lead-executor | 126,579 | 68,000 | fired |
-| 5 | STRESS1-R1-sec | security-reviewer | 90,935 | 35,000 | fired |
-| 6 | STRESS1-R1-qual | quality-reviewer | 147,631 (+143,198 re-emit continuation) | 35,000 | fired |
-| 7 | STRESS1-ARB-R1 | arbiter | 145,784 | 15,000 | fired |
-| 8 | STRESS1-R2-sec | security-reviewer | 90,757 | 25,000 | fired |
-| 9 | STRESS1-R2-qual | quality-reviewer | 134,953 | 25,000 | fired |
-| 10 | STRESS1-ARB-R2 | arbiter | 261,965 | 18,000 | fired |
-| 11 | STRESS1-FIX | fixer | 180,913 | 190,000 | **not fired** — the one line that held |
-| 12 | STRESS1-TEST | test-runner | 72,701 | 40,000 | fired |
-| 13 | STRESS1-E2E | integration-runner | 130,491 | 40,000 | fired |
-| 14 | STRESS1-ARB-FIN | arbiter | 301,037 | 20,000 | fired |
+| #   | task_id         | agent              | measured                                | line    | trigger                                |
+| --- | --------------- | ------------------ | --------------------------------------- | ------- | -------------------------------------- |
+| 1   | STRESS1-A1      | lead-planner       | 128,098                                 | 15,000  | fired                                  |
+| 2   | STRESS1-ARB1    | arbiter            | 136,427                                 | 10,000  | fired                                  |
+| 3   | STRESS1-EXA     | lead-executor      | 74,287                                  | 52,000  | fired                                  |
+| 4   | STRESS1-EXB     | lead-executor      | 126,579                                 | 68,000  | fired                                  |
+| 5   | STRESS1-R1-sec  | security-reviewer  | 90,935                                  | 35,000  | fired                                  |
+| 6   | STRESS1-R1-qual | quality-reviewer   | 147,631 (+143,198 re-emit continuation) | 35,000  | fired                                  |
+| 7   | STRESS1-ARB-R1  | arbiter            | 145,784                                 | 15,000  | fired                                  |
+| 8   | STRESS1-R2-sec  | security-reviewer  | 90,757                                  | 25,000  | fired                                  |
+| 9   | STRESS1-R2-qual | quality-reviewer   | 134,953                                 | 25,000  | fired                                  |
+| 10  | STRESS1-ARB-R2  | arbiter            | 261,965                                 | 18,000  | fired                                  |
+| 11  | STRESS1-FIX     | fixer              | 180,913                                 | 190,000 | **not fired** — the one line that held |
+| 12  | STRESS1-TEST    | test-runner        | 72,701                                  | 40,000  | fired                                  |
+| 13  | STRESS1-E2E     | integration-runner | 130,491                                 | 40,000  | fired                                  |
+| 14  | STRESS1-ARB-FIN | arbiter            | 301,037                                 | 20,000  | fired                                  |
 
 Figures are subagent **context totals** (lower bounds; orchestrator tokens unmeasured — the
 baseline's own caveat). Dispatch cap ≤14: **exactly consumed**. Coverage: **8/8 agent types
@@ -82,13 +82,13 @@ CrewAI facts from the RSCH-2 dive (MIT, ~54.2k stars, role-based crews, sequenti
 process, `human_input` flag, developer-written verification). Axis law fixed at RSCH-2:
 **verifiable outcome, not velocity.**
 
-| Axis | CrewAI as documented | This run's evidence | Verdict |
-|---|---|---|---|
-| Setup time | pip install + a few dozen lines to a running crew | a constitution: repo law, seeds, suites — days, not minutes | **CrewAI**, decisively |
-| Control surface | roles/tasks/process flags; guardrails developer-authored | byte-pinned seeds, deny-lists, dispatch law, gate tokens, per-dispatch budgets — every control mechanical and enumerated | **psychic-crew** |
-| Verification depth | whatever tests the developer writes; no framework-level adversarial layer | 18→33 suite with set-equality contract, negative controls, 11/11 mutation kills, red-then-green demonstrations, live E2E with a ruled mismatch | **psychic-crew** |
-| Evidence trail | logs/telemetry; no release law | 28 append-only audit records; 15/15 dispatch coverage; every packet persisted, released before consumption; provenance notes on every paraphrase | **psychic-crew** |
-| Human-gate ergonomics | `human_input: true` pauses for console input | exact-token gates that REFUSED the operator's own premature close token, a bounded fork question, mid-gate re-budgeting — the gate machine held against its approver | **psychic-crew** |
+| Axis                  | CrewAI as documented                                                      | This run's evidence                                                                                                                                                  | Verdict                |
+| --------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Setup time            | pip install + a few dozen lines to a running crew                         | a constitution: repo law, seeds, suites — days, not minutes                                                                                                          | **CrewAI**, decisively |
+| Control surface       | roles/tasks/process flags; guardrails developer-authored                  | byte-pinned seeds, deny-lists, dispatch law, gate tokens, per-dispatch budgets — every control mechanical and enumerated                                             | **psychic-crew**       |
+| Verification depth    | whatever tests the developer writes; no framework-level adversarial layer | 18→33 suite with set-equality contract, negative controls, 11/11 mutation kills, red-then-green demonstrations, live E2E with a ruled mismatch                       | **psychic-crew**       |
+| Evidence trail        | logs/telemetry; no release law                                            | 28 append-only audit records; 15/15 dispatch coverage; every packet persisted, released before consumption; provenance notes on every paraphrase                     | **psychic-crew**       |
+| Human-gate ergonomics | `human_input: true` pauses for console input                              | exact-token gates that REFUSED the operator's own premature close token, a bounded fork question, mid-gate re-budgeting — the gate machine held against its approver | **psychic-crew**       |
 
 **Verdict: 4–1 on the frozen axes — and the honest frame is the same as SIDE-0's: segmentation.**
 CrewAI optimizes time-to-first-crew for developers who will author their own controls; this
@@ -119,6 +119,27 @@ guide at delta 0; counts 105→124; summary figures cascaded (validate 51/0, sav
    MUST on audit lines. 7. **Operator gate item, 4th ask:** arbiter `Edit` scoped to `logs/` (or a
    per-line append path) — every append currently rewrites the whole gitignored history with no
    recovery path. 8. CR-024 widening to top-level directories (QUAL-09's wake condition).
+
+**Dispositions — CORRECTIONS-2 (2026-08-27), all eight resolved:**
+
+1. **RECORDED** — shell-discipline.md rule 8 (persist prose by fragment-assembly or Write, never a
+   raw Bash heredoc). The rule-writing itself was the sixth instance.
+2. **RECORDED + mechanical FLAG** — arbiter-protocol.md commit-then-dispatch rule; reference-cap.sh
+   warns (stderr, never denies) on a `lead-executor` dispatch with a staged index.
+3. **FIXED** — integration-runner.md scope generalized to a `stress-*` allowlist (stress-project /
+   stress-site); the F7 body labelled the stress-project exemplar.
+4. **CLOSED** — no tracked artifact carries the `curl -X HEAD` probe (both plan reviewers verified);
+   it existed only in the one-time dispatch. The correct form (`curl -I`) is recorded in §C.
+5. **FIXED (both suites)** — C-28 in validate-crew and run-crew-tests now binds the clean summary
+   only when the run is clean, and fails beside a red run instead of folding F into a green PASS;
+   CR-027 documented as the legitimate authored-count binding.
+6. **RECORDED (schema + rule)** — `agent_id` added to arbiter.md step-4 schema and made a MUST in
+   arbiter-protocol.md; C-25 is the enforcement, pre-schema lines grandfathered.
+7. **FIXED (append-only, create-safe)** — arbiter granted Edit and appends via Edit with a
+   grep-confirm; sensitive-guard.sh denies a whole-file Write to an existing non-empty trail while
+   permitting creation. The FLAG-lines-to-separate-file hardening for the residual race is deferred.
+8. **FIXED** — CR-024 gained a top-level-directory arm (column-0 anchor, gitignore-filtered,
+   both-ways comm, fire-probe); the map now mechanically must name every tracked top-level dir.
 
 ## H. Weakest claim, flagged
 

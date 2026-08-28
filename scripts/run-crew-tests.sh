@@ -136,6 +136,37 @@ cases_F2 () {
   denies sensitive-guard '{"tool_input":{"file_path":"/x/.gitignore","content":"logs/\n"}}' && ok "denies .gitignore removal of protected entry" || no "gitignore removal not denied"
   allows sensitive-guard '{"tool_input":{"file_path":"/x/.gitignore","content":".env\nlogs/\n.claude/state/\nextra/\n"}}' && ok "allows .gitignore append (C-04 must stay possible)" || no "gitignore append wrongly denied"
 
+  # CORRECTIONS-2 (#7): the append-only guard — a whole-file Write to an EXISTING trail is denied
+  # (forcing the arbiter to Edit-append), while a Write that CREATES an absent trail and any Edit both
+  # pass. All three fire-probed, per house law; the create-allow case is the fresh-session deadlock fix.
+  printf '{"seed":1}\n' > "$F2T/logs/arbiter-audit.jsonl"
+  denies sensitive-guard "$(jq -cn --arg f "$F2T/logs/arbiter-audit.jsonl" '{tool_name:"Write",tool_input:{file_path:$f,content:"x"}}')" \
+    && ok "append-only: whole-file Write to an existing trail is denied" || no "append-only: existing-trail Write not denied"
+  allows sensitive-guard "$(jq -cn --arg f "$F2T/logs/build-errors.jsonl" '{tool_name:"Write",tool_input:{file_path:$f,content:"x"}}')" \
+    && ok "append-only: Write that CREATES an absent trail is allowed (no first-line deadlock)" || no "append-only: create-write wrongly denied"
+  allows sensitive-guard "$(jq -cn --arg f "$F2T/logs/arbiter-audit.jsonl" '{tool_name:"Edit",tool_input:{file_path:$f}}')" \
+    && ok "append-only: Edit to an existing trail is allowed" || no "append-only: Edit wrongly denied"
+
+  # CORRECTIONS-2 (#2): reference-cap WARNS (never denies, exit 0) when lead-executor is dispatched
+  # with a staged index. A throwaway git repo stages a file; the warning goes to stderr. The clean
+  # case is the control. (fixer is exempt — it is not a committing agent; the existing :507 probe
+  # dispatches fixer and stays unaffected.)
+  rcg=$(mktemp -d)
+  ( cd "$rcg" && git init -q && git config user.email t@t && git config user.name t \
+    && echo x > staged.txt && git add staged.txt ) 2>/dev/null
+  rcw=$(printf '%s' "$(jq -cn '{tool_input:{subagent_type:"lead-executor",prompt:"go"}}')" \
+        | CLAUDE_PROJECT_DIR="$rcg" ./hooks/reference-cap.sh 2>&1 >/dev/null); rcrc=$?
+  { [ "$rcrc" -eq 0 ] && grep -q 'STAGED index' <<<"$rcw"; } \
+    && ok "CORRECTIONS-2 #2: reference-cap warns on a staged-index lead-executor dispatch (exit 0)" \
+    || no "CORRECTIONS-2 #2: staged-index warning missing or hook denied (rc=$rcrc)"
+  ( cd "$rcg" && git commit -qm x ) 2>/dev/null
+  rcc=$(printf '%s' "$(jq -cn '{tool_input:{subagent_type:"lead-executor",prompt:"go"}}')" \
+        | CLAUDE_PROJECT_DIR="$rcg" ./hooks/reference-cap.sh 2>&1 >/dev/null)
+  grep -q 'STAGED index' <<<"$rcc" \
+    && no "CORRECTIONS-2 #2: false staged-index warning on a clean tree" \
+    || ok "CORRECTIONS-2 #2: no warning when the index is clean (control)"
+  rm -rf "$rcg"
+
   denies model-guard '{"tool_input":{"file_path":"models.config.json","content":"  \"model\": \"claude-fable-5\""}}' && ok "model-guard blocks fable write" || no "fable write not blocked"
   allows model-guard '{"tool_input":{"file_path":"models.config.json","content":"  \"model\": \"claude-opus-5\""}}'  && ok "model-guard allows a clean model write" || no "clean model write wrongly denied"
   allows model-guard '{"tool_input":{"file_path":"README.md","content":"the fable model is banned"}}' && ok "model-guard ignores prose outside the config surface" || no "prose wrongly denied"
@@ -928,6 +959,31 @@ cases_F6 () {
       && ok "C-26 map hooks/ matches the tree both ways ($ndkh files, _common.sh included as the map names it)" \
       || no "C-26 map hooks/ drift — named but absent:[$hab] on disk but unmapped:[$hun]"
 
+  # CORRECTIONS-2 (#8, QUAL-09) — CR-024 widened to TOP-LEVEL directories. The map's last entry
+  # predated stress-site/ (D26 mapped it); nothing mechanically checked that a new top-level dir is
+  # named in the map. Derivation dry-run-verified at plan time (7 dirs each side). MAP side is
+  # COLUMN-0 anchored (`^├─ `/`^└─ `) — a loose anchor wrongly catches nested `│  ├─` children
+  # (agents/, rules/, skills/). Gitignored map entries (logs/, tagged in the map) are dropped via
+  # git check-ignore so they are not flagged as "mapped but untracked". TREE side is tracked dirs
+  # only (git ls-files first component), excluding the ~12 top-level files and the untracked corpus.
+  dgt=$(grep -oE '^[├└]─ [A-Za-z._-]+/' DIRECTORY_GUIDE.md | sed -E 's/^[├└]─ //; s:/$::' | sort -u)
+  dgt=$(for d in $dgt; do git check-ignore -q "$d" || printf '%s\n' "$d"; done | sort -u)
+  dtt=$(git ls-files | awk -F/ 'NF>1{print $1}' | sort -u)
+  ndgt=$(printf '%s\n' "$dgt" | grep -c . || true); ndtt=$(printf '%s\n' "$dtt" | grep -c . || true)
+  { [ "${ndgt:-0}" -ge 5 ] && [ "${ndtt:-0}" -ge 5 ]; } \
+    && ok "CR-024 top-level extraction non-vacuous (map $ndgt, tree $ndtt)" \
+    || no "CR-024 top-level extraction vacuous — map:$ndgt tree:$ndtt, both must be >=5"
+  tab=$(comm -23 <(printf '%s\n' "$dgt") <(printf '%s\n' "$dtt") | tr '\n' ' ')
+  tun=$(comm -13 <(printf '%s\n' "$dgt") <(printf '%s\n' "$dtt") | tr '\n' ' ')
+  { [ -z "$tab" ] && [ -z "$tun" ]; } \
+    && ok "CR-024 map top-level dirs match the tree both ways ($ndtt tracked dirs)" \
+    || no "CR-024 top-level drift — mapped-but-untracked:[$tab] tracked-but-unmapped:[$tun]"
+  # Fire-probe: a planted unmapped tracked dir must be caught by the same both-ways comm (real map).
+  tplant=$(comm -13 <(printf '%s\n' "$dgt") <(printf '%s\nPLANTED-UNMAPPED-DIR\n' "$dtt" | sort -u))
+  grep -q 'PLANTED-UNMAPPED-DIR' <<<"$tplant" \
+    && ok "CR-024 top-level arm catches a planted unmapped tracked dir (probe)" \
+    || no "CR-024 top-level arm did NOT catch a planted unmapped dir — the arm is void"
+
 
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
@@ -1342,7 +1398,7 @@ SUITE_TOTAL=$((P + F + 2))
 #
 # The +1 is THIS assertion, which has not been counted yet at the moment it runs. Stated rather than
 # left as a magic number for someone to "fix" later.
-if [ "$WANT" = "all" ] && { [ ! -d .git ] || [ ! -d logs ]; }; then
+if [ "$WANT" = "all" ] && { ! git rev-parse --is-inside-work-tree >/dev/null 2>&1 || [ ! -f logs/arbiter-audit.jsonl ]; }; then
   # Same guard as validate-crew's, for the same reason — see the note there.
   ok "CR-027 README count describes the primary checkout; this is not one"
 elif [ "$WANT" = "all" ]; then
@@ -1351,6 +1407,9 @@ elif [ "$WANT" = "all" ]; then
   # that covers one instance of a claim is the same defect as a canary that covers one trail, which
   # is what C-27 was about. And it ran BEFORE the C-14 canary, so an assertion added after it was
   # invisible to it and the binding passed on a number one short. It now runs last.
+  # CORRECTIONS-2 (#5): CR-027 legitimately binds the AUTHORED assertion count (SUITE_TOTAL = P+F+2),
+  # stable red or green — the README claims how many assertions EXIST, not how many passed today. The
+  # pass/fail claim is C-28's job (fixed above). CR-027 is not the defect.
   rct=$SUITE_TOTAL
   rcall=$(grep -oE '[0-9]+ crew assertions' README.md 2>/dev/null | grep -oE '^[0-9]+' | sort -u)
   rcn=$(printf '%s\n' "$rcall" | grep -c . || true)
@@ -1373,7 +1432,7 @@ fi
 # summary's figure describes the primary checkout, so the comparison is scoped to it and ANNOUNCED
 # elsewhere. Caught by the portability drill immediately after the gate — the fourth appearance of
 # equality-on-a-varying-count in this build, and the second in this session.
-if [ ! -d .git ] || [ ! -d logs ]; then
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1 || [ ! -f logs/arbiter-audit.jsonl ]; then
   ok "C-28 summary figure describes the primary checkout; this is not one"
 else
   # C-28 — this script also binds its own claim in context/session-summary.md. save-context cannot
@@ -1381,13 +1440,20 @@ else
   # suite would recurse. The suite is the only component that knows its own total.
   ssum="context/session-summary.md"
   ssgot=$(grep -oE 'crew suite \*\*([^*]+)\*\*' "$ssum" 2>/dev/null | head -1 | sed -E 's/^crew suite \*\*//; s/\*\*$//')
-  sswant="$SUITE_TOTAL PASS / 0 FAIL"
-  if [ -z "$ssgot" ]; then
+  # CORRECTIONS-2 (#5): the crew twin of the same defect — bind the clean figure ONLY when the run
+  # is clean; a red run (F>0 so far) fails here rather than reading PASS beside red, and no figure is
+  # recomputed in the red branch so the +2 self-count cannot go off-by-one.
+  if [ "$F" -ne 0 ]; then
+    no "C-28 cannot bind a clean summary — this run is red (F=$F); fix the failures first"
+  elif [ -z "$ssgot" ]; then
     ok "C-28 summary makes no crew suite claim — nothing to bind"
-  elif [ "$ssgot" = "$sswant" ]; then
-    ok "C-28 summary's crew suite figure matches this run ($sswant)"
   else
-    no "C-28 summary says crew suite '$ssgot', this run is '$sswant'"
+    sswant="$SUITE_TOTAL PASS / 0 FAIL"
+    if [ "$ssgot" = "$sswant" ]; then
+      ok "C-28 summary's crew suite figure matches this run ($sswant)"
+    else
+      no "C-28 summary says crew suite '$ssgot', this run is '$sswant'"
+    fi
   fi
 fi
 
