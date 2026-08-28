@@ -964,3 +964,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** crossing rules clean (0 URLs/abs-paths/token-shapes/mermaid); completeness 42/26/308/28/34/9 reconciled to source; validate 53/0/0 and save-context 33/0 green; rct 201/2 = dirty-tree + C-28-mid-straddle.
 - **Active artifact:** docs/CHANGE-PLANE.md (new, +1 = 127 tracked); README footprint + summary cascaded.
 - **Next action:** operator issues `APPROVE CHANGE-PLANE-1`; commit + push. Then the LARGE PLAN is drafted — the ~10 workstreams from 2026-08-28 (sibling realignment, corpus re-exploration, autonomous-audit scope, README/UX overhaul, framework baselining, TEI) pending the operator's prioritization; four escalations remain open.
+
+## [F8|2026-08-28T09:41:48Z] CHANGE-PLANE-1 CLOSED at 40ec5b5 — the chronicle is frozen and committed (127 tracked)
+- **Post-commit:** crew 203/0 · validate 53/0/0 · save-context 33/0 · clean.
+- **Next action:** INDEX-1 (plan approved) is now UNBLOCKED — build docs/CHANGE-PLANE-INDEX.md (~230 IDs, 9 eras, 6 registers, thematic index), bind it both directions in the crew suite, and close the docs/ map drift via a D27 §4.3 pair-edit (v3.11→v3.12). Closes on `APPROVE INDEX-1`.
