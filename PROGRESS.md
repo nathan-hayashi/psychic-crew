@@ -974,3 +974,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** crew 203→208, validate 53/0/0, save-context 33/0; EX-01 delta 0 after the pair-edit; tracked 127→128; STOP straddle rct 205/3.
 - **Active artifact:** docs/CHANGE-PLANE-INDEX.md (new) · scripts/run-crew-tests.sh (INDEX-1 block) · MASTER_FIFO_PLAN_CLAUDE.md + DIRECTORY_GUIDE.md (D27 pair) · README + summary cascaded.
 - **Next action:** operator issues `APPROVE INDEX-1`; commit + push. Then the LARGE PLAN — the ~10 workstreams from 2026-08-28 — is drafted once the operator prioritizes; four escalations remain open.
+
+## [F8|2026-08-28T14:59:28Z] INDEX-1 CLOSED at 46d0cf9 — the chronicle has its bound map (128 tracked, suite 208)
+- **Post-commit:** crew 208/0 · validate 53/0/0 · save-context 33/0 · clean · in sync with remote.
+- **Incident recorded:** push rejected non-fast-forward; remote/local commits proved identical duplicates (same parent+tree); resolved by rebase (git skipped the duplicate), nothing forced. Cause UNEXPLAINED — registered as an open question (possible concurrent writer to dev).
+- **Next action:** the LARGE PLAN — the ~10 workstreams from 2026-08-28 (sibling realignment incl. plugins web/public, corpus re-exploration depth, autonomous-audit scope, templates complexity-diagram, repurpose→graph, sidekick→remote-exec, README/UX overhaul across all psychic- repos, framework baselining, TEI-0) — drafted once the operator prioritizes. Four escalations remain open. PACK-2 still skipped.
