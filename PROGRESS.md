@@ -954,3 +954,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** crew 195→203 (append-only ×3, staged-index ×2, CR-024-top-level ×3), validate 53 + tracked 126 unchanged; all new guards fire-probed; STOP straddle rct 201/2 (dirty-tree + C-28-red-beside-red — the #5 fix self-demonstrating) · validate 53/0 · save 33/0.
 - **Active artifact:** hooks/{sensitive-guard,reference-cap}.sh · .claude/agents/{arbiter,integration-runner}.md · .claude/rules/{shell-discipline,arbiter-protocol}.md · .claude/skills/intake/SKILL.md · scripts/{run-crew-tests,validate-crew}.sh · docs/research/STRESS-1-report.md §G.
 - **Next action:** operator issues `APPROVE CORRECTIONS-2`; commit (126 tracked, 203 crew) + push; the §G register closes. Then: the MacBook re-run (HARNESS-1) and Lite parity remain open on the operator's word.
+
+## [F8|2026-08-28T01:40:04Z] CORRECTIONS-2 CLOSED at 41390d7 — the STRESS-1 §G register is clear (203 crew, 126 tracked)
+- **Post-commit:** crew 203/0 · validate 53/0/0 · save-context 33/0 · clean; C-28 binds cleanly post-commit (the #5 fix confirmed both directions).
+- **Next action:** two threads remain on the operator's word — the MacBook re-run for actual BSD certification (HARNESS-1, docs/PORTABILITY.md) and a Lite portability/parity gate. PACK-2 still skipped.
