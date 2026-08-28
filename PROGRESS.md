@@ -968,3 +968,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-28T09:41:48Z] CHANGE-PLANE-1 CLOSED at 40ec5b5 — the chronicle is frozen and committed (127 tracked)
 - **Post-commit:** crew 203/0 · validate 53/0/0 · save-context 33/0 · clean.
 - **Next action:** INDEX-1 (plan approved) is now UNBLOCKED — build docs/CHANGE-PLANE-INDEX.md (~230 IDs, 9 eras, 6 registers, thematic index), bind it both directions in the crew suite, and close the docs/ map drift via a D27 §4.3 pair-edit (v3.11→v3.12). Closes on `APPROVE INDEX-1`.
+
+## [F8|2026-08-28T09:52:35Z] INDEX-1 built — awaiting the token
+- **Task:** docs/CHANGE-PLANE-INDEX.md (763 lines/50KB) — 351 derived anchors + 6 declared dual-site, ID→location for ~230 ids, chronological + thematic indexes; bound to the chronicle both directions (5 assertions, 2 fire-probes); D27 closes the docs/ map drift (v3.12).
+- **Workflow status:** crew 203→208, validate 53/0/0, save-context 33/0; EX-01 delta 0 after the pair-edit; tracked 127→128; STOP straddle rct 205/3.
+- **Active artifact:** docs/CHANGE-PLANE-INDEX.md (new) · scripts/run-crew-tests.sh (INDEX-1 block) · MASTER_FIFO_PLAN_CLAUDE.md + DIRECTORY_GUIDE.md (D27 pair) · README + summary cascaded.
+- **Next action:** operator issues `APPROVE INDEX-1`; commit + push. Then the LARGE PLAN — the ~10 workstreams from 2026-08-28 — is drafted once the operator prioritizes; four escalations remain open.

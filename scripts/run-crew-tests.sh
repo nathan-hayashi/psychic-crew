@@ -984,6 +984,70 @@ cases_F6 () {
     && ok "CR-024 top-level arm catches a planted unmapped tracked dir (probe)" \
     || no "CR-024 top-level arm did NOT catch a planted unmapped dir — the arm is void"
 
+  # INDEX-1 — the chronicle's index is bound to the chronicle in BOTH directions. docs/CHANGE-PLANE.md
+  # is 727KB and cannot be read whole; docs/CHANGE-PLANE-INDEX.md is the map into it, and an unbound
+  # map rots — the defect family this repo has recorded eleven times (CR-024, C-26). Anchors are the
+  # binding pointer; the index's advisory LINE NUMBERS are deliberately NOT checked, because they
+  # shift on any edit and the index says so in its own staleness contract.
+  #
+  # Correlated in ONE awk pass over both files rather than 351 greps: a `section` anchor must match a
+  # whole line exactly once, a `gate`/`decision` anchor must match as a substring exactly once, the
+  # six DECLARED dual-site headings must match exactly twice (the rulings record is deliberately
+  # inlined at both II.D and II.F), and — the converse — every heading in the chronicle must appear
+  # in one of those two lists, so a section added later cannot go unindexed.
+  cpf="docs/CHANGE-PLANE.md"; cpi="docs/CHANGE-PLANE-INDEX.md"
+  # Shared checker: $1=anchor file, $2=dual file. Echoes "bad<TAB>dualbad<TAB>unindexed<TAB>sample".
+  cp_check () {
+    awk -v ancf="$1" -v dualf="$2" -F'\t' '
+      FILENAME==ancf  { if (NF>=2) { anc[$1]=$2 } ; next }
+      FILENAME==dualf { if (NF>=1) { dual[$1]=1 } ; next }
+      {
+        if ($0 ~ /^#{2,4} /) heads[$0]=1
+        for (a in anc) {
+          if (anc[a]=="section") { if ($0==a) hit[a]++ }
+          else if (index($0,a)>0) { hit[a]++ }
+        }
+        for (d in dual) { if ($0==d) dhit[d]++ }
+      }
+      END {
+        for (a in anc)  { if ((hit[a]+0)  != 1) { bad++;   if (s1=="") s1=substr(a,1,44) } }
+        for (d in dual) { if ((dhit[d]+0) != 2) { dbad++;  if (s2=="") s2=substr(d,1,44) } }
+        for (h in heads){ if (!(h in anc) && !(h in dual)) { un++; if (s3=="") s3=substr(h,1,44) } }
+        printf "%d\t%d\t%d\t%s%s%s\n", bad+0, dbad+0, un+0, s1, s2, s3
+      }' "$1" "$2" "$3"
+  }
+  if [ ! -f "$cpf" ] || [ ! -f "$cpi" ]; then
+    no "INDEX-1: the chronicle or its index is missing — the binding cannot be checked"
+  else
+    cpa=$(mktemp); cpd=$(mktemp)
+    awk '/^# CHANGE-PLANE-ANCHORS v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$cpi" > "$cpa"
+    awk '/^# CHANGE-PLANE-DUAL-SITE v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$cpi" > "$cpd"
+    cpan=$(grep -c . "$cpa"); [[ "$cpan" =~ ^[0-9]+$ ]] || cpan=0
+    cpdn=$(grep -c . "$cpd"); [[ "$cpdn" =~ ^[0-9]+$ ]] || cpdn=0
+    # Vacuity guard FIRST: an empty block makes every comparison below trivially clean.
+    { [ "$cpan" -ge 100 ] && [ "$cpdn" -ge 1 ]; } \
+      && ok "INDEX-1 anchor block non-vacuous ($cpan anchors, $cpdn dual-site)" \
+      || no "INDEX-1 anchor block vacuous — anchors:$cpan dual:$cpdn (want >=100 and >=1)"
+    cpr=$(cp_check "$cpa" "$cpd" "$cpf")
+    cpbad=$(printf '%s' "$cpr" | cut -f1); cpdbad=$(printf '%s' "$cpr" | cut -f2)
+    cpun=$(printf '%s' "$cpr" | cut -f3); cpsam=$(printf '%s' "$cpr" | cut -f4)
+    { [ "${cpbad:-1}" -eq 0 ] && [ "${cpdbad:-1}" -eq 0 ]; } \
+      && ok "INDEX-1 every index anchor resolves in the chronicle ($cpan once, $cpdn twice)" \
+      || no "INDEX-1 anchor(s) do not resolve — unique-miss:$cpbad dual-miss:$cpdbad e.g. [$cpsam]"
+    [ "${cpun:-1}" -eq 0 ] \
+      && ok "INDEX-1 converse: every chronicle heading is indexed (no unindexed section)" \
+      || no "INDEX-1 converse: $cpun chronicle heading(s) missing from the index, e.g. [$cpsam]"
+    # Fire-probes — a check never seen failing proves nothing. Both directions, on scratch copies.
+    cpp=$(mktemp); cat "$cpa" > "$cpp"; printf '### ANCHOR-THAT-DOES-NOT-EXIST\tsection\t0\n' >> "$cpp"
+    [ "$(cp_check "$cpp" "$cpd" "$cpf" | cut -f1)" -ge 1 ] \
+      && ok "INDEX-1 probe: a planted unresolvable anchor is caught" \
+      || no "INDEX-1 probe: a planted unresolvable anchor went UNCAUGHT — the forward check is void"
+    grep -v '^## PART I ' "$cpa" > "$cpp"
+    [ "$(cp_check "$cpp" "$cpd" "$cpf" | cut -f3)" -ge 1 ] \
+      && ok "INDEX-1 probe: a chronicle heading dropped from the index is caught" \
+      || no "INDEX-1 probe: a dropped heading went UNCAUGHT — the converse check is void"
+    rm -f "$cpa" "$cpd" "$cpp"
+  fi
 
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
