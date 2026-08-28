@@ -958,3 +958,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-28T01:40:04Z] CORRECTIONS-2 CLOSED at 41390d7 — the STRESS-1 §G register is clear (203 crew, 126 tracked)
 - **Post-commit:** crew 203/0 · validate 53/0/0 · save-context 33/0 · clean; C-28 binds cleanly post-commit (the #5 fix confirmed both directions).
 - **Next action:** two threads remain on the operator's word — the MacBook re-run for actual BSD certification (HARNESS-1, docs/PORTABILITY.md) and a Lite portability/parity gate. PACK-2 still skipped.
+
+## [F8|2026-08-28T09:18:38Z] CHANGE-PLANE-1 built — awaiting the token
+- **Task:** docs/CHANGE-PLANE.md — maximal self-contained change-plane (5,184 lines): 9-era chronology + all registers inlined verbatim + honest gaps + operator-inputs log + the HELIX prompt persisted.
+- **Workflow status:** crossing rules clean (0 URLs/abs-paths/token-shapes/mermaid); completeness 42/26/308/28/34/9 reconciled to source; validate 53/0/0 and save-context 33/0 green; rct 201/2 = dirty-tree + C-28-mid-straddle.
+- **Active artifact:** docs/CHANGE-PLANE.md (new, +1 = 127 tracked); README footprint + summary cascaded.
+- **Next action:** operator issues `APPROVE CHANGE-PLANE-1`; commit + push. Then the LARGE PLAN is drafted — the ~10 workstreams from 2026-08-28 (sibling realignment, corpus re-exploration, autonomous-audit scope, README/UX overhaul, framework baselining, TEI) pending the operator's prioritization; four escalations remain open.
