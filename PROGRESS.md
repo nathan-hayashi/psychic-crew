@@ -1020,3 +1020,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-31T16:49:31Z] HARNESS-BUILD-1 CLOSED at c29a0ab — universalization arc COMPLETE (gates 0-4 of 12 done)
 - **Post-commit:** parent 217/0 · 54/0/0 · 33/0 · 13/0/15 · 133 tracked · clean · synced; Lite 67/1/0 · 63/0 · 12/0 · 14/0 · 48/0/0 · PASS (one ls-files-latching completion, disclosed) · clean · synced. User layer live (central trail flat through full suites). Deploy + twin shipped.
 - **Next action:** MODEL-1 — delete the ~/.bashrc ANTHROPIC_MODEL override, fix the stale global CLAUDE.md model line, add the platform-fallback note to model-policy.md (+ Lite ADAPTED review), apply-models + suites prove no drift. STOP on `APPROVE MODEL-1`.
+
+## [F8|2026-08-31T16:51:07Z] MODEL-1 built — awaiting the token (gate 5 of 12)
+- **Task:** bashrc ANTHROPIC_MODEL override DELETED (backup taken) · global doc line → alias-latest · fable session pin recorded as operator-chosen in model-policy.md · platform-fallback note landed · apply-models zero drift · Lite ADAPTED review = NO-CHANGE verdict.
+- **Workflow status:** crew 215/2 straddle (217) · 54/0/0 · 33/0 · tracked 133.
+- **Next action:** operator issues `APPROVE MODEL-1`; commit+push; then RETIRE-1 (survey + gap map + freeze of claude-agent-orchestration-guide; user-global interference cleanup rides along, snapshot-first).

@@ -29,6 +29,15 @@ Judgment that compounds gets Opus; narrow lenses get Sonnet.
 ## Mode
 `alias` (default) resolves through the vendor aliases `opus`/`sonnet`/`haiku`, which track the current generation and are structurally immune to dated-ID staleness. `pinned` freezes exact IDs from `.pinned` for reproducibility runs.
 
+**Platform-fallback note (MODEL-1, 2026-08-31).** When the serving platform's safeguards flag a
+session message it may switch that session to a fallback model of the PLATFORM'S choosing (observed:
+"Switched to Opus 4.8"). No local file selects that target and none can — it is not a config
+surface. What alias mode guarantees is everything local: every agent and the session default track
+the latest generation the moment the vendor ships it. The machine-side stale pins found at the
+additions-program audit (a shell-profile `ANTHROPIC_MODEL` export and a stale user-global doc line)
+were removed at this gate; the user-global session default (`settings.json`, a fable variant at the
+time of writing) is the operator's interactive choice under the session-model ruling above.
+
 **Known gap (OQ-2):** the orchestrator session may run a context-variant ID such as `claude-opus-5[1m]`, which `.pinned` cannot express. Alias mode is unaffected; a pinned-mode reproducibility run would not reproduce the variant.
 
 ## Contract
