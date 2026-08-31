@@ -1006,3 +1006,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** rule-8 mirror restored (F-1 closed, Lite PASS again) · toast() single dispatch table both repos · scrub whole-payload bound both repos · token regex widened both repos (Lite any-token closes the README-SYNC-1 gap) · 2 own-bytes probes + red legs demonstrated.
 - **Workflow status:** parent 209/2 straddle (total 211) · 53/0/0 · 33/0 · 13/0/15 · tracked 131; Lite 64/1/0 · 61/0 · 12/0 · 14/0 · 48/0/0 · PASS · witness 48/0/0.
 - **Next action:** operator issues `APPROVE HARNESS-ROT-1`; both repos commit+push; then HARNESS-CONV-1 (crit): _profile.sh both repos, profile-aware bash-blocker, R-PR-1 order detector, D28/v3.13 map valve.
+
+## [F8|2026-08-31T16:20:45Z] HARNESS-CONV-1 built — awaiting the token (gate 3 of 12, crit)
+- **Task:** _profile.sh MIRRORED both repos (marker cannot mint/loosen; corroboration law) · blockers universal-first + two-root fail-closed gate · R-PR-1 probes both suites from the artifacts own bytes · R-SEC-1 vacuity guard · D28/v3.13 valve (hooks 14→15, EX-01 delta 0).
+- **Workflow status:** parent 212/2 straddle (214 total) · 54/0/0 · 33/0 · 13/0/15 · tracked 132; Lite 66/1/0 · 62/0 · 12/0 · 14/0 · 48/0/0 · PASS · witness 48/0/0.
+- **Next action:** operator issues `APPROVE HARNESS-CONV-1`; both repos commit+push. Then HARNESS-BUILD-1 (user scope + deploy-harness.sh per spec §3-§7).

@@ -434,12 +434,12 @@ cases_F2 () {
   # halves closed long since — D17's payload enumerates all fourteen by name and the C-26 block
   # below polices map against tree in both directions — so this tree-vs-settings comparison is
   # one leg of a three-way agreement now, not the only coverage.
-  d2tracked=$(git ls-files 'hooks/*.sh' 2>/dev/null | sed 's|hooks/||' | grep -v '^_common\.sh$' | sort -u)
+  d2tracked=$(git ls-files 'hooks/*.sh' 2>/dev/null | sed 's|hooks/||' | grep -vE '^(_common|_profile)\.sh$' | sort -u)
   d2wired=$(printf '%s\n' "$d2cfg" | cut -f2 | sort -u)
   d2unwired=$(comm -23 <(printf '%s\n' "$d2tracked") <(printf '%s\n' "$d2wired") | tr '\n' ' ')
   d2ghost=$(comm -13 <(printf '%s\n' "$d2tracked") <(printf '%s\n' "$d2wired") | tr '\n' ' ')
   { [ -z "$d2unwired" ] && [ -z "$d2ghost" ]; } \
-    && ok "CR-003 every tracked hook is wired and every wired hook exists (_common.sh excluded, it is sourced)" \
+    && ok "CR-003 every tracked hook is wired and every wired hook exists (_common.sh + _profile.sh excluded, they are sourced)" \
     || no "CR-003 hooks/ drift — tracked but unwired:[$d2unwired] wired but absent:[$d2ghost]"
 
   # CR-006 — the Vega-Lite dispatch-cost distribution. Two failure modes, both real, both checked.
@@ -1099,6 +1099,35 @@ cases_F6 () {
          || no "HARNESS-ROT-1 scrub output is ${hrlen} bytes — the bound is per-line again" ;;
   esac
 
+  # HARNESS-CONV-1 / R-PR-1 — order and fail direction, run against the artifact's own bytes in a
+  # copied tree with NO resolver present: the universal arm must deny without _profile.sh ever
+  # existing (universal precedes profile), and the build arm must ALSO deny (missing resolver
+  # fails CLOSED — not enforcing build constraints in a real harness would be a breach).
+  rpa=$(mktemp -d); mkdir -p "$rpa/hooks" "$rpa/logs"
+  cp hooks/bash-blocker.sh hooks/_common.sh "$rpa/hooks/"
+  printf '%s' "$(jq -cn --arg c "sudo rm x" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+    | CLAUDE_PROJECT_DIR="$rpa" "$rpa/hooks/bash-blocker.sh" >/dev/null 2>&1; rpu=$?
+  printf '%s' "$(jq -cn --arg c "git clone https://x/y" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+    | CLAUDE_PROJECT_DIR="$rpa" "$rpa/hooks/bash-blocker.sh" >/dev/null 2>&1; rpb=$?
+  { [ "$rpu" = 2 ] && [ "$rpb" = 2 ]; } \
+    && ok "R-PR-1 universal arm precedes the profile AND a missing resolver fails closed (rc $rpu/$rpb)" \
+    || no "R-PR-1 order/fail-direction broken — universal rc=$rpu build rc=$rpb (want 2/2 with no resolver)"
+  rm -rf "$rpa"
+
+  # R-PR-1 two-root law: the LIVE blocker with the session root pointed at a foreign directory
+  # carrying a node-app marker must STILL deny a build arm (the profile resolves from the script's
+  # own repo; the session root is only the log destination — and the record must land THERE).
+  rpc=$(mktemp -d); mkdir -p "$rpc/.claude" "$rpc/logs"
+  printf '{"profile":"node-app"}' > "$rpc/.claude/harness-profile.json"
+  printf '%s' "$(jq -cn --arg c "git clone https://x/y" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+    | CLAUDE_PROJECT_DIR="$rpc" ./hooks/bash-blocker.sh >/dev/null 2>&1; rpr=$?
+  rpn=$(grep -c . "$rpc/logs/tooluse-audit.jsonl" 2>/dev/null || true)
+  case "$rpn" in ''|*[!0-9]*) rpn=0 ;; esac
+  { [ "$rpr" = 2 ] && [ "$rpn" -ge 1 ]; } \
+    && ok "R-PR-1 two-root: a session-root marker cannot loosen the live blocker; the record lands at the session root" \
+    || no "R-PR-1 two-root broken — rc=$rpr (want 2) records=$rpn (want >=1)"
+  rm -rf "$rpc"
+
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
   # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new
@@ -1420,6 +1449,11 @@ fi
   g1=git; g2=clone
   printf '%s' "$(jq -cn --arg c "$g1 $g2 https://x@h.invalid/r?t=$rst" '{tool_name:"Bash",tool_input:{command:$c}}')" \
     | CLAUDE_PROJECT_DIR="$rsroot" ./hooks/bash-blocker.sh >/dev/null 2>&1
+  # HARNESS-CONV-1 vacuity guard: if the deny stopped writing entirely, the leakage grep below
+  # finds nothing and reports a clean pass having tested nothing — the recorded vacuous-pass class.
+  [ -s "$rsroot/logs/tooluse-audit.jsonl" ] \
+    && ok "R-SEC-1 deny probe non-vacuous — the deny appended a record before leakage is judged" \
+    || no "R-SEC-1 deny probe VACUOUS — the blocker wrote nothing; the leakage check proves nothing"
   grep -qF -- "$rst" "$rsroot/logs/tooluse-audit.jsonl" 2>/dev/null && rsleak="$rsleak [deny]"
   # audit-logger — every ordinary tool use.
   printf '%s' "$(jq -cn --arg c "ec""ho $rst" '{tool_name:"Bash",tool_input:{command:$c}}')" \
