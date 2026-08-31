@@ -1233,6 +1233,30 @@ cases_F6 () {
     rm -f "$exfx"
   fi
 
+  # MATRIX-AI-1 — the 51-item feasibility matrix is DATA (same law as ORCA-MATRIX): exactly 51
+  # rows, every verdict legal, and the roll-up prose must agree with the block. The kickoff doc's
+  # own 51-item assertion above is the byte-source side of the same contract.
+  amf="docs/research/MATRIX-AI-1.md"
+  if [ ! -f "$amf" ]; then
+    no "MATRIX-AI-1 doc missing"
+  else
+    amrows=$(awk '/^# MATRIX-AI v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$amf")
+    amn=$(printf '%s\n' "$amrows" | grep -c . || true)
+    case "$amn" in ''|*[!0-9]*) amn=0 ;; esac
+    ambad=$(printf '%s\n' "$amrows" | awk -F'\t' '$3!="EXISTS"&&$3!="GENERALIZE"&&$3!="FEASIBLE-ZERO-DEP"&&$3!="BLOCKED-HC"&&$3!="REJECT"{c++} END{print c+0}')
+    { [ "$amn" -eq 51 ] && [ "$ambad" = 0 ]; } \
+      && ok "MATRIX-AI-1 block parses to exactly 51 rows, every verdict legal" \
+      || no "MATRIX-AI-1 block malformed — rows:$amn (want 51) illegal:$ambad"
+    ame=$(printf '%s\n' "$amrows" | grep -c 'EXISTS' || true)
+    amg=$(printf '%s\n' "$amrows" | grep -c 'GENERALIZE' || true)
+    amz=$(printf '%s\n' "$amrows" | grep -c 'FEASIBLE-ZERO-DEP' || true)
+    amb=$(printf '%s\n' "$amrows" | grep -c 'BLOCKED-HC' || true)
+    amr=$(printf '%s\n' "$amrows" | awk -F'\t' '$3=="REJECT"{c++} END{print c+0}')
+    grep -qF -- "Roll-up: **$ame EXISTS · $amg GENERALIZE · $amz FEASIBLE-ZERO-DEP · $amb BLOCKED-HC · $amr REJECT" "$amf" \
+      && ok "MATRIX-AI-1 roll-up prose agrees with the block ($ame/$amg/$amz/$amb/$amr)" \
+      || no "MATRIX-AI-1 roll-up disagrees — block says $ame/$amg/$amz/$amb/$amr"
+  fi
+
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
   # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new

@@ -1051,3 +1051,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** census 61-RO/4-custom/3-project/5-barred · when_to_use triggers (additive) · explain-plainly live (platform picked it up in real time) · HC-7 skills ruling in model-policy (describe-not-spell after the content scan caught the draft) · global natural-invocation note · explainers/ROUTE-1.md (the discipline's first real consumer).
 - **Workflow status:** crew 219/2 straddle (221) · 54/0/0 · 33/0 · 13/0/15 · tracked 140.
 - **Next action:** operator issues `APPROVE ROUTE-1`; then MATRIX-AI-1 — the 51-item feasibility matrix from the FENCE-2 byte-source (count-asserted), the program's final gate.
+
+## [F8|2026-08-31T21:03:43Z] MATRIX-AI-1 built — awaiting the token (gate 12 of 12 — the program's final STOP)
+- **Task:** all 51 items verdicted (7 EXISTS · 10 GENERALIZE · 9 FEASIBLE-ZERO-DEP · 22 BLOCKED-HC · 3 REJECT), matrix suite-bound as data, three-way contract with the kickoff byte-source, explainer shipped.
+- **Workflow status:** crew 221/2 straddle (223) · 54/0/0 · 33/0 · 13/0/15 · tracked 142.
+- **Next action:** operator issues `APPROVE MATRIX-AI-1` — the additions program then completes. AFTER: the queued 08-28 workstreams (sibling realignment, README/UX overhaul, corpus deep-dive, TEI-0) await prioritization; four escalations open; the RSCH-4 TAKEs are each a future gate on operator word.
