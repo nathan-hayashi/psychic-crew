@@ -105,7 +105,7 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   # future pack satisfies by construction; the parent's fences share no shape, so this lists today's
   # and will report ZERO for tomorrow's unfenced drop — the one case the probe exists to catch.
   # Extend it with every new fence. Recorded as a limit rather than left to be discovered.
-  fenced='(^|/)(Context-Transfer[^/]*|[^ ]*-main|secrets|\.ssh)/|\.(pdf|pem|key|png)$|(^|/)(deep-research-report\.md|Project-Explorer\.md|PSYCHIC-CREW-LITE-PLAN\.md|credentials\.json|id_rsa[^ ]*|ReportforClaudeWeb[^ ]*)$'
+  fenced='(^|/)(Context-Transfer[^/]*|[^ ]*-main|secrets|\.ssh)/|\.(pdf|pem|key|png)$|(^|/)(deep-research-report\.md|Project-Explorer\.md|PSYCHIC-CREW-LITE-PLAN\.md|credentials\.json|id_rsa[^ ]*|ReportforClaudeWeb[^ ]*|harness-universalization-report\\.md)$'
   # Vacuity guard FIRST. Where git cannot answer, every count below is 0 and the probe reports a
   # confident pass having measured nothing — this build has recorded that class four times.
   gtracked=$(git ls-files | grep -c .)

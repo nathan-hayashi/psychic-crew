@@ -28,6 +28,7 @@
   {"role":"arbiter","task":"F7-B7-fix","phase":"F7","tokens":123381,"duration_ms":529460},
   {"role":"security-reviewer","task":"F7-B3-sec","phase":"F7","tokens":124800,"duration_ms":655725},
   {"role":"lead-executor","task":"STRESS1-EXB","phase":"other","tokens":126579,"duration_ms":1190269},
+  {"role":"general-purpose","task":"Internal review of program plan","phase":"other","tokens":127182,"duration_ms":554549},
   {"role":"lead-planner","task":"STRESS1-A1","phase":"other","tokens":128098,"duration_ms":354145},
   {"role":"integration-runner","task":"STRESS1-E2E","phase":"other","tokens":130491,"duration_ms":1056263},
   {"role":"quality-reviewer","task":"F7-B5-qual2","phase":"F7","tokens":132990,"duration_ms":692006},

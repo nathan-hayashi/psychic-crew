@@ -6,7 +6,7 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 **verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
-Live numbers (post-CLEANUP-1): crew suite **208 PASS / 0 FAIL** · validate-crew **53 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **128 tracked files**.
+Live numbers (post-CLEANUP-1): crew suite **209 PASS / 0 FAIL** · validate-crew **53 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **130 tracked files**.
 
 The one SKIP is honest and named: C-25's identity coverage has no live trail until a subagent is dispatched in-session. These figures are bound — `save-context.sh check` compares the tracked-file count against the tree and the registered-ID count against the registry, so this line cannot silently rot again (C-24, extended at CR-034).
 
@@ -73,3 +73,13 @@ _CR-012 (audit A0-F3): this read `01:58:11Z` until 2026-08-17. Not a typo — a 
 **verified — branch layout is a SETTLED operator decision, not an oversight.** There is no `main` branch and none will be created: `dev` is the remote's default branch and the only branch that has ever existed, `v1.0.0` marks the release, and the standing "never push main without an approved gate" rule was moot throughout because there was never a `main` to push to. Do not "fix" this in a later session.
 
 Open items carried past v1.0.0 are in `ROADMAP.md`; the largest available upgrade is C-05 (hook-enforced bypass detection).
+
+**The additions program is OPEN.** Opened 2026-08-31, twelve gates; plan rev three approved (operator correction
++ 52 reviewer findings). Gate 0 FENCE-2 at its STOP: drops fenced, orca census DIVED, user-scope
+snapshot taken, the commit-amend hook removed from user settings (trigger still unexplained — the
+concurrent-writer wake condition stays OPEN; commit and push run as separate calls with a HEAD
+check until a clean session shows zero amends), kickoff + orca survey persisted. A standing
+prohibition (recorded in session memory and Plan.md) bars one sibling repo from all access — the
+RETIRE-1 target is claude-agent-orchestration-guide. Queue after FENCE-2: HARNESS-SPEC-1 →
+HARNESS-ROT-1 → HARNESS-CONV-1 → HARNESS-BUILD-1 → MODEL-1 → RETIRE-1 → RSCH-4 → COMPREHEND-1/2 →
+ROUTE-1 → MATRIX-AI-1, then the queued 08-28 workstreams (four escalations still open).

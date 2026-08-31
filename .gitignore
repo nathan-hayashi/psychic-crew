@@ -83,3 +83,9 @@ credentials.json
 # deliberate gated exception, not a quiet add. Asymmetry as always: the RESEARCH FINDINGS built
 # from these land tracked under docs/research/; the captures themselves never ship.
 *.png
+
+# FENCE-2 (2026-08-31): a MacBook-session handoff spec dropped untracked at the public root. It
+# carries one absolute home path (its own rot-table evidence), so it can never be tracked; it stays
+# on disk as the HARNESS-SPEC-1 input. Backed up to $HOME/context-transfer-backup/ with its sha256
+# pinned in the gate ledger, for the same git-clean hazard recorded above the Context-Transfer rule.
+harness-universalization-report.md

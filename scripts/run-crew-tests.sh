@@ -1049,6 +1049,19 @@ cases_F6 () {
     rm -f "$cpa" "$cpd" "$cpp"
   fi
 
+  # FENCE-2 — the 2026-08-31 program kickoff is the BYTE-SOURCE for MATRIX-AI-1's 51-item checklist
+  # (the list exists nowhere else on disk; the HELIX program lost its own kickoff this way, gap #7).
+  # A truncated or reflow-mangled kickoff must fail here by count, not surface at the matrix gate.
+  kkf="docs/research/ADDITIONS-2026-08-31-kickoff.md"
+  if [ ! -f "$kkf" ]; then
+    no "FENCE-2 kickoff doc missing — MATRIX-AI-1's byte-source is gone"
+  else
+    kkn=$(grep -c '^> Build your own' "$kkf")
+    case "$kkn" in ''|*[!0-9]*) kkn=0 ;; esac
+    [ "$kkn" -eq 51 ] && ok "FENCE-2 kickoff carries all 51 checklist items (MATRIX-AI-1 byte-source)" \
+                      || no "FENCE-2 kickoff checklist count is $kkn, want exactly 51 — the byte-source is damaged"
+  fi
+
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
   # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new

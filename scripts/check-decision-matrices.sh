@@ -87,6 +87,7 @@ open-code-review	ETL-BUILD
 gastown	DIVED
 ruflo	DIVED
 oh-my-claudecode	DIVED
+orca	DIVED
 babysitter	BARRED
 agent-framework	BARRED
 takt	BARRED

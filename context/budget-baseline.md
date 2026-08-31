@@ -40,7 +40,7 @@
 | lead-planner       | 2   | 48,935 | 35,550 | 62,320 |
 | test-runner        | 1   | 46,388 | 46,388 | 46,388 |
 
-**verified** — All measured dispatches, all phases: **47 dispatches, 5,541,107 tokens, mean 117,895.**
+**verified** — All measured dispatches, all phases: **48 dispatches, 5,668,289 tokens, mean 118,089.**
 
 ## The baseline a future phase should budget against
 
@@ -92,7 +92,7 @@ using any number: the same source counted by eight agents appears eight times.
 
 ### What it shows
 
-**verified** — 47 dispatches, **5,541,107 tokens** total, mean **117,895** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
+**verified** — 48 dispatches, **5,668,289 tokens** total, mean **118,089** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
 The red tick is the mean. The spread is the finding: the dearest single dispatch is
 **5.6×** the cheapest, so a per-phase
 budget built on a mean is wrong for both tails.
@@ -111,7 +111,7 @@ the total disagree with `logs/`.
   "description": "Per-dispatch context totals by agent role. Data embedded, not referenced: logs/ is gitignored and a spec pointing at it would plot nothing from a fresh checkout.",
   "title": {
     "text": "Dispatch cost distribution",
-    "subtitle": "33 measured dispatches; subagent context totals, not output produced"
+    "subtitle": "measured dispatches; subagent context totals, not output produced"
   },
   "data": {
     "values": [
@@ -396,6 +396,12 @@ the total disagree with `logs/`.
         "task": "STRESS1-ARB-FIN",
         "tokens": 301037,
         "duration_ms": 1920968
+      },
+      {
+        "role": "general-purpose",
+        "task": "Internal review of program plan",
+        "tokens": 127182,
+        "duration_ms": 554549
       }
     ]
   },

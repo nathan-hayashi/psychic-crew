@@ -979,3 +979,15 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Post-commit:** crew 208/0 · validate 53/0/0 · save-context 33/0 · clean · in sync with remote.
 - **Incident recorded:** push rejected non-fast-forward; remote/local commits proved identical duplicates (same parent+tree); resolved by rebase (git skipped the duplicate), nothing forced. Cause UNEXPLAINED — registered as an open question (possible concurrent writer to dev).
 - **Next action:** the LARGE PLAN — the ~10 workstreams from 2026-08-28 (sibling realignment incl. plugins web/public, corpus re-exploration depth, autonomous-audit scope, templates complexity-diagram, repurpose→graph, sidekick→remote-exec, README/UX overhaul across all psychic- repos, framework baselining, TEI-0) — drafted once the operator prioritizes. Four escalations remain open. PACK-2 still skipped.
+
+## [F8|2026-08-31T08:23:35Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 2 file(s) uncommitted
+- **HEAD:** e2e392e
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** the LARGE PLAN — the ~10 workstreams from 2026-08-28 (sibling realignment incl. plugins web/public, corpus re-exploration depth, autonomous-audit scope, templates complexity-diagram, repurpose→graph, sidekick→remote-exec, README/UX overhaul across all psychic- repos, framework baselining, TEI-0) — drafted once the operator prioritizes. Four escalations remain open. PACK-2 still skipped.
+
+## [F8|2026-08-31T15:40:25Z] FENCE-2 built — awaiting the token (additions program gate 0 of 12)
+- **Task:** drops fenced (report ignored+backed-up, sha a8599dcd…), orca census-classified DIVED (matrices 13/0), amend hook REMOVED from user settings (snapshot-first; trigger condition still unexplained — wake condition OPEN; separate commit/push + HEAD assertion standing), kickoff persisted w/ 51-item suite assertion (crew 209), orca survey persisted scrubbed.
+- **Workflow status:** crew 207/2 straddle · validate 53/0/0 · save 33/0 · matrices 13/0/15 · tracked 130 · CR-006 fence re-synced 48 rows.
+- **Standing prohibition:** one sibling repo (see session memory) is NEVER touched — reads included; RETIRE-1 targets claude-agent-orchestration-guide.
+- **Next action:** operator issues `APPROVE FENCE-2`; commit, then push (separate call, HEAD-equality). Then HARNESS-SPEC-1 (spec ratify gate): hard-check the fenced report claim-by-claim against THIS machine, produce docs/research/HARNESS-SPEC.md per the plan's two-root/marker/managed-region laws, STOP for ratification. 11 gates remain after this one.
