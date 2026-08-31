@@ -991,3 +991,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** crew 207/2 straddle · validate 53/0/0 · save 33/0 · matrices 13/0/15 · tracked 130 · CR-006 fence re-synced 48 rows.
 - **Standing prohibition:** one sibling repo (see session memory) is NEVER touched — reads included; RETIRE-1 targets claude-agent-orchestration-guide.
 - **Next action:** operator issues `APPROVE FENCE-2`; commit, then push (separate call, HEAD-equality). Then HARNESS-SPEC-1 (spec ratify gate): hard-check the fenced report claim-by-claim against THIS machine, produce docs/research/HARNESS-SPEC.md per the plan's two-root/marker/managed-region laws, STOP for ratification. 11 gates remain after this one.
+
+## [F8|2026-08-31T15:48:04Z] FENCE-2 CLOSED at a33484b — program gate 0 done (130 tracked, crew 209, all four suites green)
+- **Post-commit:** 209/0 · 53/0/0 · 33/0 · 13/0/15 · clean · in sync · HEAD stable across separate commit/push calls (no amend fired — first data point).
+- **Next action:** HARNESS-SPEC-1 — hard-check the fenced report (hash-asserted) against THIS machine, produce docs/research/HARNESS-SPEC.md per the program laws (two-root, marker, managed-region, topology), STOP on `APPROVE HARNESS-SPEC-1`.
