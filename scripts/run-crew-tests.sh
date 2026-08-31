@@ -1193,6 +1193,46 @@ cases_F6 () {
       || no "RSCH-4 roll-up prose disagrees with the block — block says $omt/$omm/$omv"
   fi
 
+  # COMPREHEND-2 — the explainer discipline, bound. Every GATES row AFTER the declared epoch row
+  # must have docs/explainers/<GATE>.md. Row-position, not date (the ledger's ISO column is empty
+  # on many rows). Vacuity-guarded: an empty post-epoch set refuses rather than passing silent.
+  exidx="docs/explainers/INDEX.md"
+  exepoch=$(grep -m1 '^EXPLAINER-EPOCH: ' "$exidx" 2>/dev/null | awk '{print $2}')
+  if [ -z "${exepoch:-}" ]; then
+    no "COMPREHEND-2 epoch line missing from $exidx — the explainer rule has no anchor"
+  else
+    exrows=$(awk -F'|' -v ep="$exepoch" '
+      /^\| [A-Za-z]/ { g=$2; gsub(/^ +| +$/,"",g);
+        if (found && g!="Gate") print g;
+        if (g==ep) found=1 }' GATES.md)
+    exn=$(printf '%s\n' "$exrows" | grep -c . || true)
+    case "$exn" in ''|*[!0-9]*) exn=0 ;; esac
+    exmiss=""
+    for g in $exrows; do [ -f "docs/explainers/$g.md" ] || exmiss="$exmiss [$g]"; done
+    if [ "$exn" -lt 1 ]; then
+      no "COMPREHEND-2 post-epoch gate set is EMPTY — vacuous, the epoch row was not found in GATES.md"
+    elif [ -z "$exmiss" ]; then
+      ok "COMPREHEND-2 every post-epoch gate ($exn) has its plain-language explainer"
+    else
+      no "COMPREHEND-2 explainer(s) MISSING for post-epoch gate(s):$exmiss"
+    fi
+    # Fire-probe: a planted post-epoch row with no explainer must be caught by the same extraction.
+    exfx=$(mktemp)
+    cat GATES.md > "$exfx"
+    printf '| PROBE-GATE-X9 |  | planted | planted | awaiting `APPROVE PROBE-GATE-X9` |\n' >> "$exfx"
+    exrows2=$(awk -F'|' -v ep="$exepoch" '
+      /^\| [A-Za-z]/ { g=$2; gsub(/^ +| +$/,"",g);
+        if (found && g!="Gate") print g;
+        if (g==ep) found=1 }' "$exfx")
+    exmiss2=""
+    for g in $exrows2; do [ -f "docs/explainers/$g.md" ] || exmiss2="$exmiss2 [$g]"; done
+    case "$exmiss2" in
+      *PROBE-GATE-X9*) ok "COMPREHEND-2 fire-probe: a planted explainer-less gate is caught by name" ;;
+      *) no "COMPREHEND-2 fire-probe FAILED — the planted gate went unnoticed; the binding is void" ;;
+    esac
+    rm -f "$exfx"
+  fi
+
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
   # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new

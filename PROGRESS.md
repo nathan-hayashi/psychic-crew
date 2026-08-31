@@ -1041,3 +1041,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Workflow status:** crew 217/2 straddle (219) · 54/0/0 · 33/0 · tracked 136.
 - **Next action:** operator picks the mechanism (A+D recommended / A / C-flavored / other) AND issues `APPROVE COMPREHEND-1`; COMPREHEND-2 builds exactly the choice.
 - **Choice recorded @ 2026-08-31T20:29:05Z:** A+D (explainers + on-demand skill). COMPREHEND-2 builds exactly this on the next token.
+
+## [F8|2026-08-31T20:32:55Z] COMPREHEND-2 built — awaiting the token (gate 9 of 12)
+- **Task:** explainer discipline live (epoch=COMPREHEND-1; first explainer covers itself; vacuity guard FIRED CORRECTLY pre-row then greened); D30/v3.15 docs valve; D half routes at ROUTE-1.
+- **Workflow status:** crew 219/2 straddle (221) · 54/0/0 · 33/0 · 13/0/15 · tracked 138.
+- **Next action:** operator issues `APPROVE COMPREHEND-2`; then ROUTE-1 (skills inventory via Read/Glob only, dated-fetch the trigger contract, HC-7-BARRED class, vendor skills read-only, snapshot precondition).
