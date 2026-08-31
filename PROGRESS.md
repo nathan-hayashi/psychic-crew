@@ -1078,3 +1078,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** MIT ×6 + identity ruling + append-only visibility truth (3 retro rows; plugins deferred to S1) + explainer-epoch ×4 (fire-probe caught the porter, fixed, all green) + ARC4 baseline measured pre-drift (durable in Plan.md).
 - **Workflow status:** parent 221/2 straddle · 54/0/0 · 33/0 · 13/0/15 · tracked 144; Lite full PASS (61 tracked, 59 sync rows); siblings 32/39/41/30 all green.
 - **Next action:** operator issues `APPROVE S0-RECONCILE`; ordered per-repo close per the multi-repo law; then S1-PLUGINS-WEB opens.
+
+## [F8|2026-08-31T23:40:45Z] S0-RECONCILE CLOSED across all six repos — the multi-repo law survived its first live PARTIAL
+- **Close:** ordered parent→templates→sidekick→repurpose→plugins→lite; a real PARTIAL fired at repo 3 (two S0 rows skipped by a guard-substring collision with the retro rows text — owned), resumed on the SAME token, all six verified in sync.
+- **Post-close:** parent 223/0 · 54/0/0 · 33/0 · 13/0/15; Lite full PASS; siblings 32/39/41/30; all trees clean.
+- **Next action:** S1-PLUGINS-WEB (the rebuild + audit; the flip waits for S1B). 
