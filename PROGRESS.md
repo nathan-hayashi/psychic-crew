@@ -1035,3 +1035,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** ORCA-MATRIX v1 bound as data (12 rows, 8 TAKE / 2 MODULATE / 2 VALIDATE, wholesale REJECTs recorded); 8 landing shapes each naming its future gate; 2 new crew assertions (block legality + roll-up agreement).
 - **Workflow status:** crew 217/2 straddle (219) · 54/0/0 · 33/0 · 13/0/15 · tracked 135.
 - **Next action:** operator issues `APPROVE RSCH-4`; then COMPREHEND-1 — dated-fetch research + mechanism matrix; YOU pick the comprehension mechanism at its STOP (nothing is built there).
+
+## [F8|2026-08-31T20:27:46Z] COMPREHEND-1 built — awaiting the token + the mechanism choice (gate 8 of 12)
+- **Task:** research doc tracked (3 dated sources, estate honestly assessed as expert-voiced, 4 mechanisms costed, recommendation A+D, COMPREHEND-2 binding pre-specified).
+- **Workflow status:** crew 217/2 straddle (219) · 54/0/0 · 33/0 · tracked 136.
+- **Next action:** operator picks the mechanism (A+D recommended / A / C-flavored / other) AND issues `APPROVE COMPREHEND-1`; COMPREHEND-2 builds exactly the choice.
+- **Choice recorded @ 2026-08-31T20:29:05Z:** A+D (explainers + on-demand skill). COMPREHEND-2 builds exactly this on the next token.
