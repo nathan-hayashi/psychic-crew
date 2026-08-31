@@ -27,3 +27,4 @@ entry for it.
 ## Explainers
 
 - [COMPREHEND-2](COMPREHEND-2.md) — this mechanism itself: the explainer discipline and its binding.
+- [ROUTE-1](ROUTE-1.md) — invocation by intent: trigger phrases, explain-plainly, and the barred class.

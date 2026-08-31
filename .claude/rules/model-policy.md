@@ -40,5 +40,15 @@ time of writing) is the operator's interactive choice under the session-model ru
 
 **Known gap (OQ-2):** the orchestrator session may run a context-variant ID such as `claude-opus-5[1m]`, which `.pinned` cannot express. Alias mode is unaffected; a pinned-mode reproducibility run would not reproduce the variant.
 
+## HC-7 skills ruling (ROUTE-1, 2026-08-31)
+Five user-scope skills exist solely to invoke non-Claude models (the two named after the barred
+vendor's CLI, the consult pair, and peer-review, which delegates to them — the census names them
+in `docs/research/ROUTE-1-skills.md`; this file describes rather than spells them, per the same
+rule that keeps the abs-path prose clean). Inside this estate they are **never
+auto-routed and never invoked** — `bash-blocker.sh` refuses the underlying commands mechanically,
+and this paragraph is the recorded ruling so no later gate relitigates the question. The files
+themselves stay installed: they are the operator's own toolchain for repos outside this estate,
+and deleting another context's tools is not this repo's call.
+
 ## Contract
 A configured model that cannot be applied MUST produce a structured `[WARN]` — never a silent skip. Per-agent `effort` is supported and stamped (confirmed F0 step 6): `low|medium|high|xhigh|max`, overriding session effort.

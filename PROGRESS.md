@@ -1046,3 +1046,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** explainer discipline live (epoch=COMPREHEND-1; first explainer covers itself; vacuity guard FIRED CORRECTLY pre-row then greened); D30/v3.15 docs valve; D half routes at ROUTE-1.
 - **Workflow status:** crew 219/2 straddle (221) · 54/0/0 · 33/0 · 13/0/15 · tracked 138.
 - **Next action:** operator issues `APPROVE COMPREHEND-2`; then ROUTE-1 (skills inventory via Read/Glob only, dated-fetch the trigger contract, HC-7-BARRED class, vendor skills read-only, snapshot precondition).
+
+## [F8|2026-08-31T20:49:19Z] ROUTE-1 built — awaiting the token (gate 10 of 12)
+- **Task:** census 61-RO/4-custom/3-project/5-barred · when_to_use triggers (additive) · explain-plainly live (platform picked it up in real time) · HC-7 skills ruling in model-policy (describe-not-spell after the content scan caught the draft) · global natural-invocation note · explainers/ROUTE-1.md (the discipline's first real consumer).
+- **Workflow status:** crew 219/2 straddle (221) · 54/0/0 · 33/0 · 13/0/15 · tracked 140.
+- **Next action:** operator issues `APPROVE ROUTE-1`; then MATRIX-AI-1 — the 51-item feasibility matrix from the FENCE-2 byte-source (count-asserted), the program's final gate.
