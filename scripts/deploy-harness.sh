@@ -191,7 +191,7 @@ jq --arg bb "\$CLAUDE_PROJECT_DIR/.claude/harness-hooks/bash-blocker.sh" \
   ]' "$SL_FILE" > "$SL_FILE.hdtmp" && mv "$SL_FILE.hdtmp" "$SL_FILE"
 
 RH_CMD=$(region_hash "$CMD_FILE"); RH_GI=$(region_hash "$GI_FILE")
-jq -cn --arg p "$PROFILE_VAL" --arg ts "$(date -u +%FT%TZ)" --arg hp "$SELF_DIR" \
+MF_NEW=$(jq -cn --arg p "$PROFILE_VAL" --arg ts "$(date -u +%FT%TZ)" --arg hp "$SELF_DIR" \
   --arg cr "$CREATED" \
   --arg rc "$RH_CMD" --arg rg "$RH_GI" \
   --arg h1 "$(_sha256 "$HHOOKS/_common.sh")" --arg h2 "$(_sha256 "$HHOOKS/_profile.sh")" \
@@ -199,7 +199,15 @@ jq -cn --arg p "$PROFILE_VAL" --arg ts "$(date -u +%FT%TZ)" --arg hp "$SELF_DIR"
   {profile:$p,
    deploy:{version:"v1", ts:$ts, source:$hp, created:$cr,
            regions:{"CLAUDE.md":$rc, ".gitignore":$rg},
-           hooks:{"_common.sh":$h1,"_profile.sh":$h2,"bash-blocker.sh":$h3,"sensitive-guard.sh":$h4}}}' > "$MANIFEST"
+           hooks:{"_common.sh":$h1,"_profile.sh":$h2,"bash-blocker.sh":$h3,"sensitive-guard.sh":$h4}}}')
+# TRUE idempotency (spec predicate): a re-run that changes nothing WRITES nothing — the manifest
+# is rewritten only when it differs beyond its own timestamp, so back-to-back applies are
+# byte-identical regardless of the clock (the ts-only rewrite was a time-dependent flake).
+if [ -f "$MANIFEST" ] && [ "$(jq -c 'del(.deploy.ts)' "$MANIFEST" 2>/dev/null)" = "$(printf '%s' "$MF_NEW" | jq -c 'del(.deploy.ts)')" ]; then
+  :
+else
+  printf '%s\n' "$MF_NEW" > "$MANIFEST"
+fi
 
 audit_line "apply" "$TARGET"
 printf 'deployed into %s (profile %s). re-run is idempotent; --remove restores; backups under .claude/harness-backups/\n' "$TARGET" "$PROFILE_VAL"

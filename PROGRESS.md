@@ -1025,3 +1025,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** bashrc ANTHROPIC_MODEL override DELETED (backup taken) · global doc line → alias-latest · fable session pin recorded as operator-chosen in model-policy.md · platform-fallback note landed · apply-models zero drift · Lite ADAPTED review = NO-CHANGE verdict.
 - **Workflow status:** crew 215/2 straddle (217) · 54/0/0 · 33/0 · tracked 133.
 - **Next action:** operator issues `APPROVE MODEL-1`; commit+push; then RETIRE-1 (survey + gap map + freeze of claude-agent-orchestration-guide; user-global interference cleanup rides along, snapshot-first).
+
+## [F8|2026-08-31T17:17:05Z] RETIRE-1 built — awaiting the token (gate 6 of 12)
+- **Task:** gap map tracked (roll-up: ALL GAPS COVERED, zero ports) · guide frozen at 455a70b local-only (push = operator word) · six interference cleanups landed snapshot-first (symlink loop, prettier exemptions, router scoping, toast defers, clone() skip-list, README d2 honesty) · barred repo untouched · BUILD-1 ts-flake fixed cross-gate (disclosed).
+- **Workflow status:** parent 215/2 straddle (217) · 54/0/0 · 33/0 · 13/0/15 · tracked 134; Lite 67/1/0 · 63/0 · 12/0 · 14/0 · 48/0/0 · PASS.
+- **Next action:** operator issues `APPROVE RETIRE-1` (+ optionally "push the banner"); then RSCH-4 (orca matrix) opens.

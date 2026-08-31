@@ -55,7 +55,7 @@ would fail the §4 seed byte-identity check that the whole build rests on.
 | Fact | Value | |
 | --- | --- | --- |
 | Node / npm actually used | v24.14.0 / 11.9.0 | `[E]` |
-| Tracked files / bytes | 133 files, ~2.2 MB | `[E]` |
+| Tracked files / bytes | 134 files, ~2.2 MB | `[E]` |
 | Runtime dependencies | **zero** — `stress-project/` is Node stdlib only | `[E]` |
 | Disk beyond the checkout | `logs/` grows unbounded; ~2.5 MB after nine phases plus an audit | `[E]` |
 
@@ -208,8 +208,10 @@ block is source that reads better than the JSON, not a picture anyone here can r
 worth tracking anyway is the next paragraph.
 
 ```d2
-# Source of truth is .claude/settings.json. run-crew-tests.sh compares every event -> hook edge
-# below against it in BOTH directions, so this diagram cannot drift from what actually fires.
+# Source of truth is .claude/settings.json — the PROJECT hook topology. run-crew-tests.sh
+# compares every event -> hook edge below against it in BOTH directions, so this diagram cannot
+# drift from the project file. User-scope hooks MERGE in addition at runtime (RETIRE-1: they are
+# governed by the harness user layer's own laws and defer inside this repo; they are not drawn).
 
 direction: right
 
