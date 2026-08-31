@@ -29,3 +29,4 @@ entry for it.
 - [COMPREHEND-2](COMPREHEND-2.md) — this mechanism itself: the explainer discipline and its binding.
 - [ROUTE-1](ROUTE-1.md) — invocation by intent: trigger phrases, explain-plainly, and the barred class.
 - [MATRIX-AI-1](MATRIX-AI-1.md) — the 51-item checklist, every verdict written down and suite-checked.
+- [S0-RECONCILE](S0-RECONCILE.md) — MIT estate-wide, identity, visibility truth, sibling explainer ports.

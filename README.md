@@ -55,7 +55,7 @@ would fail the §4 seed byte-identity check that the whole build rests on.
 | Fact | Value | |
 | --- | --- | --- |
 | Node / npm actually used | v24.14.0 / 11.9.0 | `[E]` |
-| Tracked files / bytes | 142 files, ~2.3 MB | `[E]` |
+| Tracked files / bytes | 144 files, ~2.3 MB | `[E]` |
 | Runtime dependencies | **zero** — `stress-project/` is Node stdlib only | `[E]` |
 | Disk beyond the checkout | `logs/` grows unbounded; ~2.5 MB after nine phases plus an audit | `[E]` |
 
@@ -349,4 +349,8 @@ _This said 23 until 2026-08-17. The figure came from reading the highest correct
 
 ## Licence
 
-Unlicensed / all rights reserved. The five external repositories studied under the soft-ETL registry are knowledge substrate with attribution recorded in `CLAUDE_DESIGN.md`, never runtime dependencies.
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Nathan Lim (the canonical author identity, ruled
+at S0-RECONCILE; the GitHub handle is an address, not a holder). Unlicensed/all-rights-reserved
+until 2026-08-31, when the estate-wide MIT ruling landed. The external repositories studied under
+the soft-ETL registry remain knowledge substrate with attribution recorded in `CLAUDE_DESIGN.md`,
+never runtime dependencies.

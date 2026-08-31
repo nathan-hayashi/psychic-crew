@@ -1063,3 +1063,18 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Open holds carried forward:** amend-hook trigger UNEXPLAINED (wake condition OPEN; separate commit/push law stands) · barred-repo prohibition permanent · guide banner push = operator word · PACK-2 skipped · MacBook BSD cert = operator run.
 - **Next action:** the queued 08-28 LARGE PLAN awaits operator prioritization (sibling realignment incl. plugins web/public, README/UX overhaul, corpus deep-dive, TEI-0; four escalations open) + the eight RSCH-4 TAKEs are each a future gate on operator word.
 - **RETIRE-1 banner pushed @ 2026-08-31T22:21:43Z** on the operator's word — the guide's public copy now carries the RETIRED pointer.
+
+## [F8|2026-08-31T23:29:15Z] VISIBILITY RECONCILIATION (S0-RECONCILE, append-only — the historical checkpoints above stay as written)
+- The all-private sibling claims recorded earlier in this file were TRUE WHEN WRITTEN. At some
+  unrecorded later moment, templates/sidekick/repurpose were flipped PUBLIC out-of-band on GitHub
+  (no commit, no token, no ledger row — gh pushedAt still matches each birth commit). Discovered
+  by the large-plan survey 2026-08-31; the estate hazard audit returned CLEAN (validator-enforced).
+- RESOLUTION per the operator's ratify+reconcile ruling: each of the three carries a dated
+  VIS-RECONCILE ledger row; their README/CLAUDE current-state lines now say PUBLIC-since-flip;
+  plugins (still private, its lines still true) defers to S1. This entry is the parent-side record;
+  nothing historical was rewritten.
+
+## [F8|2026-08-31T23:33:22Z] S0-RECONCILE built — awaiting the token (LARGE PLAN gate 1 of 24)
+- **Task:** MIT ×6 + identity ruling + append-only visibility truth (3 retro rows; plugins deferred to S1) + explainer-epoch ×4 (fire-probe caught the porter, fixed, all green) + ARC4 baseline measured pre-drift (durable in Plan.md).
+- **Workflow status:** parent 221/2 straddle · 54/0/0 · 33/0 · 13/0/15 · tracked 144; Lite full PASS (61 tracked, 59 sync rows); siblings 32/39/41/30 all green.
+- **Next action:** operator issues `APPROVE S0-RECONCILE`; ordered per-repo close per the multi-repo law; then S1-PLUGINS-WEB opens.
