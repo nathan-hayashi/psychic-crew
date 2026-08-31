@@ -995,3 +995,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-08-31T15:48:04Z] FENCE-2 CLOSED at a33484b — program gate 0 done (130 tracked, crew 209, all four suites green)
 - **Post-commit:** 209/0 · 53/0/0 · 33/0 · 13/0/15 · clean · in sync · HEAD stable across separate commit/push calls (no amend fired — first data point).
 - **Next action:** HARNESS-SPEC-1 — hard-check the fenced report (hash-asserted) against THIS machine, produce docs/research/HARNESS-SPEC.md per the program laws (two-root, marker, managed-region, topology), STOP on `APPROVE HARNESS-SPEC-1`.
+
+## [F8|2026-08-31T15:52:21Z] HARNESS-SPEC-1 built — awaiting the token (gate 1 of 12)
+- **Task:** docs/research/HARNESS-SPEC.md — report hash-asserted then hard-checked (rot rows: 2 CONFIRMED-both-repos, 2 FALSE-HERE incl. one that would INVERT truth if applied); 3 dated platform refinements (on-demand subdir CLAUDE.md; file-watcher-immediate hooks — FENCE-2 caveat retired; user-scope imports trusted); F-1 NEW: Lite sync RED today (rule-8 mirror divergence from CORRECTIONS-2) — owned by HARNESS-ROT-1; full build contract (two-root, marker, managed-region, topology, trail, sync, install-order laws) + per-gate end-state tuples.
+- **Escalation AT this STOP:** the projects-level CLAUDE.md loads into all 18 sibling dirs incl. the barred repo — ships inert by default; operator may decline that half or use claudeMdExcludes.
+- **Workflow status:** crew 207/2 straddle · validate 53/0/0 · save 33/0 · matrices 13/0/15 · tracked 131.
+- **Next action:** operator issues `APPROVE HARNESS-SPEC-1` (ratifies the spec + the DIVED census class stands + the inert-CLAUDE.md default unless they say otherwise); commit+push; then HARNESS-ROT-1 (rule-8 mirror sync, stop.sh dispatch+regex, scrub payload-bound, both repos).
