@@ -1016,3 +1016,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** user layer installed (self-tested 5 properties incl. single-record defer + redaction probe, THEN wired w/ fresh backup; central trail flat at 3 through full suite runs) · deploy-harness.sh + ADAPTED twin (dry-run default, drift-refusal, byte-equal restore incl. created-file deletion) · D29/v3.14 · 4 own-defects caught by house machinery (rule-7, rule-5, C-14 canary, Lite remove-gap) all fixed.
 - **Workflow status:** parent 215/2 straddle (217) · 54/0/0 · 33/0 · 13/0/15 · tracked 133; Lite 67/1/0 · 63/0 · 12/0 · 14/0 · 48/0/0 · PASS.
 - **Next action:** operator issues `APPROVE HARNESS-BUILD-1`; both repos commit+push; then MODEL-1 (bashrc env override delete, global CLAUDE.md model line, model-policy fallback note).
+
+## [F8|2026-08-31T16:49:31Z] HARNESS-BUILD-1 CLOSED at c29a0ab — universalization arc COMPLETE (gates 0-4 of 12 done)
+- **Post-commit:** parent 217/0 · 54/0/0 · 33/0 · 13/0/15 · 133 tracked · clean · synced; Lite 67/1/0 · 63/0 · 12/0 · 14/0 · 48/0/0 · PASS (one ls-files-latching completion, disclosed) · clean · synced. User layer live (central trail flat through full suites). Deploy + twin shipped.
+- **Next action:** MODEL-1 — delete the ~/.bashrc ANTHROPIC_MODEL override, fix the stale global CLAUDE.md model line, add the platform-fallback note to model-policy.md (+ Lite ADAPTED review), apply-models + suites prove no drift. STOP on `APPROVE MODEL-1`.
