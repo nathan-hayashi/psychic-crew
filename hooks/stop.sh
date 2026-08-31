@@ -27,7 +27,10 @@ MSG="turn complete"
 # Widened at CLEANUP-1 (audit R4-14): post-build gates carry named tokens, not GATE-Fn, so the
 # F-only pattern meant no toast for any gate since F8. Any awaiting APPROVE row now qualifies —
 # still ledger-anchored, same one-token extraction.
-PEND=$(grep -oE 'awaiting `APPROVE [A-Z0-9-]+`' "$ROOT/GATES.md" 2>/dev/null | sed -E 's/^awaiting `APPROVE ([A-Z0-9-]+)`$/\1/' | head -1 || true)
+# HARNESS-ROT-1: class widened to [A-Za-z0-9-] — the uppercase-only form silently skipped every
+# lowercase-suffixed token (STRESS-1a awaited with no toast). Fire-probed by executing this line's
+# own bytes against fixtures in the suite.
+PEND=$(grep -oE 'awaiting `APPROVE [A-Za-z0-9-]+`' "$ROOT/GATES.md" 2>/dev/null | sed -E 's/^awaiting `APPROVE ([A-Za-z0-9-]+)`$/\1/' | head -1 || true)
 [ -n "${PEND:-}" ] && MSG="GATE READY — $PEND awaiting your token"
-command -v wsl-notify-send.exe >/dev/null 2>&1 && wsl-notify-send.exe "psychic-crew" "$MSG" >/dev/null 2>&1 || true
+toast "$MSG"
 exit 0

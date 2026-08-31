@@ -1001,3 +1001,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Escalation AT this STOP:** the projects-level CLAUDE.md loads into all 18 sibling dirs incl. the barred repo — ships inert by default; operator may decline that half or use claudeMdExcludes.
 - **Workflow status:** crew 207/2 straddle · validate 53/0/0 · save 33/0 · matrices 13/0/15 · tracked 131.
 - **Next action:** operator issues `APPROVE HARNESS-SPEC-1` (ratifies the spec + the DIVED census class stands + the inert-CLAUDE.md default unless they say otherwise); commit+push; then HARNESS-ROT-1 (rule-8 mirror sync, stop.sh dispatch+regex, scrub payload-bound, both repos).
+
+## [F8|2026-08-31T16:06:07Z] HARNESS-ROT-1 built — awaiting the token (gate 2 of 12)
+- **Task:** rule-8 mirror restored (F-1 closed, Lite PASS again) · toast() single dispatch table both repos · scrub whole-payload bound both repos · token regex widened both repos (Lite any-token closes the README-SYNC-1 gap) · 2 own-bytes probes + red legs demonstrated.
+- **Workflow status:** parent 209/2 straddle (total 211) · 53/0/0 · 33/0 · 13/0/15 · tracked 131; Lite 64/1/0 · 61/0 · 12/0 · 14/0 · 48/0/0 · PASS · witness 48/0/0.
+- **Next action:** operator issues `APPROVE HARNESS-ROT-1`; both repos commit+push; then HARNESS-CONV-1 (crit): _profile.sh both repos, profile-aware bash-blocker, R-PR-1 order detector, D28/v3.13 map valve.

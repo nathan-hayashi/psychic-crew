@@ -1062,6 +1062,43 @@ cases_F6 () {
                       || no "FENCE-2 kickoff checklist count is $kkn, want exactly 51 — the byte-source is damaged"
   fi
 
+  # HARNESS-ROT-1 — stop.sh's pending-token extraction, executed from the FILE'S OWN BYTES against
+  # fixtures (rule 6: probe the exact construct — a re-typed copy of the regex would test the test).
+  # The old [A-Z0-9-] class silently skipped lowercase-suffixed tokens: STRESS-1a awaited with no
+  # toast and nothing noticed. Both fixtures must resolve: the legacy uppercase shape, and the
+  # mixed-case shape the old class missed.
+  hrx=$(mktemp -d)
+  hrline=$(grep -m1 '^PEND=' hooks/stop.sh)
+  if [ -z "$hrline" ]; then
+    no "HARNESS-ROT-1 could not extract the PEND line from stop.sh — the probe has no construct to execute"
+  else
+    printf '| A |  | x | y | awaiting `APPROVE FENCE-9` |\n' > "$hrx/GATES.md"
+    ROOT="$hrx" eval "$hrline"
+    hr1="${PEND:-}"
+    printf '| B |  | x | y | awaiting `APPROVE HARNESS-Rot-9z` |\n' > "$hrx/GATES.md"
+    ROOT="$hrx" eval "$hrline"
+    hr2="${PEND:-}"
+    { [ "$hr1" = "FENCE-9" ] && [ "$hr2" = "HARNESS-Rot-9z" ]; } \
+      && ok "HARNESS-ROT-1 stop.sh token extraction resolves upper AND mixed-case fixtures (own bytes executed)" \
+      || no "HARNESS-ROT-1 stop.sh extraction failed a fixture — upper:[$hr1] mixed:[$hr2]"
+  fi
+  rm -rf "$hrx"
+
+  # HARNESS-ROT-1 — scrub() bounds the WHOLE payload, not each line. Report row 4, demonstrated
+  # live: a ~4KB multi-line denied heredoc logged essentially in full under the per-line cut.
+  # The planted shape is fragment-assembled (a scanner never contains its prey) and sits PAST the
+  # bound, proving redaction runs before truncation can be relied on and the bound holds anyway.
+  hrtok="$(printf 'gh%s_%s' 'p' 'ABCDEFGHIJKLMNOP12345678')"
+  hrpay=$(printf 'line-one-%0400d\nline-two-%0400d\nline-three %s tail-%0400d\n' 7 7 "$hrtok" 7)
+  hrout=$(bash -c '. hooks/_common.sh 2>/dev/null; scrub "$1"' _ "$hrpay")
+  hrlen=${#hrout}
+  case "$hrout" in
+    *"$hrtok"*) no "HARNESS-ROT-1 scrub leaked the planted shape past the bound" ;;
+    *) [ "$hrlen" -le 400 ] \
+         && ok "HARNESS-ROT-1 scrub bounds the whole multi-line payload (${hrlen} <= 400) and the planted shape is gone" \
+         || no "HARNESS-ROT-1 scrub output is ${hrlen} bytes — the bound is per-line again" ;;
+  esac
+
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
   # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new
