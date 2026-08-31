@@ -1011,3 +1011,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** _profile.sh MIRRORED both repos (marker cannot mint/loosen; corroboration law) · blockers universal-first + two-root fail-closed gate · R-PR-1 probes both suites from the artifacts own bytes · R-SEC-1 vacuity guard · D28/v3.13 valve (hooks 14→15, EX-01 delta 0).
 - **Workflow status:** parent 212/2 straddle (214 total) · 54/0/0 · 33/0 · 13/0/15 · tracked 132; Lite 66/1/0 · 62/0 · 12/0 · 14/0 · 48/0/0 · PASS · witness 48/0/0.
 - **Next action:** operator issues `APPROVE HARNESS-CONV-1`; both repos commit+push. Then HARNESS-BUILD-1 (user scope + deploy-harness.sh per spec §3-§7).
+
+## [F8|2026-08-31T16:42:27Z] HARNESS-BUILD-1 built — awaiting the token (gate 4 of 12; universalization arc completes here)
+- **Task:** user layer installed (self-tested 5 properties incl. single-record defer + redaction probe, THEN wired w/ fresh backup; central trail flat at 3 through full suite runs) · deploy-harness.sh + ADAPTED twin (dry-run default, drift-refusal, byte-equal restore incl. created-file deletion) · D29/v3.14 · 4 own-defects caught by house machinery (rule-7, rule-5, C-14 canary, Lite remove-gap) all fixed.
+- **Workflow status:** parent 215/2 straddle (217) · 54/0/0 · 33/0 · 13/0/15 · tracked 133; Lite 67/1/0 · 63/0 · 12/0 · 14/0 · 48/0/0 · PASS.
+- **Next action:** operator issues `APPROVE HARNESS-BUILD-1`; both repos commit+push; then MODEL-1 (bashrc env override delete, global CLAUDE.md model line, model-policy fallback note).

@@ -1128,6 +1128,48 @@ cases_F6 () {
     || no "R-PR-1 two-root broken — rc=$rpr (want 2) records=$rpn (want >=1)"
   rm -rf "$rpc"
 
+  # HARNESS-BUILD-1 — deploy-harness.sh controls as spec predicates, in a scratch git repo far from
+  # both harnesses (C-14 law). Three assertions: (1) refusals + fresh deploy + byte-idempotent
+  # re-run; (2) a planted human edit inside a managed region REFUSES without --force; (3) --remove
+  # restores the touched files byte-equal to pre-deploy and deletes every artifact.
+  hdt=$(mktemp -d)
+  ( cd "$hdt" && git init -q . && git config user.email t@t && git config user.name t \
+    && printf 'hi\n' > app.txt && printf '# target\n' > CLAUDE.md && printf 'node_modules/\n' > .gitignore \
+    && git add -A && git commit -qm init ) >/dev/null 2>&1
+  hdc0=$(_sha256 "$hdt/CLAUDE.md"); hdg0=$(_sha256 "$hdt/.gitignore")
+  # C-14: mutating legs run a BYTE-COPY from a scratch harness home, so the script's own audit
+  # append lands in scratch logs, never this repo's live trail. Refusal legs use the live script:
+  # they exit before any audit write, and the self-refusal needs the live SELF_DIR identity.
+  hdh=$(mktemp -d); mkdir -p "$hdh/scripts" "$hdh/logs"
+  cp scripts/deploy-harness.sh "$hdh/scripts/"
+  hdng=$(mktemp -d)
+  ./scripts/deploy-harness.sh "$hdng" --apply >/dev/null 2>&1; hdr1=$?
+  ./scripts/deploy-harness.sh . --apply >/dev/null 2>&1; hdr2=$?
+  "$hdh/scripts/deploy-harness.sh" "$hdt" --apply >/dev/null 2>&1; hdr3=$?
+  ( cd "$hdt" && git add -A && git commit -qm deploy ) >/dev/null 2>&1
+  hdcat=$(mktemp); cat "$hdt/CLAUDE.md" "$hdt/.gitignore" "$hdt/.claude/harness-profile.json" > "$hdcat" 2>/dev/null; hds1=$(_sha256 "$hdcat")
+  "$hdh/scripts/deploy-harness.sh" "$hdt" --apply >/dev/null 2>&1; hdr4=$?
+  cat "$hdt/CLAUDE.md" "$hdt/.gitignore" "$hdt/.claude/harness-profile.json" > "$hdcat" 2>/dev/null; hds2=$(_sha256 "$hdcat"); rm -f "$hdcat"
+  { [ "$hdr1" = 3 ] && [ "$hdr2" = 3 ] && [ "$hdr3" = 0 ] && [ "$hdr4" = 0 ] && [ "$hds1" = "$hds2" ] \
+      && [ -x "$hdt/.claude/harness-hooks/bash-blocker.sh" ]; } \
+    && ok "deploy-harness refuses non-git and self, deploys fresh, and re-runs byte-idempotent" \
+    || no "deploy-harness basics broken — non-git:$hdr1 self:$hdr2 fresh:$hdr3 rerun:$hdr4 idem:[$hds1/$hds2]"
+  awk '{gsub(/do not edit inside these markers/,"HUMAN EDIT")}1' "$hdt/CLAUDE.md" > "$hdt/CLAUDE.md.t" && mv "$hdt/CLAUDE.md.t" "$hdt/CLAUDE.md"
+  ( cd "$hdt" && git add -A && git commit -qm humanedit ) >/dev/null 2>&1
+  "$hdh/scripts/deploy-harness.sh" "$hdt" --apply >/dev/null 2>&1; hdr5=$?
+  "$hdh/scripts/deploy-harness.sh" "$hdt" --apply --force >/dev/null 2>&1; hdr6=$?
+  ( cd "$hdt" && git add -A && git commit -qm forced ) >/dev/null 2>&1
+  { [ "$hdr5" = 3 ] && [ "$hdr6" = 0 ]; } \
+    && ok "deploy-harness REFUSES a drifted managed region and proceeds only under --force" \
+    || no "deploy-harness drift law broken — plain:$hdr5 (want 3) force:$hdr6 (want 0)"
+  "$hdh/scripts/deploy-harness.sh" "$hdt" --remove >/dev/null 2>&1; hdr7=$?
+  hdc1=$(_sha256 "$hdt/CLAUDE.md"); hdg1=$(_sha256 "$hdt/.gitignore")
+  { [ "$hdr7" = 0 ] && [ "$hdc1" = "$hdc0" ] && [ "$hdg1" = "$hdg0" ] \
+      && [ ! -d "$hdt/.claude/harness-hooks" ] && [ ! -f "$hdt/.claude/harness-profile.json" ]; } \
+    && ok "deploy-harness --remove restores both files BYTE-EQUAL to pre-deploy and deletes every artifact" \
+    || no "deploy-harness --remove broken — rc:$hdr7 CLAUDE.md:$([ "$hdc1" = "$hdc0" ] && echo eq || echo NEQ) .gitignore:$([ "$hdg1" = "$hdg0" ] && echo eq || echo NEQ)"
+  rm -rf "$hdt" "$hdng" "$hdh"
+
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
   # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new
