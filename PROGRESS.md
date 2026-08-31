@@ -1056,3 +1056,9 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** all 51 items verdicted (7 EXISTS · 10 GENERALIZE · 9 FEASIBLE-ZERO-DEP · 22 BLOCKED-HC · 3 REJECT), matrix suite-bound as data, three-way contract with the kickoff byte-source, explainer shipped.
 - **Workflow status:** crew 221/2 straddle (223) · 54/0/0 · 33/0 · 13/0/15 · tracked 142.
 - **Next action:** operator issues `APPROVE MATRIX-AI-1` — the additions program then completes. AFTER: the queued 08-28 workstreams (sibling realignment, README/UX overhaul, corpus deep-dive, TEI-0) await prioritization; four escalations open; the RSCH-4 TAKEs are each a future gate on operator word.
+
+## [F8|2026-08-31T22:17:57Z] ADDITIONS PROGRAM COMPLETE — 12 of 12 gates, every one on its exact token (final HEAD 7de1648)
+- **Program:** FENCE-2 · HARNESS-SPEC-1 · HARNESS-ROT-1 · HARNESS-CONV-1 · HARNESS-BUILD-1 · MODEL-1 · RETIRE-1 · RSCH-4 · COMPREHEND-1 · COMPREHEND-2 · ROUTE-1 · MATRIX-AI-1.
+- **Estate end-state:** parent 223/0 · 54/0/0 · 33/0 · 13/0/15 · 142 tracked · v3.15/D30 · clean · synced; Lite 67/1/0 · 63/0 · 12/0 · 14/0 · 48/0/0 · PASS · clean · synced; user layer live (central redacted trail, defer keystone); deploy + twin shipped; guide frozen local-only; explainer discipline live (3 explainers).
+- **Open holds carried forward:** amend-hook trigger UNEXPLAINED (wake condition OPEN; separate commit/push law stands) · barred-repo prohibition permanent · guide banner push = operator word · PACK-2 skipped · MacBook BSD cert = operator run.
+- **Next action:** the queued 08-28 LARGE PLAN awaits operator prioritization (sibling realignment incl. plugins web/public, README/UX overhaul, corpus deep-dive, TEI-0; four escalations open) + the eight RSCH-4 TAKEs are each a future gate on operator word.
