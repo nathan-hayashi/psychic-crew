@@ -1030,3 +1030,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** gap map tracked (roll-up: ALL GAPS COVERED, zero ports) · guide frozen at 455a70b local-only (push = operator word) · six interference cleanups landed snapshot-first (symlink loop, prettier exemptions, router scoping, toast defers, clone() skip-list, README d2 honesty) · barred repo untouched · BUILD-1 ts-flake fixed cross-gate (disclosed).
 - **Workflow status:** parent 215/2 straddle (217) · 54/0/0 · 33/0 · 13/0/15 · tracked 134; Lite 67/1/0 · 63/0 · 12/0 · 14/0 · 48/0/0 · PASS.
 - **Next action:** operator issues `APPROVE RETIRE-1` (+ optionally "push the banner"); then RSCH-4 (orca matrix) opens.
+
+## [F8|2026-08-31T17:29:07Z] RSCH-4 built — awaiting the token (gate 7 of 12)
+- **Task:** ORCA-MATRIX v1 bound as data (12 rows, 8 TAKE / 2 MODULATE / 2 VALIDATE, wholesale REJECTs recorded); 8 landing shapes each naming its future gate; 2 new crew assertions (block legality + roll-up agreement).
+- **Workflow status:** crew 217/2 straddle (219) · 54/0/0 · 33/0 · 13/0/15 · tracked 135.
+- **Next action:** operator issues `APPROVE RSCH-4`; then COMPREHEND-1 — dated-fetch research + mechanism matrix; YOU pick the comprehension mechanism at its STOP (nothing is built there).

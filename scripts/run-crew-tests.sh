@@ -1170,6 +1170,29 @@ cases_F6 () {
     || no "deploy-harness --remove broken — rc:$hdr7 CLAUDE.md:$([ "$hdc1" = "$hdc0" ] && echo eq || echo NEQ) .gitignore:$([ "$hdg1" = "$hdg0" ] && echo eq || echo NEQ)"
   rm -rf "$hdt" "$hdng" "$hdh"
 
+  # RSCH-4 — the orca surgical matrix is DATA the suite parses (ARMY-TABLE/INDEX-1 precedent):
+  # the fenced ORCA-MATRIX block must carry exactly 12 rows of legal verdicts, and the doc's own
+  # prose roll-up must agree with the block — a matrix whose summary disagrees with its rows is
+  # the stale-figure class this repo has recorded repeatedly.
+  omf="docs/research/RSCH-4-orca.md"
+  if [ ! -f "$omf" ]; then
+    no "RSCH-4 matrix doc missing"
+  else
+    omrows=$(awk '/^# ORCA-MATRIX v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$omf")
+    omn=$(printf '%s\n' "$omrows" | grep -c . || true)
+    case "$omn" in ''|*[!0-9]*) omn=0 ;; esac
+    ombad=$(printf '%s\n' "$omrows" | awk -F'\t' '$3!="TAKE-PATTERN"&&$3!="MODULATE-OURS"&&$3!="VALIDATE-AGAINST"&&$3!="REJECT"{c++} END{print c+0}')
+    { [ "$omn" -eq 12 ] && [ "$ombad" = 0 ]; } \
+      && ok "RSCH-4 ORCA-MATRIX parses to exactly 12 rows, every verdict legal" \
+      || no "RSCH-4 ORCA-MATRIX malformed — rows:$omn (want 12) illegal-verdicts:$ombad"
+    omt=$(printf '%s\n' "$omrows" | grep -c 'TAKE-PATTERN' || true)
+    omm=$(printf '%s\n' "$omrows" | grep -c 'MODULATE-OURS' || true)
+    omv=$(printf '%s\n' "$omrows" | grep -c 'VALIDATE-AGAINST' || true)
+    grep -qF -- "Roll-up: **$omt TAKE-PATTERN · $omm MODULATE-OURS · $omv VALIDATE-AGAINST" "$omf" \
+      && ok "RSCH-4 roll-up prose agrees with the block ($omt/$omm/$omv)" \
+      || no "RSCH-4 roll-up prose disagrees with the block — block says $omt/$omm/$omv"
+  fi
+
   # C-16, tested BEHAVIOURALLY and rewritten at HARNESS-1 for the golden-manifest mechanism: copy
   # settings AND the manifest into a temp root, strip a deny entry the OLD hand-maintained subset
   # did NOT cover (terraform), and assert the set-difference check reports it. This proves the new
