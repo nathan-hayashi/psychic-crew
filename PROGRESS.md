@@ -1083,3 +1083,8 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Close:** ordered parent→templates→sidekick→repurpose→plugins→lite; a real PARTIAL fired at repo 3 (two S0 rows skipped by a guard-substring collision with the retro rows text — owned), resumed on the SAME token, all six verified in sync.
 - **Post-close:** parent 223/0 · 54/0/0 · 33/0 · 13/0/15; Lite full PASS; siblings 32/39/41/30; all trees clean.
 - **Next action:** S1-PLUGINS-WEB (the rebuild + audit; the flip waits for S1B). 
+
+## [F8|2026-08-31T23:49:49Z] S1-PLUGINS-WEB built — awaiting the token (LARGE PLAN gate 2 of 24)
+- **Task:** web-only rebuild complete — manifests retired (history preserved for S1B's ruling), gate-machine = pure ledger discipline, chat-user gallery README, .gitignore + publication probe ported, zero-CLI + interpreter arms live w/ fire-probes (both caught real things on first fire: modified-vs-untracked in the probe, my own ledger row in the interpreter arm).
+- **Workflow status:** validate-plugins 35/0/0 · plugins tracked 16 · diff staged and shown pre-token · parent untouched.
+- **Next action:** operator issues `APPROVE S1-PLUGINS-WEB` (plugins-repo close per the push protocol); then S1B-PUBLIC — the history scan + your explicit ruling on public history disclosure, then the flip.
