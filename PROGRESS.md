@@ -1267,3 +1267,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T17:09:11Z] ARC4-RECAL built — awaiting the token (THE FINAL GATE)
 - **Task:** bands -> plateau (measured this hour); ratification run clean vs new bands; token string kept for the arm; footprint 184.
 - **Next action:** `APPROVE ARC4-RECAL` — the large plan completes.
+
+## [F8|2026-09-01T17:13:36Z] THE LARGE PLAN IS COMPLETE — ARC4-RECAL closed @44e5855 (26 of 26 tokens)
+- **End-state:** parent 254/0 · 54/0/0 · 33/0 · matrices 27/0/15 · envelope 11/0 · PORTABLE · 184 tracked · v3.17/D32; lite + four siblings all green; estate public/MIT/bound.
+- **Next action:** NONE OWED — the queue is empty. Open items live in the parked-and-open register (Plan.md, this entry's sibling) and every one waits on the operator's word.

@@ -98,12 +98,20 @@ Mermaid diagram; sidekick coupling curated-by-proof), and S5-README-UX (six fron
 every-occurrence rewrites BEFORE badges, honesty sections, derived-checked graph render, lite topology,
 SVG screenshot, de-localized quickstarts, gh descriptions/topics/homepages after all pushes). Standing
 lesson bought twice (RPG-2, S5): every gate's explainer is a tracked file — the footprint claims move
-in the same build script. ARC 2 COMPLETE (11 gates): CORPUS-0 bound an
-18-row coverage table (census four-value, PROHIBITED asserted by absence, eight questions named
-before any reading), eight full dives discharged their questions (typed-trail arms landed at
-ZEROSHOT with a probe that caught its own checker; loud no-transfer verdicts at OPENHANDS/AGENTFW;
-vocabulary adoptions filed with ARC4-1 — three shapes owed by name; four hook-wiring candidates
-queued for an operator gate under classifier law; the liveness axis landed in budget-baseline;
-babysitter's signing blocked by R-SEC-1 with the operator-held route recorded), and CORPUS-DELTA
-closed the arithmetic 18/18. NEXT: BASE-1/2 (arc 3), then ARC4-1/2, TEI-0, ARC4-RECAL. Push protocol unchanged (fetch-assert, separate
-commit/push, capture-on-reject, post-push guard re-runs).
+in the same build script. THE LARGE PLAN IS COMPLETE (2026-09-01): twenty-six
+pre-declared tokens across five arcs, in order, every close under the push protocol. Arc 1 grew and
+wired the siblings (remote lane, repurpose graph + vendored pin + path-not-body cap, six-rung
+ladder, six bound front doors, plugins public after its ruled flip). Arc 2 closed the corpus
+census 18/18 with eight pre-named-question dives (typed-trail arms; loud no-transfers; three schema
+shapes filed then discharged at ARC4-1; four hook candidates queued; the liveness axis in the
+budget baseline; signing blocked by R-SEC-1 with the operator route recorded). Arc 3 froze the
+stick then left sixteen cells honestly open and priced. Arc 4 shipped the audit constitution and
+its twice-fenced engine (seven skip-guards proven live; tree-hash no-write control; live runs
+clean). Arc 5 birthed the envelope contract, PARKed the graph lane by arithmetic with a
+closure-semantics wake, and recalibrated the bands to the plateau. End-state: parent 254/0 ·
+54/0/0 · 33/0 · matrices 27/0/15 · envelope 11/0 · PORTABLE · 184 tracked · v3.17/D32;
+lite 67/1/0 · 65/0/0 · 12/0 · 48; siblings 44/0 · 64/0/0 · 78/0 · 36/0/0; all six repos public,
+MIT, described, badged-where-bound. NOTHING IS OWED: every open item (SIDE-PAGES-1, eight RSCH-4
+TAKE gates, the four-candidate hook gate, MacBook BSD cert, Lite parity, PACK-2-skipped, the
+operator-key signing option, BASE's sixteen cells, the TEI-1..4 ladder, C-05, the standing wake
+conditions) waits on the operator's word, registered in Plan.md's completion entry.
