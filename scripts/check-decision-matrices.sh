@@ -96,7 +96,7 @@ agent-framework	QUEUED
 takt	QUEUED
 conductor	QUEUED
 zeroshot	DIVED
-OpenHands	QUEUED
+OpenHands	DIVED
 langgraph	QUEUED
 claude-agent-sdk-python	QUEUED
 automation-ecosystem	PROHIBITED'
