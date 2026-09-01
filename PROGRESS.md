@@ -1235,3 +1235,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T15:11:39Z] BASE-1 built — awaiting the token (LARGE PLAN gate 21 of 24; arc 3 opens)
 - **Task:** four candidates named w/ documented licenses (Dify flagged); CrewAI REUSED; five axes verbatim under the frozen law; documented-only posture stated; BASE-2 contract pre-bound; footprint 173.
 - **Next action:** `APPROVE BASE-1`; then BASE-2.
+
+## [F8|2026-09-01T15:13:50Z] BASE-1 CLOSED — BASE-2 opens (gate 21 of 24 done)
+- **Next action:** the matrix; token `APPROVE BASE-2`.
