@@ -1114,3 +1114,11 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T03:51:59Z] SIDE-R1 CLOSED @d232014 — SIDE-R2 opens (LARGE PLAN gate 4 of 24 done)
 - **State:** sidekick pushed + verified; post-push guard ok; 45/0/0 on pushed HEAD.
 - **Next action:** build SIDE-R2 to its STOP; token `APPROVE SIDE-R2`.
+
+## [F8|2026-09-01T03:58:16Z] SIDE-R2 built — awaiting the token (LARGE PLAN gate 5 of 24)
+- **Task:** two-lane phone surface + mobile law in one width query + E3 static arms every clone + J2 in-engine fit meter (ran LIVE here — browser present; drill wording kept for bare hosts). validate-sidekick 60/0/0 · node tests ALL PASS.
+- **Next action:** `APPROVE SIDE-R2`; then RPG-1 (the repurpose graph).
+
+## [F8|2026-09-01T04:00:27Z] SIDE-R2 CLOSED @ed89fc4 — RPG-1 opens (LARGE PLAN gate 5 of 24 done)
+- **State:** sidekick pushed + verified; 60/0/0 on pushed HEAD; remote arc R1+R2 complete.
+- **Next action:** build RPG-1 to its STOP; token `APPROVE RPG-1`.
