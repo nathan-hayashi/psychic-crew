@@ -1196,3 +1196,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [F8|2026-09-01T06:18:41Z] CORPUS-TAKT CLOSED — CORPUS-LANGGRAPH opens (gate 15 of 24 done)
 - **Next action:** targeted dive; token `APPROVE CORPUS-LANGGRAPH`.
+
+## [F8|2026-09-01T06:20:25Z] CORPUS-LANGGRAPH built — awaiting the token (LARGE PLAN gate 16 of 24)
+- **Task:** checkpoint contract read; computed-vs-judged resume; seen-cursor = hook-gate candidate #4 (classifier law); census flip; questions 2==2; footprint 163.
+- **Next action:** `APPROVE CORPUS-LANGGRAPH`; then CORPUS-AGENTFW.

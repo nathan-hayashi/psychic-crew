@@ -97,7 +97,7 @@ takt	DIVED
 conductor	DIVED
 zeroshot	DIVED
 OpenHands	DIVED
-langgraph	QUEUED
+langgraph	DIVED
 claude-agent-sdk-python	DIVED
 automation-ecosystem	PROHIBITED'
 cen_n=$(printf '%s\n' "$CENSUS" | grep -c .)

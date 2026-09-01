@@ -38,3 +38,4 @@ entry for it.
 - [CORPUS-CONDUCTOR](CORPUS-CONDUCTOR.md) — dive 3: the explicit-vs-crash line and the failure trio, adopted with named owners.
 - [CORPUS-SDKPY](CORPUS-SDKPY.md) — dive 4: three unseen lifecycle events, priced as assertions, queued for an operator gate.
 - [CORPUS-TAKT](CORPUS-TAKT.md) — dive 5: the liveness axis our budget cannot see, landed in the baseline.
+- [CORPUS-LANGGRAPH](CORPUS-LANGGRAPH.md) — dive 6: computed resume vs judged resume; the seen-cursor joins the hook queue.

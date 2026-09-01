@@ -16,7 +16,7 @@ OpenHands	DIVED	full	CORPUS-OPENHANDS
 conductor	DIVED	full	CORPUS-CONDUCTOR
 claude-agent-sdk-python	DIVED	full	CORPUS-SDKPY
 takt	DIVED	full	CORPUS-TAKT
-langgraph	QUEUED	full	CORPUS-LANGGRAPH
+langgraph	DIVED	full	CORPUS-LANGGRAPH
 agent-framework	QUEUED	full	CORPUS-AGENTFW
 babysitter	QUEUED	full-split	CORPUS-BABYSITTER-1+CORPUS-BABYSITTER-2
 turbo	ETL-BUILD	delta	CORPUS-DELTA
@@ -42,7 +42,6 @@ the law it cites. One question per QUEUED row, suite-bound both directions.
 
 ```text
 # CORPUS-QUESTIONS v1
-langgraph	What does langgraph checkpoint per graph node, and how do its resume semantics compare to our disk-canonical continuity law (HC-8)?
 agent-framework	What contract does agent-framework enforce between planner and executor roles, and where does it place the human gate relative to ours?
 babysitter	What supervision loop does babysitter run over child agents — part 1 (BABYSITTER-1): what it watches and how it detects; part 2 (BABYSITTER-2): what it intervenes with — and which halves transfer under our human-gate law?
 ```
