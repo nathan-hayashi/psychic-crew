@@ -89,11 +89,16 @@ operator confirmed no other writers push to any estate dev), **S1-PLUGINS-WEB** 
 manifests retired, gate-machine reborn as ledger discipline, zero-CLI + interpreter arms with fire-probes,
 validate-plugins 35/0/0), **S1B-PUBLIC** (the audited flip — full-history scan private-class ZERO,
 disclosure ruled provenance-not-leakage; plugins PUBLIC; all four siblings now public, ceremonied or
-ratified). **IN FLIGHT: SIDE-R1 at its STOP awaiting the token** — sidekick's remote lane: single-line
-REMOTE_PREAMBLE under D2 byte-law (drift fixture proven distinguishable), compilePromptPack
-wraps-never-rewrites, the protocol doc declares the fallback-rule-3 inversion out loud plus the honest
-unasserted half, six node tests (E2r fired on its author: the sixth binds pack === preamble+contract
-byte-for-byte), validate-sidekick 45/0/0, nine files staged, refusal demonstrated, diff shown pre-token.
-Queue after it: SIDE-R2, RPG-1, RPG-2, TPL-R1, S5-README-UX, CORPUS-0 plus ten dive gates, BASE-1/2,
-ARC4-1/2, TEI-0, ARC4-RECAL. Every close runs the push protocol (fetch-assert first, commit and push as
-separate calls, capture both sides on any reject, post-push gate-guard re-run).
+ratified). **ARC 1 COMPLETE (9 of 24 gates)**: after S1B came SIDE-R1 (the remote lane's brain — preamble under
+D2 byte-law, compilePromptPack, the declared fallback-inversion), SIDE-R2 (the phone surface, J2
+measured in-engine), RPG-1 (the repurpose graph: 11 blueprints incl. explainer-epoch, ratified slug
+vocabulary, projected index, pull protocol), RPG-2 (the estate consumes it: intake §6 vendored pin +
+the path-not-body cap; lite consumer contract), TPL-R1 (six-rung ladder 4/7/9/10/13/17 bound as a
+Mermaid diagram; sidekick coupling curated-by-proof), and S5-README-UX (six front doors: bound badges,
+every-occurrence rewrites BEFORE badges, honesty sections, derived-checked graph render, lite topology,
+SVG screenshot, de-localized quickstarts, gh descriptions/topics/homepages after all pushes). Standing
+lesson bought twice (RPG-2, S5): every gate's explainer is a tracked file — the footprint claims move
+in the same build script. NEXT: CORPUS-0 opens arc 2 (17-row coverage table, four-value census
+vocabulary re-ratified at its STOP, eight dive questions named before any reading). Queue: 10 dive
+gates, BASE-1/2, ARC4-1/2, TEI-0, ARC4-RECAL. Push protocol unchanged (fetch-assert, separate
+commit/push, capture-on-reject, post-push guard re-runs).

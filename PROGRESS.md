@@ -1150,3 +1150,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T05:15:35Z] S5-README-UX built — awaiting the token (LARGE PLAN gate 9 of 24; arc-1 finale)
 - **Task:** six repos: bound badges (4) + declined-disclosed (2) · every-occurrence rewrites BEFORE badges · honesty sections · derived-checked repurpose graph · lite topology · SVG screenshot · de-localized quickstarts · LICENSE + TEI-ref verified-not-edited.
 - **Next action:** `APPROVE S5-README-UX` (six ordered closes, then gh metadata); then CORPUS-0 (arc 2).
+
+## [F8|2026-09-01T05:29:48Z] S5-README-UX CLOSED x6 — ARC 1 COMPLETE (9 of 24) — CORPUS-0 opens arc 2
+- **State:** all six legs pushed+verified; gh metadata confirmed; two close defects owned (unstaged stamp; footprint class second instance — lesson sharpened); 230/0 · 54/0/0 · 33/0 · 146 tracked.
+- **Next action:** build CORPUS-0 to its STOP; token `APPROVE CORPUS-0`.
