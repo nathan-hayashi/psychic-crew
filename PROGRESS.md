@@ -1210,3 +1210,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [F8|2026-09-01T14:56:05Z] CORPUS-AGENTFW CLOSED — CORPUS-BABYSITTER-1 opens (gate 17 of 24 done)
 - **Next action:** targeted dive, detection half; token `APPROVE CORPUS-BABYSITTER-1`.
+
+## [F8|2026-09-01T14:57:56Z] CORPUS-BABYSITTER-1 built — awaiting the token (LARGE PLAN gate 18 of 24)
+- **Task:** detection half answered; per-step mechanism-vs-discipline line filed with C-05 (owner exists); census/question deliberately unflipped (part 2 discharges); footprint 167.
+- **Next action:** `APPROVE CORPUS-BABYSITTER-1`; then CORPUS-BABYSITTER-2.
