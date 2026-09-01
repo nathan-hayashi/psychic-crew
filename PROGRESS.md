@@ -1228,3 +1228,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T15:06:17Z] CORPUS-DELTA built — awaiting the token (LARGE PLAN gate 20 of 24; arc-2 finale)
 - **Task:** four NO-ACTION refresh verdicts at the declared tier; coverage arithmetic 18/18 closed; census untouched by definition; footprint 171.
 - **Next action:** `APPROVE CORPUS-DELTA` (arc 2 completes); then BASE-1 (arc 3).
+
+## [F8|2026-09-01T15:10:39Z] CORPUS-DELTA CLOSED @4a1ad35 — ARC 2 COMPLETE — BASE-1 opens (gate 20 of 24 done)
+- **Next action:** build BASE-1 to its STOP; token `APPROVE BASE-1`.

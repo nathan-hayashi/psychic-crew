@@ -98,7 +98,12 @@ Mermaid diagram; sidekick coupling curated-by-proof), and S5-README-UX (six fron
 every-occurrence rewrites BEFORE badges, honesty sections, derived-checked graph render, lite topology,
 SVG screenshot, de-localized quickstarts, gh descriptions/topics/homepages after all pushes). Standing
 lesson bought twice (RPG-2, S5): every gate's explainer is a tracked file — the footprint claims move
-in the same build script. NEXT: CORPUS-0 opens arc 2 (17-row coverage table, four-value census
-vocabulary re-ratified at its STOP, eight dive questions named before any reading). Queue: 10 dive
-gates, BASE-1/2, ARC4-1/2, TEI-0, ARC4-RECAL. Push protocol unchanged (fetch-assert, separate
+in the same build script. ARC 2 COMPLETE (11 gates): CORPUS-0 bound an
+18-row coverage table (census four-value, PROHIBITED asserted by absence, eight questions named
+before any reading), eight full dives discharged their questions (typed-trail arms landed at
+ZEROSHOT with a probe that caught its own checker; loud no-transfer verdicts at OPENHANDS/AGENTFW;
+vocabulary adoptions filed with ARC4-1 — three shapes owed by name; four hook-wiring candidates
+queued for an operator gate under classifier law; the liveness axis landed in budget-baseline;
+babysitter's signing blocked by R-SEC-1 with the operator-held route recorded), and CORPUS-DELTA
+closed the arithmetic 18/18. NEXT: BASE-1/2 (arc 3), then ARC4-1/2, TEI-0, ARC4-RECAL. Push protocol unchanged (fetch-assert, separate
 commit/push, capture-on-reject, post-push guard re-runs).
