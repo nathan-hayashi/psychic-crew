@@ -1088,3 +1088,11 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 - **Task:** web-only rebuild complete — manifests retired (history preserved for S1B's ruling), gate-machine = pure ledger discipline, chat-user gallery README, .gitignore + publication probe ported, zero-CLI + interpreter arms live w/ fire-probes (both caught real things on first fire: modified-vs-untracked in the probe, my own ledger row in the interpreter arm).
 - **Workflow status:** validate-plugins 35/0/0 · plugins tracked 16 · diff staged and shown pre-token · parent untouched.
 - **Next action:** operator issues `APPROVE S1-PLUGINS-WEB` (plugins-repo close per the push protocol); then S1B-PUBLIC — the history scan + your explicit ruling on public history disclosure, then the flip.
+
+## [F8|2026-09-01T00:00:07Z] S1B-PUBLIC built — awaiting the token (LARGE PLAN gate 3 of 24)
+- **Task:** history scan CLEAN (private-class 0 everywhere; CLI-class = the 2-commit origin story); operator ruling ACCEPTED-disclosure recorded; flip sequence staged (flip → verify → supersede lines → stamp).
+- **Next action:** operator issues `APPROVE S1B-PUBLIC`; the flip executes in the ruled order; then SIDE-R1 (sidekick protocol + pack) opens.
+
+## [F8|2026-09-01T00:07:37Z] S1B-PUBLIC CLOSED — psychic-plugins is PUBLIC; all four siblings now public (one ceremonied, three ratified)
+- **Close:** flip verified against the live API BEFORE the stamp (the first attempt used a wrong gh flag and verified private — the ruled flip→verify→stamp ordering caught it exactly as designed; retried with the correct flag, verified, then stamped).
+- **Next action:** SIDE-R1 (sidekick: REMOTE_PREAMBLE single-line carrier + formatter round-trip proof, §D2 byte-binding, protocol doc, contract delta shown pre-token).
