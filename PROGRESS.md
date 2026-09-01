@@ -1256,3 +1256,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T15:47:16Z] ARC4-2 built — awaiting the token (LARGE PLAN gate 24 of 24 named-tokens... gates 23 done, 2 remain after: TEI-0 + ARC4-RECAL)
 - **Task:** the fenced engine — 7 skip-guards proven live, tree-hash no-write control w/ planted-write catch, §4.3 pair 12->13 D31/v3.16 delta-0, freshness surfaces, first live run 6-repos-0-findings; rule-5 caught its own new arm (remedied); crew 249; footprint 179.
 - **Next action:** `APPROVE ARC4-2` (arc 4 completes); then TEI-0.
+
+## [F8|2026-09-01T16:30:04Z] ARC4-2 CLOSED @fa817d3 — ARC 4 COMPLETE — TEI-0 opens
+- **Next action:** build TEI-0 to its STOP under the RSCH-3 pre-plan; token `APPROVE TEI-0`.
