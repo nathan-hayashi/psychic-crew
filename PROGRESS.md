@@ -1186,3 +1186,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T06:09:57Z] CORPUS-SDKPY built — awaiting the token (LARGE PLAN gate 14 of 24)
 - **Task:** ten-vs-eight event diff; three unseen events priced as assertions; NO wiring by classifier law (HIGH class — recorded as candidates, SubagentStop first); census flip; questions 4==4; footprint 159.
 - **Next action:** `APPROVE CORPUS-SDKPY`; then CORPUS-TAKT.
+
+## [F8|2026-09-01T06:12:42Z] CORPUS-SDKPY CLOSED — CORPUS-TAKT opens (gate 14 of 24 done)
+- **Next action:** targeted dive; token `APPROVE CORPUS-TAKT`.
