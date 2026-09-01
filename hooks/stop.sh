@@ -32,5 +32,10 @@ MSG="turn complete"
 # own bytes against fixtures in the suite.
 PEND=$(grep -oE 'awaiting `APPROVE [A-Za-z0-9-]+`' "$ROOT/GATES.md" 2>/dev/null | sed -E 's/^awaiting `APPROVE ([A-Za-z0-9-]+)`$/\1/' | head -1 || true)
 [ -n "${PEND:-}" ] && MSG="GATE READY — $PEND awaiting your token"
+# ARC4-2: audit staleness rides the toast ONLY when no gate is pending — gate precedence is law.
+if [ -z "${PEND:-}" ] && [ -f "$ROOT/logs/audit/runs.jsonl" ]; then
+  ALAST=$(tail -1 "$ROOT/logs/audit/runs.jsonl" 2>/dev/null | jq -r '.ts // empty' 2>/dev/null || true)
+  [ -n "${ALAST:-}" ] && MSG="$MSG · last self-audit $ALAST"
+fi
 toast "$MSG"
 exit 0

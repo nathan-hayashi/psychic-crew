@@ -91,6 +91,11 @@ git archive --format=tar HEAD | tar -x -C "$CS"
   && git -c user.email=drill@local -c user.name=drill commit -qm "clone-shaped" ) >/dev/null 2>&1
 if ( cd "$CS" && ./scripts/setup.sh ) > "$TMP/c.out" 2>&1; then
   printf '  [ok]   setup.sh READY in the clone-shaped checkout — %s\n' "$(grep -E 'validate-crew:' "$TMP/c.out" | tail -1 | sed 's/^ *\[ok\] *//')"
+  if ( cd "$CS" && bash hooks/session-start.sh >/dev/null 2>&1 ); then
+    printf '  [ok]   session-start silent-exit-0 with no logs/ (ARC4-2: the no-audit branch, leg C)\n'
+  else
+    printf '  [FAIL] session-start died in the clone-shaped checkout (the no-audit branch broke)\n'
+  fi
 else
   printf '  [FAIL] setup.sh NOT READY in the clone-shaped checkout (the operator-laptop class):\n'
   grep -E '\[FAIL\]|NOT READY' "$TMP/c.out" | sed 's/^/         /' | tail -6; FAIL=$((FAIL + 1))

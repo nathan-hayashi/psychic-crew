@@ -41,7 +41,8 @@ TRAILS_BEFORE=$(for f in logs/*.jsonl; do [ -f "$f" ] && printf '%s:%s\n' "$f" "
 cases_F0 () {
   echo "== F0 — scaffold integrity =="
   check "validate-crew all green"                 0 ./scripts/validate-crew.sh
-  check "plan corrections: F0 clean"              0 ./scripts/check-plan-corrections.sh F0
+  if [ "${PSYCHIC_SELF_AUDIT:-0}" = 1 ]; then ok "self-audit skip-guard: corrections site F0 skipped (the metrics-writer chain)"
+  else check "plan corrections: F0 clean"              0 ./scripts/check-plan-corrections.sh F0; fi
   check "decision matrices: structure, census and citations hold (H3b)" 0 ./scripts/check-decision-matrices.sh
   check "settings.json parses"                    0 jq -e . .claude/settings.json
   check "models.config.json parses"               0 jq -e . models.config.json
@@ -66,7 +67,8 @@ cases_F0 () {
 cases_F1 () {
   echo "== F1 — model routing (HC-2 / HC-4) =="
   check "apply-models clean config"               0 ./scripts/apply-models.sh
-  check "plan corrections: F1 clean"              0 ./scripts/check-plan-corrections.sh F1
+  if [ "${PSYCHIC_SELF_AUDIT:-0}" = 1 ]; then ok "self-audit skip-guard: corrections site F1 skipped (the metrics-writer chain)"
+  else check "plan corrections: F1 clean"              0 ./scripts/check-plan-corrections.sh F1; fi
   for v in '.agents["lead-planner"].model="fable"' '.session.model="fable"' \
            '.pinned.opus="claude-fable-5"' '.aliases.opus="claude-fable-5"'; do
     jq "$v" "$BAK"/models.config.json > models.config.json
@@ -570,7 +572,8 @@ cases_F4 () {
   # G-F4 stress, executable half: with the lock absent the lock branch precondition is false.
   ( unset CREW_TIER_LOCK; [ -z "${CREW_TIER_LOCK:-}" ] ) && ok "stress: lock clears in a scratch shell without touching project env" || no "lock could not be cleared"
   [ "$(jq -r .env.CREW_TIER_LOCK .claude/settings.json)" = T3 ] && ok "stress: project env restored to T3" || no "project env lock not T3"
-  check "plan corrections: F4 clean" 0 ./scripts/check-plan-corrections.sh F4
+  if [ "${PSYCHIC_SELF_AUDIT:-0}" = 1 ]; then ok "self-audit skip-guard: corrections site F4 skipped (the metrics-writer chain)"
+  else check "plan corrections: F4 clean" 0 ./scripts/check-plan-corrections.sh F4; fi
 
   # CR-026 (S4, ruling R3a) — the user-facing intake layer. The agent-side contracts were strong;
   # the human side had none, so every task contract was authored by the orchestrator from an
@@ -676,7 +679,8 @@ cases_F3 () {
   disp=$(grep -l '^tools:.*Agent' .claude/agents/*.md 2>/dev/null | xargs -n1 basename 2>/dev/null | tr '\n' ' ')
   [ "$disp" = "" ] && ok "EX-05: no agent holds an inert dispatch grant" \
                        || no "EX-05: dispatch tool held by [$disp]; nested dispatch does not work, so any grant is inert and misleading"
-  check "plan corrections: F3 clean" 0 ./scripts/check-plan-corrections.sh F3
+  if [ "${PSYCHIC_SELF_AUDIT:-0}" = 1 ]; then ok "self-audit skip-guard: corrections site F3 skipped (the metrics-writer chain)"
+  else check "plan corrections: F3 clean" 0 ./scripts/check-plan-corrections.sh F3; fi
 
   # --- SEC-DG-01 (arbiter-released, F3-D1) — audit-trail secret hygiene ---
   # Both writers used to bound the target with `cut -c1-200`, which limits LENGTH and redacts
@@ -812,7 +816,8 @@ cases_F5 () {
   grep -qF "army-selector" .claude/skills/intake/SKILL.md \
     && ok "SIDE-3 intake points at the selector" || no "SIDE-3 intake pointer missing"
 
-  check "plan corrections: F5 clean" 0 ./scripts/check-plan-corrections.sh F5
+  if [ "${PSYCHIC_SELF_AUDIT:-0}" = 1 ]; then ok "self-audit skip-guard: corrections site F5 skipped (the metrics-writer chain)"
+  else check "plan corrections: F5 clean" 0 ./scripts/check-plan-corrections.sh F5; fi
 }
 
 cases_F6 () {
@@ -1307,7 +1312,8 @@ cases_F7 () {
   # guard fired on gate evidence it had no business flagging. Bind to what changes if the defect
   # is real - the audit modifying its subject - not to an incidental starting state.
   f7tmp0=$(ls -A "$sp/tmp" 2>/dev/null | wc -l)
-  check "plan corrections: F7 clean"              0 ./scripts/check-plan-corrections.sh F7
+  if [ "${PSYCHIC_SELF_AUDIT:-0}" = 1 ]; then ok "self-audit skip-guard: corrections site F7 skipped (the metrics-writer chain)"
+  else check "plan corrections: F7 clean"              0 ./scripts/check-plan-corrections.sh F7; fi
 
   # -- the app suite runs green. Capture into a variable, THEN test: node --test exits nonzero
   # on failure and a pipeline would swallow that under pipefail (five recorded incidents).
@@ -1578,6 +1584,56 @@ AQ2EOF
   [ -n "$agpv" ] && ok "control fires: a planted ACCEPTED row with a phantom cr_id is caught$agpv" \
     || no "gated-fixes control DID NOT fire on the planted row"
 
+
+  # ARC4-2 — the runner and its two P0 controls. The no-write control is a TREE-HASH manifest
+  # diff over a tracked+.git tar copy (porcelain cannot see ignored paths — the one directory
+  # the lane may write is the one porcelain ignores; and the copy is verified to BE a git work
+  # tree first, the C-23 lesson). The skip-guard is proven live by a nested F5 run.
+  echo "== ARC4-2 — the runner: skip-guard, tree-hash no-write control, freshness =="
+  [ -x scripts/self-audit.sh ] && bash -n scripts/self-audit.sh 2>/dev/null \
+    && ok "self-audit.sh present, executable, parses" || no "self-audit.sh missing or broken"
+  sagn=$(grep -c 'self-audit skip-guard' scripts/run-crew-tests.sh)
+  [[ "$sagn" =~ ^[0-9]+$ ]] || sagn=0
+  [ "$sagn" -eq 8 ] && ok "all 7 corrections call sites carry the skip-guard (7 sites + this counting line)" \
+    || no "skip-guard site count $sagn != 8 (7 sites + the counter's own match)"
+  sfl=$(PSYCHIC_SELF_AUDIT=1 ./scripts/run-crew-tests.sh F5 2>/dev/null | grep -c 'skip-guard')
+  [[ "$sfl" =~ ^[0-9]+$ ]] || sfl=0
+  [ "$sfl" -ge 1 ] && ok "skip-guard FIRES live (nested F5 run in audit mode: $sfl site(s) skipped)" \
+    || no "skip-guard DID NOT fire in a live audit-mode run"
+  na=$(mktemp -d)
+  git ls-files -z | tar -cf "$na/t.tar" --null -T - .git 2>/dev/null
+  mkdir "$na/repo" && tar -xf "$na/t.tar" -C "$na/repo"
+  if git -C "$na/repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    ok "no-write control copy IS a git work tree (C-23: the control's substrate proven before use)"
+    ( cd "$na/repo" && find . -type f | LC_ALL=C sort > "$na/f0.list" )
+    while IFS= read -r f; do printf '%s %s\n' "$(cd "$na/repo" && _sha256 "$f")" "$f"; done < "$na/f0.list" > "$na/m0"
+    ( cd "$na/repo" && ./scripts/self-audit.sh --measure-only >/dev/null 2>&1 )
+    ( cd "$na/repo" && find . -type f | LC_ALL=C sort > "$na/f1.list" )
+    while IFS= read -r f; do printf '%s %s\n' "$(cd "$na/repo" && _sha256 "$f")" "$f"; done < "$na/f1.list" > "$na/m1"
+    nwbad=$(diff "$na/m0" "$na/m1" | grep -E '^[<>]' | awk '{print $3}' | sort -u | grep -v '^\./logs/audit/' || true)
+    [ -z "$nwbad" ] && ok "no-write holds: the audit lane changed ONLY logs/audit/* (tree-hash diff)" \
+      || no "audit lane WROTE outside logs/audit/: $(tr '\n' ' ' <<<"$nwbad")"
+    mkdir -p "$na/repo/logs/metrics" && printf 'planted\n' > "$na/repo/logs/metrics/planted-probe"
+    ( cd "$na/repo" && find . -type f | LC_ALL=C sort > "$na/f2.list" )
+    while IFS= read -r f; do printf '%s %s\n' "$(cd "$na/repo" && _sha256 "$f")" "$f"; done < "$na/f2.list" > "$na/m2"
+    nwp=$(diff "$na/m1" "$na/m2" | grep -E '^[<>]' | awk '{print $3}' | sort -u | grep -v '^\./logs/audit/' | grep -c .)
+    [[ "$nwp" =~ ^[0-9]+$ ]] || nwp=0
+    [ "$nwp" -ge 1 ] && ok "control fires: a planted logs/metrics write IS seen by the manifest diff (porcelain could not see it)" \
+      || no "no-write control DID NOT fire on the planted ignored-path write"
+  else
+    no "no-write control copy is NOT a git work tree — the control would be void (C-23)"
+  fi
+  rm -rf "$na"
+  sgl=$(grep -n 'GATE READY' hooks/stop.sh | head -1 | cut -d: -f1); [[ "$sgl" =~ ^[0-9]+$ ]] || sgl=0
+  sal=$(grep -n 'last self-audit' hooks/stop.sh | head -1 | cut -d: -f1); [[ "$sal" =~ ^[0-9]+$ ]] || sal=0
+  { [ "$sgl" -ge 1 ] && [ "$sal" -gt "$sgl" ] && grep -q 'PEND' <<<"$(grep -B2 'last self-audit' hooks/stop.sh)"; } \
+    && ok "stop-toast: audit staleness sits BELOW gate precedence, proven from the hook's own bytes (gate line $sgl < audit line $sal, PEND-guarded)" \
+    || no "stop-toast ordering broken: gate=$sgl audit=$sal or the PEND guard is missing"
+  grep -q 'logs/audit/runs.jsonl' hooks/session-start.sh \
+    && grep -E -- '-f "\$ROOT/logs/audit/runs.jsonl"' hooks/session-start.sh >/dev/null \
+    && ok "session-start freshness line present and guarded (absent logs/ = silent, the bare-clone branch)" \
+    || no "session-start freshness line missing or unguarded"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
@@ -1594,7 +1650,8 @@ gate_evidence () {
   echo "tree: $(git status --porcelain | wc -l) dirty · tracked: $(git ls-files | wc -l)"
   echo "synced: $([ "$(git rev-parse HEAD)" = "$(git rev-parse origin/dev 2>/dev/null)" ] && echo yes || echo NO)"
   echo "--- validators ---"; ./scripts/validate-crew.sh | tail -1
-  ./scripts/check-plan-corrections.sh | tail -2 | head -1
+  if [ "${PSYCHIC_SELF_AUDIT:-0}" = 1 ]; then echo "self-audit skip-guard: corrections site evidence skipped (the metrics-writer chain)"
+  else ./scripts/check-plan-corrections.sh | tail -2 | head -1; fi
   echo "--- suite ---"
 }
 

@@ -46,3 +46,4 @@ entry for it.
 - [BASE-1](BASE-1.md) — arc 3 opens: four candidates named, five axes reaffirmed frozen, posture stated.
 - [BASE-2](BASE-2.md) — the matrix: setup settles, sixteen cells honestly open, roll-up suite-bound.
 - [ARC4-1](ARC4-1.md) — the audit constitution: bands from the early baseline, empty-legal queue, three schemas discharged, gated-fixes law.
+- [ARC4-2](ARC4-2.md) — the engine, fenced: tree-hash no-write control, seven skip-guards, human invocation.
