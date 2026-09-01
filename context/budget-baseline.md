@@ -483,3 +483,16 @@ the total disagree with `logs/`.
 this is a spec, not a picture. What is enforced instead is in `run-crew-tests.sh`: the embedded
 `values` are compared against the TSV row by row when it is present, and every field named in the
 `encoding` must exist in the data — the failure that renders an empty chart.
+
+## The second axis — liveness (CORPUS-TAKT, 2026-09-01)
+
+**verified** — Every figure above measures ONE axis: cumulative spend. The TAKT dive
+(docs/research/CORPUS-TAKT.md) establishes a second, independent axis this baseline does NOT
+measure: liveness. Takt's budget primitive is an inactivity deadline — cumulative time
+deliberately uncapped, freshness of observable events capped, with a typed PART_TIMEOUT when
+even the signal channel goes stale. A phase in this estate can be under every budget in this
+file and hung forever; nothing here would notice. That gap is the gastown stuck-agent finding
+(S6, promoted at CORPUS-0), corroborated a second time from the budgeting angle. Liveness is
+UNOWNED in this estate today; the SubagentStop wiring candidate (CORPUS-SDKPY, awaiting an
+operator-declared gate) is the death-half of any future stall detection. Any future budget
+states which axes it covers — this file covers spend only.

@@ -93,7 +93,7 @@ oh-my-claudecode	DIVED
 orca	DIVED
 babysitter	QUEUED
 agent-framework	QUEUED
-takt	QUEUED
+takt	DIVED
 conductor	DIVED
 zeroshot	DIVED
 OpenHands	DIVED

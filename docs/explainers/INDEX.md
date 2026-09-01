@@ -37,3 +37,4 @@ entry for it.
 - [CORPUS-OPENHANDS](CORPUS-OPENHANDS.md) — dive 2: bounds compared, one rejection recorded, no-transfer stated loudly.
 - [CORPUS-CONDUCTOR](CORPUS-CONDUCTOR.md) — dive 3: the explicit-vs-crash line and the failure trio, adopted with named owners.
 - [CORPUS-SDKPY](CORPUS-SDKPY.md) — dive 4: three unseen lifecycle events, priced as assertions, queued for an operator gate.
+- [CORPUS-TAKT](CORPUS-TAKT.md) — dive 5: the liveness axis our budget cannot see, landed in the baseline.
