@@ -77,8 +77,11 @@ note "M2's 'rows the checker reports' quantity is NOT re-derived here: doing so 
 
 echo "== C. M4 census — every corpus directory classified, both directions =="
 # The classification is DATA, maintained here the way FIXTURE_IDS is: a new drop must be added
-# deliberately or this fails by name. Statuses: ETL-BUILD (consumed at build under §11),
-# DIVED (S6 targeted dive on a named question), BARRED (M4: no named question stands today).
+# deliberately or this fails by name. Statuses (CORPUS-0 four-value vocabulary, ratified by that
+# gate's token): ETL-BUILD (consumed at build under §11) · DIVED (targeted dive done) · QUEUED
+# (a named question stands in docs/research/CORPUS-0-coverage.md; its dive gate discharges it) ·
+# PROHIBITED (reads barred by standing law; NEVER on disk — the ABSENCE is the assertion).
+# BARRED is retired: it conflated no-question-yet with the absolute prohibition.
 CENSUS='turbo	ETL-BUILD
 claude-agent-orchestration-guide	ETL-BUILD
 mermaid-hybrid-stack-guide	ETL-BUILD
@@ -88,14 +91,15 @@ gastown	DIVED
 ruflo	DIVED
 oh-my-claudecode	DIVED
 orca	DIVED
-babysitter	BARRED
-agent-framework	BARRED
-takt	BARRED
-conductor	BARRED
-zeroshot	BARRED
-OpenHands	BARRED
-langgraph	BARRED
-claude-agent-sdk-python	BARRED'
+babysitter	QUEUED
+agent-framework	QUEUED
+takt	QUEUED
+conductor	QUEUED
+zeroshot	QUEUED
+OpenHands	QUEUED
+langgraph	QUEUED
+claude-agent-sdk-python	QUEUED
+automation-ecosystem	PROHIBITED'
 cen_n=$(printf '%s\n' "$CENSUS" | grep -c .)
 [ "$cen_n" -ge 10 ] && pass "census table parses to $cen_n classifications (vacuity guard)" \
                     || fail "census table vacuous ($cen_n rows)"
@@ -109,16 +113,70 @@ for d in *-main; do
 done
 [ -z "$unclass" ] && pass "every corpus directory on disk is classified — a new drop fails here by name" \
                   || fail "UNCLASSIFIED corpus director(ies) on disk:$unclass — M4's law has no verdict for them yet"
-gone=""
+gone=""; prohpresent=""
 while IFS="$(printf '\t')" read -r nm st; do
   [ -n "${nm:-}" ] || continue
+  if [ "${st:-}" = "PROHIBITED" ]; then
+    [ -d "${nm}-main" ] && prohpresent="$prohpresent [$nm]"
+    continue
+  fi
   [ -d "${nm}-main" ] || gone="$gone [$nm]"
 done <<CENEOF
 $CENSUS
 CENEOF
 [ -z "$gone" ] && pass "every classified directory is on disk — the census describes the corpus that exists" \
                || fail "classified director(ies) missing from disk:$gone"
-note "H3b deep-dive closure, recorded: D1a's three mandated dives are done (S6a gastown, S6b ruflo + oh-my-claudecode); M1's two gap-questions (stall detection, temporal bisect) were answered and BUILT in the twin (its L3 continuity and L2 history layers); the report-ranked repos not on disk are unfetchable under HC-5; and no ledger names a standing question against the eight BARRED directories. M4's bar therefore closes the deep-dive half — reopened only by a named question."
+[ -z "$prohpresent" ] && pass "PROHIBITED corpora are ABSENT from disk — the prohibition is machine-visible and holding" \
+                      || fail "PROHIBITED corpus present on disk:$prohpresent — the standing law is breached"
+note "H3b deep-dive closure, SUPERSEDED AT CORPUS-0: that closure held exactly while no question was named. CORPUS-0 NAMED the eight (docs/research/CORPUS-0-coverage.md, CORPUS-QUESTIONS v1) under M4's own law — question first, reading second — so the eight rows are QUEUED for their dive gates, not closed. The three S6 dives are promoted to docs/research/S6-*.md verbatim; the PROHIBITED row is closed by LAW (reads barred estate-wide, absence asserted above), never by absence of questions."
+
+
+echo "== C2. CORPUS-0 — coverage table + questions, bound both directions =="
+COVDOC="docs/research/CORPUS-0-coverage.md"
+if [ ! -f "$COVDOC" ]; then
+  fail "coverage doc missing: $COVDOC"
+else
+  cov=$(awk '/^# CORPUS-COVERAGE v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$COVDOC")
+  covn=$(printf '%s\n' "$cov" | grep -c .); case "$covn" in ''|*[!0-9]*) covn=0 ;; esac
+  cenn=$(printf '%s\n' "$CENSUS" | grep -c .)
+  [ "$covn" -eq "$cenn" ] && pass "coverage rows ($covn) == census rows ($cenn)" \
+    || fail "coverage/census row mismatch: $covn vs $cenn"
+  covpair=$(printf '%s\n' "$cov" | awk -F'\t' '{print $1 "\t" $2}' | sort)
+  cenpair=$(printf '%s\n' "$CENSUS" | sort)
+  [ "$covpair" = "$cenpair" ] && pass "coverage (name,status) pairs == census, set-equal both ways" \
+    || fail "coverage/census divergence: $(comm -3 <(printf '%s\n' "$covpair") <(printf '%s\n' "$cenpair") | head -2 | tr '\n' ' ')"
+  covbad=""
+  while IFS="$(printf '\t')" read -r cnm cst ctier cdis; do
+    [ -n "${cnm:-}" ] || continue
+    case "${cdis:-}" in
+      CORPUS-ZEROSHOT|CORPUS-OPENHANDS|CORPUS-CONDUCTOR|CORPUS-SDKPY|CORPUS-TAKT|CORPUS-LANGGRAPH|CORPUS-AGENTFW|CORPUS-DELTA|CORPUS-0|RSCH-4|F6|PROHIBITED-BY-LAW) : ;;
+      CORPUS-BABYSITTER-1+CORPUS-BABYSITTER-2) : ;;
+      *) covbad="$covbad [$cnm:$cdis]" ;;
+    esac
+  done <<COVEOF
+$cov
+COVEOF
+  [ -z "$covbad" ] && pass "every discharge is a named gate or the one exemption (no row can dangle)" \
+    || fail "unknown discharge(s):$covbad"
+  qs=$(awk '/^# CORPUS-QUESTIONS v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$COVDOC")
+  qn=$(printf '%s\n' "$qs" | grep -c .); case "$qn" in ''|*[!0-9]*) qn=0 ;; esac
+  [ "$qn" -eq 8 ] && pass "exactly 8 named questions (M4: question first, reading second)" \
+    || fail "question rows $qn != 8"
+  qnames=$(printf '%s\n' "$qs" | cut -f1 | sort)
+  queued=$(printf '%s\n' "$CENSUS" | awk -F'\t' '$2=="QUEUED"{print $1}' | sort)
+  [ "$qnames" = "$queued" ] && pass "questions <-> QUEUED rows, set-equal both ways (no unquestioned QUEUED, no phantom question)" \
+    || fail "question/QUEUED divergence: $(comm -3 <(printf '%s\n' "$qnames") <(printf '%s\n' "$queued") | tr '\n' ' ')"
+  for pd in S6-gastown S6-ruflo S6-oh-my-claudecode; do
+    [ -f "docs/research/$pd.md" ] && pass "promotion doc exists: $pd (the CORPUS-0 discharge is an artifact, not a claim)" \
+      || fail "promotion doc MISSING: $pd — the promoted rows would discharge against nothing"
+  done
+  covp=$(mktemp)
+  { printf '%s\n' "$cov"; printf 'phantom-corpus\tQUEUED\tfull\tCORPUS-PHANTOM\n'; } > "$covp"
+  covp2=$(awk -F'\t' '{print $1 "\t" $2}' "$covp" | sort)
+  [ "$covp2" != "$cenpair" ] && pass "control fires: a phantom coverage row breaks census agreement" \
+    || fail "coverage control DID NOT fire"
+  rm -f "$covp"
+fi
 
 echo "== D. M5 — dispatch economics, re-derived from the live TSV =="
 tsv="logs/metrics/dispatch-costs.tsv"

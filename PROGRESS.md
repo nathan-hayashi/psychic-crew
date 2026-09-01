@@ -1154,3 +1154,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T05:29:48Z] S5-README-UX CLOSED x6 — ARC 1 COMPLETE (9 of 24) — CORPUS-0 opens arc 2
 - **State:** all six legs pushed+verified; gh metadata confirmed; two close defects owned (unstaged stamp; footprint class second instance — lesson sharpened); 230/0 · 54/0/0 · 33/0 · 146 tracked.
 - **Next action:** build CORPUS-0 to its STOP; token `APPROVE CORPUS-0`.
+
+## [F8|2026-09-01T05:34:29Z] CORPUS-0 built — awaiting the token (LARGE PLAN gate 10 of 24; arc 2 opens)
+- **Task:** four-value census (+PROHIBITED absence-asserted row) · coverage 18 rows bound both ways w/ control · 8 questions named pre-reading · 3 verbatim promotions · matrices 23/0 · footprint 151 in-script.
+- **Next action:** `APPROVE CORPUS-0` (ratifies the vocabulary); then CORPUS-ZEROSHOT.
