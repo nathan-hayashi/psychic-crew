@@ -1249,3 +1249,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T15:20:12Z] ARC4-1 built — awaiting the token (LARGE PLAN gate 23 of 24)
 - **Task:** rubric + bands (early baseline, provisional, RECAL named) + empty-legal queue + three schemas discharged by name + bridge + gated-fixes law; 7 arms w/ both probes; crew 241; footprint 177.
 - **Next action:** `APPROVE ARC4-1`; then ARC4-2 (the runner, intake-class HIGH).
+
+## [F8|2026-09-01T15:40:49Z] ARC4-1 CLOSED — ARC4-2 opens (gate 23 of 24 done)
+- **Next action:** the runner; token `APPROVE ARC4-2`.
