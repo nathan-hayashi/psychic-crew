@@ -1217,3 +1217,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [F8|2026-09-01T15:00:14Z] CORPUS-BABYSITTER-1 CLOSED — CORPUS-BABYSITTER-2 opens (gate 18 of 24 done)
 - **Next action:** intervention-half dive + flip; token `APPROVE CORPUS-BABYSITTER-2`.
+
+## [F8|2026-09-01T15:01:49Z] CORPUS-BABYSITTER-2 built — awaiting the token (LARGE PLAN gate 19 of 24; ladder 8/8)
+- **Task:** intervention half weighed (held / rejected / sibling-recorded / R-SEC-1-blocked w/ operator route); LAST census flip + question discharge; questions 0==0 empty-legal; footprint 169.
+- **Next action:** `APPROVE CORPUS-BABYSITTER-2`; then CORPUS-DELTA.

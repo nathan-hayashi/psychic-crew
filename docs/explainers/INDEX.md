@@ -41,3 +41,4 @@ entry for it.
 - [CORPUS-LANGGRAPH](CORPUS-LANGGRAPH.md) — dive 6: computed resume vs judged resume; the seen-cursor joins the hook queue.
 - [CORPUS-AGENTFW](CORPUS-AGENTFW.md) — dive 7: ledgers as working-state vs ledgers as law; author-declared vs operator-declared gates.
 - [CORPUS-BABYSITTER-1](CORPUS-BABYSITTER-1.md) — split part 1: mandatory per-step detection, filed with C-05.
+- [CORPUS-BABYSITTER-2](CORPUS-BABYSITTER-2.md) — split part 2: interventions weighed, signing blocked by the secrets law, the ladder closed.

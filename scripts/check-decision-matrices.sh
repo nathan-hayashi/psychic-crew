@@ -91,7 +91,7 @@ gastown	DIVED
 ruflo	DIVED
 oh-my-claudecode	DIVED
 orca	DIVED
-babysitter	QUEUED
+babysitter	DIVED
 agent-framework	DIVED
 takt	DIVED
 conductor	DIVED

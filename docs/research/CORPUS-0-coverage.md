@@ -18,7 +18,7 @@ claude-agent-sdk-python	DIVED	full	CORPUS-SDKPY
 takt	DIVED	full	CORPUS-TAKT
 langgraph	DIVED	full	CORPUS-LANGGRAPH
 agent-framework	DIVED	full	CORPUS-AGENTFW
-babysitter	QUEUED	full-split	CORPUS-BABYSITTER-1+CORPUS-BABYSITTER-2
+babysitter	DIVED	full-split	CORPUS-BABYSITTER-1+CORPUS-BABYSITTER-2
 turbo	ETL-BUILD	delta	CORPUS-DELTA
 open-code-review	ETL-BUILD	delta	CORPUS-DELTA
 neatcontext-plugins	ETL-BUILD	delta	CORPUS-DELTA
@@ -42,7 +42,6 @@ the law it cites. One question per QUEUED row, suite-bound both directions.
 
 ```text
 # CORPUS-QUESTIONS v1
-babysitter	What supervision loop does babysitter run over child agents — part 1 (BABYSITTER-1): what it watches and how it detects; part 2 (BABYSITTER-2): what it intervenes with — and which halves transfer under our human-gate law?
 ```
 
 ## Adopted corrections
