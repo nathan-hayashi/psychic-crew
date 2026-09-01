@@ -1130,3 +1130,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T04:34:19Z] RPG-1 CLOSED @d1ed136 — RPG-2 opens (LARGE PLAN gate 6 of 24 done)
 - **State:** repurpose pushed + verified; 75/0 on pushed HEAD; slug vocabulary ratified with the token.
 - **Next action:** build RPG-2 to its STOP (parent + lite consumers, ordered); token `APPROVE RPG-2`.
+
+## [F8|2026-09-01T04:42:28Z] RPG-2 built — awaiting the token (LARGE PLAN gate 7 of 24)
+- **Task:** intake §6 vendored pin + path-not-body cap + 7 arms (both conditional legs demonstrated) · army-selector line · lite consumer doc + sync row + law 6 · straddle 228/2 -> 230/0 at commit, pre-declared · lite all green staged.
+- **Next action:** `APPROVE RPG-2` (parent then lite closes, ordered); then TPL-R1.

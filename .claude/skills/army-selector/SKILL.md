@@ -37,6 +37,8 @@ ambiguous	none	none	all	below 0.6 confidence the correct output is a FALLBACK bl
 3. Return the row and the why — as advice. Selection is advice about WHO would fit, not a license to dispatch: the zero-dispatch default (CR-006/C-25) stands, every real dispatch still crosses the arbiter (EX-05), and a session that can do the work solo does.
 4. If the honest classification is `ambiguous`, say so and return the FALLBACK, because the
    ninth row is the one that keeps the other eight honest.
+5. When the fit includes re-instantiating a known pattern, pull it through the intake skill's
+   §6 pin — cite the blueprint's path in the sibling gallery; never paste its body.
 
 ## 3. What is mechanically checked, and what is not
 

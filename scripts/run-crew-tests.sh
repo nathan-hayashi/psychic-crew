@@ -1445,6 +1445,53 @@ cases_F7 () {
     || no "F7 determinism: seeded-identical=$f7det free-running-differs=$f7var (want 1 / 1)"
   rm -rf "$f7o"
 
+
+  # RPG-2 — the parent consumes the repurpose graph through a VENDORED PIN (the vendored-vocabulary
+  # blueprint applied to its own gallery). Unconditional arms bind the pin block in the intake
+  # skill; the live diff runs only when a sibling checkout is present, and absence is ANNOUNCED in
+  # the ok-line (this suite has no SKIP channel — silent not-applicable is the C-23 shape).
+  echo "== RPG-2 — repurpose pull pin (unconditional) + live sibling diff (conditional) =="
+  rpsk=.claude/skills/intake/SKILL.md
+  rptab=$(awk '/^# REPURPOSE-PIN v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$rpsk")
+  rpn=$(grep -c . <<<"$rptab"); [[ "$rpn" =~ ^[0-9]+$ ]] || rpn=0
+  [ "$rpn" -ge 4 ] && ok "RPG-2 pin block extracted non-vacuously ($rpn rows)" \
+    || no "RPG-2 pin block vacuous: $rpn rows (want >= 4)"
+  rpids=$(awk -F'\t' '$1=="ids"{print $2}' <<<"$rptab")
+  rpidn=$(tr ',' '\n' <<<"$rpids" | grep -c .); [[ "$rpidn" =~ ^[0-9]+$ ]] || rpidn=0
+  [ "$rpidn" -eq 11 ] && ok "RPG-2 pin carries 11 blueprint ids" \
+    || no "RPG-2 pin id count $rpidn != 11"
+  rptrg=$(awk -F'\t' '$1=="trigger"' <<<"$rptab" | grep -c .); [[ "$rptrg" =~ ^[0-9]+$ ]] || rptrg=0
+  [ "$rptrg" -eq 3 ] && ok "RPG-2 pin names exactly 3 triggers" \
+    || no "RPG-2 pin trigger rows $rptrg != 3"
+  rpsec=$(awk '/^## 6\. /{f=1;next} f&&/^## [0-9]/{exit} f' "$rpsk")
+  rpsl=$(grep -c '' <<<"$rpsec"); [[ "$rpsl" =~ ^[0-9]+$ ]] || rpsl=0
+  rpfn=$(grep -c '^```' <<<"$rpsec"); [[ "$rpfn" =~ ^[0-9]+$ ]] || rpfn=0
+  { [ "$rpsl" -le 40 ] && [ "$rpfn" -eq 2 ]; } \
+    && ok "RPG-2 path-not-body cap holds: section 6 is $rpsl lines with one fenced block" \
+    || no "RPG-2 path-not-body cap BROKEN: $rpsl lines (cap 40), $rpfn fence markers (want 2)"
+  rpmut=$(tr ',' '\n' <<<"$rpids" | grep -vxF 'gate-machine' | grep -c .)
+  [[ "$rpmut" =~ ^[0-9]+$ ]] || rpmut=0
+  { [ "$rpmut" -ne 11 ] && [ "$rpmut" -ne "$rpidn" ]; } \
+    && ok "RPG-2 control fires: a pin with one id dropped is seen by the comparator ($rpmut != 11)" \
+    || no "RPG-2 control DID NOT fire — dropping an id left the comparator blind"
+  RPATH="${PSYCHIC_REPURPOSE_PATH:-../psychic-repurpose}"
+  if [ -f "$RPATH/docs/PULL-INDEX.md" ]; then
+    rplive=$(awk '/^# PULL-INDEX v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$RPATH/docs/PULL-INDEX.md" | cut -f1 | sort)
+    rppin=$(tr ',' '\n' <<<"$rpids" | sort)
+    [ "$rppin" = "$rplive" ] && ok "RPG-2 pin ids set-equal the live sibling index (both directions)" \
+      || no "RPG-2 pin/sibling id drift: $(comm -3 <(printf '%s\n' "$rppin") <(printf '%s\n' "$rplive") | tr '\n' ' ')"
+    rpmiss=""
+    while IFS=$'\t' read -r rjunk rslug rphr; do
+      rrow=$(awk -F'\t' -v s="$rslug" '$2==s' "$RPATH/docs/PULL-INDEX.md" 2>/dev/null | head -1)
+      grep -qF "$rphr" <<<"$rrow" || rpmiss="$rpmiss [$rslug]"
+    done <<<"$(awk -F'\t' '$1=="trigger"' <<<"$rptab")"
+    [ -z "$rpmiss" ] && ok "RPG-2 all 3 pinned trigger phrases verbatim in the sibling index" \
+      || no "RPG-2 pinned phrase(s) missing from the sibling:$rpmiss"
+  else
+    ok "RPG-2 sibling checkout absent at PSYCHIC_REPURPOSE_PATH — id diff deferred, ANNOUNCED (pin arms above still bind)"
+    ok "RPG-2 sibling checkout absent — trigger-phrase diff deferred, ANNOUNCED"
+  fi
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

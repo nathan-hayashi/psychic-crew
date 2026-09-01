@@ -122,3 +122,27 @@ record that they are executed by a person rather than by the suite.
 4. **On-disk answers are not asked.** Ask something whose answer is written in `Plan.md` or
    `GATES.md` — for example which gate tokens have already been approved. Expect: **zero**
    questions and the answer read from disk.
+
+## 6. Pulling a blueprint (RPG-2)
+
+When a request matches one of the pinned triggers below, the orchestrator MAY pull the named
+blueprint from the repurpose gallery — BY PATH, never by pasting the body. The sibling checkout
+resolves via `PSYCHIC_REPURPOSE_PATH` (default `../psychic-repurpose`, the sidekick precedent).
+A pull takes the blueprint plus its `requires` closure as the sibling index precomputes it.
+
+The pin is a VENDORED copy — the vendored-vocabulary blueprint applied to its own gallery: the
+full id list plus three named triggers, bound unconditionally by the suite against this block
+and diffed against the live sibling only when a checkout is present (absence is announced, never
+silent). The drift control mutates the pin in memory and must be seen doing it.
+
+```text
+# REPURPOSE-PIN v1
+ids	assembled-needles,commit-straddle,count-binding,explainer-epoch,gate-machine,negative-control,observer-fence,pair-edit-delta-zero,unknown-fields,vendored-vocabulary,witness-manifest
+trigger	unbound-figure-drift	a readme states a number the repo can recompute
+trigger	never-seen-failing	a checker has never been seen failing
+trigger	opaque-gate-change	non-author comprehension is a requirement
+```
+
+This section is deliberately CAPPED: the suite fails it beyond 40 lines or a second fenced
+block. A pasted-in blueprint body cannot fit under either bound — that is the path-not-body
+control the gallery's PULL-PROTOCOL names as landing here.
