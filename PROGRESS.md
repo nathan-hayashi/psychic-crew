@@ -1096,3 +1096,21 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T00:07:37Z] S1B-PUBLIC CLOSED — psychic-plugins is PUBLIC; all four siblings now public (one ceremonied, three ratified)
 - **Close:** flip verified against the live API BEFORE the stamp (the first attempt used a wrong gh flag and verified private — the ruled flip→verify→stamp ordering caught it exactly as designed; retried with the correct flag, verified, then stamped).
 - **Next action:** SIDE-R1 (sidekick: REMOTE_PREAMBLE single-line carrier + formatter round-trip proof, §D2 byte-binding, protocol doc, contract delta shown pre-token).
+
+## [F8|2026-09-01T02:08:29Z] SIDE-R1 built — awaiting the token (LARGE PLAN gate 4 of 24)
+- **Task:** REMOTE_PREAMBLE single-line carrier · compilePromptPack (6 node tests; E2r caught the missing-constant case on first fire) · protocol doc w/ DECLARED inversion + unasserted half · D2 byte-law + drift control · E2r · contract delta.
+- **Next action:** `APPROVE SIDE-R1`; then SIDE-R2 (the phone surface).
+
+## [F8|2026-09-01T02:08:36Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 2 file(s) uncommitted
+- **HEAD:** 7cb6cbf
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** `APPROVE SIDE-R1`; then SIDE-R2 (the phone surface).
+
+## [F8|2026-09-01T02:13:56Z] POST-COMPACTION REFRESH — SIDE-R1 complete at its STOP (§15.3)
+- **State:** build finished after compaction — E2r fired on its author (five tests became six; the sixth is the byte-identity binding), node tests ALL PASS, validate-sidekick 45/0/0, nine files staged in sidekick, refusal demonstrated, renegotiation diff shown pre-token. Parent ledgers + intake current.
+- **Next action:** `APPROVE SIDE-R1`; then SIDE-R2 (the phone surface).
+
+## [F8|2026-09-01T03:51:59Z] SIDE-R1 CLOSED @d232014 — SIDE-R2 opens (LARGE PLAN gate 4 of 24 done)
+- **State:** sidekick pushed + verified; post-push guard ok; 45/0/0 on pushed HEAD.
+- **Next action:** build SIDE-R2 to its STOP; token `APPROVE SIDE-R2`.

@@ -74,12 +74,26 @@ _CR-012 (audit A0-F3): this read `01:58:11Z` until 2026-08-17. Not a typo — a 
 
 Open items carried past v1.0.0 are in `ROADMAP.md`; the largest available upgrade is C-05 (hook-enforced bypass detection).
 
-**The additions program is OPEN.** Opened 2026-08-31, twelve gates; plan rev three approved (operator correction
-+ 52 reviewer findings). Gate 0 FENCE-2 at its STOP: drops fenced, orca census DIVED, user-scope
-snapshot taken, the commit-amend hook removed from user settings (trigger still unexplained — the
-concurrent-writer wake condition stays OPEN; commit and push run as separate calls with a HEAD
-check until a clean session shows zero amends), kickoff + orca survey persisted. A standing
-prohibition (recorded in session memory and Plan.md) bars one sibling repo from all access — the
-RETIRE-1 target is claude-agent-orchestration-guide. Queue after FENCE-2: HARNESS-SPEC-1 →
-HARNESS-ROT-1 → HARNESS-CONV-1 → HARNESS-BUILD-1 → MODEL-1 → RETIRE-1 → RSCH-4 → COMPREHEND-1/2 →
-ROUTE-1 → MATRIX-AI-1, then the queued 08-28 workstreams (four escalations still open).
+**verified — the additions program CLOSED (2026-08-31, all twelve gates approved):** fence + incident
+close (amend-hook removed; concurrent-writer wake condition stays OPEN), harness universalization
+(deploy-harness, user-scope layer), model-default hygiene, guide retirement with its public banner,
+RSCH-4 (eight TAKE gates queued on operator word), the comprehension layer (per-gate explainers +
+explain-plainly), natural-language routing, and the AI-engineering feasibility matrix. The barred-repo
+prohibition (business project, not even reads) stands permanently.
+
+**verified — THE LARGE PLAN is EXECUTING** (rev 2: five arcs, 24 pre-declared tokens, seven kickoff
+rulings ledgered; arcs run SIBLINGS then CORPUS then BASELINE then AUTO-AUDIT then TEI). Closed so far:
+**S0-RECONCILE** (six repos: MIT everywhere, canonical identity recorded, out-of-band visibility flips
+ratified append-only, explainer-epoch ported to all four siblings, the ARC4 baseline measured early,
+operator confirmed no other writers push to any estate dev), **S1-PLUGINS-WEB** (web-only rebuild:
+manifests retired, gate-machine reborn as ledger discipline, zero-CLI + interpreter arms with fire-probes,
+validate-plugins 35/0/0), **S1B-PUBLIC** (the audited flip — full-history scan private-class ZERO,
+disclosure ruled provenance-not-leakage; plugins PUBLIC; all four siblings now public, ceremonied or
+ratified). **IN FLIGHT: SIDE-R1 at its STOP awaiting the token** — sidekick's remote lane: single-line
+REMOTE_PREAMBLE under D2 byte-law (drift fixture proven distinguishable), compilePromptPack
+wraps-never-rewrites, the protocol doc declares the fallback-rule-3 inversion out loud plus the honest
+unasserted half, six node tests (E2r fired on its author: the sixth binds pack === preamble+contract
+byte-for-byte), validate-sidekick 45/0/0, nine files staged, refusal demonstrated, diff shown pre-token.
+Queue after it: SIDE-R2, RPG-1, RPG-2, TPL-R1, S5-README-UX, CORPUS-0 plus ten dive gates, BASE-1/2,
+ARC4-1/2, TEI-0, ARC4-RECAL. Every close runs the push protocol (fetch-assert first, commit and push as
+separate calls, capture both sides on any reject, post-push gate-guard re-run).
