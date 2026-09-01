@@ -1158,3 +1158,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T05:34:29Z] CORPUS-0 built — awaiting the token (LARGE PLAN gate 10 of 24; arc 2 opens)
 - **Task:** four-value census (+PROHIBITED absence-asserted row) · coverage 18 rows bound both ways w/ control · 8 questions named pre-reading · 3 verbatim promotions · matrices 23/0 · footprint 151 in-script.
 - **Next action:** `APPROVE CORPUS-0` (ratifies the vocabulary); then CORPUS-ZEROSHOT.
+
+## [F8|2026-09-01T05:37:08Z] CORPUS-0 CLOSED @f8b50d4 — CORPUS-ZEROSHOT opens (gate 10 of 24 done)
+- **Next action:** targeted dive against the named question; token `APPROVE CORPUS-ZEROSHOT`.
