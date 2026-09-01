@@ -43,3 +43,4 @@ entry for it.
 - [CORPUS-BABYSITTER-1](CORPUS-BABYSITTER-1.md) — split part 1: mandatory per-step detection, filed with C-05.
 - [CORPUS-BABYSITTER-2](CORPUS-BABYSITTER-2.md) — split part 2: interventions weighed, signing blocked by the secrets law, the ladder closed.
 - [CORPUS-DELTA](CORPUS-DELTA.md) — four refresh verdicts in one gate; the coverage arithmetic closes 18/18.
+- [BASE-1](BASE-1.md) — arc 3 opens: four candidates named, five axes reaffirmed frozen, posture stated.

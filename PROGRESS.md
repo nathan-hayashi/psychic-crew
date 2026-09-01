@@ -1231,3 +1231,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [F8|2026-09-01T15:10:39Z] CORPUS-DELTA CLOSED @4a1ad35 — ARC 2 COMPLETE — BASE-1 opens (gate 20 of 24 done)
 - **Next action:** build BASE-1 to its STOP; token `APPROVE BASE-1`.
+
+## [F8|2026-09-01T15:11:39Z] BASE-1 built — awaiting the token (LARGE PLAN gate 21 of 24; arc 3 opens)
+- **Task:** four candidates named w/ documented licenses (Dify flagged); CrewAI REUSED; five axes verbatim under the frozen law; documented-only posture stated; BASE-2 contract pre-bound; footprint 173.
+- **Next action:** `APPROVE BASE-1`; then BASE-2.
