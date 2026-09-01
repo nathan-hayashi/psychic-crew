@@ -1193,3 +1193,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T06:14:43Z] CORPUS-TAKT built — awaiting the token (LARGE PLAN gate 15 of 24)
 - **Task:** liveness-vs-spend axes; baseline amendment LANDED (second axis named, owner queued); PART_TIMEOUT -> ARC4-1 (three shapes owed); census flip; questions 3==3; footprint 161.
 - **Next action:** `APPROVE CORPUS-TAKT`; then CORPUS-LANGGRAPH.
+
+## [F8|2026-09-01T06:18:41Z] CORPUS-TAKT CLOSED — CORPUS-LANGGRAPH opens (gate 15 of 24 done)
+- **Next action:** targeted dive; token `APPROVE CORPUS-LANGGRAPH`.
