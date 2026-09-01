@@ -1634,6 +1634,29 @@ AQ2EOF
     && ok "session-start freshness line present and guarded (absent logs/ = silent, the bare-clone branch)" \
     || no "session-start freshness line missing or unguarded"
 
+
+  # TEI-0 — the envelope + pilot, held by the standalone checker (suite-checked like the
+  # vega-lite fence: the suite runs the checker and independently spot-binds the fence).
+  echo "== TEI-0 — envelope schema + graph pilot =="
+  [ -x scripts/check-envelope.sh ] && bash -n scripts/check-envelope.sh 2>/dev/null \
+    && ok "check-envelope.sh present, executable, parses" || no "check-envelope.sh missing or broken"
+  if ./scripts/check-envelope.sh >/tmp/tei0-check.out 2>&1; then
+    ok "check-envelope green: $(tail -1 /tmp/tei0-check.out | tr -d '\n')"
+  else
+    no "check-envelope RED: $(grep '\[FAIL\]' /tmp/tei0-check.out | head -2 | tr '\n' ' ')"
+  fi
+  tgn=$(awk '/^# TEI-GRAPH v1$/{f=1;next} f&&/^```/{exit} f' docs/research/TEI-0-pilot.md | jq '.nodes | length' 2>/dev/null)
+  case "$tgn" in ''|*[!0-9]*) tgn=0 ;; esac
+  [ "$tgn" -ge 10 ] && ok "pilot graph fence extracts independently ($tgn nodes)" \
+    || no "pilot graph fence vacuous from the suite's own extraction ($tgn)"
+  tvc=$(grep -c '^VERDICT: PARK' docs/research/TEI-0-pilot.md)
+  case "$tvc" in ''|*[!0-9]*) tvc=0 ;; esac
+  [ "$tvc" -eq 1 ] && ok "pilot verdict PARK recorded once, wake condition named (the RSCH-1 question discharged)" \
+    || no "pilot verdict line count $tvc != 1"
+  jq -e '.required | length == 8' envelope.schema.json >/dev/null 2>&1 \
+    && ok "envelope schema requires its eight members (suite's independent read)" \
+    || no "envelope schema required-set broken by the suite's own read"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

@@ -1259,3 +1259,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [F8|2026-09-01T16:30:04Z] ARC4-2 CLOSED @fa817d3 — ARC 4 COMPLETE — TEI-0 opens
 - **Next action:** build TEI-0 to its STOP under the RSCH-3 pre-plan; token `APPROVE TEI-0`.
+
+## [F8|2026-09-01T16:33:30Z] TEI-0 built — awaiting the token (LARGE PLAN; ARC4-RECAL alone remains)
+- **Task:** envelope schema (8 members) + jq-only checker 11/0 (both controls fire) + the pilot's honest PARK w/ named wake; §4.3 13->14 D32/v3.17; crew 254; footprint 183.
+- **Next action:** `APPROVE TEI-0`; then ARC4-RECAL (the final gate).

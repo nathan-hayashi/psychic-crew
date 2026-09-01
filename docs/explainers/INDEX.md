@@ -47,3 +47,4 @@ entry for it.
 - [BASE-2](BASE-2.md) — the matrix: setup settles, sixteen cells honestly open, roll-up suite-bound.
 - [ARC4-1](ARC4-1.md) — the audit constitution: bands from the early baseline, empty-legal queue, three schemas discharged, gated-fixes law.
 - [ARC4-2](ARC4-2.md) — the engine, fenced: tree-hash no-write control, seven skip-guards, human invocation.
+- [TEI-0](TEI-0.md) — the envelope contract, the jq-only checker, and the graph verdict: PARK with a named wake.
