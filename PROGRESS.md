@@ -1165,3 +1165,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T05:41:13Z] CORPUS-ZEROSHOT built — awaiting the token (LARGE PLAN gate 11 of 24)
 - **Task:** dive answered against the pre-named question; 4 transferred arms (self-dispatch probe caught its own vacuous checker — fixed with witness); census flip + dynamic questions arm; crew 234; footprint 153.
 - **Next action:** `APPROVE CORPUS-ZEROSHOT`; then CORPUS-OPENHANDS.
+
+## [F8|2026-09-01T05:57:51Z] CORPUS-ZEROSHOT CLOSED @221a016 — CORPUS-OPENHANDS opens (gate 11 of 24 done)
+- **Next action:** targeted dive; token `APPROVE CORPUS-OPENHANDS`.
