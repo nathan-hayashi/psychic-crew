@@ -27,9 +27,13 @@ below, citing its dive:
 
 ## The axes and bands — from S0's EARLY baseline, deliberately
 
-Bands derive from the S0-RECONCILE baseline (measured 2026-08-31, pre-drift, durable in
-Plan.md) — NOT from today's post-dive figures, per the anti-trough ruling. They are
-PROVISIONAL: the named recalibration gate is `APPROVE ARC4-RECAL`, after arc 5.
+Bands were born from the S0-RECONCILE baseline (2026-08-31, pre-drift, per the anti-trough
+ruling) and RECALIBRATED at `APPROVE ARC4-RECAL` (2026-09-01, after arc 5, as that gate was
+named from birth): the large plan's growth landed — every repo grew, none shrank, the audit's
+first live runs read zero findings against the birth bands — so the floors now hold the NEW
+plateau (floor = the post-program measured count; a shrink from TODAY's reality is the
+signal) and ceilings stay 3x. The S0 birth values remain durable in Plan.md; the next
+recalibration is on the operator's word, not a schedule.
 
 **Axis A — tracked-file count, PER-REPO** (an aggregate band over six repos of wildly
 different density is meaningless): floor = the S0 baseline (a repo shrinking below its
@@ -48,12 +52,12 @@ figures compare against these floors.
 
 ```text
 # ARC4-BANDS v1
-psychic-crew	144	432	223
-psychic-crew-lite	61	183	67
-psychic-templates	14	42	32
-psychic-sidekick	12	36	39
-psychic-repurpose	18	54	41
-psychic-plugins	12	36	30
+psychic-crew	183	549	254
+psychic-crew-lite	62	186	67
+psychic-templates	21	63	44
+psychic-sidekick	22	66	64
+psychic-repurpose	28	84	78
+psychic-plugins	18	54	36
 ```
 
 Columns: repo · axisA_floor · axisA_ceiling (3×) · axisC_floor. Axis B carries no band by

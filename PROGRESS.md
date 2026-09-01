@@ -1263,3 +1263,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T16:33:30Z] TEI-0 built — awaiting the token (LARGE PLAN; ARC4-RECAL alone remains)
 - **Task:** envelope schema (8 members) + jq-only checker 11/0 (both controls fire) + the pilot's honest PARK w/ named wake; §4.3 13->14 D32/v3.17; crew 254; footprint 183.
 - **Next action:** `APPROVE TEI-0`; then ARC4-RECAL (the final gate).
+
+## [F8|2026-09-01T17:09:11Z] ARC4-RECAL built — awaiting the token (THE FINAL GATE)
+- **Task:** bands -> plateau (measured this hour); ratification run clean vs new bands; token string kept for the arm; footprint 184.
+- **Next action:** `APPROVE ARC4-RECAL` — the large plan completes.
