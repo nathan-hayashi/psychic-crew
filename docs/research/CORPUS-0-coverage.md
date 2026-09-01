@@ -11,7 +11,7 @@ Columns: name, census status, tier, discharge (a gate id, or the exemption).
 
 ```text
 # CORPUS-COVERAGE v1
-zeroshot	QUEUED	full	CORPUS-ZEROSHOT
+zeroshot	DIVED	full	CORPUS-ZEROSHOT
 OpenHands	QUEUED	full	CORPUS-OPENHANDS
 conductor	QUEUED	full	CORPUS-CONDUCTOR
 claude-agent-sdk-python	QUEUED	full	CORPUS-SDKPY
@@ -42,7 +42,6 @@ the law it cites. One question per QUEUED row, suite-bound both directions.
 
 ```text
 # CORPUS-QUESTIONS v1
-zeroshot	What does zeroshot's harness assert about task completion that our gate machine does not, and does any check transfer as a suite arm?
 OpenHands	How does OpenHands bound an agent's action space per step (permissions, sandboxing), and which of those bounds have no equivalent in our hook layer?
 conductor	How does conductor express multi-agent hand-off ordering, and does its scheme name failure states our arbiter protocol lacks?
 claude-agent-sdk-python	Which session and tool lifecycle events does the SDK expose that our hooks cannot see, and what would each enable as an assertion?

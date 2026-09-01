@@ -33,3 +33,4 @@ entry for it.
 - [RPG-2](RPG-2.md) — the estate consumes the gallery: the vendored pin, the path-not-body cap.
 - [S5-README-UX](S5-README-UX.md) — six front doors: bound badges, honesty sections, derived diagrams.
 - [CORPUS-0](CORPUS-0.md) — the accounting before the reading: coverage bound, questions named, prohibition machine-visible.
+- [CORPUS-ZEROSHOT](CORPUS-ZEROSHOT.md) — the first dive: typed completion studied, the coherence check transferred.

@@ -95,7 +95,7 @@ babysitter	QUEUED
 agent-framework	QUEUED
 takt	QUEUED
 conductor	QUEUED
-zeroshot	QUEUED
+zeroshot	DIVED
 OpenHands	QUEUED
 langgraph	QUEUED
 claude-agent-sdk-python	QUEUED
@@ -160,8 +160,10 @@ COVEOF
     || fail "unknown discharge(s):$covbad"
   qs=$(awk '/^# CORPUS-QUESTIONS v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$COVDOC")
   qn=$(printf '%s\n' "$qs" | grep -c .); case "$qn" in ''|*[!0-9]*) qn=0 ;; esac
-  [ "$qn" -eq 8 ] && pass "exactly 8 named questions (M4: question first, reading second)" \
-    || fail "question rows $qn != 8"
+  qexp=$(printf '%s\n' "$CENSUS" | awk -F'\t' '$2=="QUEUED"' | grep -c .)
+  case "$qexp" in ''|*[!0-9]*) qexp=0 ;; esac
+  [ "$qn" -eq "$qexp" ] && pass "one named question per QUEUED row ($qn == $qexp; discharged questions live in their dive docs)" \
+    || fail "question rows $qn != QUEUED rows $qexp"
   qnames=$(printf '%s\n' "$qs" | cut -f1 | sort)
   queued=$(printf '%s\n' "$CENSUS" | awk -F'\t' '$2=="QUEUED"{print $1}' | sort)
   [ "$qnames" = "$queued" ] && pass "questions <-> QUEUED rows, set-equal both ways (no unquestioned QUEUED, no phantom question)" \

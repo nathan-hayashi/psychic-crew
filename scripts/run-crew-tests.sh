@@ -1492,6 +1492,41 @@ cases_F7 () {
     ok "RPG-2 sibling checkout absent — trigger-phrase diff deferred, ANNOUNCED"
   fi
 
+
+  # CORPUS-ZEROSHOT — the transferred check: completion/dispatch trails held to TYPED coherence
+  # (zeroshot's verifier outputs are schema-required with errors-empty-iff-approved; the analog
+  # here is the arbiter trail). Conditional on the gitignored trail, announced when absent
+  # (CR-027 pattern); the probes below are UNCONDITIONAL so both checkers are seen firing.
+  echo "== CORPUS-ZEROSHOT — typed-trail coherence (transferred from the dive) =="
+  zaud=logs/arbiter-audit.jsonl
+  if [ ! -f "$zaud" ]; then
+    ok "arbiter trail absent (bare clone) — schema-coherence arm announced, not silent"
+    ok "arbiter trail absent — self-dispatch arm announced likewise"
+  else
+    ztot=$(grep -c . "$zaud"); [[ "$ztot" =~ ^[0-9]+$ ]] || ztot=0
+    zok=$(jq -c 'select(.ts != null and .from_agent != null and .to != null)' "$zaud" 2>/dev/null | grep -c .)
+    [[ "$zok" =~ ^[0-9]+$ ]] || zok=0
+    { [ "$ztot" -ge 1 ] && [ "$zok" -eq "$ztot" ]; } \
+      && ok "arbiter trail schema-coherent: all $ztot rows parse with ts+from_agent+to (typed, not narrated)" \
+      || no "arbiter trail incoherent: $zok of $ztot rows carry the required shape"
+    zself=$(jq -r '.from_agent as $f | select(($f != null) and (.to != null)) | select((.to | index($f)) != null) | .ts' "$zaud" 2>/dev/null | grep -c .)
+    [[ "$zself" =~ ^[0-9]+$ ]] || zself=0
+    [ "$zself" -eq 0 ] && ok "no self-dispatch row: from_agent never in its own to-list (C-12, machine-typed)" \
+      || no "SELF-DISPATCH in the trail: $zself row(s) name their own sender"
+  fi
+  zp=$(mktemp)
+  printf '{"ts":"probe","from_agent":"a","to":["b"]}\nnot-json-at-all\n' > "$zp"
+  zpt=$(grep -c . "$zp"); zpo=$(jq -c 'select(.ts != null and .from_agent != null and .to != null)' "$zp" 2>/dev/null | grep -c .)
+  [[ "$zpo" =~ ^[0-9]+$ ]] || zpo=0
+  [ "$zpo" -lt "$zpt" ] && ok "control fires: a malformed trail line is seen by the coherence checker ($zpo of $zpt)" \
+    || no "coherence control DID NOT fire"
+  printf '{"ts":"probe2","from_agent":"a","to":["x","a"]}\n' > "$zp"
+  zps=$(jq -r '.from_agent as $f | select(($f != null) and (.to != null)) | select((.to | index($f)) != null) | .ts' "$zp" 2>/dev/null | grep -c .)
+  [[ "$zps" =~ ^[0-9]+$ ]] || zps=0
+  [ "$zps" -eq 1 ] && ok "control fires: a planted self-dispatch row is seen ($zps)" \
+    || no "self-dispatch control DID NOT fire ($zps)"
+  rm -f "$zp"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
