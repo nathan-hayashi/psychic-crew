@@ -1203,3 +1203,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [F8|2026-09-01T14:52:17Z] CORPUS-LANGGRAPH CLOSED — CORPUS-AGENTFW opens (gate 16 of 24 done)
 - **Next action:** targeted dive; token `APPROVE CORPUS-AGENTFW`.
+
+## [F8|2026-09-01T14:54:12Z] CORPUS-AGENTFW built — awaiting the token (LARGE PLAN gate 17 of 24)
+- **Task:** Magentic ledgers/stall/replan vs our law; custody + authority divergences named; autonomous-replan REJECTED with reason; stall corroboration #3; census flip; questions 1==1; footprint 165.
+- **Next action:** `APPROVE CORPUS-AGENTFW`; then CORPUS-BABYSITTER-1.

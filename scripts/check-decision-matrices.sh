@@ -92,7 +92,7 @@ ruflo	DIVED
 oh-my-claudecode	DIVED
 orca	DIVED
 babysitter	QUEUED
-agent-framework	QUEUED
+agent-framework	DIVED
 takt	DIVED
 conductor	DIVED
 zeroshot	DIVED
