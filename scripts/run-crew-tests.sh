@@ -1527,6 +1527,57 @@ cases_F7 () {
     || no "self-dispatch control DID NOT fire ($zps)"
   rm -f "$zp"
 
+
+  # ARC4-1 — rubric + queue bindings (nothing autonomous; the runner is ARC4-2's).
+  echo "== ARC4-1 — audit rubric, bands, queue, and the gated-fixes law =="
+  arub=docs/AUDIT-RUBRIC.md
+  abnd=$(awk '/^# ARC4-BANDS v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$arub" 2>/dev/null)
+  abn=$(grep -c . <<<"$abnd"); [[ "$abn" =~ ^[0-9]+$ ]] || abn=0
+  [ "$abn" -eq 6 ] && ok "ARC4 bands: one row per estate repo (6)" \
+    || no "ARC4 bands rows $abn != 6"
+  abbad=$(printf '%s\n' "$abnd" | awk -F'\t' 'NF!=4 || $2!~/^[0-9]+$/ || $3!~/^[0-9]+$/ || $4!~/^[0-9]+$/ {print $1}')
+  [ -z "$abbad" ] && ok "ARC4 bands numeric and 4-column throughout" \
+    || no "ARC4 band row(s) malformed: $(tr '\n' ' ' <<<"$abbad")"
+  grep -qF 'APPROVE ARC4-RECAL' "$arub" \
+    && ok "bands declared provisional with the recalibration token named" \
+    || no "ARC4-RECAL not named — provisional bands without a recal path"
+  if grep -qE '^# AUDIT-QUEUE v1$' "$arub"; then
+    aq=$(awk '/^# AUDIT-QUEUE v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$arub")
+    aqn=$(grep -c . <<<"$aq"); [[ "$aqn" =~ ^[0-9]+$ ]] || aqn=0
+    ok "audit queue parses ($aqn row(s) — EMPTY IS LEGAL; the guard tests the instrument, not the yield)"
+  else
+    no "AUDIT-QUEUE header missing or unparseable — a broken instrument, not an empty one"
+  fi
+  aqp=$(mktemp); sed 's/^# AUDIT-QUEUE v1$/# AUDIT-QUEUE-BROKEN/' "$arub" > "$aqp"
+  if grep -qE '^# AUDIT-QUEUE v1$' "$aqp"; then
+    no "queue-header control DID NOT fire — a corrupted header went unseen"
+  else
+    ok "control fires: a corrupted queue header is seen as broken, distinct from empty"
+  fi
+  rm -f "$aqp"
+  agbad=""
+  while IFS="$(printf '\t')" read -r qid qts qrepo qaxis qsev qclaim qstat qcr; do
+    [ -n "${qid:-}" ] || continue
+    case "${qstat:-}" in
+      ACCEPTED|CLOSED)
+        grep -qF "${qcr:-__none__}" Plan.md || agbad="$agbad [$qid:$qcr]"
+        ;;
+    esac
+  done <<AQEOF
+$aq
+AQEOF
+  [ -z "$agbad" ] && ok "gated-fixes law holds over the queue ($aqn row(s); ACCEPTED/CLOSED require a chronicled cr_id)" \
+    || no "gated-fixes law VIOLATED — ACCEPTED/CLOSED without a Plan.md cr_id:$agbad"
+  agp=$(printf 'q99\t2026-01-01\tpsychic-crew\tA\tmed\tprobe\tACCEPTED\tCR-PHANTOM-X9')
+  agpv=""
+  while IFS="$(printf '\t')" read -r qid qts qrepo qaxis qsev qclaim qstat qcr; do
+    case "${qstat:-}" in ACCEPTED|CLOSED) grep -qF "${qcr:-__none__}" Plan.md || agpv="$agpv [$qid]";; esac
+  done <<AQ2EOF
+$agp
+AQ2EOF
+  [ -n "$agpv" ] && ok "control fires: a planted ACCEPTED row with a phantom cr_id is caught$agpv" \
+    || no "gated-fixes control DID NOT fire on the planted row"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

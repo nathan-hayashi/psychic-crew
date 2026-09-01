@@ -45,3 +45,4 @@ entry for it.
 - [CORPUS-DELTA](CORPUS-DELTA.md) — four refresh verdicts in one gate; the coverage arithmetic closes 18/18.
 - [BASE-1](BASE-1.md) — arc 3 opens: four candidates named, five axes reaffirmed frozen, posture stated.
 - [BASE-2](BASE-2.md) — the matrix: setup settles, sixteen cells honestly open, roll-up suite-bound.
+- [ARC4-1](ARC4-1.md) — the audit constitution: bands from the early baseline, empty-legal queue, three schemas discharged, gated-fixes law.
