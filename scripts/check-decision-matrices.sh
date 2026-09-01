@@ -98,7 +98,7 @@ conductor	DIVED
 zeroshot	DIVED
 OpenHands	DIVED
 langgraph	QUEUED
-claude-agent-sdk-python	QUEUED
+claude-agent-sdk-python	DIVED
 automation-ecosystem	PROHIBITED'
 cen_n=$(printf '%s\n' "$CENSUS" | grep -c .)
 [ "$cen_n" -ge 10 ] && pass "census table parses to $cen_n classifications (vacuity guard)" \

@@ -36,3 +36,4 @@ entry for it.
 - [CORPUS-ZEROSHOT](CORPUS-ZEROSHOT.md) — the first dive: typed completion studied, the coherence check transferred.
 - [CORPUS-OPENHANDS](CORPUS-OPENHANDS.md) — dive 2: bounds compared, one rejection recorded, no-transfer stated loudly.
 - [CORPUS-CONDUCTOR](CORPUS-CONDUCTOR.md) — dive 3: the explicit-vs-crash line and the failure trio, adopted with named owners.
+- [CORPUS-SDKPY](CORPUS-SDKPY.md) — dive 4: three unseen lifecycle events, priced as assertions, queued for an operator gate.
