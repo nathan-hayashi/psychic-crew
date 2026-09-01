@@ -180,6 +180,35 @@ COVEOF
   rm -f "$covp"
 fi
 
+
+echo "== C5. BASE-2 matrix — shape, vocabulary, roll-up agreement (arc 3) =="
+B2="docs/research/BASE-2-comparison.md"
+if [ ! -f "$B2" ]; then
+  fail "BASE-2 doc missing: $B2"
+else
+  b2m=$(awk '/^# BASE-2-MATRIX v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$B2")
+  b2n=$(printf '%s\n' "$b2m" | grep -c .); case "$b2n" in ''|*[!0-9]*) b2n=0 ;; esac
+  [ "$b2n" -eq 4 ] && pass "BASE-2 matrix carries exactly 4 candidate rows" \
+    || fail "BASE-2 matrix rows $b2n != 4 (the contract forbids adding or dropping)"
+  b2bad=$(printf '%s\n' "$b2m" | awk -F'\t' 'NF!=6 {print $1" (cols "NF")"}')
+  [ -z "$b2bad" ] && pass "every BASE-2 row carries exactly 5 axis cells" \
+    || fail "BASE-2 row shape broken: $(tr '\n' ' ' <<<"$b2bad")"
+  b2voc=$(printf '%s\n' "$b2m" | cut -f2-6 | tr '\t' '\n' | sort -u | grep -vxF 'OURS' | grep -vxF 'THEIRS' | grep -vxF 'TIE' | grep -vxF 'NOT-COMPARABLE-DOCUMENTED-ONLY')
+  [ -z "$b2voc" ] && pass "every cell uses the four-value verdict vocabulary exactly" \
+    || fail "BASE-2 off-vocabulary cell value(s): $(tr '\n' ' ' <<<"$b2voc")"
+  b2r=$(awk '/^# BASE-2-ROLLUP v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$B2")
+  b2err=""
+  for v in OURS THEIRS TIE NOT-COMPARABLE-DOCUMENTED-ONLY; do
+    claimed=$(printf '%s\n' "$b2r" | awk -F'\t' -v k="$v" '$1==k{print $2}')
+    case "$claimed" in ''|*[!0-9]*) claimed=-1 ;; esac
+    actual=$(printf '%s\n' "$b2m" | cut -f2-6 | tr '\t' '\n' | grep -cxF "$v")
+    case "$actual" in ''|*[!0-9]*) actual=0 ;; esac
+    [ "$claimed" -eq "$actual" ] || b2err="$b2err [$v: rollup $claimed vs cells $actual]"
+  done
+  [ -z "$b2err" ] && pass "roll-up agrees with the cells for all four verdict values" \
+    || fail "BASE-2 roll-up disagreement:$b2err"
+fi
+
 echo "== D. M5 — dispatch economics, re-derived from the live TSV =="
 tsv="logs/metrics/dispatch-costs.tsv"
 if [ ! -f "$tsv" ]; then

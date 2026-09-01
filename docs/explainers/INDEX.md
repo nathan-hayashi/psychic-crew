@@ -44,3 +44,4 @@ entry for it.
 - [CORPUS-BABYSITTER-2](CORPUS-BABYSITTER-2.md) — split part 2: interventions weighed, signing blocked by the secrets law, the ladder closed.
 - [CORPUS-DELTA](CORPUS-DELTA.md) — four refresh verdicts in one gate; the coverage arithmetic closes 18/18.
 - [BASE-1](BASE-1.md) — arc 3 opens: four candidates named, five axes reaffirmed frozen, posture stated.
+- [BASE-2](BASE-2.md) — the matrix: setup settles, sixteen cells honestly open, roll-up suite-bound.

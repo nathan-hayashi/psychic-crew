@@ -1238,3 +1238,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [F8|2026-09-01T15:13:50Z] BASE-1 CLOSED — BASE-2 opens (gate 21 of 24 done)
 - **Next action:** the matrix; token `APPROVE BASE-2`.
+
+## [F8|2026-09-01T15:15:03Z] BASE-2 built — awaiting the token (LARGE PLAN gate 22 of 24; arc-3 finale)
+- **Task:** 4x5 matrix under the pre-bound contract; Setup THEIRS x4, 16 cells honestly open and priced; roll-up suite-bound (matrices 27/0); footprint 175.
+- **Next action:** `APPROVE BASE-2` (arc 3 completes); then ARC4-1.
