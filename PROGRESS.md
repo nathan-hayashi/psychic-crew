@@ -1122,3 +1122,11 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T04:00:27Z] SIDE-R2 CLOSED @ed89fc4 — RPG-1 opens (LARGE PLAN gate 5 of 24 done)
 - **State:** sidekick pushed + verified; 60/0/0 on pushed HEAD; remote arc R1+R2 complete.
 - **Next action:** build RPG-1 to its STOP; token `APPROVE RPG-1`.
+
+## [F8|2026-09-01T04:11:17Z] RPG-1 built — awaiting the token (LARGE PLAN gate 6 of 24)
+- **Task:** 11th blueprint (explainer-epoch) · frontmatter graph onto all 11 · Kills table literalized · generated PULL-INDEX + PULL-PROTOCOL (two unasserted halves declared) · suite 30→75/0 incl. the closure arm's vacuous-pass catch (awk reserved word) repaired with a positive witness.
+- **Next action:** `APPROVE RPG-1` (ratifies the 11-slug vocabulary); then RPG-2 (two-repo consumer).
+
+## [F8|2026-09-01T04:34:19Z] RPG-1 CLOSED @d1ed136 — RPG-2 opens (LARGE PLAN gate 6 of 24 done)
+- **State:** repurpose pushed + verified; 75/0 on pushed HEAD; slug vocabulary ratified with the token.
+- **Next action:** build RPG-2 to its STOP (parent + lite consumers, ordered); token `APPROVE RPG-2`.
