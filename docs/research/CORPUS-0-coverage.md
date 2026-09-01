@@ -13,7 +13,7 @@ Columns: name, census status, tier, discharge (a gate id, or the exemption).
 # CORPUS-COVERAGE v1
 zeroshot	DIVED	full	CORPUS-ZEROSHOT
 OpenHands	DIVED	full	CORPUS-OPENHANDS
-conductor	QUEUED	full	CORPUS-CONDUCTOR
+conductor	DIVED	full	CORPUS-CONDUCTOR
 claude-agent-sdk-python	QUEUED	full	CORPUS-SDKPY
 takt	QUEUED	full	CORPUS-TAKT
 langgraph	QUEUED	full	CORPUS-LANGGRAPH
@@ -42,7 +42,6 @@ the law it cites. One question per QUEUED row, suite-bound both directions.
 
 ```text
 # CORPUS-QUESTIONS v1
-conductor	How does conductor express multi-agent hand-off ordering, and does its scheme name failure states our arbiter protocol lacks?
 claude-agent-sdk-python	Which session and tool lifecycle events does the SDK expose that our hooks cannot see, and what would each enable as an assertion?
 takt	How does takt encode the pacing of agent turns (cadence, budgets), and does any mechanism map onto our budget-baseline discipline?
 langgraph	What does langgraph checkpoint per graph node, and how do its resume semantics compare to our disk-canonical continuity law (HC-8)?

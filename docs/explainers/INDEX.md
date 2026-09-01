@@ -35,3 +35,4 @@ entry for it.
 - [CORPUS-0](CORPUS-0.md) — the accounting before the reading: coverage bound, questions named, prohibition machine-visible.
 - [CORPUS-ZEROSHOT](CORPUS-ZEROSHOT.md) — the first dive: typed completion studied, the coherence check transferred.
 - [CORPUS-OPENHANDS](CORPUS-OPENHANDS.md) — dive 2: bounds compared, one rejection recorded, no-transfer stated loudly.
+- [CORPUS-CONDUCTOR](CORPUS-CONDUCTOR.md) — dive 3: the explicit-vs-crash line and the failure trio, adopted with named owners.

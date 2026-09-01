@@ -94,7 +94,7 @@ orca	DIVED
 babysitter	QUEUED
 agent-framework	QUEUED
 takt	QUEUED
-conductor	QUEUED
+conductor	DIVED
 zeroshot	DIVED
 OpenHands	DIVED
 langgraph	QUEUED
