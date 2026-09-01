@@ -1138,3 +1138,11 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T04:54:37Z] RPG-2 CLOSED (parent a1b7d9a+a54737e, lite 03a5e12) — TPL-R1 opens (gate 7 of 24 done)
 - **State:** both legs pushed + verified; crew 230/0 · 54/0/0 · 33/0 · lite 65/0 · 12/0 · 67/1/0 · 145 tracked; footprint miss (explainer=file) caught by R4-12/PB-06 post-push, fixed same token, owned in Plan.
 - **Next action:** build TPL-R1 to its STOP (templates + sidekick, ordered); token `APPROVE TPL-R1`.
+
+## [F8|2026-09-01T04:58:40Z] TPL-R1 built — awaiting the token (LARGE PLAN gate 8 of 24)
+- **Task:** two new rungs inside the 22 (no cascade, disclosed) · bound Mermaid ladder 4/7/9/10/13/17 w/ drift control · sidekick extractor floor + backtick probe + subset template-set arm · templates 43/0 · sidekick 63/0/0.
+- **Next action:** `APPROVE TPL-R1` (templates then sidekick closes); then S5-README-UX.
+
+## [F8|2026-09-01T05:07:43Z] TPL-R1 CLOSED (templates ec57e18, sidekick 4698833) — S5-README-UX opens (gate 8 of 24 done)
+- **State:** both legs pushed + verified; ladder bound at 4/7/9/10/13/17; coupling proven subset.
+- **Next action:** build S5-README-UX to its STOP (six repos, ordered); token `APPROVE S5-README-UX`.
