@@ -1172,3 +1172,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T06:00:05Z] CORPUS-OPENHANDS built — awaiting the token (LARGE PLAN gate 12 of 24)
 - **Task:** dive answered; ONE no-equivalent bound found and rejected-with-reason; NO transfer, stated loudly; census flip; questions 6==6; crew unchanged 234; footprint 155.
 - **Next action:** `APPROVE CORPUS-OPENHANDS`; then CORPUS-CONDUCTOR.
+
+## [F8|2026-09-01T06:02:15Z] CORPUS-OPENHANDS CLOSED — CORPUS-CONDUCTOR opens (gate 12 of 24 done)
+- **Next action:** targeted dive; token `APPROVE CORPUS-CONDUCTOR`.
