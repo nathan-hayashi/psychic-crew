@@ -1134,3 +1134,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T04:42:28Z] RPG-2 built — awaiting the token (LARGE PLAN gate 7 of 24)
 - **Task:** intake §6 vendored pin + path-not-body cap + 7 arms (both conditional legs demonstrated) · army-selector line · lite consumer doc + sync row + law 6 · straddle 228/2 -> 230/0 at commit, pre-declared · lite all green staged.
 - **Next action:** `APPROVE RPG-2` (parent then lite closes, ordered); then TPL-R1.
+
+## [F8|2026-09-01T04:54:37Z] RPG-2 CLOSED (parent a1b7d9a+a54737e, lite 03a5e12) — TPL-R1 opens (gate 7 of 24 done)
+- **State:** both legs pushed + verified; crew 230/0 · 54/0/0 · 33/0 · lite 65/0 · 12/0 · 67/1/0 · 145 tracked; footprint miss (explainer=file) caught by R4-12/PB-06 post-push, fixed same token, owned in Plan.
+- **Next action:** build TPL-R1 to its STOP (templates + sidekick, ordered); token `APPROVE TPL-R1`.
