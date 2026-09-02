@@ -19,6 +19,10 @@ PHASE=$(awk -F'|' '/APPROVED/ && $2 ~ /^ *G-F[0-9]+[ab]? *$/ {gsub(/[^0-9]/,"",$
                    END{if(p!="") print "F" p}' "$ROOT/GATES.md" 2>/dev/null || true)
 [ -n "${PHASE:-}" ] || PHASE="F?"
 now () { date -u +%Y-%m-%dT%H:%M:%SZ; }
+# HOOK-1: byte-pin hashing for hooks, mirrored from the suite's portable helper so the R-SD-1
+# rule-7 scanner's shape exclusion applies here too. An EMPTY hash is a failure, never a match.
+_sha256 () { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1
+             else shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; fi; }
 # SEC-DG-01: every audit target passes through scrub() before it is written. The old form was
 # `cut -c1-200`, which is a LENGTH limit and not a redaction — a credential inside the first 200
 # bytes went into logs/tooluse-audit.jsonl verbatim, and that file is durable, is read at every

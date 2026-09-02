@@ -213,7 +213,14 @@ cases_F2 () {
   check "restore-context.sh latest exits 0" 0 ./scripts/restore-context.sh latest
   grep -q 'RELOAD INSTRUCTION' <<<"$(./scripts/restore-context.sh latest 2>/dev/null)" && ok "restore-context prints the reload instruction" || no "reload instruction missing"
 
-  o=$(printf '%s' '{}' | ./hooks/session-start.sh 2>/dev/null || true)
+  # HOOK-1 retrofit: this fixture used to run against the LIVE root, which was harmless while
+  # the hook only read — the seen-cursor makes it write, and a trail row born mid-run is
+  # exactly what the C-14 canary calls drift. Temp root, the ccs-02 shape.
+  ssfx=$(mktemp -d); mkdir -p "$ssfx/hooks" "$ssfx/context"
+  cp hooks/session-start.sh hooks/_common.sh "$ssfx/hooks/" 2>/dev/null
+  printf '# P\n- **Next action:** fixture\n' > "$ssfx/PROGRESS.md"
+  : > "$ssfx/GATES.md"; : > "$ssfx/Plan.md"
+  o=$(printf '%s' '{}' | CLAUDE_PROJECT_DIR="$ssfx" "$ssfx/hooks/session-start.sh" 2>/dev/null || true)
   printf '%s' "$o" | jq -e '.hookSpecificOutput.additionalContext' >/dev/null 2>&1 && ok "SessionStart emits additionalContext (§15.4)" || no "SessionStart output malformed"
 
   # --- G-F2 gap closure (found by the live stress, not by the offline suite) ---
@@ -1656,6 +1663,95 @@ AQ2EOF
   jq -e '.required | length == 8' envelope.schema.json >/dev/null 2>&1 \
     && ok "envelope schema requires its eight members (suite's independent read)" \
     || no "envelope schema required-set broken by the suite's own read"
+
+
+  # HOOK-1 — the four observation surfaces, tested on the CR-025 template (temp roots, piped
+  # fixture JSON). Honest limit restated where it binds: these prove WIRING AND BEHAVIOR; only
+  # live rows prove the platform delivers the events.
+  echo "== HOOK-1 — observation hooks: stop twin, prompt receipts, ask trail, seen-cursor =="
+  h1t=$(mktemp -d); mkdir -p "$h1t/logs"; cp GATES.md "$h1t/" 2>/dev/null
+  printf '%s' '{"session_id":"h1","agent_id":"h1-agt","agent_type":"quality-reviewer","agent_transcript_path":"/x/y.jsonl"}' \
+    | CLAUDE_PROJECT_DIR="$h1t" ./hooks/subagent-stop.sh >"$h1t/stop.out" 2>&1
+  h1a=$(jq -r '.agent_id // ""' "$h1t/logs/subagent-stops.jsonl" 2>/dev/null | head -1)
+  h1x=$(jq -r '.agent_transcript_path // ""' "$h1t/logs/subagent-stops.jsonl" 2>/dev/null | head -1)
+  { [ "$h1a" = "h1-agt" ] && [ "$h1x" = "/x/y.jsonl" ]; } \
+    && ok "HOOK-1 stop twin records identity + transcript path (the death-forensics handle)" \
+    || no "HOOK-1 stop twin lost fields (id='$h1a' path='$h1x')"
+  [ -s "$h1t/stop.out" ] && no "HOOK-1 stop twin wrote to stdout/stderr (must be silent)" \
+    || ok "HOOK-1 stop twin is silent and exits 0 (observation law)"
+  grep -qE 'tool_response|\.error|success' <<<"$(sed 's/#.*//' hooks/subagent-stop.sh)" \
+    && no "HOOK-1 stop twin reads an outcome field — it must fire regardless of success" \
+    || ok "HOOK-1 stop twin depends on no outcome field (covers failed dispatches, like its birth twin)"
+  printf '%s' '{"session_id":"h1","prompt":"APPROVE X9-PROBE"}' \
+    | CLAUDE_PROJECT_DIR="$h1t" ./hooks/user-prompt-submit.sh >"$h1t/ups.out" 2>&1
+  h1k=$(jq -r '.starts_with_approve_token // ""' "$h1t/logs/prompt-receipts.jsonl" 2>/dev/null | head -1)
+  [ "$h1k" = "APPROVE X9-PROBE" ] && ok "HOOK-1 receipt stamps an exact token at submission (whole-prompt anchored)" \
+    || no "HOOK-1 receipt missed the exact token (got '$h1k')"
+  [ -s "$h1t/ups.out" ] && no "HOOK-1 prompt hook wrote to stdout (context injection risk)" \
+    || ok "HOOK-1 prompt hook prints nothing (stdout-injection law)"
+  printf '%s' '{"session_id":"h1","prompt":"please APPROVE X9-PROBE later, secret_token=sk-abcdef123456789012345"}' \
+    | CLAUDE_PROJECT_DIR="$h1t" ./hooks/user-prompt-submit.sh >/dev/null 2>&1
+  h1k2=$(jq -r '.starts_with_approve_token // ""' "$h1t/logs/prompt-receipts.jsonl" 2>/dev/null | tail -1)
+  [ -z "$h1k2" ] && ok "HOOK-1 anchored negative: prose mentioning a token stamps NO receipt" \
+    || no "HOOK-1 receipt fired on prose (got '$h1k2') — the anchor is broken"
+  grep -qF 'sk-abcdef123456789012345' "$h1t/logs/prompt-receipts.jsonl" \
+    && no "HOOK-1 PROMPT BODY LEAKED into the receipts trail — the no-body law is broken" \
+    || ok "HOOK-1 control: a planted secret in the prompt never reaches the trail (derived-only, fire-probed)"
+  printf '%s' '{"session_id":"h1","prompt":"REMOTE PROMPT PROTOCOL v1 - this prompt was sent from a remote/mobile session by the operator.\nRun it."}' \
+    | CLAUDE_PROJECT_DIR="$h1t" ./hooks/user-prompt-submit.sh >/dev/null 2>&1
+  h1r=$(jq -r '.is_remote_preamble' "$h1t/logs/prompt-receipts.jsonl" 2>/dev/null | tail -1)
+  [ "$h1r" = "true" ] && ok "HOOK-1 a REMOTE PROMPT PROTOCOL turn is recognized at entry" \
+    || no "HOOK-1 remote-preamble flag wrong ($h1r)"
+  printf '%s' '{"session_id":"h1","agent_id":"h1-agt","agent_type":"fixer","tool_name":"Bash","tool_input":{"command":"deploy --token=ghp_abcdefgh12345678 now"}}' \
+    | CLAUDE_PROJECT_DIR="$h1t" ./hooks/permission-request.sh >"$h1t/pr.out" 2>&1
+  h1p=$(jq -r '.agent_type // ""' "$h1t/logs/permission-requests.jsonl" 2>/dev/null | head -1)
+  [ "$h1p" = "fixer" ] && ok "HOOK-1 ask trail is agent-attributed (the ask-side of the denial trail)" \
+    || no "HOOK-1 ask row lost attribution ('$h1p')"
+  h1g=$(jq -r '.target // ""' "$h1t/logs/permission-requests.jsonl" 2>/dev/null | head -1)
+  case "$h1g" in
+    *ghp_abcdefgh12345678*) no "HOOK-1 ask trail carries a planted credential UNSCRUBBED" ;;
+    *REDACTED*) ok "HOOK-1 control: a planted credential in the asked target is scrubbed (fire-probed)" ;;
+    *) no "HOOK-1 ask target neither raw nor redacted ('$h1g') — scrub path broken" ;;
+  esac
+  [ -s "$h1t/pr.out" ] && no "HOOK-1 ask hook emitted output — it must never answer asks" \
+    || ok "HOOK-1 ask hook is silent (observation only, never a decision)"
+  h1c=$(mktemp -d); mkdir -p "$h1c/hooks" "$h1c/context" "$h1c/logs"
+  cp hooks/session-start.sh hooks/_common.sh "$h1c/hooks/" 2>/dev/null
+  printf 'a\nb\nc\n' > "$h1c/Plan.md"; printf 'r1 awaiting\n' > "$h1c/GATES.md"
+  printf '# P\n- **Next action:** fx\n' > "$h1c/PROGRESS.md"
+  printf '%s' '{}' | CLAUDE_PROJECT_DIR="$h1c" "$h1c/hooks/session-start.sh" >/dev/null 2>&1
+  printf 'd\ne\nf\n' >> "$h1c/Plan.md"
+  cur2=$(printf '%s' '{}' | CLAUDE_PROJECT_DIR="$h1c" "$h1c/hooks/session-start.sh" 2>/dev/null \
+         | jq -r '.hookSpecificOutput.additionalContext' 2>/dev/null)
+  grep -q 'Plan +3 lines' <<<"$cur2" \
+    && ok "HOOK-1 seen-cursor reports the append delta (+3 Plan lines between groundings)" \
+    || no "HOOK-1 seen-cursor missed the append delta"
+  printf 'r1 APPROVED\n' > "$h1c/GATES.md"
+  cur3=$(printf '%s' '{}' | CLAUDE_PROJECT_DIR="$h1c" "$h1c/hooks/session-start.sh" 2>/dev/null \
+         | jq -r '.hookSpecificOutput.additionalContext' 2>/dev/null)
+  grep -q 'GATES +0 lines (CHANGED)' <<<"$cur3" \
+    && ok "HOOK-1 seen-cursor sees a zero-line-delta stamp flip by content hash (the class that matters)" \
+    || no "HOOK-1 seen-cursor is blind to the in-place stamp flip"
+  h1n=$(grep -c . "$h1c/logs/grounding-cursor.jsonl" 2>/dev/null); [ "${h1n:-0}" -ge 3 ] \
+    && ok "HOOK-1 cursor trail accumulates one row per grounding ($h1n rows in fixture)" \
+    || no "HOOK-1 cursor trail rows: ${h1n:-0} (want >= 3)"
+  printf '%s' '{"session_id":"h1","tool_name":"Agent","tool_input":{"subagent_type":"Explore","prompt":"tiny"}}' \
+    | CLAUDE_PROJECT_DIR="$h1t" ./hooks/reference-cap.sh >/dev/null 2>&1
+  grep -q '"event":"PreToolUse.observed"' "$h1t/logs/tooluse-audit.jsonl" 2>/dev/null \
+    && ok "HOOK-1 reference-cap now leaves an unconditional delivery row (HOOK-2's precondition evidence)" \
+    || no "HOOK-1 PreToolUse.observed row missing — delivery evidence not wired"
+  h1keys=$(jq -r '.hooks | keys[]' .claude/settings.json 2>/dev/null | tr '\n' ' ')
+  case "$h1keys" in
+    *SubagentStop*UserPromptSubmit*|*UserPromptSubmit*SubagentStop*) : ;; *)
+      no "HOOK-1 settings missing new event keys ($h1keys)"; h1sk=done ;;
+  esac
+  if [ "${h1sk:-}" != done ]; then
+    case "$h1keys" in
+      *PermissionRequest*) ok "HOOK-1 all three new events wired in settings (SubagentStop, UserPromptSubmit, PermissionRequest)" ;;
+      *) no "HOOK-1 PermissionRequest key missing from settings" ;;
+    esac
+  fi
+  rm -rf "$h1t" "$h1c"
 
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate

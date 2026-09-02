@@ -38,6 +38,15 @@ exec 3>&2   # preserve the real stderr for the #2 warning; the block below suppr
     /^[[:space:]]*```/ { if (inf) { if (n > m) m = n; n = 0; inf = 0 } else { inf = 1 } ; next }
     inf { n++ }
     END { if (n > m) m = n; print m + 0 }')
+  # HOOK-1: unconditional delivery evidence — this is the ONLY PreToolUse[Agent] hook, and no
+  # live row had ever proven the matcher fires (66 dispatches, zero trail lines). One append
+  # before the early exit turns delivery from an assumption into a readable fact; HOOK-2's
+  # deny hook has a hard precondition on at least one of these rows existing.
+  { mkdir -p "$ROOT/logs"
+    jq -cn --arg ts "$(now)" --arg p "$PHASE" \
+       '{ts:$ts,event:"PreToolUse.observed",tool:"Agent",phase:$p}' \
+       >> "$ROOT/logs/tooluse-audit.jsonl"
+  } >/dev/null 2>&1
   [ "${BIG:-0}" -gt "$CAP" ] || exit 0
   TO=$(printf '%s' "$INPUT" | jq -r '.tool_input.subagent_type // "unknown"' 2>/dev/null || echo unknown)
   ID=$(printf '%s' "$P" | grep -oE '"task_id"[[:space:]]*:[[:space:]]*"[A-Za-z0-9._-]+"' | head -1 \

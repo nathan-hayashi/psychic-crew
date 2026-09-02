@@ -40,7 +40,7 @@
 | lead-planner       | 2   | 48,935 | 35,550 | 62,320 |
 | test-runner        | 1   | 46,388 | 46,388 | 46,388 |
 
-**verified** — All measured dispatches, all phases: **51 dispatches, 6,185,211 tokens, mean 121,278.**
+**verified** — All measured dispatches, all phases: **55 dispatches, 6,841,551 tokens, mean 124,392.**
 
 ## The baseline a future phase should budget against
 
@@ -92,7 +92,7 @@ using any number: the same source counted by eight agents appears eight times.
 
 ### What it shows
 
-**verified** — 51 dispatches, **6,185,211 tokens** total, mean **121,278** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
+**verified** — 55 dispatches, **6,841,551 tokens** total, mean **124,392** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
 The red tick is the mean. The spread is the finding: the dearest single dispatch is
 **5.6×** the cheapest, so a per-phase
 budget built on a mean is wrong for both tails.
@@ -236,6 +236,12 @@ the total disagree with `logs/`.
         "duration_ms": 654902
       },
       {
+        "role": "Explore",
+        "task": "Survey register-item source docs",
+        "tokens": 112443,
+        "duration_ms": 332031
+      },
+      {
         "role": "lead-executor",
         "task": "F7-A3-modules",
         "tokens": 117542,
@@ -338,6 +344,12 @@ the total disagree with `logs/`.
         "duration_ms": 705809
       },
       {
+        "role": "general-purpose",
+        "task": "Peer review of register plan",
+        "tokens": 143260,
+        "duration_ms": 562110
+      },
+      {
         "role": "arbiter",
         "task": "STRESS1-ARB-R1",
         "tokens": 145784,
@@ -380,6 +392,12 @@ the total disagree with `logs/`.
         "duration_ms": 781106
       },
       {
+        "role": "general-purpose",
+        "task": "Internal review of register plan",
+        "tokens": 172777,
+        "duration_ms": 637722
+      },
+      {
         "role": "Plan",
         "task": "Design the three hard pieces",
         "tokens": 177934,
@@ -408,6 +426,12 @@ the total disagree with `logs/`.
         "task": "F7-B9-e2e",
         "tokens": 198302,
         "duration_ms": 758461
+      },
+      {
+        "role": "Plan",
+        "task": "before",
+        "tokens": 227860,
+        "duration_ms": 1024536
       },
       {
         "role": "arbiter",

@@ -1271,3 +1271,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [F8|2026-09-01T17:13:36Z] THE LARGE PLAN IS COMPLETE — ARC4-RECAL closed @44e5855 (26 of 26 tokens)
 - **End-state:** parent 254/0 · 54/0/0 · 33/0 · matrices 27/0/15 · envelope 11/0 · PORTABLE · 184 tracked · v3.17/D32; lite + four siblings all green; estate public/MIT/bound.
 - **Next action:** NONE OWED — the queue is empty. Open items live in the parked-and-open register (Plan.md, this entry's sibling) and every one waits on the operator's word.
+
+## [RP|2026-09-02T05:39:55Z] HOOK-1 built — awaiting the token (REGISTER PROGRAM gate 1 of 10)
+- **Task:** stop twin + derived-only receipts + ask trail + hash-aware seen-cursor + delivery-evidence row + canary-trap retrofit; 16+2 arms green; crew 270 · validate 59 · tracked 188 · D33/v3.18 (rule-5 third catch; fence 55-row regen; loop-scaling counts).
+- **Next action:** `APPROVE HOOK-1`; then HOOK-2.

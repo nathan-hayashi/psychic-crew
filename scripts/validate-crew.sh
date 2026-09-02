@@ -351,7 +351,7 @@ if [ -f logs/subagent-starts.jsonl ] && [ -f logs/arbiter-audit.jsonl ]; then
   scov=$(jq -r 'select((.event // "") != "FLAG") | select((.agent_id // "") != "") | .agent_id' \
          logs/arbiter-audit.jsonl 2>/dev/null | sort -u)
   if [ -z "$sstart" ]; then
-    skip "C-25: no specialist subagent start recorded yet (identity coverage untestable)"
+    skip "C-25: no specialist subagent start recorded yet (identity coverage untestable; deaths-side coverage is C-25b below)"
   else
     sunc=$(comm -23 <(printf '%s\n' "$sstart") <(printf '%s\n' "$scov") | sed '/^$/d')
     if [ -z "$sunc" ]; then
@@ -362,6 +362,41 @@ if [ -f logs/subagent-starts.jsonl ] && [ -f logs/arbiter-audit.jsonl ]; then
   fi
 else
   skip "C-25: no subagent-starts trail yet (SubagentStart hook owns logs/subagent-starts.jsonl)"
+fi
+
+# HOOK-1 — paired lifecycle + deaths-side coverage. Both ANNOUNCE-ONLY behind a pinned cutover:
+# the starts trail predates the stops trail, so historical orphans are structural, and these
+# append-only trails cannot be repaired after the fact (the exact reason C-25 grandfathers by
+# enumeration). Promotion to FAIL is a NAMED WAKE: after a clean multi-session window shows the
+# platform delivers SubagentStop reliably, the operator's word flips announce to fail.
+HK1_CUT='2026-09-01T18:00:00Z'
+SPEC25="${SPEC25:-security-reviewer|quality-reviewer|fixer|test-runner|integration-runner}"
+scov="${scov:-}"
+if [ -f logs/subagent-starts.jsonl ]; then
+  if [ -f logs/subagent-stops.jsonl ]; then
+    hkst=$(jq -r --arg c "$HK1_CUT" 'select((.ts // "") > $c) | select((.agent_id // "") != "") | .agent_id'            logs/subagent-starts.jsonl 2>/dev/null | sort -u)
+    hksp=$(jq -r 'select((.agent_id // "") != "") | .agent_id' logs/subagent-stops.jsonl 2>/dev/null | sort -u)
+    hkor=$(comm -23 <(printf '%s
+' "$hkst") <(printf '%s
+' "$hksp") | sed '/^$/d' | grep -c . || true)
+    case "$hkor" in ''|*[!0-9]*) hkor=0 ;; esac
+    pass "HOOK-1 paired lifecycle (announce-only, cutover $HK1_CUT): $hkor post-cut start(s) without a stop"
+  else
+    pass "HOOK-1 paired lifecycle: no stops trail yet — announce-only, nothing to pair (delivery unproven)"
+  fi
+  hkss=$(jq -r --arg s "$SPEC25" --arg c "$HK1_CUT" 'select((.ts // "") > $c)
+           | select((.agent_id // "") != "") | select((.agent_type // "") | test($s)) | .agent_id'          logs/subagent-stops.jsonl 2>/dev/null | sort -u)
+  if [ -z "$hkss" ]; then
+    pass "C-25b (announce-only): no post-cutover specialist stop yet — deaths-side coverage pending delivery"
+  else
+    hksu=$(comm -23 <(printf '%s
+' "$hkss") <(printf '%s
+' "$scov") | sed '/^$/d' | tr '
+' ' ')
+    pass "C-25b (announce-only, promotion is a named wake): specialist stop(s) without arbiter coverage: ${hksu:-none}"
+  fi
+else
+  skip "HOOK-1 lifecycle arms: no starts trail (bare clone) — announced"
 fi
 
 # C-19: coverage that cannot be ORDERED is coverage that cannot be trusted. A task_id match proves
