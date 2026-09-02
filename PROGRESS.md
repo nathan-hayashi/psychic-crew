@@ -1299,3 +1299,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [RP|2026-09-02T19:01:11Z] ARB-ORCA-1 CLOSED — REGISTRY-1 opens (gate 4 of 10 done)
 - **Next action:** the reliability registry; token `APPROVE REGISTRY-1`.
+
+## [RP|2026-09-02T19:07:54Z] REGISTRY-1 built — awaiting the token (REGISTER PROGRAM gate 5 of 10)
+- **Task:** 44-row registry, measured maturity 14/30, declared shared extraction, both-ways binding, both probes firing (one after eating its own prey); crew 310 · tracked 197.
+- **Next action:** `APPROVE REGISTRY-1`; then TICK-1 (pays the registry tax live).

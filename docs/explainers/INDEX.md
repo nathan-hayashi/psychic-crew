@@ -53,3 +53,4 @@ entry for it.
 - [HOOK-2](HOOK-2.md) — the specialist ordering lock: arbiter-armed markers, every refusal class probed, the limit on the label.
 - [TEI-1](TEI-1.md) — the risk-rating brain that is deliberately not an AI: pinned rules, two-layer deny, recommendation logged-never-consulted.
 - [ARB-ORCA-1](ARB-ORCA-1.md) — the arbiter amendment: verdict trio, tested example, three-check releases, the honest third outcome.
+- [REGISTRY-1](REGISTRY-1.md) — 44 sections mapped to what they protect; maturity measured, both directions bound.

@@ -1909,6 +1909,65 @@ AQ2EOF
     && ok "ARB-ORCA-1 authoring rules sit BESIDE the example fence ($((aadj - afen)) line(s) after it), per their own rule" \
     || no "ARB-ORCA-1 authoring rules drifted from the fence (fence:$afen rules:$aadj)"
 
+
+  # REGISTRY-1 — the reliability registry, bound both directions against the LIVE section set.
+  # Extraction spec (shared with the generator, declared in the doc): lines matching
+  # ^\s*echo "== , excluding any containing $( or %s (the evidence banner and summary printfs
+  # are not sections). Maturity is MECHANICAL: a section span carrying a firing-control line
+  # is proven, else experimental — no prose archaeology.
+  echo "== REGISTRY-1 — reliability registry: live sections vs rows, both ways =="
+  RG=docs/RELIABILITY-REGISTRY.md
+  rgt=$(awk '/^# RELIABILITY-REGISTRY v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$RG" 2>/dev/null)
+  rgn=$(grep -c . <<<"$rgt"); case "$rgn" in ''|*[!0-9]*) rgn=0 ;; esac
+  [ "$rgn" -ge 35 ] && ok "REGISTRY-1 registry non-vacuous ($rgn rows)" \
+    || no "REGISTRY-1 registry vacuous: $rgn rows (want >= 35)"
+  rgbadv=$(printf '%s\n' "$rgt" | awk -F'\t' 'NF!=5 || ($5!="proven" && $5!="experimental") {print $1}' | tr '\n' ' ')
+  [ -z "$rgbadv" ] && ok "REGISTRY-1 every row is 5-field with legal maturity vocabulary" \
+    || no "REGISTRY-1 malformed row(s): $rgbadv"
+  rgmiss=""
+  while IFS="$(printf '\t')" read -r rid rinv rora rpna rmat; do
+    [ -n "${rid:-}" ] || continue
+    rgf=$(printf '%s' "$rpna" | cut -d: -f1)
+    rgh=$(printf '%s' "$rpna" | cut -d: -f2-)
+    rgc=$(grep -cF "$rgh" "$rgf" 2>/dev/null); case "$rgc" in ''|*[!0-9]*) rgc=0 ;; esac
+    [ "$rgc" -ge 1 ] || rgmiss="$rgmiss [$rid]"
+  done <<RGEOF
+$rgt
+RGEOF
+  [ -z "$rgmiss" ] && ok "REGISTRY-1 forward: every row's proving needle greps in its named file" \
+    || no "REGISTRY-1 forward broken:$rgmiss"
+  rglive=$(for s in scripts/run-crew-tests.sh scripts/validate-crew.sh scripts/save-context.sh scripts/check-decision-matrices.sh scripts/check-envelope.sh; do
+    grep -E '^[[:space:]]*echo "== ' "$s" | grep -v '\$(' | grep -v '%s' \
+      | sed -E 's/^[[:space:]]*echo "== (.*) ==.*$/\1/' | sed "s|^|$s\t|"
+  done | grep -c .)
+  case "$rglive" in ''|*[!0-9]*) rglive=0 ;; esac
+  [ "$rglive" -eq "$rgn" ] && ok "REGISTRY-1 reverse: live section count ($rglive) == registry rows ($rgn) — a new section without a row is red" \
+    || no "REGISTRY-1 reverse: live sections $rglive vs rows $rgn (a section is missing its row, or a row its section)"
+  rgp=$(mktemp)
+  { printf '%s\n' "$rgt"; printf 'phantom-behavior\tx\tx\tscripts/check-envelope.sh:== ZZZ-NO-SUCH ==\texperimental\n'; } > "$rgp"
+  rgpm=""
+  while IFS="$(printf '\t')" read -r rid rinv rora rpna rmat; do
+    [ -n "${rid:-}" ] || continue
+    rgf=$(printf '%s' "$rpna" | cut -d: -f1); rgh=$(printf '%s' "$rpna" | cut -d: -f2-)
+    rgc=$(grep -cF "$rgh" "$rgf" 2>/dev/null); case "$rgc" in ''|*[!0-9]*) rgc=0 ;; esac
+    [ "$rgc" -ge 1 ] || rgpm="$rgpm [$rid]"
+  done < "$rgp"
+  case "$rgpm" in
+    *phantom-behavior*) ok "REGISTRY-1 control fires: a phantom row's needle is caught by the forward logic" ;;
+    *) no "REGISTRY-1 phantom-row control DID NOT fire" ;;
+  esac
+  rm -f "$rgp"
+  rgo=$(mktemp)
+  cp scripts/check-envelope.sh "$rgo"
+  printf '\necho "== PLANTED ORPHAN SECTION =="\n' >> "$rgo"
+  rgoc=$(grep -E '^[[:space:]]*echo "== ' "$rgo" | grep -v '\$(' | grep -v '%s' | grep -c .)
+  rgbase=$(grep -E '^[[:space:]]*echo "== ' scripts/check-envelope.sh | grep -v '\$(' | grep -v '%s' | grep -c .)
+  case "$rgoc$rgbase" in *[!0-9]*) rgoc=0; rgbase=0 ;; esac
+  [ "$rgoc" -eq $((rgbase + 1)) ] \
+    && ok "REGISTRY-1 control fires: a planted header in a script copy is seen by the reverse extraction" \
+    || no "REGISTRY-1 orphaned-header control DID NOT fire ($rgoc vs $rgbase)"
+  rm -f "$rgo"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
