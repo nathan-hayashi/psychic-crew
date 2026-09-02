@@ -1861,6 +1861,54 @@ AQ2EOF
   [ "$t1net" -eq 0 ] && ok "TEI-1 the engine calls no model and no network (fragment-needle scan; the behavioral control carries the weight)" \
     || no "TEI-1 model/network shape in the engine: $t1net hit(s)"
 
+
+  # ARB-ORCA-1 — four TAKEs bound as data. Docs-as-data arms are legitimate here because the
+  # protocol file IS the deliverable (the ORCA-MATRIX precedent); the snapshot arm is what
+  # keeps them from being prose-assertions, and its golden was captured from authored bytes
+  # AFTER the formatter exemption landed (order matters — Prettier rewrites json fences).
+  echo "== ARB-ORCA-1 — the arbiter amendment: verdict trio, authoring rules, ownership, lifecycle =="
+  ap=.claude/rules/arbiter-protocol.md
+  grep -qF 'arbiter-protocol.md)' hooks/auto-format.sh \
+    && ok "ARB-ORCA-1 the formatter exemption precedes the golden (skip-list covers the protocol file)" \
+    || no "ARB-ORCA-1 protocol file not exempted — the snapshot would pin formatter output"
+  aof=$(awk '/^```json$/{f=1;next} f&&/^```$/{exit} f' "$ap")
+  [ "$aof" = '{"task_id","phase","to":["<agent>"],"objective","inputs","expected_output","budget_tokens","deadline_steps","guardrail","failure_budget"}' ] \
+    && ok "ARB-ORCA-1 snapshot: the DISPATCH fence byte-equals the embedded golden (the doc's example is a tested artifact)" \
+    || no "ARB-ORCA-1 DISPATCH fence drifted from the golden"
+  amf=$(mktemp); sed 's/"failure_budget"/"failure_bugdet"/' "$ap" > "$amf"
+  amx=$(awk '/^```json$/{f=1;next} f&&/^```$/{exit} f' "$amf")
+  [ "$amx" != '{"task_id","phase","to":["<agent>"],"objective","inputs","expected_output","budget_tokens","deadline_steps","guardrail","failure_budget"}' ] \
+    && ok "ARB-ORCA-1 control fires: a mutated fence copy is seen by the same extraction+compare" \
+    || no "ARB-ORCA-1 snapshot control DID NOT fire"
+  rm -f "$amf"
+  for f in "$ap" .claude/agents/arbiter.md; do
+    aotrio=$(grep -cE 'live ?\| ?unverifiable ?\| ?exited' "$f"); case "$aotrio" in ''|*[!0-9]*) aotrio=0 ;; esac
+    [ "$aotrio" -ge 1 ] \
+      && ok "ARB-ORCA-1 verdict trio present verbatim: $f" \
+      || no "ARB-ORCA-1 verdict trio missing from $f"
+  done
+  grep -qF 'unverifiable` may never be recorded as `live' "$ap" \
+    && ok "ARB-ORCA-1 the collapse-forbidden sentence stands (assert nothing you cannot observe)" \
+    || no "ARB-ORCA-1 collapse sentence missing"
+  grep -qF '"failure_budget"' "$ap" && grep -qF 'ESCALATES to the operator via FALLBACK, never a silent replan' "$ap" \
+    && ok "ARB-ORCA-1 failure_budget in the schema with the escalate-never-replan law (CORPUS-AGENTFW cited)" \
+    || no "ARB-ORCA-1 failure_budget or its law missing"
+  grep -qF 'THREE INDEPENDENT checks' "$ap" && grep -qF 'sender' "$ap" \
+    && ok "ARB-ORCA-1 release ownership: the three-check rule enumerated (task, dispatch, sender)" \
+    || no "ARB-ORCA-1 three-check rule missing"
+  grep -qF 'dispatched-unobserved' "$ap" \
+    && ok "ARB-ORCA-1 lifecycle vocabulary carries dispatched-unobserved (the third outcome, never guessed away)" \
+    || no "ARB-ORCA-1 dispatched-unobserved missing"
+  grep -qF 'BEFORE any ledger row is written' "$ap" \
+    && ok "ARB-ORCA-1 preconditions ordered before ledger rows (refusal is free — T6)" \
+    || no "ARB-ORCA-1 precondition ordering sentence missing"
+  aadj=$(grep -n 'Authoring rules (ARB-ORCA-1' "$ap" | head -1 | cut -d: -f1)
+  afen=$(grep -n '"failure_budget"}' "$ap" | head -1 | cut -d: -f1)
+  case "$aadj$afen" in *[!0-9]*) aadj=0; afen=1 ;; esac
+  { [ "$aadj" -gt 0 ] && [ "$afen" -gt 0 ] && [ $((aadj - afen)) -ge 0 ] && [ $((aadj - afen)) -le 4 ]; } \
+    && ok "ARB-ORCA-1 authoring rules sit BESIDE the example fence ($((aadj - afen)) line(s) after it), per their own rule" \
+    || no "ARB-ORCA-1 authoring rules drifted from the fence (fence:$afen rules:$aadj)"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

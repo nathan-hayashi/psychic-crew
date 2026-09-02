@@ -52,3 +52,4 @@ entry for it.
 - [HOOK-1](HOOK-1.md) — four new senses: the death half, derived-only receipts, the ask trail, the grounding cursor.
 - [HOOK-2](HOOK-2.md) — the specialist ordering lock: arbiter-armed markers, every refusal class probed, the limit on the label.
 - [TEI-1](TEI-1.md) — the risk-rating brain that is deliberately not an AI: pinned rules, two-layer deny, recommendation logged-never-consulted.
+- [ARB-ORCA-1](ARB-ORCA-1.md) — the arbiter amendment: verdict trio, tested example, three-check releases, the honest third outcome.
