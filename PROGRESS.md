@@ -1282,3 +1282,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [RP|2026-09-02T17:23:06Z] HOOK-2 built — awaiting the token (REGISTER PROGRAM gate 2 of 10)
 - **Task:** the ordering lock — live precondition paid (observed row + live stops + the first token receipt), per-pair arbiter-written markers, five refusal classes probed, limit on the label; crew 282 · tracked 190 · D34/v3.19.
 - **Next action:** `APPROVE HOOK-2`; then TEI-1.
+
+## [RP|2026-09-02T17:32:58Z] HOOK-2 CLOSED — TEI-1 opens (gate 2 of 10 done)
+- **Next action:** the deterministic router; token `APPROVE TEI-1`.
