@@ -1275,3 +1275,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [RP|2026-09-02T05:39:55Z] HOOK-1 built — awaiting the token (REGISTER PROGRAM gate 1 of 10)
 - **Task:** stop twin + derived-only receipts + ask trail + hash-aware seen-cursor + delivery-evidence row + canary-trap retrofit; 16+2 arms green; crew 270 · validate 59 · tracked 188 · D33/v3.18 (rule-5 third catch; fence 55-row regen; loop-scaling counts).
 - **Next action:** `APPROVE HOOK-1`; then HOOK-2.
+
+## [RP|2026-09-02T17:17:55Z] HOOK-1 CLOSED @d666214 — HOOK-2 opens (gate 1 of 10 done)
+- **Next action:** live-evidence dispatch, then the guard; token `APPROVE HOOK-2`.
