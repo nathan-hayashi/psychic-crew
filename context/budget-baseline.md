@@ -40,7 +40,7 @@
 | lead-planner       | 2   | 48,935 | 35,550 | 62,320 |
 | test-runner        | 1   | 46,388 | 46,388 | 46,388 |
 
-**verified** — All measured dispatches, all phases: **55 dispatches, 6,841,551 tokens, mean 124,392.**
+**verified** — All measured dispatches, all phases: **56 dispatches, 6,862,924 tokens, mean 122,552.**
 
 ## The baseline a future phase should budget against
 
@@ -92,7 +92,7 @@ using any number: the same source counted by eight agents appears eight times.
 
 ### What it shows
 
-**verified** — 55 dispatches, **6,841,551 tokens** total, mean **124,392** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
+**verified** — 56 dispatches, **6,862,924 tokens** total, mean **122,552** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
 The red tick is the mean. The spread is the finding: the dearest single dispatch is
 **5.6×** the cheapest, so a per-phase
 budget built on a mean is wrong for both tails.
@@ -115,6 +115,12 @@ the total disagree with `logs/`.
   },
   "data": {
     "values": [
+      {
+        "role": "Explore",
+        "task": "Live-evidence probe dispatch",
+        "tokens": 21373,
+        "duration_ms": 8759
+      },
       {
         "role": "lead-planner",
         "task": "G-F3 demo: lead produces DISPATCH",

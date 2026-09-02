@@ -1,4 +1,5 @@
 [
+  {"role":"Explore","task":"Live-evidence probe dispatch","phase":"other","tokens":21373,"duration_ms":8759},
   {"role":"lead-planner","task":"G-F3 demo: lead produces DISPATCH","phase":"F3","tokens":35550,"duration_ms":130272},
   {"role":"arbiter","task":"F3-D1-dirguide-risk-scan","phase":"F3","tokens":36568,"duration_ms":123378},
   {"role":"test-runner","task":"F7-B8-tests","phase":"F7","tokens":46388,"duration_ms":197102},

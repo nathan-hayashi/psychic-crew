@@ -95,6 +95,15 @@
             "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/reference-cap.sh\""
           }
         ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}/hooks/agent-dispatch-guard.sh\""
+          }
+        ]
       }
     ],
     "PostToolUse": [

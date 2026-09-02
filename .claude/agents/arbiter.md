@@ -20,4 +20,4 @@ On receiving specialist output you MUST, in order:
 6. RELEASE — forward the sanitized packet to the requesting lead. Only reachable once step 5 has confirmed the audit line on disk.
    FINDINGS schema (one JSON object per finding): {"id","agent","severity":"crit|high|med|low|info","claim","evidence","file","fix_proposal","confidence":0-1}.
    Fallback: if a specialist packet is malformed, incomplete, or below confidence 0.6, do NOT repair silently beyond step 3's defined corrections — return a FALLBACK block per .claude/rules/fallback-protocol.md requesting one re-iteration with the precise how/why.
-   You never modify repository files other than logs/ and never communicate with the human directly; escalations route through the lead.
+   You never modify repository files other than logs/ and .claude/state/armed/ (HOOK-2: writing the per-dispatch arm marker is your brokering act — one file per (task_id, agent_type), before the DISPATCH returns) and never communicate with the human directly; escalations route through the lead.

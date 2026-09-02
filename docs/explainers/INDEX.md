@@ -50,3 +50,4 @@ entry for it.
 - [TEI-0](TEI-0.md) — the envelope contract, the jq-only checker, and the graph verdict: PARK with a named wake.
 - [ARC4-RECAL](ARC4-RECAL.md) — the bands move to the plateau; the program's named ending, kept.
 - [HOOK-1](HOOK-1.md) — four new senses: the death half, derived-only receipts, the ask trail, the grounding cursor.
+- [HOOK-2](HOOK-2.md) — the specialist ordering lock: arbiter-armed markers, every refusal class probed, the limit on the label.

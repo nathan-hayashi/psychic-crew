@@ -1753,6 +1753,67 @@ AQ2EOF
   fi
   rm -rf "$h1t" "$h1c"
 
+
+  # HOOK-2 — the ordering guard, both legs and every refusal class fire-probed. The live
+  # precondition is asserted against the REAL trail (announced when absent — bare clones).
+  echo "== HOOK-2 — agent-dispatch-guard: ordering + attribution for the specialist five =="
+  if [ -f logs/tooluse-audit.jsonl ]; then
+    h2ob=$(grep -c '"event":"PreToolUse.observed"' logs/tooluse-audit.jsonl); [[ "$h2ob" =~ ^[0-9]+$ ]] || h2ob=0
+    [ "$h2ob" -ge 1 ] && ok "HOOK-2 precondition holds live: $h2ob PreToolUse.observed row(s) — the matcher demonstrably fires" \
+      || no "HOOK-2 precondition BROKEN: zero observed rows in a live checkout that shipped the deny"
+  else
+    ok "HOOK-2 precondition: no live trail (bare clone) — announced; the gate's own close recorded the live row"
+  fi
+  h2=$(mktemp -d); mkdir -p "$h2/logs" "$h2/.claude/state/armed"; cp GATES.md "$h2/" 2>/dev/null
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"Explore","prompt":"probe"}}' \
+    | CLAUDE_PROJECT_DIR="$h2" ./hooks/agent-dispatch-guard.sh >"$h2/o1" 2>&1; h2r=$?
+  { [ "$h2r" -eq 0 ] && [ ! -s "$h2/o1" ]; } \
+    && ok "HOOK-2 non-specialist dispatch passes silently (planning workflows untouched)" \
+    || no "HOOK-2 non-specialist leg broken (exit $h2r)"
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"fixer","prompt":"x \"task_id\": \"T-A1\" y"}}' \
+    | CLAUDE_PROJECT_DIR="$h2" ./hooks/agent-dispatch-guard.sh >"$h2/o2" 2>&1; h2r=$?
+  { [ "$h2r" -eq 2 ] && grep -q '"permissionDecision":"deny"' "$h2/o2"; } \
+    && ok "HOOK-2 control fires: specialist without an arm marker is DENIED with the decision object" \
+    || no "HOOK-2 no-marker deny broken (exit $h2r)"
+  grep -q '"event":"PreToolUse.deny"' "$h2/logs/tooluse-audit.jsonl" 2>/dev/null \
+    && ok "HOOK-2 the denial left its own audit record (a blocked call must not vanish)" \
+    || no "HOOK-2 deny left no trail record"
+  jq -cn --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{ts:$ts,agent_type:"fixer",task_id:"T-A1"}' > "$h2/.claude/state/armed/T-A1.fixer"
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"fixer","prompt":"x \"task_id\": \"T-A1\" y"}}' \
+    | CLAUDE_PROJECT_DIR="$h2" ./hooks/agent-dispatch-guard.sh >"$h2/o3" 2>&1; h2r=$?
+  { [ "$h2r" -eq 0 ] && [ ! -s "$h2/o3" ]; } \
+    && ok "HOOK-2 armed specialist dispatch passes (fresh matching marker)" \
+    || no "HOOK-2 armed-pass leg broken (exit $h2r)"
+  [ -f "$h2/.claude/state/armed/T-A1.fixer" ] \
+    && no "HOOK-2 marker SURVIVED the allow — one-shot consumption broken" \
+    || ok "HOOK-2 marker consumed on allow (one-shot; a retry needs a re-arm, by design)"
+  grep -q '"event":"PreToolUse.arm-consumed"' "$h2/logs/tooluse-audit.jsonl" 2>/dev/null \
+    && ok "HOOK-2 the allow leg leaves its own record (arm-consumed, symmetric with deny)" \
+    || no "HOOK-2 arm-consumed record missing"
+  jq -cn '{ts:"2026-01-01T00:00:00Z",agent_type:"fixer",task_id:"T-A2"}' > "$h2/.claude/state/armed/T-A2.fixer"
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"fixer","prompt":"x \"task_id\": \"T-A2\" y"}}' \
+    | CLAUDE_PROJECT_DIR="$h2" ./hooks/agent-dispatch-guard.sh >/dev/null 2>&1; h2r=$?
+  [ "$h2r" -eq 2 ] && ok "HOOK-2 control fires: a stale arm (past TTL) is refused — re-arm and retry" \
+    || no "HOOK-2 stale-TTL leg broken (exit $h2r)"
+  jq -cn --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{ts:$ts,agent_type:"quality-reviewer",task_id:"T-A3"}' > "$h2/.claude/state/armed/T-A3.security-reviewer"
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"security-reviewer","prompt":"x \"task_id\": \"T-A3\" y"}}' \
+    | CLAUDE_PROJECT_DIR="$h2" ./hooks/agent-dispatch-guard.sh >/dev/null 2>&1; h2r=$?
+  [ "$h2r" -eq 2 ] && ok "HOOK-2 control fires: a wrong-type arm does not transfer between specialists" \
+    || no "HOOK-2 wrong-type leg broken (exit $h2r)"
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"test-runner","prompt":"see DISPATCH at docs/d.md"}}' \
+    | CLAUDE_PROJECT_DIR="$h2" ./hooks/agent-dispatch-guard.sh >/dev/null 2>&1; h2r=$?
+  [ "$h2r" -eq 2 ] && ok "HOOK-2 control fires: a path-carried DISPATCH (no inline task_id) is refused — the pinned-shape decision" \
+    || no "HOOK-2 path-carried leg broken (exit $h2r)"
+  printf 'not json at all' > "$h2/.claude/state/armed/T-A4.fixer"
+  printf '%s' '{"tool_name":"Agent","tool_input":{"subagent_type":"fixer","prompt":"x \"task_id\": \"T-A4\" y"}}' \
+    | CLAUDE_PROJECT_DIR="$h2" ./hooks/agent-dispatch-guard.sh >/dev/null 2>&1; h2r=$?
+  [ "$h2r" -eq 2 ] && ok "HOOK-2 control fires: an unparseable marker fails CLOSED" \
+    || no "HOOK-2 fail-closed leg broken (exit $h2r)"
+  h2m=$(jq -r '.hooks.PreToolUse[] | select(.hooks[0].command | test("agent-dispatch-guard")) | .matcher' .claude/settings.json 2>/dev/null)
+  [ "$h2m" = "Agent" ] && ok "HOOK-2 wired on the Agent matcher (settings read back)" \
+    || no "HOOK-2 settings matcher wrong ('$h2m')"
+  rm -rf "$h2"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
