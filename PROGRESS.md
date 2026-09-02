@@ -1296,3 +1296,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [RP|2026-09-02T17:56:12Z] ARB-ORCA-1 built — awaiting the token (REGISTER PROGRAM gate 4 of 10)
 - **Task:** verdict trio + collapse ban, tested DISPATCH fence (exemption-then-golden), three-check releases + failure_budget escalate-law, dispatched-unobserved + refusal-is-free; crew 304 · tracked 195.
 - **Next action:** `APPROVE ARB-ORCA-1`; then REGISTRY-1.
+
+## [RP|2026-09-02T19:01:11Z] ARB-ORCA-1 CLOSED — REGISTRY-1 opens (gate 4 of 10 done)
+- **Next action:** the reliability registry; token `APPROVE REGISTRY-1`.
