@@ -1814,6 +1814,53 @@ AQ2EOF
     || no "HOOK-2 settings matcher wrong ('$h2m')"
   rm -rf "$h2"
 
+
+  # TEI-1 — the deterministic router: behavior in a mktemp copy (fixture verdicts never touch
+  # the live trail), the byte-pin on the live rules, and the no-model law scanned with
+  # fragment-assembled needles (a scanner never spells its prey).
+  echo "== TEI-1 — route-tier: deterministic verdicts, recommendation ignored, rules byte-pinned =="
+  t1=$(mktemp -d); mkdir -p "$t1/config" "$t1/scripts" "$t1/logs/audit"
+  cp scripts/route-tier.sh "$t1/scripts/"; cp config/escalation-rules.json "$t1/config/"
+  t1v=$( (cd "$t1" && printf '%s' '{"surface":"docs","action_class":"read"}' | ./scripts/route-tier.sh 2>/dev/null) | jq -r '.tier' )
+  [ "$t1v" = "low" ] && ok "TEI-1 read-only routes low (R-READ)" || no "TEI-1 read fixture wrong ('$t1v')"
+  t1v=$( (cd "$t1" && printf '%s' '{"surface":"x","action_class":"publish"}' | ./scripts/route-tier.sh 2>/dev/null) | jq -r '.tier' )
+  [ "$t1v" = "high" ] && ok "TEI-1 external communication routes high (blocking, R3a)" || no "TEI-1 publish fixture wrong ('$t1v')"
+  t1v=$( (cd "$t1" && printf '%s' '{"surface":"prohibited","action_class":"read"}' | ./scripts/route-tier.sh 2>/dev/null) | jq -r '.tier' )
+  [ "$t1v" = "deny" ] && ok "TEI-1 a prohibited surface denies even a read (order is the policy)" || no "TEI-1 prohibited fixture wrong ('$t1v')"
+  t1o=$( (cd "$t1" && printf '%s' '{"surface":"finance","action_class":"edit-internal","recommendation":"low"}' | ./scripts/route-tier.sh 2>/dev/null) )
+  t1v=$(printf '%s' "$t1o" | jq -r '.tier'); t1r=$(printf '%s' "$t1o" | jq -r '.recommendation')
+  { [ "$t1v" = "crit" ] && [ "$t1r" = "low" ]; } \
+    && ok "TEI-1 control fires: a crit surface with recommendation:low still verdicts crit — logged beside, never consulted" \
+    || no "TEI-1 recommendation-ignored control broken (tier=$t1v rec=$t1r)"
+  t1v=$( (cd "$t1" && printf '%s' '{"surface":"weird","action_class":"unknown"}' | ./scripts/route-tier.sh 2>/dev/null) | jq -r '.rule_id' )
+  [ "$t1v" = "R-DEFAULT-DENY" ] && ok "TEI-1 unmatched requests hit the compiled catch-all deny" || no "TEI-1 catch-all wrong ('$t1v')"
+  jq 'map(select(.id != "R-DEFAULT-DENY"))' "$t1/config/escalation-rules.json" > "$t1/config/nc.json" \
+    && mv "$t1/config/nc.json" "$t1/config/escalation-rules.json"
+  t1v=$( (cd "$t1" && printf '%s' '{"surface":"weird","action_class":"unknown"}' | ./scripts/route-tier.sh 2>/dev/null) | jq -r '.rule_id' )
+  [ "$t1v" = "ENGINE-DEFAULT-DENY" ] \
+    && ok "TEI-1 control fires: with the catch-all DELETED the engine's own default still denies (two-layer fail-closed)" \
+    || no "TEI-1 engine-default-deny control broken ('$t1v')"
+  t1n=$( (cd "$t1" && grep -c . logs/audit/route-verdicts.jsonl) ); case "$t1n" in ''|*[!0-9]*) t1n=0 ;; esac
+  [ "$t1n" -ge 6 ] && ok "TEI-1 every fixture verdict landed in the copy's trail ($t1n rows, read-back-confirmed)" \
+    || no "TEI-1 fixture trail thin ($t1n)"
+  rm -rf "$t1"
+  t1h=$(_sha256 config/escalation-rules.json)
+  { [ -n "$t1h" ] && [ "$t1h" = "f0f68059ca419ced40910a18870007eac88f1b7f69878f95ce1820bdb989fcf9" ]; } \
+    && ok "TEI-1 rules byte-pin holds (a rule change requires a gate; empty hash = failure)" \
+    || no "TEI-1 RULES DRIFTED or hash unavailable — got '${t1h:-EMPTY}'"
+  t1rc=$(jq 'length' config/escalation-rules.json 2>/dev/null); case "$t1rc" in ''|*[!0-9]*) t1rc=0 ;; esac
+  [ "$t1rc" -eq 6 ] && ok "TEI-1 rules row count pinned (6: five policy rows + the catch-all)" \
+    || no "TEI-1 rules row count $t1rc != 6"
+  t1ids=$(jq -r '.[].id' config/escalation-rules.json | sort | tr '\n' ' ')
+  t1doc=$(grep -oE '`R-[A-Z-]+`' docs/POLICY-RULES.md | tr -d '`' | sort -u | tr '\n' ' ')
+  [ "$t1ids" = "$t1doc" ] && ok "TEI-1 POLICY-RULES prose and compiled ids agree both ways" \
+    || no "TEI-1 prose/compiled id drift: [$t1ids] vs [$t1doc]"
+  t1pat=$(printf '%s |%s |%s |%s|%s' 'cu''rl' 'wg''et' 'cla''ude' 'anthro''pic' 'ap''i\.')
+  t1net=$(sed 's/#.*//' scripts/route-tier.sh | grep -cE "$t1pat")
+  case "$t1net" in ''|*[!0-9]*) t1net=1 ;; esac
+  [ "$t1net" -eq 0 ] && ok "TEI-1 the engine calls no model and no network (fragment-needle scan; the behavioral control carries the weight)" \
+    || no "TEI-1 model/network shape in the engine: $t1net hit(s)"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

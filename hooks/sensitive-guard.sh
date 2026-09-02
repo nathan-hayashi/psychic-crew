@@ -19,7 +19,7 @@ if [ "$T" = "Write" ]; then
   case "$F" in
     *logs/*)
       case "${F##*/}" in
-        arbiter-audit.jsonl|tooluse-audit.jsonl|subagent-starts.jsonl|build-errors.jsonl|intake-contracts.jsonl|subagent-stops.jsonl|prompt-receipts.jsonl|permission-requests.jsonl|grounding-cursor.jsonl)
+        arbiter-audit.jsonl|tooluse-audit.jsonl|subagent-starts.jsonl|build-errors.jsonl|intake-contracts.jsonl|subagent-stops.jsonl|prompt-receipts.jsonl|permission-requests.jsonl|grounding-cursor.jsonl|route-verdicts.jsonl)
           [ -s "$F" ] && deny "append-only guard: '$F' is an append-only audit trail — append via Edit, not a whole-file Write" ;;
       esac ;;
   esac

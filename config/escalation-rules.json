@@ -1,0 +1,48 @@
+[
+  {
+    "id": "R-PROHIBITED",
+    "if": {
+      "surface": "^(prohibited|unverifiable)$"
+    },
+    "tier": "deny",
+    "why": "mechanically refused; no in-session override (\u00a7C row 4)"
+  },
+  {
+    "id": "R-CRITICAL",
+    "if": {
+      "surface": "^(finance|legal|security|employment)$"
+    },
+    "tier": "crit",
+    "why": "financial/legal/security/employment action: exact token, dual-gate (\u00a7C row 3)"
+  },
+  {
+    "id": "R-EXTERNAL",
+    "if": {
+      "action_class": "^(send|publish|notify)$"
+    },
+    "tier": "high",
+    "why": "external communication / material impact: blocking approval (\u00a7C row 2)"
+  },
+  {
+    "id": "R-REVERSIBLE",
+    "if": {
+      "action_class": "^(edit-internal|refactor|draft)$"
+    },
+    "tier": "med",
+    "why": "reversible internal change; suites verify (\u00a7C row 1)"
+  },
+  {
+    "id": "R-READ",
+    "if": {
+      "action_class": "^(read|summarize|analyze)$"
+    },
+    "tier": "low",
+    "why": "read-only: log and proceed (\u00a7C row 0)"
+  },
+  {
+    "id": "R-DEFAULT-DENY",
+    "if": {},
+    "tier": "deny",
+    "why": "no rule covers this request class; policy must gain a row at a gate before it can be tiered"
+  }
+]
