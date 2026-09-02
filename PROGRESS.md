@@ -1310,3 +1310,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [RP|2026-09-02T19:32:46Z] TICK-1 built — awaiting the token (REGISTER PROGRAM gate 6 of 10)
 - **Task:** live re-block + scratch backstop + floor 81 (close-record-commit advance) + tree>=HEAD explicit; registry tax paid live; crew 315 · tracked 199.
 - **Next action:** `APPROVE TICK-1`; then RATCHET-1.
+
+## [RP|2026-09-02T20:11:52Z] TICK-1 CLOSED — RATCHET-1 opens (gate 6 of 10 done; floor 82)
+- **Next action:** the dependency ratchet; token `APPROVE RATCHET-1`.
