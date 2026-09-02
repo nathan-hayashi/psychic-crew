@@ -1968,6 +1968,50 @@ RGEOF
     || no "REGISTRY-1 orphaned-header control DID NOT fire ($rgoc vs $rgbase)"
   rm -f "$rgo"
 
+
+  # TICK-1 — gates re-blocked every tick: an honest STRADDLE-TIME control (outside a straddle
+  # the awaiting set is empty and says so), with an always-run fixture backstop so the arm is
+  # never vacuous, plus two stamp-loss layers (floor + tree>=HEAD).
+  echo "== TICK-1 — gate re-assertion: live re-block, floor, tree-vs-HEAD =="
+  tkaw=$(grep -oE 'awaiting `APPROVE [A-Za-z0-9-]+`' GATES.md 2>/dev/null | sed -E 's/^awaiting `APPROVE ([A-Za-z0-9-]+)`$/\1/' | sort -u)
+  tkn=$(grep -c . <<<"$tkaw"); case "$tkn" in ''|*[!0-9]*) tkn=0 ;; esac
+  if [ "$tkn" -eq 0 ]; then
+    ok "TICK-1 no awaiting rows this run — re-block trivially holds, ANNOUNCED (the backstop below still fires)"
+  else
+    tkbad=""
+    while IFS= read -r tk; do
+      [ -n "$tk" ] || continue
+      ./scripts/gate-guard.sh "APPROVE $tk" >/dev/null 2>&1 && tkbad="$tkbad [$tk]"
+    done <<<"$tkaw"
+    [ -z "$tkbad" ] && ok "TICK-1 live re-block: gate-guard refuses ALL $tkn awaiting token(s) right now" \
+      || no "TICK-1 an awaiting token was ACCEPTED:$tkbad — the gate state rotted"
+  fi
+  tkf=$(mktemp -d); cp scripts/gate-guard.sh "$tkf/" 2>/dev/null
+  printf '| PROBE-TK |  | p | p | awaiting `APPROVE PROBE-TK` |\n' > "$tkf/GATES.md"
+  ( cd "$tkf" && ./gate-guard.sh "APPROVE PROBE-TK" >/dev/null 2>&1 ) && tkr=0 || tkr=1
+  [ "$tkr" -eq 1 ] && ok "TICK-1 backstop fires: a planted awaiting row is refused in a scratch root (never vacuous)" \
+    || no "TICK-1 backstop DID NOT refuse the planted awaiting row"
+  rm -rf "$tkf"
+  tkap=$(grep -c '\*\*APPROVED\*\*' GATES.md); case "$tkap" in ''|*[!0-9]*) tkap=0 ;; esac
+  tkfl=$(grep -E '^[0-9]+$' .claude/gates-floor.txt | head -1); case "$tkfl" in ''|*[!0-9]*) tkfl=-1 ;; esac
+  { [ "$tkfl" -ge 0 ] && [ "$tkap" -ge "$tkfl" ]; } \
+    && ok "TICK-1 floor holds: $tkap APPROVED row(s) >= floor $tkfl (a committed stamp-drop reads red)" \
+    || no "TICK-1 STAMP LOSS: APPROVED count $tkap fell below the floor $tkfl"
+  tkc=$(mktemp); grep '\*\*APPROVED\*\*' GATES.md > "$tkc"
+  tkdel=$(grep -c . "$tkc"); tkdel=$((tkdel - 1))
+  [ "$tkdel" -lt "$tkfl" ] \
+    && ok "TICK-1 control fires: a scratch count with one stamp deleted ($tkdel) reads below the floor ($tkfl)" \
+    || no "TICK-1 deleted-stamp control DID NOT fire ($tkdel vs $tkfl)"
+  rm -f "$tkc"
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git show HEAD:GATES.md >/dev/null 2>&1; then
+    tkhd=$(git show HEAD:GATES.md | grep -c '\*\*APPROVED\*\*'); case "$tkhd" in ''|*[!0-9]*) tkhd=0 ;; esac
+    [ "$tkap" -ge "$tkhd" ] \
+      && ok "TICK-1 working tree APPROVED count ($tkap) >= HEAD ($tkhd) — direction explicit; the straddle's tree=HEAD+1 is legal" \
+      || no "TICK-1 UNCOMMITTED STAMP LOSS: tree $tkap < HEAD $tkhd"
+  else
+    ok "TICK-1 tree-vs-HEAD not derivable here (archive extract) — announced, the floor layer still binds (C-23)"
+  fi
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

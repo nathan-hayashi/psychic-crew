@@ -1,0 +1,6 @@
+# gates-floor.txt — the APPROVED-row high-water mark (TICK-1).
+# The suite asserts GATES.md's APPROVED count >= this floor every run, so a committed revert
+# that silently drops a stamp goes red. The floor advances in CLOSE-RECORD commits (already a
+# separate commit from the stamp by ritual), so a single revert cannot move both sides.
+# Motivating incident class: the rebase-dropped-APPROVED-row the push protocol exists to catch.
+81
