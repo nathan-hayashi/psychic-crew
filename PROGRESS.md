@@ -1289,3 +1289,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [RP|2026-09-02T17:38:00Z] TEI-1 built — awaiting the token (REGISTER PROGRAM gate 3 of 10)
 - **Task:** deterministic router — pinned six-rule policy (restrictive-first after the smoke's fail-open catch), two-layer deny, recommendation logged-never-consulted, read-back trail; crew 293 · tracked 194 · D35/v3.20.
 - **Next action:** `APPROVE TEI-1`; then ARB-ORCA-1.
+
+## [RP|2026-09-02T17:53:21Z] TEI-1 CLOSED — ARB-ORCA-1 opens (gate 3 of 10 done)
+- **Next action:** the arbiter amendment; token `APPROVE ARB-ORCA-1`.
