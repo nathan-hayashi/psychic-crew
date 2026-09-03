@@ -1317,3 +1317,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [RP|2026-09-02T20:15:13Z] RATCHET-1 built — awaiting the token (REGISTER PROGRAM gate 7 of 10)
 - **Task:** manifest census (floor-first, two fixture-app exemptions) + command-position interpreter needles w/ structural exemptions; both probes fire; registry tax paid; crew 320 · tracked 200.
 - **Next action:** `APPROVE RATCHET-1`; then STUB-1.
+
+## [RP|2026-09-03T00:35:58Z] RATCHET-1 CLOSED — STUB-1 opens (gate 7 of 10 done; floor 83)
+- **Next action:** the skill drift audit; token `APPROVE STUB-1`.
