@@ -57,3 +57,4 @@ entry for it.
 - [TICK-1](TICK-1.md) — stamps cannot vanish: live re-block, the high-water floor, tree-vs-HEAD.
 - [RATCHET-1](RATCHET-1.md) — the zero-dependency doctrine as a shrink-only machine check.
 - [STUB-1](STUB-1.md) — the drift audit whose honest verdict is NO-OP, plus the ratchet that keeps it true.
+- [LITE-PARITY-1](LITE-PARITY-1.md) — the portability scanners reach the twin; the pre-sweep caught three silent-false-pass sites.

@@ -2157,9 +2157,13 @@ fi
   # (`n=$(… wc -l); [ "$n" = 0 ]`) across lines — every such site was swept at HARNESS-1 and gains a
   # needle when evidence produces one, exactly as rule 5 states for its own uncovered consumers.
   # Fragment-assembled so this assertion never matches itself; empty allowlist.
+  # LITE-PARITY-1: stripper upgraded to the twin's corrected form — the naive s/#.*// destroys
+  # any line carrying a hash inside a string (lite measured a census of 4 where the accurate one
+  # found 9). Parity means the better form both sides.
+  _sdstrip2='s/^[[:space:]]*#.*$//; s/[[:space:]]#.*$//'
   _w1="w""c -l"; _w2=')" ='; _w3=')" !='
   sd2bad=$(git ls-files '*.sh' 2>/dev/null | while read -r sdf; do
-             sed 's/#.*//' "$sdf" | grep -nF -- "$_w1" | grep -F -e "$_w2" -e "$_w3" | sed "s|^|$sdf:|"
+             sed -E "$_sdstrip2" "$sdf" | grep -nF -- "$_w1" | grep -F -e "$_w2" -e "$_w3" | sed "s|^|$sdf:|"
            done)
   # The scanner must be SEEN to fire — a control that never catches proves nothing (R-SD-1 rule 6).
   sd2probe='[ "$(git status | '"$_w1"$_w2' 0 ]'
@@ -2182,7 +2186,7 @@ fi
   # carriers and self-exclude by shape. Empty allowlist. Vacuity is covered by rule 1's sdn≥5 above.
   _pb="sha256""sum"; _pc="past""e -sd"; _pi="se""d -i "
   pabad=$(git ls-files '*.sh' 2>/dev/null | while read -r pf; do
-            sc=$(sed 's/#.*//' "$pf")
+            sc=$(sed -E "$_sdstrip2" "$pf")
             printf '%s\n' "$sc" | grep -nE "${_pi}['\"]"       | sed "s|^|$pf:(a) |"
             printf '%s\n' "$sc" | grep -nF -- "$_pb" | grep -vF '_sha256 ()' | sed "s|^|$pf:(b) |"
             printf '%s\n' "$sc" | grep -nF -- "$_pc" | grep -vF -- '-sd+ -'  | sed "s|^|$pf:(c) |"

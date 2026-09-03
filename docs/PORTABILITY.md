@@ -56,5 +56,10 @@ paste its output into a session in the repo and the gate law handles it.
 
 - **The twin repo (psychic-crew-lite)** gets the rule-2/rule-7 scanners at its own portability gate,
   not this one — its suite is separate (`validate-lite.sh`) and was not part of the MacBook run.
+  **SUPERSEDED at LITE-PARITY-1 (2026-09-02): the scanners are PORTED** — with the twin's corrected
+  comment-stripper on both sides, and the port's pre-sweep caught three real direct-sha256sum sites
+  (check-sync's byte-compare and check-witness's attestations — the exact silent-false-pass class
+  this document warns about), swept through a `_sha256` helper in the same gate. The operator's BSD
+  certification run on the lite suite remains the one step only the Mac can complete.
 - Other early-exit consumers (`head -n`, `grep -m`, `sed q`) remain R-SD-1 rule-5 prose until an
   instance appears.
