@@ -39,7 +39,8 @@
       "Bash(mv *)",
       "Bash(chmod *)",
       "Bash(gh repo *)",
-      "Bash(gh auth status *)"
+      "Bash(gh auth status *)",
+      "Bash(gh api repos/nathan-hayashi/psychic-sidekick/pages*)"
     ],
     "deny": [
       "Read(.env*)",

@@ -58,3 +58,4 @@ entry for it.
 - [RATCHET-1](RATCHET-1.md) — the zero-dependency doctrine as a shrink-only machine check.
 - [STUB-1](STUB-1.md) — the drift audit whose honest verdict is NO-OP, plus the ratchet that keeps it true.
 - [LITE-PARITY-1](LITE-PARITY-1.md) — the portability scanners reach the twin; the pre-sweep caught three silent-false-pass sites.
+- [SIDE-PAGES-1](SIDE-PAGES-1.md) — the parked name scoped and shipped: sidekick hosted, one narrow grant, three-state verification.
