@@ -1338,3 +1338,13 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [RP|2026-09-03T00:52:47Z] SIDE-PAGES-1 built — awaiting the token (REGISTER PROGRAM gate 10 of 10 — THE LAST)
 - **Task:** hosted lane (same bytes by construction) · one narrow grant declared · homepage overwrite declared · three-state verification (pre-token FAIL = the declared straddle) · enablement at the token w/ fallback.
 - **Next action:** `APPROVE SIDE-PAGES-1` — enable, verify, close both repos; the program completes.
+
+## [F8|2026-09-03T00:55:44Z] EMERGENCY CHECKPOINT (PreCompact)
+- **In-flight:** 8 file(s) uncommitted
+- **HEAD:** 9634d5d
+- **Recovery:** tail of Plan.md, plus the newest snapshot in .claude/state/checkpoints/
+- **Next action:** `APPROVE SIDE-PAGES-1` — enable, verify, close both repos; the program completes.
+
+## [RP|2026-09-03T01:00:12Z] SIDE-PAGES-1 CLOSED — THE REGISTER PROGRAM COMPLETE (10/10)
+- **State:** sidekick 3777596 (67/0/0, Pages live dev:/, homepage = hosted URL) · parent 6705d65 · floor 86 · crew 325/0 · validate 60/0/0 · tracked 204.
+- **Next action:** finalize battery + program completion record.
