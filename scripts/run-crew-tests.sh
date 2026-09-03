@@ -2012,6 +2012,43 @@ RGEOF
     ok "TICK-1 tree-vs-HEAD not derivable here (archive extract) — announced, the floor layer still binds (C-23)"
   fi
 
+
+  # RATCHET-1 — the empty dependency baseline, forever. Motivating incident: the estate's
+  # python3 death at S1 (the last interpreter dependency, killed with the manifests it
+  # parsed). Two scanners: manifests (vacuity-floored) and interpreter shapes (fragment-
+  # assembled needles over _sdstrip-equivalent stripped shell, structural exemptions by KIND:
+  # the deny-needle carrier file by name, fenced census data by shape — a scanner must not
+  # eat the guards and datasets that legitimately spell its prey). Honest limit: ad-hoc
+  # session commands are out of scope — this governs TRACKED shell.
+  echo "== RATCHET-1 — empty dependency baseline: manifests + interpreter shapes =="
+  rtall=$(git ls-files); rtn=$(grep -c . <<<"$rtall"); case "$rtn" in ''|*[!0-9]*) rtn=0 ;; esac
+  [ "$rtn" -ge 20 ] && ok "RATCHET-1 census floor: $rtn tracked files enumerated (a census over nothing must not read green)" \
+    || no "RATCHET-1 census vacuous: $rtn files"
+  rtman=$(grep -E '(^|/)(package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|requirements[^/]*\.txt|Pipfile[^/]*|pyproject\.toml|Gemfile[^/]*|go\.(mod|sum)|Cargo\.(toml|lock)|composer\.json)$' <<<"$rtall" \
+        | grep -vE '^(stress-project|stress-site)/' | tr '\n' ' ')
+  [ -z "$rtman" ] && ok "RATCHET-1 manifest baseline EMPTY outside the two named fixture apps (stress-project, stress-site) — shrink-only, forever" \
+    || no "RATCHET-1 dependency manifest tracked outside the fixture apps: $rtman"
+  rtprobe=$(printf 'x/%s.%s' 'package' 'json')
+  rtpm=$(printf '%s\n%s\n' "$rtall" "$rtprobe" \
+        | grep -E '(^|/)(package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|requirements[^/]*\.txt|Pipfile[^/]*|pyproject\.toml|Gemfile[^/]*|go\.(mod|sum)|Cargo\.(toml|lock)|composer\.json)$' \
+        | grep -vE '^(stress-project|stress-site)/' | grep -c .)
+  case "$rtpm" in ''|*[!0-9]*) rtpm=0 ;; esac
+  [ "$rtpm" -ge 1 ] && ok "RATCHET-1 control fires: a planted manifest name is seen by the census" \
+    || no "RATCHET-1 manifest control DID NOT fire"
+  rtneed=$(printf '%s |%s |%s |%s |%s |%s |%s |%s|%s ' 'pip in''stall' 'pi''p3' 'gem in''stall' 'go r''un' 'npm in''stall' 'np''x' 'pyth''on3' 'pe''rl -' 'ru''by ')
+  rtcarrier='hooks/bash-blocker.sh'
+  rthits=$(for s in $(git ls-files 'scripts/*.sh' 'hooks/*.sh' | grep -vxF "$rtcarrier"); do
+    sed -E 's/^[[:space:]]*#.*$//; s/[[:space:]]#.*$//' "$s" | grep -nE "$rtneed" | sed "s|^|$s:|"
+  done | grep -vE 'printf|denies |deny-fixture' | tr '\n' ' ')
+  [ -z "$rthits" ] && ok "RATCHET-1 interpreter shapes absent from tracked shell (allowed set: bash jq awk sed grep git node; carrier + fixture lines structurally exempt)" \
+    || no "RATCHET-1 forbidden interpreter shape(s): $rthits"
+  rtfp=$(mktemp)
+  printf '%s x.py\n' 'pyth''on3' > "$rtfp"
+  rtfc=$(sed -E 's/^[[:space:]]*#.*$//' "$rtfp" | grep -cE "$rtneed"); case "$rtfc" in ''|*[!0-9]*) rtfc=0 ;; esac
+  [ "$rtfc" -ge 1 ] && ok "RATCHET-1 control fires: a planted interpreter line is matched by the fragment needles" \
+    || no "RATCHET-1 interpreter control DID NOT fire"
+  rm -f "$rtfp"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

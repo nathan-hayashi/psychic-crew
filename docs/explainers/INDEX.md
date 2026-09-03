@@ -55,3 +55,4 @@ entry for it.
 - [ARB-ORCA-1](ARB-ORCA-1.md) — the arbiter amendment: verdict trio, tested example, three-check releases, the honest third outcome.
 - [REGISTRY-1](REGISTRY-1.md) — 44 sections mapped to what they protect; maturity measured, both directions bound.
 - [TICK-1](TICK-1.md) — stamps cannot vanish: live re-block, the high-water floor, tree-vs-HEAD.
+- [RATCHET-1](RATCHET-1.md) — the zero-dependency doctrine as a shrink-only machine check.

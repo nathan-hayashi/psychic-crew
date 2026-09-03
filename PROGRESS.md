@@ -1313,3 +1313,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [RP|2026-09-02T20:11:52Z] TICK-1 CLOSED — RATCHET-1 opens (gate 6 of 10 done; floor 82)
 - **Next action:** the dependency ratchet; token `APPROVE RATCHET-1`.
+
+## [RP|2026-09-02T20:15:13Z] RATCHET-1 built — awaiting the token (REGISTER PROGRAM gate 7 of 10)
+- **Task:** manifest census (floor-first, two fixture-app exemptions) + command-position interpreter needles w/ structural exemptions; both probes fire; registry tax paid; crew 320 · tracked 200.
+- **Next action:** `APPROVE RATCHET-1`; then STUB-1.
