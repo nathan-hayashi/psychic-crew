@@ -6,7 +6,7 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 **verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
-Live numbers (post-CLEANUP-1): crew suite **320 PASS / 0 FAIL** · validate-crew **60 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **200 tracked files**.
+Live numbers (post-CLEANUP-1): crew suite **325 PASS / 0 FAIL** · validate-crew **60 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **202 tracked files**.
 
 The one SKIP is honest and named: C-25's identity coverage has no live trail until a subagent is dispatched in-session. These figures are bound — `save-context.sh check` compares the tracked-file count against the tree and the registered-ID count against the registry, so this line cannot silently rot again (C-24, extended at CR-034).
 
@@ -109,7 +109,7 @@ stick then left sixteen cells honestly open and priced. Arc 4 shipped the audit 
 its twice-fenced engine (seven skip-guards proven live; tree-hash no-write control; live runs
 clean). Arc 5 birthed the envelope contract, PARKed the graph lane by arithmetic with a
 closure-semantics wake, and recalibrated the bands to the plateau. End-state: parent 254/0 ·
-54/0/0 · 33/0 · matrices 27/0/15 · envelope 11/0 · PORTABLE · 200 tracked · v3.20/D35;
+54/0/0 · 33/0 · matrices 27/0/15 · envelope 11/0 · PORTABLE · 202 tracked · v3.20/D35;
 lite 67/1/0 · 65/0/0 · 12/0 · 48; siblings 44/0 · 64/0/0 · 78/0 · 36/0/0; all six repos public,
 MIT, described, badged-where-bound. NOTHING IS OWED: every open item (SIDE-PAGES-1, eight RSCH-4
 TAKE gates, the four-candidate hook gate, MacBook BSD cert, Lite parity, PACK-2-skipped, the

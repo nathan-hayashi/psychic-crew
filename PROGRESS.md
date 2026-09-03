@@ -1320,3 +1320,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [RP|2026-09-03T00:35:58Z] RATCHET-1 CLOSED — STUB-1 opens (gate 7 of 10 done; floor 83)
 - **Next action:** the skill drift audit; token `APPROVE STUB-1`.
+
+## [RP|2026-09-03T00:38:05Z] STUB-1 built — awaiting the token (REGISTER PROGRAM gate 8 of 10)
+- **Task:** bound audit table (3 CLEAN, ls-files census), announced sibling legs, the transcript ratchet w/ probe, NO-OP verdict recorded; registry 47==47; crew 325 · tracked 202.
+- **Next action:** `APPROVE STUB-1`; then LITE-PARITY-1.

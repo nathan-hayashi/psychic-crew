@@ -56,3 +56,4 @@ entry for it.
 - [REGISTRY-1](REGISTRY-1.md) — 44 sections mapped to what they protect; maturity measured, both directions bound.
 - [TICK-1](TICK-1.md) — stamps cannot vanish: live re-block, the high-water floor, tree-vs-HEAD.
 - [RATCHET-1](RATCHET-1.md) — the zero-dependency doctrine as a shrink-only machine check.
+- [STUB-1](STUB-1.md) — the drift audit whose honest verdict is NO-OP, plus the ratchet that keeps it true.

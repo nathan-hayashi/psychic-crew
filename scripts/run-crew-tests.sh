@@ -2049,6 +2049,36 @@ RGEOF
     || no "RATCHET-1 interpreter control DID NOT fire"
   rm -f "$rtfp"
 
+
+  # STUB-1 — the skill drift audit: the table bound both ways against the TRACKED census
+  # (never a filesystem glob — the corpora carry ~30 third-party SKILL.md files), plus the
+  # one narrow ratchet: no pasted-terminal-transcript shape in a parent skill, zero forever.
+  echo "== STUB-1 — skill-surface drift audit: bound table + the transcript ratchet =="
+  sta=$(awk '/^# STUB-AUDIT v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/STUB-1-skill-audit.md 2>/dev/null)
+  stn=$(grep -c . <<<"$sta"); case "$stn" in ''|*[!0-9]*) stn=0 ;; esac
+  [ "$stn" -ge 3 ] && ok "STUB-1 audit table non-vacuous ($stn rows)" || no "STUB-1 audit vacuous: $stn"
+  stbad=$(printf '%s\n' "$sta" | awk -F'\t' 'NF!=3 || ($2!="CLEAN" && $2!="ROTTING") {print $1}' | tr '\n' ' ')
+  [ -z "$stbad" ] && ok "STUB-1 every row 3-field with legal verdict vocabulary" || no "STUB-1 malformed row(s): $stbad"
+  stgl=$(git ls-files '.claude/skills/*/SKILL.md' | sort)
+  strw=$(printf '%s\n' "$sta" | cut -f1 | sort)
+  [ "$stgl" = "$strw" ] && ok "STUB-1 audit rows == tracked skill census, set-equal both ways (ls-files, never a glob)" \
+    || no "STUB-1 audit/census divergence: $(comm -3 <(printf '%s\n' "$stgl") <(printf '%s\n' "$strw") | tr '\n' ' ')"
+  sttr=0
+  for sk in $stgl; do
+    stc=$(awk '/^```/{inf=!inf; next} inf' "$sk" | grep -cE '^\$ .*[0-9]+\.[0-9]+\.[0-9]+')
+    case "$stc" in ''|*[!0-9]*) stc=0 ;; esac
+    sttr=$((sttr + stc))
+  done
+  [ "$sttr" -eq 0 ] && ok "STUB-1 transcript ratchet: zero pasted-terminal shapes in tracked skills (zero forever)" \
+    || no "STUB-1 pasted transcript shape(s) in a skill: $sttr"
+  stp=$(mktemp)
+  printf '%s\n%s v1.2.3 installed\n%s\n' '```' '$ tool --version' '```' > "$stp"
+  stpc=$(awk '/^```/{inf=!inf; next} inf' "$stp" | grep -cE '^\$ .*[0-9]+\.[0-9]+\.[0-9]+')
+  case "$stpc" in ''|*[!0-9]*) stpc=0 ;; esac
+  [ "$stpc" -ge 1 ] && ok "STUB-1 control fires: a planted transcript block is matched by the ratchet" \
+    || no "STUB-1 transcript control DID NOT fire"
+  rm -f "$stp"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
