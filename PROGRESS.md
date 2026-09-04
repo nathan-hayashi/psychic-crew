@@ -1437,3 +1437,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [SP|2026-09-04T16:12:09Z] TM-FENCE-1 executed + stamped — successor 5/6
 - **Next action:** gate commit -> record (floor 102) -> attest -> coda (3 flips).
+
+## [SP|2026-09-04T16:22:48Z] TM-FENCE-1 CLOSED — successor 5/6; the specimens repaired
+- **Next action:** `APPROVE CALIB-1` completes the successor program's first wave.

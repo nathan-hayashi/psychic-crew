@@ -202,9 +202,9 @@ GR-127	sidekick	sibling-checkout and node-absent legs are stated SKIPs; browser 
 GR-128	sidekick	SIDE-R1 fallback-rule inversion declared out loud; the remote lane inverts block-on-low-confidence and the unasserted half is stated	side:GATES.md:8	OPEN	no	accepted-limit	CENSUS	GAP-REGISTER-1
 GR-129	verification-gap	census coverage-table tier column was unvalidated: no legal-vocabulary arm, no arithmetic re-derivation — closed this gate	scripts/check-decision-matrices.sh:149-155	RESOLVED:GAP-REGISTER-1	yes	unverified-claim	CENSUS	GAP-REGISTER-1
 GR-130	verification-gap	no arm fired when a research doc omitted its weakest-claims section — the epoch arm closes it for all program docs forward	docs/research/RSCH-1-claude-native.md:169	RESOLVED:GAP-REGISTER-1	yes	unverified-claim	CENSUS	GAP-REGISTER-1
-GR-131	open-question	envelope schema evidence enum is E/I/S while the plan grammar is E/I/S/V? — a live vocabulary divergence between two ratified records; reported not corrected	envelope.schema.json:73-80	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
-GR-132	open-question	the register-program completion record claims registry 44 to 48 while disk holds 47 and the suite's 47==47 was always green — the orchestrator's own figure is the program's first logged hallucination; reported not corrected	Plan.md:638	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
-GR-133	open-question	CORPUS-SDKPY and CORPUS-LANGGRAPH still read awaiting-an-operator-declared-gate for hook candidates HOOK-1 discharged 2026-09-02; dated research prose lagging the ledger; reported not corrected	docs/research/CORPUS-SDKPY.md:40	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
+GR-131	open-question	envelope schema evidence enum is E/I/S while the plan grammar is E/I/S/V? — a live vocabulary divergence between two ratified records; reported not corrected	envelope.schema.json:73-80	RESOLVED:TM-FENCE-1	no	ambiguous-record	CENSUS	GAP-REGISTER-1
+GR-132	open-question	the register-program completion record claims registry 44 to 48 while disk holds 47 and the suite's 47==47 was always green — the orchestrator's own figure is the program's first logged hallucination; reported not corrected	Plan.md:638	RESOLVED:TM-FENCE-1	no	ambiguous-record	CENSUS	GAP-REGISTER-1
+GR-133	open-question	CORPUS-SDKPY and CORPUS-LANGGRAPH still read awaiting-an-operator-declared-gate for hook candidates HOOK-1 discharged 2026-09-02; dated research prose lagging the ledger; reported not corrected	docs/research/CORPUS-SDKPY.md:40	RESOLVED:TM-FENCE-1	no	ambiguous-record	CENSUS	GAP-REGISTER-1
 GR-134	open-question	orca application source under 1 percent read; a thirteenth pattern-candidate could exist unread - the residue of the survey row this dive resolved	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unread-source	CENSUS	DIVE-W1-OR-1
 GR-135	verification-gap	no dated suite-run attestation exists - when a control last proved itself and on what platform/userland is unrecorded; BSD certification and temporal claims ride session memory	docs/research/DIVE-W1-OR-1.md:1	RESOLVED:SUITE-ATTEST-1	no	unverified-claim	CENSUS	DIVE-W1-OR-1
 GR-136	dispatch-residual	agent-teams flag if ever enabled in any settings layer routes teammate coordination through user-scope mailboxes outside the dispatch guard and the estate's trails; default-off + headless immunity today; the settings pin to 0 is the available hard line	docs/research/DIVE-W1-AT-1.md:1	RESOLVED:COMM-HARDEN-1	no	external-drift	CENSUS	DIVE-W1-AT-1
@@ -229,6 +229,9 @@ GR-014	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
 GR-015	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
 GR-136	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
 GR-024	2026-09-04	OPEN>RESOLVED:PROMOTE-1	PROMOTE-1
+GR-131	2026-09-04	OPEN>RESOLVED:TM-FENCE-1	TM-FENCE-1
+GR-132	2026-09-04	OPEN>RESOLVED:TM-FENCE-1	TM-FENCE-1
+GR-133	2026-09-04	OPEN>RESOLVED:TM-FENCE-1	TM-FENCE-1
 ```
 
 ## Weakest claims, flagged
