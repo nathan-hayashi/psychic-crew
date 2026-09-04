@@ -95,7 +95,7 @@ GR-020	dispatch-residual	bypass detection is caught never prevented; SubagentSta
 GR-021	dispatch-residual	HOOK-2 defeats ordering and attribution not deliberate forgery; the dispatching session could write a marker itself; C-25/C-05 detection is the net beneath	docs/explainers/HOOK-2.md:12-17	OPEN	partial	accepted-limit	CENSUS	GAP-REGISTER-1
 GR-022	dispatch-residual	HOOK-2 break-glass is named not armed: unwritable .claude/state or absent jq recovers only by operator hand-edit	docs/explainers/HOOK-2.md	OPEN	no	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-023	dispatch-residual	C-25 covers only specialist starts the platform reports; an unannounced dispatch is invisible	context/plan-corrections.md:292	OPEN	partial	accepted-limit	CENSUS	GAP-REGISTER-1
-GR-024	dispatch-residual	C-25b paired-lifecycle and HOOK-1 lifecycle arms are announce-only behind HK1_CUT; promotion to FAIL is a named wake	scripts/validate-crew.sh:372	OPEN	partial	unexercised-path	CENSUS	GAP-REGISTER-1
+GR-024	dispatch-residual	C-25b paired-lifecycle and HOOK-1 lifecycle arms are announce-only behind HK1_CUT; promotion to FAIL is a named wake	scripts/validate-crew.sh:372	RESOLVED:PROMOTE-1	partial	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-025	dispatch-residual	C-25 identity coverage has no live trail until a subagent is dispatched in-session; standing announced SKIP	scripts/validate-crew.sh:354	OPEN	partial	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-026	dispatch-residual	HOOK-1 platform delivery provable only live; fixtures prove wiring; trail arms announce absence rather than fail	docs/explainers/HOOK-1.md:35-38	OPEN	partial	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-027	dispatch-residual	F7 arbiter coverage is ordering-undecidable forever; granularity never captured, unrecoverable backward	ROADMAP.md:40	OPEN	no	accepted-limit	CENSUS	GAP-REGISTER-1
@@ -228,6 +228,7 @@ GR-013	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
 GR-014	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
 GR-015	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
 GR-136	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
+GR-024	2026-09-04	OPEN>RESOLVED:PROMOTE-1	PROMOTE-1
 ```
 
 ## Weakest claims, flagged

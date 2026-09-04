@@ -1430,3 +1430,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [SP|2026-09-04T16:04:38Z] PROMOTE-1 executed + stamped — successor 4/6; promoted exactly what the evidence supports
 - **Next action:** gate commit -> record (floor 101) -> attest -> coda (flip i_c25b).
+
+## [SP|2026-09-04T16:08:20Z] PROMOTE-1 CLOSED — successor 4/6
+- **State:** integrity plane armed w/ zero grandfathers · observational reasons in the arms · floor 101 · attest 4 rows.
+- **Next action:** operator's word — TM-FENCE-1 / CALIB-1, or drops.
