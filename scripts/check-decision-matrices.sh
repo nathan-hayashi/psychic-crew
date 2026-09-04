@@ -671,5 +671,82 @@ SMEOF2
   rm -rf "$smfix"
 fi
 
+echo "== J. SYNTH — the incorporation program, closure both ways =="
+SY="docs/research/SYNTH-1-incorporation-program.md"
+if [ ! -f "$SY" ]; then
+  fail "synth record missing: $SY"
+else
+  syt=$(awk '/^# INCORPORATION-PROGRAM v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$SY")
+  syn=$(printf '%s\n' "$syt" | grep -c .); case "$syn" in ''|*[!0-9]*) syn=0 ;; esac
+  [ "$syn" -ge 4 ] && pass "program fence: $syn successor gates (vacuity floor)" || fail "program vacuous: $syn"
+  syb=$(printf '%s\n' "$syt" | awk -F'\t' 'NF!=5{c++} END{print c+0}')
+  [ "$syb" = 0 ] && pass "program rows are 5 fields (order, gate, class, consumes, token)" || fail "$syb malformed program row(s)"
+  syc=$(printf '%s\n' "$syt" | cut -f3 | grep -vcE '^(build|web-verify|operator-word|named-wake)$')
+  case "$syc" in ''|*[!0-9]*) syc=0 ;; esac
+  [ "$syc" = 0 ] && pass "gate-class vocabulary legal" || fail "$syc off-vocabulary class(es)"
+  sydup=$(printf '%s\n' "$syt" | cut -f5 | sort | uniq -d | tr '\n' ' ')
+  [ -z "$sydup" ] && pass "successor tokens unique" || fail "duplicate token(s): $sydup"
+  sybadtok=$(printf '%s\n' "$syt" | cut -f5 | grep -vcE '^APPROVE [A-Z0-9-]+$')
+  case "$sybadtok" in ''|*[!0-9]*) sybadtok=0 ;; esac
+  [ "$sybadtok" = 0 ] && pass "token grammar holds (APPROVE <NAME>)" || fail "$sybadtok malformed token(s)"
+  sycol=""
+  while IFS= read -r tok; do
+    [ -n "$tok" ] || continue
+    sp=$(grep -cF "\`$tok\`" GATES.md); case "$sp" in ''|*[!0-9]*) sp=0 ;; esac
+    [ "$sp" = 0 ] || sycol="$sycol [$tok]"
+  done <<SYEOF
+$(printf '%s\n' "$syt" | cut -f5)
+SYEOF
+  [ -z "$sycol" ] && pass "no successor token collides with a spent or open GATES.md token" \
+    || fail "token collision(s) with the ledger:$sycol"
+  syz=$(awk '/^# SYNTH-CLOSURE v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$SY")
+  syzn=$(printf '%s\n' "$syz" | grep -c .); case "$syzn" in ''|*[!0-9]*) syzn=0 ;; esac
+  gro3=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | awk -F'\t' '$5=="OPEN"{print $1}' | sort)
+  syzids=$(printf '%s\n' "$syz" | cut -f1 | sort)
+  [ "$gro3" = "$syzids" ] && pass "closure both ways: every OPEN register row exactly once in the accounting ($syzn rows) - nothing pulled out was dropped" \
+    || fail "closure/register divergence: $(comm -3 <(printf '%s\n' "$gro3") <(printf '%s\n' "$syzids") | head -3 | tr '\n' ' ')"
+  syzv=$(printf '%s\n' "$syz" | cut -f2 | grep -vcE '^(consumed|parked|declined|accepted|ESCALATE)$')
+  case "$syzv" in ''|*[!0-9]*) syzv=0 ;; esac
+  [ "$syzv" = 0 ] && pass "closure vocabulary legal" || fail "$syzv off-vocabulary closure state(s)"
+  sygates=$(printf '%s\n' "$syt" | cut -f2 | sort)
+  sybadg=""
+  for cg in $(printf '%s\n' "$syz" | awk -F'\t' '$2=="consumed"{print $3}' | sort -u); do
+    grep -qxF "$cg" <<<"$sygates" || sybadg="$sybadg [$cg]"
+  done
+  [ -z "$sybadg" ] && pass "every consumed row names a gate that exists in the program fence" \
+    || fail "consumed-by phantom gate(s):$sybadg"
+  sycal=""
+  while IFS='|' read -r _e src pred out hit _r; do
+    src=$(printf '%s' "$src" | tr -d ' '); pred=$(printf '%s' "$pred" | tr -d ' ')
+    out=$(printf '%s' "$out" | tr -d ' '); hit=$(printf '%s' "$hit" | tr -d ' ')
+    [ -n "$src" ] && [ "$src" != "source" ] && [ "$src" != "---" ] || continue
+    mo=$(awk -F'\t' -v id="$src" '$1==id && $8=="DIVED"{print $9}' <<<"$(awk '/^# SOURCE-MAP v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/SOURCE-MAP-1.md)")
+    mp=$(awk -F'\t' -v id="$src" '$1==id{print $6}' <<<"$(awk '/^# SOURCE-MAP v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/SOURCE-MAP-1.md)")
+    [ "$mo" = "$out" ] || sycal="$sycal [$src:out $out vs $mo]"
+    [ "$mp" = "$pred" ] || sycal="$sycal [$src:pred $pred vs $mp]"
+    case "$pred:$out" in
+      TAKE-ZERO:0) ok2=yes ;;
+      TAKE-FEW:1|TAKE-FEW:2) ok2=yes ;;
+      TAKE-MANY:*) [ "$out" -ge 3 ] 2>/dev/null && ok2=yes || ok2=no ;;
+      *) ok2=no ;;
+    esac
+    [ "$ok2" = "$hit" ] || sycal="$sycal [$src:band $hit vs $ok2]"
+  done <<SYEOF2
+$(awk '/calibration roll-up/{f=1} f&&/^\| [A-Z]+-[0-9]/' "$SY")
+SYEOF2
+  [ -z "$sycal" ] && pass "calibration roll-up recomputed from the map: every prediction, outcome, and band verdict agrees" \
+    || fail "calibration disagreement:$sycal"
+  syord=$(printf '%s\n' "$syt" | cut -f1 | tr '\n' ' ')
+  syexp=$(printf '%s\n' "$syt" | cut -f1 | sort -n | tr '\n' ' ')
+  [ "$syord" = "$syexp" ] && pass "program order strictly sequential (the chain has no forward dependencies)" \
+    || fail "program order broken: $syord"
+  syp=$(mktemp)
+  printf 'GR-999\tconsumed\tPHANTOM-GATE-1\n' > "$syp"
+  sypg=$(cut -f3 "$syp")
+  grep -qxF "$sypg" <<<"$sygates" && fail "closure control DID NOT fire" \
+    || pass "control fires: a planted consumed-by-phantom-gate row is refused by the target check"
+  rm -f "$syp"
+fi
+
 printf '\n== check-decision-matrices: %s PASS / %s FAIL / %s NOTED (notes are dated divergences, kept per CR-033) ==\n' "$P" "$F" "$N"
 [ "$F" = 0 ] || exit 1

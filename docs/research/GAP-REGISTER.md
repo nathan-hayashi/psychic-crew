@@ -208,6 +208,7 @@ GR-133	open-question	CORPUS-SDKPY and CORPUS-LANGGRAPH still read awaiting-an-op
 GR-134	open-question	orca application source under 1 percent read; a thirteenth pattern-candidate could exist unread - the residue of the survey row this dive resolved	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unread-source	CENSUS	DIVE-W1-OR-1
 GR-135	verification-gap	no dated suite-run attestation exists - when a control last proved itself and on what platform/userland is unrecorded; BSD certification and temporal claims ride session memory	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unverified-claim	CENSUS	DIVE-W1-OR-1
 GR-136	dispatch-residual	agent-teams flag if ever enabled in any settings layer routes teammate coordination through user-scope mailboxes outside the dispatch guard and the estate's trails; default-off + headless immunity today; the settings pin to 0 is the available hard line	docs/research/DIVE-W1-AT-1.md:1	OPEN	no	external-drift	CENSUS	DIVE-W1-AT-1
+GR-137	verification-gap	no standing confidence-vs-outcome ledger exists estate-wide; the vector program's 6-for-6 table is seed evidence held in one record, not a mechanism; CALIB-1 is its named landing	docs/research/SYNTH-1-incorporation-program.md:1	OPEN	no	unverified-claim	CENSUS	SYNTH-1
 ```
 
 ## The flip log

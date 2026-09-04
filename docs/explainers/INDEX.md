@@ -62,3 +62,4 @@ entry for it.
 - [GAP-REGISTER-1](GAP-REGISTER-1.md) — the estate’s 133 admitted gaps as one measured, suite-bound register.
 - [VECTOR-1](VECTOR-1.md) — the deterministic router mapping every open gap to its resolving process.
 - [SOURCE-MAP-1](SOURCE-MAP-1.md) — fifteen named rabbit holes, the frozen dry rule, and the calibration column.
+- [SYNTH-1](SYNTH-1.md) — six successor gates and the closure that lets nothing drop.
