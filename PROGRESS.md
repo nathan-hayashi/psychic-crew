@@ -1408,3 +1408,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [SP|2026-09-04T04:59:07Z] SUITE-ATTEST-1 built + stamped — first attest at the close
 - **Task:** attest.sh + history + queries + 3 controls; lite timeline shipped first; J evolved to fulfilled predictions.
 - **Next action:** parent commit -> first live attest -> record commit (floor 98) w/ flips.
+
+## [SP|2026-09-04T05:21:40Z] SUITE-ATTEST-1 CLOSED — row one live; three refusals and one false message, all owned
+- **State:** attest history 1 row · flips fulfilled · queue re-derived · floor 98 · ritual corrected (gate/record/attest/coda).
+- **Next action:** operator's word — STALL-VOCAB-1 / COMM-HARDEN-1 / PROMOTE-1 / TM-FENCE-1 / CALIB-1, or drops.
