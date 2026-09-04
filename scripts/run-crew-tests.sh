@@ -2300,8 +2300,8 @@ RGEOF
   grep -qF 'ADJUDICATED INTENTIONAL' scripts/check-envelope.sh \
     && ok "TM-FENCE-1 the enum divergence is adjudicated where the checker lives (V? is prose, not an evidence class)" \
     || no "TM-FENCE-1 adjudication missing"
-  grep -qF "the meter was right, the ledger lied" Plan.md 2>/dev/null || grep -qiF 'the meter was right, the ledger lied' Plan.md \
-    && ok "TM-FENCE-1 the registry-figure correction is appended beside the append-only original" \
+  tmcor=$(grep -cF 'the meter was right, the ledger lied' Plan.md); case "$tmcor" in ''|*[!0-9]*) tmcor=0 ;; esac
+  [ "$tmcor" -ge 1 ] && ok "TM-FENCE-1 the registry-figure correction is appended beside the append-only original" \
     || no "TM-FENCE-1 Plan correction missing"
   { grep -qF 'TM-FENCE-1 currency note' docs/research/CORPUS-SDKPY.md && grep -qF 'TM-FENCE-1 currency note' docs/research/CORPUS-LANGGRAPH.md; } \
     && ok "TM-FENCE-1 both stale awaiting-prose docs carry their dated discharge pointers" \
