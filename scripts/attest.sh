@@ -22,7 +22,9 @@
 # the regression alarm. Bisect granularity == attest cadence, stated (finer than a release,
 # as often as the act is performed).
 set -uo pipefail
-export LC_ALL=C
+# NO global LC_ALL export: the child suites parse UTF-8 records (the guide's box-drawing),
+# and a C-locale leak broke their CR-024 extraction on this script's first live run — the
+# refusal control caught it. attest's own logic is locale-independent (no sorts).
 cd "$(dirname "$0")/.."
 HIST="docs/ATTEST-HISTORY.md"
 
