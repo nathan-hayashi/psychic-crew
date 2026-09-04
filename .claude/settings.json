@@ -2,7 +2,8 @@
   "model": "opus",
   "effortLevel": "max",
   "env": {
-    "CREW_TIER_LOCK": "T3"
+    "CREW_TIER_LOCK": "T3",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "0"
   },
   "permissions": {
     "allow": [
@@ -38,7 +39,8 @@
       "Bash(cp *)",
       "Bash(mv *)",
       "Bash(chmod *)",
-      "Bash(gh repo *)",
+      "Bash(gh repo view nathan-hayashi/*)",
+      "Bash(gh repo edit nathan-hayashi/*)",
       "Bash(gh auth status *)",
       "Bash(gh api repos/nathan-hayashi/psychic-sidekick/pages*)"
     ],

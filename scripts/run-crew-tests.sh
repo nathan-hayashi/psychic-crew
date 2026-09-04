@@ -2225,6 +2225,31 @@ RGEOF
     || no "STALL-VOCAB-1 grace violated"
   rm -rf "$svfx"
 
+
+  # COMM-HARDEN-1 — the two in-repo surfaces bound standing (F1/F3 are machine-local acts,
+  # LIVE-lined in the ledger by the no-cross-repo-assertion law).
+  echo "== COMM-HARDEN-1 — narrowed gh grants and the teams pin, bound with probes =="
+  ch_gen=$(jq -r '.permissions.allow[]' .claude/settings.json | grep -cxF 'Bash(gh repo *)')
+  case "$ch_gen" in ''|*[!0-9]*) ch_gen=0 ;; esac
+  [ "$ch_gen" = 0 ] && ok "COMM-HARDEN-1 the generic gh-repo grant is GONE (F2)" \
+    || no "COMM-HARDEN-1 generic gh repo grant present"
+  ch_v=$(jq -r '.permissions.allow[]' .claude/settings.json | grep -cxF 'Bash(gh repo view nathan-hayashi/*)')
+  ch_e=$(jq -r '.permissions.allow[]' .claude/settings.json | grep -cxF 'Bash(gh repo edit nathan-hayashi/*)')
+  case "$ch_v" in ''|*[!0-9]*) ch_v=0 ;; esac; case "$ch_e" in ''|*[!0-9]*) ch_e=0 ;; esac
+  { [ "$ch_v" = 1 ] && [ "$ch_e" = 1 ]; } && ok "COMM-HARDEN-1 the two estate-scoped forms stand (view + edit, nathan-hayashi only)" \
+    || no "COMM-HARDEN-1 narrowed forms missing (view=$ch_v edit=$ch_e)"
+  ch_pin=$(jq -r '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS // "unset"' .claude/settings.json)
+  [ "$ch_pin" = "0" ] && ok "COMM-HARDEN-1 agent-teams pinned to 0 at the project layer (beats shell exports; GR-136's hard line)" \
+    || no "COMM-HARDEN-1 teams pin wrong: '$ch_pin'"
+  ch_t=$(mktemp)
+  jq '.permissions.allow += ["Bash(gh repo *)"] | .env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1"' .claude/settings.json > "$ch_t"
+  ch_p1=$(jq -r '.permissions.allow[]' "$ch_t" | grep -cxF 'Bash(gh repo *)')
+  ch_p2=$(jq -r '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS' "$ch_t")
+  case "$ch_p1" in ''|*[!0-9]*) ch_p1=0 ;; esac
+  { [ "$ch_p1" -ge 1 ] && [ "$ch_p2" = "1" ]; } && ok "COMM-HARDEN-1 controls fire: a re-widened grant and a flipped pin are both seen in a mutated copy" \
+    || no "COMM-HARDEN-1 probe blind (gen=$ch_p1 pin=$ch_p2)"
+  rm -f "$ch_t"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

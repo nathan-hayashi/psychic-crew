@@ -1420,3 +1420,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [SP|2026-09-04T14:52:17Z] STALL-VOCAB-1 coda delivered — flip landed; the query's first catch explained
 - **State:** i_stall resolved-fulfilled · boundary artifact owned · regressions-exits-0 law · floor 99.
 - **Next action:** operator's word — COMM-HARDEN-1 / PROMOTE-1 / TM-FENCE-1 / CALIB-1, or drops.
+
+## [SP|2026-09-04T15:05:04Z] COMM-HARDEN-1 executed + stamped — successor 3/6
+- **Next action:** gate commit -> record (floor 100) -> attest -> coda (4 flips).
