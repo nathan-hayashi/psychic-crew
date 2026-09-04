@@ -83,7 +83,7 @@ DR-MEM0	drop-request	mem0-main	Does Mem0 memory-scoping model carry a pattern fo
 DR-CREWAI	drop-request	crewai-main	Run-sourced at last: which STRESS-1 rubric column entries survive contact with CrewAI actual code (HC-5 kept the survey documentation-only)?	GR-068,GR-081	TAKE-FEW	M	REQUESTED	-	-
 DR-AIDER	drop-request	aider-main	What does Aider commit-per-step discipline attest per change, and does its repo-map maintenance answer the temporal-bisect gap?	GR-042	TAKE-FEW	M	REQUESTED	-	-
 DR-N8N	drop-request	n8n-main	SOURCE-AVAILABLE (not OSI) - pattern-transform only, no verbatim: does its workflow-credential separation carry a lesson for the pack lane?	GR-068	TAKE-ZERO	M	REQUESTED	-	-
-CG-1	web	cogno-studio	What is cogno.studio (identity from its own pages, dated), and does anything observable there - product surface, published docs, stated patterns - VALIDATE-AGAINST or challenge this estate's designs, with TAKE candidates only where license permits?	GR-068,GR-113	TAKE-ZERO	S	QUEUED	-	-
+CG-1	web	cogno-studio	What is cogno.studio (identity from its own pages, dated), and does anything observable there - product surface, published docs, stated patterns - VALIDATE-AGAINST or challenge this estate's designs, with TAKE candidates only where license permits?	GR-068,GR-113	TAKE-ZERO	S	DIVED	0	DIVE-W1-CG-1
 ```
 
 ## Weakest claims, flagged

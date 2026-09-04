@@ -1392,3 +1392,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T04:13:24Z] DIVE-W1-AT-1 executed — wave 5, outcome 0 (5-for-5) — DRY-ELIGIBLE
 - **State:** tail [0,0], condition met; 11 rows remain; both DRY and HC-1 rows opening.
 - **Next action:** the operator's word — `APPROVE DIVE-W1-DRY` or any dive token.
+
+## [VP|2026-09-04T04:19:34Z] DIVE-W1-CG-1 executed — wave 6, outcome 0 (6-for-6) — still DRY-ELIGIBLE
+- **State:** operator's append dived; 4 validations, 0 takes; tail [0,0]; 10 rows remain.
+- **Next action:** the operator's word — `APPROVE DIVE-W1-DRY` or any dive token.
