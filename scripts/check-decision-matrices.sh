@@ -689,22 +689,60 @@ else
   sybadtok=$(printf '%s\n' "$syt" | cut -f5 | grep -vcE '^APPROVE [A-Z0-9-]+$')
   case "$sybadtok" in ''|*[!0-9]*) sybadtok=0 ;; esac
   [ "$sybadtok" = 0 ] && pass "token grammar holds (APPROVE <NAME>)" || fail "$sybadtok malformed token(s)"
-  sycol=""
-  while IFS= read -r tok; do
-    [ -n "$tok" ] || continue
-    sp=$(grep -cF "\`$tok\`" GATES.md); case "$sp" in ''|*[!0-9]*) sp=0 ;; esac
-    [ "$sp" = 0 ] || sycol="$sycol [$tok]"
+  sycol=""; syfulfil=0
+  while IFS="$(printf '\t')" read -r _so sgname _sc _scon stok; do
+    [ -n "${stok:-}" ] || continue
+    sp=$(grep -cF "\`$stok\`" GATES.md); case "$sp" in ''|*[!0-9]*) sp=0 ;; esac
+    if [ "$sp" = 0 ]; then
+      continue
+    fi
+    sr=$(grep -cE "^\| $sgname \|.*\*\*APPROVED\*\* \`$stok\`" GATES.md); case "$sr" in ''|*[!0-9]*) sr=0 ;; esac
+    if [ "$sr" = "$sp" ]; then
+      syfulfil=$((syfulfil+1))
+    else
+      sycol="$sycol [$stok]"
+    fi
   done <<SYEOF
-$(printf '%s\n' "$syt" | cut -f5)
+$syt
 SYEOF
-  [ -z "$sycol" ] && pass "no successor token collides with a spent or open GATES.md token" \
-    || fail "token collision(s) with the ledger:$sycol"
+  [ -z "$sycol" ] && pass "successor tokens: no unrelated ledger collision ($syfulfil fulfilled by their own gates' APPROVED rows — the prediction landing is legal)" \
+    || fail "token collision(s) with unrelated ledger row(s):$sycol"
   syz=$(awk '/^# SYNTH-CLOSURE v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$SY")
   syzn=$(printf '%s\n' "$syz" | grep -c .); case "$syzn" in ''|*[!0-9]*) syzn=0 ;; esac
-  gro3=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | awk -F'\t' '$5=="OPEN"{print $1}' | sort)
+  grall4=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md)
+  gro3=$(printf '%s\n' "$grall4" | awk -F'\t' '$5=="OPEN"{print $1}' | sort)
   syzids=$(printf '%s\n' "$syz" | cut -f1 | sort)
-  [ "$gro3" = "$syzids" ] && pass "closure both ways: every OPEN register row exactly once in the accounting ($syzn rows) - nothing pulled out was dropped" \
-    || fail "closure/register divergence: $(comm -3 <(printf '%s\n' "$gro3") <(printf '%s\n' "$syzids") | head -3 | tr '\n' ' ')"
+  syzmiss=$(comm -23 <(printf '%s\n' "$gro3") <(printf '%s\n' "$syzids") | tr '\n' ' ')
+  sypost=""
+  for om in $syzmiss; do
+    omborn=$(printf '%s\n' "$grall4" | awk -F'\t' -v id="$om" '$1==id{print $9}')
+    case "$omborn" in SUITE-ATTEST-*|STALL-VOCAB-*|COMM-HARDEN-*|PROMOTE-*|TM-FENCE-*|CALIB-*) sypost="$sypost [$om]" ;; *) : ;; esac
+  done
+  syzmiss2=$(printf '%s' "$syzmiss" | tr -d '[] ' )
+  sypost2=$(printf '%s' "$sypost" | tr -d '[] ')
+  if [ "$syzmiss2" = "$sypost2" ]; then
+    pass "closure coverage: every SYNTH-era OPEN row is accounted; successor-born rows pass to the next synthesis"
+    [ -n "$sypost" ] && note "successor-born OPEN row(s) awaiting the next program's closure:$sypost"
+  else
+    fail "SYNTH-era OPEN row(s) missing from the closure: $syzmiss (successor-born: $sypost)"
+  fi
+  syful=""
+  while IFS="$(printf '\t')" read -r zid zst zdet; do
+    [ -n "${zid:-}" ] || continue
+    zdisp=$(printf '%s\n' "$grall4" | awk -F'\t' -v id="$zid" '$1==id{print $5}')
+    [ -n "$zdisp" ] || { syful="$syful [$zid:gone]"; continue; }
+    case "$zdisp" in
+      OPEN) : ;;
+      RESOLVED:*)
+        zg="${zdisp#RESOLVED:}"
+        { [ "$zst" = "consumed" ] && [ "$zdet" = "$zg" ]; } || syful="$syful [$zid:$zdisp vs $zst/$zdet]" ;;
+      *) syful="$syful [$zid:$zdisp]" ;;
+    esac
+  done <<SYEOF3
+$syz
+SYEOF3
+  [ -z "$syful" ] && pass "fulfilled predictions: every closure row since resolved was resolved BY THE GATE the closure named (the record predicted; the flip proved)" \
+    || fail "closure prediction broken:$syful"
   syzv=$(printf '%s\n' "$syz" | cut -f2 | grep -vcE '^(consumed|parked|declined|accepted|ESCALATE)$')
   case "$syzv" in ''|*[!0-9]*) syzv=0 ;; esac
   [ "$syzv" = 0 ] && pass "closure vocabulary legal" || fail "$syzv off-vocabulary closure state(s)"

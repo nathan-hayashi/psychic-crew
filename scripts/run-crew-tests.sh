@@ -2128,6 +2128,59 @@ RGEOF
     || no "STUB-1 transcript control DID NOT fire"
   rm -f "$stp"
 
+
+  # SUITE-ATTEST-1 — the attestation record: deliberate appends only (H2a honored), refusal
+  # on red proven, the queries proven on fixtures. The record starts EMPTY; the gate's close
+  # performs the first live attest (enablement at the token).
+  echo "== SUITE-ATTEST-1 — attest: deliberate proof-of-run, refusal on red, bisect queries =="
+  sa_h="docs/ATTEST-HISTORY.md"
+  [ -f "$sa_h" ] && ok "SUITE-ATTEST-1 history exists" || no "SUITE-ATTEST-1 history missing"
+  sa_rows=$(awk '/^# ATTEST-HISTORY v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$sa_h")
+  sa_n=$(printf '%s\n' "$sa_rows" | grep -c .); case "$sa_n" in ''|*[!0-9]*) sa_n=0 ;; esac
+  if [ "$sa_n" = 0 ]; then
+    ok "SUITE-ATTEST-1 fence empty (legal exactly until the gate's close performs the first attest — the declared straddle)"
+  else
+    sa_bad=$(printf '%s\n' "$sa_rows" | awk -F'\t' 'NF!=10{c++} END{print c+0}')
+    [ "$sa_bad" = 0 ] && ok "SUITE-ATTEST-1 rows are 10 fields ($sa_n row(s))" || no "SUITE-ATTEST-1 $sa_bad malformed row(s)"
+    sa_ts=$(printf '%s\n' "$sa_rows" | cut -f1)
+    sa_sorted=$(printf '%s\n' "$sa_ts" | sort)
+    [ "$sa_ts" = "$sa_sorted" ] && ok "SUITE-ATTEST-1 timestamps monotone (append-only held)" || no "SUITE-ATTEST-1 timestamps out of order"
+    sa_hd=$(printf '%s\n' "$sa_rows" | cut -f2 | grep -vcE '^[0-9a-f]{7,40}$')
+    case "$sa_hd" in ''|*[!0-9]*) sa_hd=0 ;; esac
+    [ "$sa_hd" = 0 ] && ok "SUITE-ATTEST-1 head shas well-formed" || no "SUITE-ATTEST-1 $sa_hd bad sha(s)"
+    sa_num=$(printf '%s\n' "$sa_rows" | awk -F'\t' '{for(i=5;i<=9;i++) if ($i !~ /^[0-9]+$/) c++} END{print c+0}')
+    [ "$sa_num" = 0 ] && ok "SUITE-ATTEST-1 totals numeric" || no "SUITE-ATTEST-1 $sa_num non-numeric total(s)"
+    sa_sec=$(printf '%s\n' "$sa_rows" | cut -f10 | grep -vcE '^([A-Za-z0-9._-]+:[0-9]+)(,[A-Za-z0-9._-]+:[0-9]+)*$')
+    case "$sa_sec" in ''|*[!0-9]*) sa_sec=0 ;; esac
+    [ "$sa_sec" = 0 ] && ok "SUITE-ATTEST-1 section vectors well-formed (name:count csv)" || no "SUITE-ATTEST-1 $sa_sec bad vector(s)"
+  fi
+  sa_t=$(mktemp -d)
+  mkdir -p "$sa_t/docs" "$sa_t/scripts"
+  cp scripts/attest.sh "$sa_t/scripts/"
+  { echo '# ATTEST-HISTORY seed'; echo '## The history'; echo '```text'; echo '# ATTEST-HISTORY v1'
+    printf '2026-01-01T00:00:00Z\taaaaaaa\tLinux\tGNU\t300\t60\t33\t80\t11\talpha:10,beta:20,gamma:5\n'
+    printf '2026-01-02T00:00:00Z\tbbbbbbb\tLinux\tGNU\t300\t60\t33\t80\t11\talpha:10,gamma:3\n'
+    echo '```'; } > "$sa_t/docs/ATTEST-HISTORY.md"
+  sa_reg=$( ( cd "$sa_t" && bash scripts/attest.sh regressions 2>&1 ) )
+  sa_v=$(printf '%s\n' "$sa_reg" | grep -c 'REGRESSION: section VANISHED: beta'); case "$sa_v" in ''|*[!0-9]*) sa_v=0 ;; esac
+  sa_d=$(printf '%s\n' "$sa_reg" | grep -c 'REGRESSION: gamma dropped 5 -> 3'); case "$sa_d" in ''|*[!0-9]*) sa_d=0 ;; esac
+  [ "$sa_v" -ge 1 ] && ok "SUITE-ATTEST-1 control fires: a vanished section is named with its last sighting" \
+    || no "SUITE-ATTEST-1 vanish control DID NOT fire: $sa_reg"
+  [ "$sa_d" -ge 1 ] && ok "SUITE-ATTEST-1 control fires: a dropped count is named with its bisect window" \
+    || no "SUITE-ATTEST-1 drop control DID NOT fire"
+  sa_tl=$( ( cd "$sa_t" && bash scripts/attest.sh timeline --section gamma 2>&1 ) | grep -c 'gamma:' )
+  case "$sa_tl" in ''|*[!0-9]*) sa_tl=0 ;; esac
+  [ "$sa_tl" -ge 2 ] && ok "SUITE-ATTEST-1 timeline exposes a section's count across rows (the flap detector)" \
+    || no "SUITE-ATTEST-1 timeline broken"
+  sa_ref=$( ( cd "$sa_t" && mkdir -p logs && printf '#!/bin/sh\necho "== run-crew-tests: 1 PASS / 1 FAIL =="\nexit 1\n' > scripts/run-crew-tests.sh && chmod +x scripts/run-crew-tests.sh && printf '#!/bin/sh\nexit 1\n' > scripts/validate-crew.sh && chmod +x scripts/validate-crew.sh && cp scripts/validate-crew.sh scripts/save-context.sh && cp scripts/validate-crew.sh scripts/check-decision-matrices.sh && cp scripts/validate-crew.sh scripts/check-envelope.sh && bash scripts/attest.sh run 2>&1; echo "rc=$?" ) )
+  sa_r1=$(printf '%s\n' "$sa_ref" | grep -c 'REFUSED'); case "$sa_r1" in ''|*[!0-9]*) sa_r1=0 ;; esac
+  sa_r2=$(printf '%s\n' "$sa_ref" | grep -c 'rc=1'); case "$sa_r2" in ''|*[!0-9]*) sa_r2=0 ;; esac
+  sa_r3=$( ( cd "$sa_t" && awk '/^# ATTEST-HISTORY v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/ATTEST-HISTORY.md | grep -c . ) )
+  { [ "$sa_r1" -ge 1 ] && [ "$sa_r2" -ge 1 ] && [ "$sa_r3" = 2 ]; } \
+    && ok "SUITE-ATTEST-1 control fires: a red battery is REFUSED and appends nothing (the deliberate-act law with teeth)" \
+    || no "SUITE-ATTEST-1 refusal control DID NOT hold (refused=$sa_r1 rc=$sa_r2 rows=$sa_r3)"
+  rm -rf "$sa_t"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

@@ -63,3 +63,4 @@ entry for it.
 - [VECTOR-1](VECTOR-1.md) — the deterministic router mapping every open gap to its resolving process.
 - [SOURCE-MAP-1](SOURCE-MAP-1.md) — fifteen named rabbit holes, the frozen dry rule, and the calibration column.
 - [SYNTH-1](SYNTH-1.md) — six successor gates and the closure that lets nothing drop.
+- [SUITE-ATTEST-1](SUITE-ATTEST-1.md) — dated proof-of-run: who proved what, when, on which userland.
