@@ -84,9 +84,9 @@ GR-009	security-residual	early-exit consumers head -n, grep -m, sed q are covere
 GR-010	security-residual	cross-release guard sees only payloads it can read; a line assembled from shell variables is invisible until the gate-time trail scan	docs/security/threat-model.md:68	OPEN	partial	unverified-claim	TM-10	GAP-REGISTER-1
 GR-011	security-residual	provenance-flag detects verbatim relay only and flags after the write; paraphrase undetected by construction	docs/security/threat-model.md:69	OPEN	no	accepted-limit	TM-11	GAP-REGISTER-1
 GR-012	security-residual	publication residual is human; beyond one conversation-URL assertion no check reads prose for confidentiality	docs/security/threat-model.md:70	OPEN	partial	unverified-claim	TM-12	GAP-REGISTER-1
-GR-013	security-residual	user-global allow-list carries a promptless any-host network-fetch rule; zero-network law procedural for the bare-fetch shape even in the parent	Plan.md:637	OPEN	no	operator-blocked	COMM-F1	GAP-REGISTER-1
-GR-014	security-residual	parent allow-list gh repo rule is generic over any repo argument; narrowing to estate-scoped forms awaits the operator	Plan.md:637	OPEN	no	operator-blocked	COMM-F2	GAP-REGISTER-1
-GR-015	security-residual	the turbo repo carries an upstream remote to the external original — the one external comms surface on the machine	Plan.md:637	OPEN	no	operator-blocked	COMM-F3	GAP-REGISTER-1
+GR-013	security-residual	user-global allow-list carries a promptless any-host network-fetch rule; zero-network law procedural for the bare-fetch shape even in the parent	Plan.md:637	RESOLVED:COMM-HARDEN-1	no	operator-blocked	COMM-F1	GAP-REGISTER-1
+GR-014	security-residual	parent allow-list gh repo rule is generic over any repo argument; narrowing to estate-scoped forms awaits the operator	Plan.md:637	RESOLVED:COMM-HARDEN-1	no	operator-blocked	COMM-F2	GAP-REGISTER-1
+GR-015	security-residual	the turbo repo carries an upstream remote to the external original — the one external comms surface on the machine	Plan.md:637	RESOLVED:COMM-HARDEN-1	no	operator-blocked	COMM-F3	GAP-REGISTER-1
 GR-016	security-residual	session-level claude.ai connectors exist under operator account control; outside repo functions, named for completeness	Plan.md:637	OPEN	no	accepted-limit	COMM-F4	GAP-REGISTER-1
 GR-017	security-residual	red-team never tested ledger-content forgery by a write-capable session, settings/deny-list-change classes, or the pack document-intake injection surface	docs/security/redteam-1.md:67-72	OPEN	no	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-018	security-residual	P5 symlink probe recorded not fixed: GATES.md swapped for a symlink to a doctored copy passes the guard; git-status type change is the only signal	docs/security/redteam-1.md:59	OPEN	no	accepted-limit	CENSUS	GAP-REGISTER-1
@@ -207,7 +207,7 @@ GR-132	open-question	the register-program completion record claims registry 44 t
 GR-133	open-question	CORPUS-SDKPY and CORPUS-LANGGRAPH still read awaiting-an-operator-declared-gate for hook candidates HOOK-1 discharged 2026-09-02; dated research prose lagging the ledger; reported not corrected	docs/research/CORPUS-SDKPY.md:40	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
 GR-134	open-question	orca application source under 1 percent read; a thirteenth pattern-candidate could exist unread - the residue of the survey row this dive resolved	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unread-source	CENSUS	DIVE-W1-OR-1
 GR-135	verification-gap	no dated suite-run attestation exists - when a control last proved itself and on what platform/userland is unrecorded; BSD certification and temporal claims ride session memory	docs/research/DIVE-W1-OR-1.md:1	RESOLVED:SUITE-ATTEST-1	no	unverified-claim	CENSUS	DIVE-W1-OR-1
-GR-136	dispatch-residual	agent-teams flag if ever enabled in any settings layer routes teammate coordination through user-scope mailboxes outside the dispatch guard and the estate's trails; default-off + headless immunity today; the settings pin to 0 is the available hard line	docs/research/DIVE-W1-AT-1.md:1	OPEN	no	external-drift	CENSUS	DIVE-W1-AT-1
+GR-136	dispatch-residual	agent-teams flag if ever enabled in any settings layer routes teammate coordination through user-scope mailboxes outside the dispatch guard and the estate's trails; default-off + headless immunity today; the settings pin to 0 is the available hard line	docs/research/DIVE-W1-AT-1.md:1	RESOLVED:COMM-HARDEN-1	no	external-drift	CENSUS	DIVE-W1-AT-1
 GR-137	verification-gap	no standing confidence-vs-outcome ledger exists estate-wide; the vector program's 6-for-6 table is seed evidence held in one record, not a mechanism; CALIB-1 is its named landing	docs/research/SYNTH-1-incorporation-program.md:1	OPEN	no	unverified-claim	CENSUS	SYNTH-1
 ```
 
@@ -224,6 +224,10 @@ GR-085	2026-09-03	OPEN>RESOLVED:DIVE-W1-AT-1	DIVE-W1-AT-1
 GR-135	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
 GR-042	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
 GR-041	2026-09-04	OPEN>RESOLVED:STALL-VOCAB-1	STALL-VOCAB-1
+GR-013	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
+GR-014	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
+GR-015	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
+GR-136	2026-09-04	OPEN>RESOLVED:COMM-HARDEN-1	COMM-HARDEN-1
 ```
 
 ## Weakest claims, flagged
