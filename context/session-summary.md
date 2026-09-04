@@ -6,7 +6,7 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 **verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
-Live numbers (post-CLEANUP-1): crew suite **344 PASS / 0 FAIL** · validate-crew **60 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **232 tracked files**.
+Live numbers (post-CLEANUP-1): crew suite **348 PASS / 0 FAIL** · validate-crew **60 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **232 tracked files**.
 
 The one SKIP is honest and named: C-25's identity coverage has no live trail until a subagent is dispatched in-session. These figures are bound — `save-context.sh check` compares the tracked-file count against the tree and the registered-ID count against the registry, so this line cannot silently rot again (C-24, extended at CR-034).
 
@@ -122,4 +122,4 @@ THE REGISTER PROGRAM COMPLETE (10/10) at 2026-09-03T01:44:15Z: parent 09c8574, f
 
 ## Vector program (2026-09-04T04:38:26Z)
 
-THE VECTOR PROGRAM COMPLETE: 232 tracked, floor 97, crew 344/0, matrices 91/0/18, register 137 rows (queue a proven pure function), wave 6 dives 6-for-6 calibration, closure 131 rows both-ways by arm. Successor program ratified at SYNTH-1 w/ six pre-declared tokens (SUITE-ATTEST-1 the headline). Estate-only comms ruling + COMM-AUDIT F1-F3 + the agent-teams pin await COMM-HARDEN-1's operator word.
+THE VECTOR PROGRAM COMPLETE: 232 tracked, floor 97, crew 348/0, matrices 91/0/18, register 137 rows (queue a proven pure function), wave 6 dives 6-for-6 calibration, closure 131 rows both-ways by arm. Successor program ratified at SYNTH-1 w/ six pre-declared tokens (SUITE-ATTEST-1 the headline). Estate-only comms ruling + COMM-AUDIT F1-F3 + the agent-teams pin await COMM-HARDEN-1's operator word.
