@@ -70,8 +70,6 @@ in-place fencing stays successor work (GR-carried).
 
 ## The register
 
-GR-135	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
-GR-042	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
 ```text
 # GAP-REGISTER v1
 GR-001	security-residual	gate-guard stops ordering mistakes not forgery; a session writing a fake APPROVED line passes; detection is ledger-vs-operator-memory audit, procedural	docs/security/threat-model.md:59	OPEN	no	unverified-claim	TM-1	GAP-REGISTER-1
@@ -223,6 +221,8 @@ GR-077	2026-09-03	OPEN>RESOLVED:DIVE-W1-OR-1	DIVE-W1-OR-1
 GR-086	2026-09-03	OPEN>RESOLVED:DIVE-W1-GA-1	DIVE-W1-GA-1
 GR-078	2026-09-03	OPEN>RESOLVED:DIVE-W1-EK-1	DIVE-W1-EK-1
 GR-085	2026-09-03	OPEN>RESOLVED:DIVE-W1-AT-1	DIVE-W1-AT-1
+GR-135	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
+GR-042	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
 ```
 
 ## Weakest claims, flagged

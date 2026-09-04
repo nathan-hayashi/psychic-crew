@@ -46,7 +46,7 @@ case "${1:-run}" in
     fi
     secs=$(printf '%s\n' "$crew_out" | awk '
       /^== / && $0 !~ /run-crew-tests:/ { if (name != "") printf "%s:%d,", name, cnt
-        name=$0; sub(/^== /,"",name); sub(/ ==.*$/,"",name); gsub(/[ ,\t]/,"-",name); cnt=0; next }
+        name=$0; sub(/^== /,"",name); sub(/ ==.*$/,"",name); gsub(/[^A-Za-z0-9._-]/,"-",name); gsub(/-+/,"-",name); cnt=0; next }
       /\[PASS\]/ { cnt++ }
       END { if (name != "") printf "%s:%d", name, cnt }')
     tsr=$(date -u +%Y-%m-%dT%H:%M:%SZ)
