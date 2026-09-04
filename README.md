@@ -55,7 +55,7 @@ would fail the §4 seed byte-identity check that the whole build rests on.
 | Fact | Value | |
 | --- | --- | --- |
 | Node / npm actually used | v24.14.0 / 11.9.0 | `[E]` |
-| Tracked files / bytes | 215 files, ~2.3 MB | `[E]` |
+| Tracked files / bytes | 216 files, ~2.3 MB | `[E]` |
 | Runtime dependencies | **zero** — `stress-project/` is Node stdlib only | `[E]` |
 | Disk beyond the checkout | `logs/` grows unbounded; ~2.5 MB after nine phases plus an audit | `[E]` |
 

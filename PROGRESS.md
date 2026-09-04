@@ -1376,3 +1376,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T02:53:31Z] DIVE-W1-OR-1 executed — wave 1/16+, outcome 3 (prediction held)
 - **State:** dive doc + register delta (1 resolved, 2 born) + queue 132 + map DIVED, one commit pending.
 - **Next action:** record commit (floor 90); then `APPROVE DIVE-W1-RU-1` when the operator words it.
+
+## [VP|2026-09-04T03:13:49Z] DIVE-W1-RU-1 executed — wave 2/16+, outcome 2 (prediction held)
+- **State:** convergent landing SUITE-ATTEST-1 (orca+ruflo takes); signature-theater REJECT recorded; queue unchanged.
+- **Next action:** record commit (floor 91); then `APPROVE DIVE-W1-GA-1`.
