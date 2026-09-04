@@ -18,3 +18,13 @@ eleven remaining rows: HC-1, OU-1, CG-1, and the eight drop-requests.
 Three new arms: the dry re-derivation (a DRY section written while the tail is not 0,0
 reds unless it carries the operator-early-close line verbatim), terminal-status legality,
 and row-count conservation.
+
+## What happened (the close)
+
+The condition was met honestly — six dives, the last two both zero, aborts none — and the
+flips ran: HC-1 and OU-1 parked with their questions intact, all eight drop-requests
+standing as UNFILLED-AT-DRY invitations. Sixteen rows before, sixteen after. The wave
+delivered five TAKE-class mechanisms across three corpus dives (the SUITE-ATTEST-1
+convergence the headline), one REJECT with teeth (signature theater), thirteen
+VALIDATE-AGAINST records, four in-place currency corrections, one [V?] confirmed intact,
+and a perfect 6-for-6 prediction record for SYNTH-1's first calibration table.

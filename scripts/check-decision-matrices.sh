@@ -626,6 +626,36 @@ SMEOF2
     done
   done
   pass "generic dive validator swept every dive doc on disk (per-dive marginal suite cost: zero arms)"
+  smdry=$(awk '/^## DRY/{f=1} f&&/dry condition is MET/{print "met"; exit}' "$SM")
+  smq2=$(printf '%s\n' "$smt" | awk -F'\t' '$8=="QUEUED"||$8=="REQUESTED"' | grep -c .)
+  case "$smq2" in ''|*[!0-9]*) smq2=0 ;; esac
+  if [ -n "$smdry" ]; then
+    smseq=$(awk '/performed sequence/{f=1} f&&/frozen dry condition/{exit} f' "$SM" | grep -oE '[A-Z]+-[0-9]+:[0-9]+' | tr '\n' ' ')
+    smlast2=$(printf '%s\n' $smseq | tail -2 | cut -d: -f2 | tr '\n' ' ')
+    smbadpair=""
+    for pr in $smseq; do
+      pid="${pr%%:*}"; pout="${pr##*:}"
+      pm=$(printf '%s\n' "$smt" | awk -F'\t' -v id="$pid" '$1==id && $8=="DIVED" {print $9}')
+      [ "$pm" = "$pout" ] || smbadpair="$smbadpair [$pr vs ${pm:-absent}]"
+    done
+    smearly=$(grep -c 'operator-early-close' "$SM")
+    case "$smearly" in ''|*[!0-9]*) smearly=0 ;; esac
+    if [ "$smlast2" = "0 0 " ] || [ "$smearly" -ge 1 ]; then
+      pass "DRY re-derivation: the section's tail ($smlast2) is genuinely dry (or the operator-early-close line is present verbatim)"
+    else
+      fail "DRY section written while the tail is $smlast2 — premature dry is refusable, not arguable"
+    fi
+    [ -z "$smbadpair" ] && pass "DRY sequence integrity: every (id,outcome) pair in the derivation matches a DIVED fence row" \
+      || fail "DRY derivation disagrees with the fence:$smbadpair"
+    smdived=$(printf '%s\n' "$smt" | awk -F'\t' '$8=="DIVED"' | grep -c .)
+    smseqn=$(printf '%s\n' $smseq | grep -c .)
+    [ "$smdived" = "$smseqn" ] && pass "DRY conservation: derivation lists all $smdived performed dives; no dive omitted from the record" \
+      || fail "DRY derivation lists $smseqn dives, fence has $smdived DIVED"
+    [ "$smq2" = 0 ] && pass "terminal legality: no QUEUED or REQUESTED row survives the close (parked or unfilled, never dropped)" \
+      || fail "$smq2 row(s) still QUEUED/REQUESTED after DRY"
+  else
+    [ "$smq2" -ge 0 ] && pass "wave open: no DRY section; $smq2 QUEUED/REQUESTED row(s) live (the dry arms arm at the close)"
+  fi
   smfix=$(mktemp -d)
   { echo '# fixture dive (planted)'; echo '```text'; echo '# DIVE-ZZ-VERDICTS v1';
     printf '1\tbogus-mech\tNOT-A-VERDICT\tGR-001\tx\n'; echo '```'; } > "$smfix/DIVE-W1-ZZ.md"

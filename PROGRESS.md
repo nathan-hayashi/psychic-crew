@@ -1396,3 +1396,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T04:19:34Z] DIVE-W1-CG-1 executed — wave 6, outcome 0 (6-for-6) — still DRY-ELIGIBLE
 - **State:** operator's append dived; 4 validations, 0 takes; tail [0,0]; 10 rows remain.
 - **Next action:** the operator's word — `APPROVE DIVE-W1-DRY` or any dive token.
+
+## [VP|2026-09-04T04:24:38Z] DIVE-W1-DRY executed — THE WAVE IS CLOSED (6 dives, 6-for-6 predictions)
+- **State:** terminal flips done; 3 dry arms live; SYNTH-1 build next (the program's last gate).
+- **Next action:** record commit (floor 96); build SYNTH-1; STOP for `APPROVE SYNTH-1`.

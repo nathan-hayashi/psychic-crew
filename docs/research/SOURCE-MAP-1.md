@@ -73,18 +73,34 @@ RU-1	corpus-redive	ruflo	What exactly would a parent-side temporal-bisect layer 
 GA-1	corpus-redive	gastown	What is the minimal liveness/stall vocabulary this estate could adopt from gastown three-store design without adopting propulsion - and does NDI deserve a name here?	GR-041,GR-086	TAKE-FEW	M	DIVED	2	DIVE-W1-GA-1
 EK-1	web	rsch2-ekn-sweep	Which of the roughly thirty Ekn-flagged ecosystem rows and six PARK revisit conditions have materially changed since 2026-08-26 - dated re-verification, promotion-eligibility only?	GR-058,GR-078,GR-113	TAKE-ZERO	M	DIVED	0	DIVE-W1-EK-1
 AT-1	web	agent-teams-flag	Does the agent-teams environment flag exist in current Claude Code documentation, and does its semantics touch the EX-05 dispatch law?	GR-085	TAKE-ZERO	S	DIVED	0	DIVE-W1-AT-1
-HC-1	web	platform-currency	Have the platform facts this estate depends on drifted: hook-event set, PreCompact/PostCompact semantics (WORKAROUND-01 removal condition), model fallback behavior, the 1M-context variant (OQ-2), Team-plan content-endpoint coverage (SIDE-5)?	GR-062,GR-080,GR-093,GR-095	TAKE-FEW	M	QUEUED	-	-
-OU-1	web	orca-upstream	Has orca upstream reliability-gate manifest changed since 2026-08-31, and does any public record resolve the stablyai-vs-Lovecast licence anomaly?	GR-076,GR-077	TAKE-ZERO	S	QUEUED	-	-
-DR-DIFY	drop-request	dify-main	How does Dify gate human approval inside automated flows, and which of the 16 BASE-2 cells does its on-disk reality move?	GR-068	TAKE-FEW	M	REQUESTED	-	-
-DR-LANGFLOW	drop-request	langflow-main	What does Langflow flow-versioning actually persist per change, against our ledger discipline (BASE-2 cells)?	GR-068	TAKE-ZERO	M	REQUESTED	-	-
-DR-METAGPT	drop-request	metagpt-main	What does MetaGPT SOP-encoded role contract enforce mechanically that our agent contracts state in prose (BASE-2 cells)?	GR-068	TAKE-FEW	M	REQUESTED	-	-
-DR-AUTOGEN	drop-request	autogen-main	Which AutoGen conversation-termination semantics are mechanical vs convention, against our gate machine (BASE-2 cells)?	GR-068	TAKE-FEW	M	REQUESTED	-	-
-DR-MEM0	drop-request	mem0-main	Does Mem0 memory-scoping model carry a pattern for the Context Packager candidate the RSCH-2 shelf holds?	GR-058	TAKE-FEW	M	REQUESTED	-	-
-DR-CREWAI	drop-request	crewai-main	Run-sourced at last: which STRESS-1 rubric column entries survive contact with CrewAI actual code (HC-5 kept the survey documentation-only)?	GR-068,GR-081	TAKE-FEW	M	REQUESTED	-	-
-DR-AIDER	drop-request	aider-main	What does Aider commit-per-step discipline attest per change, and does its repo-map maintenance answer the temporal-bisect gap?	GR-042	TAKE-FEW	M	REQUESTED	-	-
-DR-N8N	drop-request	n8n-main	SOURCE-AVAILABLE (not OSI) - pattern-transform only, no verbatim: does its workflow-credential separation carry a lesson for the pack lane?	GR-068	TAKE-ZERO	M	REQUESTED	-	-
+HC-1	web	platform-currency	Have the platform facts this estate depends on drifted: hook-event set, PreCompact/PostCompact semantics (WORKAROUND-01 removal condition), model fallback behavior, the 1M-context variant (OQ-2), Team-plan content-endpoint coverage (SIDE-5)?	GR-062,GR-080,GR-093,GR-095	TAKE-FEW	M	PARKED-DRY	-	-
+OU-1	web	orca-upstream	Has orca upstream reliability-gate manifest changed since 2026-08-31, and does any public record resolve the stablyai-vs-Lovecast licence anomaly?	GR-076,GR-077	TAKE-ZERO	S	PARKED-DRY	-	-
+DR-DIFY	drop-request	dify-main	How does Dify gate human approval inside automated flows, and which of the 16 BASE-2 cells does its on-disk reality move?	GR-068	TAKE-FEW	M	UNFILLED-AT-DRY	-	-
+DR-LANGFLOW	drop-request	langflow-main	What does Langflow flow-versioning actually persist per change, against our ledger discipline (BASE-2 cells)?	GR-068	TAKE-ZERO	M	UNFILLED-AT-DRY	-	-
+DR-METAGPT	drop-request	metagpt-main	What does MetaGPT SOP-encoded role contract enforce mechanically that our agent contracts state in prose (BASE-2 cells)?	GR-068	TAKE-FEW	M	UNFILLED-AT-DRY	-	-
+DR-AUTOGEN	drop-request	autogen-main	Which AutoGen conversation-termination semantics are mechanical vs convention, against our gate machine (BASE-2 cells)?	GR-068	TAKE-FEW	M	UNFILLED-AT-DRY	-	-
+DR-MEM0	drop-request	mem0-main	Does Mem0 memory-scoping model carry a pattern for the Context Packager candidate the RSCH-2 shelf holds?	GR-058	TAKE-FEW	M	UNFILLED-AT-DRY	-	-
+DR-CREWAI	drop-request	crewai-main	Run-sourced at last: which STRESS-1 rubric column entries survive contact with CrewAI actual code (HC-5 kept the survey documentation-only)?	GR-068,GR-081	TAKE-FEW	M	UNFILLED-AT-DRY	-	-
+DR-AIDER	drop-request	aider-main	What does Aider commit-per-step discipline attest per change, and does its repo-map maintenance answer the temporal-bisect gap?	GR-042	TAKE-FEW	M	UNFILLED-AT-DRY	-	-
+DR-N8N	drop-request	n8n-main	SOURCE-AVAILABLE (not OSI) - pattern-transform only, no verbatim: does its workflow-credential separation carry a lesson for the pack lane?	GR-068	TAKE-ZERO	M	UNFILLED-AT-DRY	-	-
 CG-1	web	cogno-studio	What is cogno.studio (identity from its own pages, dated), and does anything observable there - product surface, published docs, stated patterns - VALIDATE-AGAINST or challenge this estate's designs, with TAKE candidates only where license permits?	GR-068,GR-113	TAKE-ZERO	S	DIVED	0	DIVE-W1-CG-1
 ```
+
+## DRY — the wave's close (2026-09-03, `DIVE-W1-DRY`)
+
+**The derivation, shown:** performed sequence (execution order, each pair re-checkable
+against the fence above): OR-1:3 · RU-1:2 · GA-1:2 · EK-1:0 · AT-1:0 · CG-1:0. Completed
+dives 6 (minimum 2 met); ABORTED none. **The last two performed — AT-1 and CG-1 — both
+scored outcome 0: the frozen dry condition is MET.** Predictions ran six for six
+(TAKE-MANY, FEW, FEW, ZERO, ZERO, ZERO — all held); the calibration roll-up lands at
+SYNTH-1.
+
+**Terminal flips:** HC-1 and OU-1 → PARKED-DRY, their questions intact and reopenable by a
+future program; all eight drop-requests → UNFILLED-AT-DRY, the requests standing recorded —
+placing any `<name>-main/` directory remains an open invitation whose dive question already
+exists. Nothing was silently dropped: 16 rows before, 16 after, every one in a terminal or
+DIVED state. Mid-wave-born demand (GR-134, GR-136) passes to SYNTH-1's closure accounting
+with the queue that carries it.
 
 ## Weakest claims, flagged
 
