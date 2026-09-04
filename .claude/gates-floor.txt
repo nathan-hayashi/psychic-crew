@@ -3,4 +3,4 @@
 # that silently drops a stamp goes red. The floor advances in CLOSE-RECORD commits (already a
 # separate commit from the stamp by ritual), so a single revert cannot move both sides.
 # Motivating incident class: the rebase-dropped-APPROVED-row the push protocol exists to catch.
-93
+94
