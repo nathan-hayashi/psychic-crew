@@ -68,7 +68,7 @@ id): `APPROVE DIVE-W1-<id>` — e.g. `APPROVE DIVE-W1-OR-1`.
 
 ```text
 # SOURCE-MAP v1
-OR-1	corpus-redive	orca	What does orca reliability-gate VALIDATOR reject that our registry accepts - and what do its lockfile-declared transitive dependencies reveal that the survey could not?	GR-066,GR-077	TAKE-MANY	L	QUEUED	-	-
+OR-1	corpus-redive	orca	What does orca reliability-gate VALIDATOR reject that our registry accepts - and what do its lockfile-declared transitive dependencies reveal that the survey could not?	GR-066,GR-077	TAKE-MANY	L	DIVED	3	DIVE-W1-OR-1
 RU-1	corpus-redive	ruflo	What exactly would a parent-side temporal-bisect layer need from ruflo verification history design - and what does their implementation get wrong that ours must not?	GR-042	TAKE-FEW	M	QUEUED	-	-
 GA-1	corpus-redive	gastown	What is the minimal liveness/stall vocabulary this estate could adopt from gastown three-store design without adopting propulsion - and does NDI deserve a name here?	GR-041,GR-086	TAKE-FEW	M	QUEUED	-	-
 EK-1	web	rsch2-ekn-sweep	Which of the roughly thirty Ekn-flagged ecosystem rows and six PARK revisit conditions have materially changed since 2026-08-26 - dated re-verification, promotion-eligibility only?	GR-058,GR-078,GR-113	TAKE-ZERO	M	QUEUED	-	-

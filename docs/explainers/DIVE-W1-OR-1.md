@@ -19,3 +19,14 @@ atomic commit.
 An off-vocabulary verdict, a missing landing-shape table, a dead register link, a
 weakest-claims omission — the SOURCE-MAP-1 validator, already proven firing on a planted
 fixture.
+
+## What was found (the close)
+
+One strong take — orca's dated evidence-run ledger (369 live runs, platform-reconciled),
+which our registry lacks entirely and which the BSD-certification and temporal rows already
+wanted from other directions; two modulations (demotion semantics stated as policy; a
+runnable-probe column bound to the registry's existing v2 wake); four validate-against
+records including two survey refinements the lockfile made possible (zero LLM SDKs in 769
+packages; the SQLite runtime is the node:sqlite builtin). Outcome 3 TAKE-class — the
+TAKE-MANY prediction held. The survey row resolved; two narrower rows born, one of them the
+program's first mid-wave demand (section I now NOTEs that state by design).

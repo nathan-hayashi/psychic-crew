@@ -555,21 +555,27 @@ SMEOF
   case "$smpro" in ''|*[!0-9]*) smpro=0 ;; esac
   [ "$smpro" = 0 ] && pass "the PROHIBITED name appears in no source row (the bar is machine-visible here too)" \
     || fail "PROHIBITED name in the map: $smpro row(s)"
-  gropen2=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | awk -F'\t' '$5=="OPEN"{print $1}' | sort)
+  grall2=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | cut -f1 | sort)
   smbadlink=""
   for rl in $(printf '%s\n' "$smt" | cut -f5 | tr ',' '\n' | sort -u); do
     [ -n "$rl" ] || continue
-    grep -qxF "$rl" <<<"$gropen2" || smbadlink="$smbadlink [$rl]"
+    grep -qxF "$rl" <<<"$grall2" || smbadlink="$smbadlink [$rl]"
   done
-  [ -z "$smbadlink" ] && pass "every register link resolves to an OPEN row" || fail "dead register link(s):$smbadlink"
-  smdem=""
+  [ -z "$smbadlink" ] && pass "every register link resolves (a served link legitimately points at the row it RESOLVED)" || fail "dead register link(s):$smbadlink"
+  smdem=""; smborn=0
   for did in $(awk '/^# VECTOR-QUEUE v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/VECTOR-QUEUE.md | awk -F'\t' '$2=="research-dive"||$2=="web-verify"{print $1}'); do
     smhit=$(printf '%s\n' "$smt" | cut -f5 | tr ',' '\n' | grep -cxF "$did")
     case "$smhit" in ''|*[!0-9]*) smhit=0 ;; esac
-    [ "$smhit" -ge 1 ] || smdem="$smdem [$did]"
+    [ "$smhit" -ge 1 ] && continue
+    didborn=$(awk -F'\t' -v id="$did" '$1==id{print $9}' <<<"$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md)")
+    case "$didborn" in
+      DIVE-W1-*) smborn=$((smborn+1)) ;;
+      *) smdem="$smdem [$did]" ;;
+    esac
   done
-  [ -z "$smdem" ] && pass "demand coverage: every research-dive and web-verify vector is claimed by at least one source" \
-    || fail "unclaimed demand vector(s):$smdem"
+  [ -z "$smdem" ] && pass "demand coverage: every map-era research/web vector is claimed by at least one source" \
+    || fail "unclaimed map-era demand vector(s):$smdem"
+  [ "$smborn" = 0 ] || note "mid-wave-born demand: $smborn vector(s) born by dives await a future source or park at DRY (SYNTH-1 consumes this signal)"
   smoc=$(printf '%s\n' "$smt" | awk -F'\t' '($8=="QUEUED"||$8=="REQUESTED") && $9!="-"{c++} END{print c+0}')
   [ "$smoc" = 0 ] && pass "outcome is '-' exactly while a row is QUEUED/REQUESTED (filled only by a dive)" \
     || fail "$smoc undived row(s) carrying an outcome"

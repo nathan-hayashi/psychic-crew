@@ -1372,3 +1372,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T02:37:56Z] SOURCE-MAP-1 CLOSED + CG-1 appended — the wave opens
 - **State:** parent 2d76436 · floor 89 · map 16 rows (15 + CG-1 operator-append) · matrices 75/0/17.
 - **Next action:** `APPROVE DIVE-W1-OR-1` opens the first dive (reading is gated; the question is already fixed).
+
+## [VP|2026-09-04T02:53:31Z] DIVE-W1-OR-1 executed — wave 1/16+, outcome 3 (prediction held)
+- **State:** dive doc + register delta (1 resolved, 2 born) + queue 132 + map DIVED, one commit pending.
+- **Next action:** record commit (floor 90); then `APPROVE DIVE-W1-RU-1` when the operator words it.

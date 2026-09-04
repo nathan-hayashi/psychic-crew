@@ -148,7 +148,7 @@ GR-073	operator-blocked	jurisdiction unknown and unrecorded — the largest unkn
 GR-074	operator-blocked	secrets backend Q2 deferred post-build; env plus gitignore discipline interim	docs/audit/DECISION_AUDIT.md:23	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-075	operator-blocked	TEI-2..4 unbuilt; pre-planned only, on the operator's word	docs/CHANGE-PLANE.md:157	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-076	open-question	orca licence anomaly unresolved: org stablyai vs copyright holder Lovecast Inc; no local file explains	docs/research/RSCH-4-orca.md:6-7	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
-GR-077	open-question	orca survey read under 0.1 percent; lockfile unread so transitive deps unknown; 98 of 99 reliability gates known only by aggregate; a thirteenth candidate could exist unread	docs/research/RSCH-4-orca-survey.md:115-120	OPEN	no	unread-source	CENSUS	GAP-REGISTER-1
+GR-077	open-question	orca survey read under 0.1 percent; lockfile unread so transitive deps unknown; 98 of 99 reliability gates known only by aggregate; a thirteenth candidate could exist unread	docs/research/RSCH-4-orca-survey.md:115-120	RESOLVED:DIVE-W1-OR-1	no	unread-source	CENSUS	GAP-REGISTER-1
 GR-078	open-question	RSCH-2 roughly thirty Ekn rows must be web-re-verified before any INCORPORATE promotion	docs/research/RSCH-2-ecosystem.md:144-147	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
 GR-079	open-question	SIDE-2 claude.ai zip lane unexercised; wake = one operator upload	GATES.md:40	OPEN	no	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-080	open-question	SIDE-5 weakest claims: Team-plan content-endpoint coverage unverified; memory artifacts not named in fetched scope	docs/research/SIDE-5-compliance-verdict.md:55-62	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
@@ -205,6 +205,8 @@ GR-130	verification-gap	no arm fired when a research doc omitted its weakest-cla
 GR-131	open-question	envelope schema evidence enum is E/I/S while the plan grammar is E/I/S/V? — a live vocabulary divergence between two ratified records; reported not corrected	envelope.schema.json:73-80	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
 GR-132	open-question	the register-program completion record claims registry 44 to 48 while disk holds 47 and the suite's 47==47 was always green — the orchestrator's own figure is the program's first logged hallucination; reported not corrected	Plan.md:638	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
 GR-133	open-question	CORPUS-SDKPY and CORPUS-LANGGRAPH still read awaiting-an-operator-declared-gate for hook candidates HOOK-1 discharged 2026-09-02; dated research prose lagging the ledger; reported not corrected	docs/research/CORPUS-SDKPY.md:40	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
+GR-134	open-question	orca application source under 1 percent read; a thirteenth pattern-candidate could exist unread - the residue of the survey row this dive resolved	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unread-source	CENSUS	DIVE-W1-OR-1
+GR-135	verification-gap	no dated suite-run attestation exists - when a control last proved itself and on what platform/userland is unrecorded; BSD certification and temporal claims ride session memory	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unverified-claim	CENSUS	DIVE-W1-OR-1
 ```
 
 ## The flip log
@@ -213,6 +215,7 @@ GR-133	open-question	CORPUS-SDKPY and CORPUS-LANGGRAPH still read awaiting-an-op
 # GAP-FLIPS v1
 GR-129	2026-09-03	OPEN>RESOLVED:GAP-REGISTER-1	GAP-REGISTER-1
 GR-130	2026-09-03	OPEN>RESOLVED:GAP-REGISTER-1	GAP-REGISTER-1
+GR-077	2026-09-03	OPEN>RESOLVED:DIVE-W1-OR-1	DIVE-W1-OR-1
 ```
 
 ## Weakest claims, flagged
