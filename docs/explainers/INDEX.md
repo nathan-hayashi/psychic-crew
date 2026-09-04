@@ -68,3 +68,4 @@ entry for it.
 - [COMM-HARDEN-1](COMM-HARDEN-1.md) — four one-liners, one word: the comms surface goes mechanical.
 - [PROMOTE-1](PROMOTE-1.md) — promote what the evidence supports; re-affirm the rest with reasons.
 - [TM-FENCE-1](TM-FENCE-1.md) — the last prose register gets its mirror; three hallucinations get their corrections.
+- [CALIB-1](CALIB-1.md) — predictions meet outcomes; the inherited threshold becomes measurable.

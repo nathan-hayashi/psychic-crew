@@ -2307,6 +2307,49 @@ RGEOF
     && ok "TM-FENCE-1 both stale awaiting-prose docs carry their dated discharge pointers" \
     || no "TM-FENCE-1 currency notes missing"
 
+
+  # CALIB-1 — the standing ledger: seed rows recomputed against their source every run.
+  echo "== CALIB-1 — calibration ledger: seeds recomputed, bands re-derived, probe fired =="
+  cb=$(awk '/^# CALIBRATION v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/CALIBRATION.md)
+  cbn=$(printf '%s\n' "$cb" | grep -c .); case "$cbn" in ''|*[!0-9]*) cbn=0 ;; esac
+  [ "$cbn" -ge 6 ] && ok "CALIB-1 ledger holds $cbn graded row(s) (>=6 seed)" || no "CALIB-1 vacuous: $cbn"
+  cbb=$(printf '%s\n' "$cb" | awk -F'\t' 'NF!=6{c++} END{print c+0}')
+  [ "$cbb" = 0 ] && ok "CALIB-1 rows are 6 fields" || no "CALIB-1 $cbb malformed row(s)"
+  cbv=$(printf '%s\n' "$cb" | cut -f6 | grep -vcE '^(yes|no|-)$')
+  case "$cbv" in ''|*[!0-9]*) cbv=0 ;; esac
+  [ "$cbv" = 0 ] && ok "CALIB-1 band_hit vocabulary legal" || no "CALIB-1 $cbv off-vocabulary hit(s)"
+  cbmap=$(awk '/^# SOURCE-MAP v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/SOURCE-MAP-1.md)
+  cbbad=""
+  while IFS="$(printf '\t')" read -r cid cdate csrc cpred cout chit; do
+    [ -n "${cid:-}" ] || continue
+    case "$csrc" in docs/research/SOURCE-MAP-1.md:*) : ;; *) continue ;; esac
+    csid="${csrc##*:}"
+    mp=$(printf '%s\n' "$cbmap" | awk -F'\t' -v id="$csid" '$1==id{print $6}')
+    mo=$(printf '%s\n' "$cbmap" | awk -F'\t' -v id="$csid" '$1==id && $8=="DIVED"{print $9}')
+    [ "$mp" = "$cpred" ] || cbbad="$cbbad [$cid:pred]"
+    [ "$mo" = "$cout" ] || cbbad="$cbbad [$cid:out]"
+    case "$cpred:$cout" in
+      TAKE-ZERO:0) cexp=yes ;;
+      TAKE-FEW:1|TAKE-FEW:2) cexp=yes ;;
+      TAKE-MANY:*) [ "$cout" -ge 3 ] 2>/dev/null && cexp=yes || cexp=no ;;
+      *) cexp=no ;;
+    esac
+    [ "$cexp" = "$chit" ] || cbbad="$cbbad [$cid:band]"
+  done <<CBEOF
+$cb
+CBEOF
+  [ -z "$cbbad" ] && ok "CALIB-1 every seed row recomputes from the map: prediction, outcome, and band verdict all agree (nothing here is recalled)" \
+    || no "CALIB-1 recompute divergence:$cbbad"
+  cb_t=$(mktemp)
+  printf 'CAL-999\t2026-01-01\tdocs/research/SOURCE-MAP-1.md:OR-1\tTAKE-MANY\t3\tno\n' > "$cb_t"
+  cbp=$(awk -F'\t' '{p=$4; o=$5; h=$6; e="no"; if (p=="TAKE-MANY" && o>=3) e="yes"; if (e!=h) print "caught"}' "$cb_t")
+  [ "$cbp" = "caught" ] && ok "CALIB-1 control fires: a planted wrong band verdict is caught by the recompute logic" \
+    || no "CALIB-1 probe blind"
+  rm -f "$cb_t"
+  cb06=$(grep -cF "0.6" docs/CALIBRATION.md); case "$cb06" in ''|*[!0-9]*) cb06=0 ;; esac
+  [ "$cb06" -ge 2 ] && ok "CALIB-1 the threshold's calibration purpose is stated where the grades live (hole 1 closes whole)" \
+    || no "CALIB-1 threshold linkage missing"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
