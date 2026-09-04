@@ -542,5 +542,37 @@ else
   fi
 fi
 
+
+echo "== STALL-VOCAB-1 — announce-plane freshness over the dispatch trails (never a FAIL; PROMOTE-1 owns promotion) =="
+command -v note >/dev/null 2>&1 || note () { printf '  [NOTE] %s\n' "$1"; }
+sv_starts="logs/subagent-starts.jsonl"
+sv_stops="logs/subagent-stops.jsonl"
+sv_grace=120; sv_thresh=3600
+if [ ! -f "$sv_starts" ]; then
+  pass "stall announce: no start trail on this machine (bare clone or pre-HOOK-1) — announced, not silent"
+else
+  sv_now=$(date -u +%s)
+  sv_cand=0; sv_live=0
+  while IFS= read -r sl; do
+    [ -n "$sl" ] || continue
+    sv_id=$(printf '%s' "$sl" | jq -r '.agent_id // empty' 2>/dev/null); [ -n "$sv_id" ] || continue
+    sv_ts=$(printf '%s' "$sl" | jq -r '.ts // empty' 2>/dev/null); [ -n "$sv_ts" ] || continue
+    sv_ep=$(date -u -d "$sv_ts" +%s 2>/dev/null || date -u -j -f '%Y-%m-%dT%H:%M:%SZ' "$sv_ts" +%s 2>/dev/null); [ -n "$sv_ep" ] || continue
+    sv_age=$((sv_now - sv_ep))
+    [ "$sv_age" -gt "$sv_grace" ] || continue
+    sv_stopped=0
+    if [ -f "$sv_stops" ]; then
+      sv_stopped=$(grep -cF "\"agent_id\": \"$sv_id\"" "$sv_stops" 2>/dev/null); case "$sv_stopped" in ''|*[!0-9]*) sv_stopped=0 ;; esac
+      [ "$sv_stopped" = 0 ] && { sv_stopped=$(grep -cF "\"agent_id\":\"$sv_id\"" "$sv_stops" 2>/dev/null); case "$sv_stopped" in ''|*[!0-9]*) sv_stopped=0 ;; esac; }
+    fi
+    sv_live=$((sv_live+1))
+    if [ "$sv_stopped" = 0 ] && [ "$sv_age" -gt "$sv_thresh" ]; then
+      sv_cand=$((sv_cand+1))
+      note "stall-candidate (started-silent class): agent $sv_id started ${sv_age}s ago, no stop event — announce-only; the operator is the watchdog"
+    fi
+  done < "$sv_starts"
+  pass "stall announce-plane swept $sv_live post-grace start(s): $sv_cand candidate(s) announced (grace=${sv_grace}s threshold=${sv_thresh}s; a candidate is never a FAIL here)"
+fi
+
 printf '\n== validate-crew: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
 [ "$F" = 0 ] || exit 1

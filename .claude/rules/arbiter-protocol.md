@@ -65,3 +65,41 @@ actually verify about the claim's subject: durable state confirmed (`live`), no 
 (`unverifiable`), or the subject ended without a verifiable outcome (`exited`). **The collapse
 is forbidden: `unverifiable` may never be recorded as `live`; assert nothing you cannot
 observe.**
+
+
+## Liveness and stall (STALL-VOCAB-1, from the gastown dive)
+
+Two planes, and only two. **Plane one is SELF-REPORTED**: a dispatched agent's state is what
+its own packets say (FINDINGS, FALLBACK, release lines). **Plane two is ONE mechanical inference and no more**:
+the freshness of the agent's last observable trail event
+(subagent-starts/stops, tooluse-audit). Everything else is forbidden inference. The rules,
+each bought by a recorded incident in the source corpus:
+
+- An ABSENT signal is never a stall verdict. A dispatch with no trail yet gets GRACE
+  (startup, delivery lag); after grace it is classified, not guessed about.
+- A STALE signal never verdicts alone — it falls through to the other plane. A live agent
+  with a stale store is heartbeat-write divergence, not stuckness (the hq-qxl9 lesson).
+- Self-reported stuck ESCALATES, never restarts and never replans — the agent is alive and
+  says so; killing it destroys the very context the operator needs
+  (escalate-never-replan, extended to liveness).
+- TOCTOU: re-check the trail immediately before acting on any stall verdict; the agent may
+  have finished between observation and action.
+- NO AUTO-ACTION, stated as design not gap: this estate runs no watchdog daemon;
+  the operator is the watchdog. Classifications are recorded and surfaced at STOPs.
+
+The classification vocabulary — the DETECTION REASON, never the lifecycle state, and every
+downstream verdict derives from the type (the gastown rule):
+
+```text
+# STALL-CLASS v1
+self-reported-stuck	the agent's own packet declares it stuck	ESCALATE to the operator; never restart
+never-started	dispatch recorded, no start event past grace	surface at the next STOP; the dispatch may retry only via re-arm
+started-silent	start event seen, no tool/trail event past threshold	surface at the next STOP; TOCTOU re-check first
+exited-unreported	stop event seen, no FINDINGS/release followed	surface at the next STOP; the release checks own the follow-up
+channel-stale	the trail itself is unwritable or unreadable	observation-plane outage, NOT an agent verdict; fix the channel first
+```
+
+`dispatched-unobserved` (the Dispatch lifecycle above) remains the no-signal terminal STATE;
+the five classes here are detection REASONS an observer may record about a live dispatch.
+The announce-plane freshness check in validate-crew is this section's first mechanical form —
+born announcing, promoted only at PROMOTE-1 on the operator's reading of its evidence.

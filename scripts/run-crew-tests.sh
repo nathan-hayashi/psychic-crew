@@ -2181,6 +2181,50 @@ RGEOF
     || no "SUITE-ATTEST-1 refusal control DID NOT hold (refused=$sa_r1 rc=$sa_r2 rows=$sa_r3)"
   rm -rf "$sa_t"
 
+
+  # STALL-VOCAB-1 — the liveness vocabulary as data + the announce logic proven on fixtures.
+  echo "== STALL-VOCAB-1 — two-plane liveness: vocabulary bound, announce logic fixture-proven =="
+  svp=".claude/rules/arbiter-protocol.md"
+  svt=$(awk '/^# STALL-CLASS v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$svp")
+  svn=$(printf '%s\n' "$svt" | grep -c .); case "$svn" in ''|*[!0-9]*) svn=0 ;; esac
+  [ "$svn" = 5 ] && ok "STALL-VOCAB-1 five classifications exactly (a vocabulary change requires a gate)" \
+    || no "STALL-VOCAB-1 classification count $svn != 5"
+  svb=$(printf '%s\n' "$svt" | awk -F'\t' 'NF!=3{c++} END{print c+0}')
+  [ "$svb" = 0 ] && ok "STALL-VOCAB-1 rows are 3 fields (class, meaning, response)" || no "STALL-VOCAB-1 $svb malformed row(s)"
+  sv_ids=$(printf '%s\n' "$svt" | cut -f1 | sort | tr '\n' ' ')
+  [ "$sv_ids" = "channel-stale exited-unreported never-started self-reported-stuck started-silent " ] \
+    && ok "STALL-VOCAB-1 the five classes are the ratified set" || no "STALL-VOCAB-1 class drift: $sv_ids"
+  grep -qF 'ONE mechanical inference and no more' "$svp" \
+    && ok "STALL-VOCAB-1 the one-inference law is stated verbatim (unwrapped by design)" || no "STALL-VOCAB-1 one-inference sentence missing"
+  grep -qF 'ESCALATES, never restarts' "$svp" \
+    && ok "STALL-VOCAB-1 self-stuck escalates, never restarts (the law with its needle)" || no "STALL-VOCAB-1 escalate needle missing"
+  grep -qF 'the operator is the watchdog' "$svp" \
+    && ok "STALL-VOCAB-1 no-auto-action stated as design (no daemon here, honestly)" || no "STALL-VOCAB-1 watchdog sentence missing"
+  svfx=$(mktemp -d)
+  mkdir -p "$svfx/logs" "$svfx/scripts"
+  sv_old=$(date -u -d '@'"$(( $(date -u +%s) - 7200 ))" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -r "$(( $(date -u +%s) - 7200 ))" +%Y-%m-%dT%H:%M:%SZ)
+  sv_new=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  printf '{"ts":"%s","agent_id":"fx-stalled"}\n{"ts":"%s","agent_id":"fx-finished"}\n{"ts":"%s","agent_id":"fx-fresh"}\n' \
+    "$sv_old" "$sv_old" "$sv_new" > "$svfx/logs/subagent-starts.jsonl"
+  printf '{"ts":"%s","agent_id":"fx-finished"}\n' "$sv_new" > "$svfx/logs/subagent-stops.jsonl"
+  svblk=$(awk '/== STALL-VOCAB-1 — announce-plane/{f=1} f{print} f&&/stall announce-plane swept/{done=1;next} done&&/^fi$/{print;exit}' scripts/validate-crew.sh)
+  svout=$( cd "$svfx" && bash -c '
+    pass () { printf "  [PASS] %s\n" "$1"; }
+    note () { printf "  [NOTE] %s\n" "$1"; }
+    ok () { printf "  [PASS] %s\n" "$1"; }
+    '"$svblk"'
+  ' 2>/dev/null )
+  sv_c1=$(printf '%s\n' "$svout" | grep -c 'stall-candidate.*fx-stalled'); case "$sv_c1" in ''|*[!0-9]*) sv_c1=0 ;; esac
+  sv_c2=$(printf '%s\n' "$svout" | grep -c 'fx-finished'); case "$sv_c2" in ''|*[!0-9]*) sv_c2=0 ;; esac
+  sv_c3=$(printf '%s\n' "$svout" | grep -c 'stall-candidate.*fx-fresh'); case "$sv_c3" in ''|*[!0-9]*) sv_c3=0 ;; esac
+  [ "$sv_c1" -ge 1 ] && ok "STALL-VOCAB-1 control fires: an old start with no stop is announced as started-silent" \
+    || no "STALL-VOCAB-1 stalled-fixture control DID NOT fire: $svout"
+  [ "$sv_c2" = 0 ] && ok "STALL-VOCAB-1 a stopped agent is never a candidate (the pair suppresses)" \
+    || no "STALL-VOCAB-1 stopped agent wrongly flagged"
+  [ "$sv_c3" = 0 ] && ok "STALL-VOCAB-1 grace holds: a fresh start is not judged" \
+    || no "STALL-VOCAB-1 grace violated"
+  rm -rf "$svfx"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

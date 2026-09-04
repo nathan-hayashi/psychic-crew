@@ -1412,3 +1412,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [SP|2026-09-04T05:21:40Z] SUITE-ATTEST-1 CLOSED — row one live; three refusals and one false message, all owned
 - **State:** attest history 1 row · flips fulfilled · queue re-derived · floor 98 · ritual corrected (gate/record/attest/coda).
 - **Next action:** operator's word — STALL-VOCAB-1 / COMM-HARDEN-1 / PROMOTE-1 / TM-FENCE-1 / CALIB-1, or drops.
+
+## [SP|2026-09-04T14:33:39Z] STALL-VOCAB-1 built + stamped — successor 2/6
+- **Task:** two-plane law + 5-class fence + announce sweep + 3 fixture controls; golden untouched.
+- **Next action:** gate commit -> record (floor 99) -> attest -> coda w/ flip.

@@ -64,3 +64,4 @@ entry for it.
 - [SOURCE-MAP-1](SOURCE-MAP-1.md) — fifteen named rabbit holes, the frozen dry rule, and the calibration column.
 - [SYNTH-1](SYNTH-1.md) — six successor gates and the closure that lets nothing drop.
 - [SUITE-ATTEST-1](SUITE-ATTEST-1.md) — dated proof-of-run: who proved what, when, on which userland.
+- [STALL-VOCAB-1](STALL-VOCAB-1.md) — words for a hung agent: two planes, five classes, the operator as watchdog.
