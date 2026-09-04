@@ -1356,3 +1356,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T01:41:22Z] GAP-REGISTER-1 CLOSED — vector program 1 of 5+wave
 - **State:** parent 1f11d6c · floor 87 · matrices 51/0/17 · register 133 rows live · tracked 206.
 - **Next action:** build VECTOR-1 (the amelioration router).
+
+## [VP|2026-09-04T01:55:29Z] VECTOR-1 built — awaiting the token (VECTOR PROGRAM gate 2 of 5+wave)
+- **Task:** rules + engine + derived tracked queue; engine arms beside TEI-1, doc arms in matrices H; D36/v3.21 valve.
+- **Next action:** `APPROVE VECTOR-1`; then SOURCE-MAP-1.

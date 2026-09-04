@@ -35,6 +35,7 @@ P=0; F=0; N=0
 pass () { P=$((P+1)); printf '  [PASS] %s\n' "$1"; }
 fail () { F=$((F+1)); printf '  [FAIL] %s\n' "$1"; }
 note () { N=$((N+1)); printf '  [NOTE] %s\n' "$1"; }
+_sha256 () { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; fi; }
 
 DM="docs/audit/DECISION_MATRICES.md"
 
@@ -470,6 +471,49 @@ GREOF
   grep -q '^## Weakest claims' "$wcp" && fail "epoch control DID NOT fire" \
     || pass "control fires: a sectionless doc is seen by the epoch grep"
   rm -f "$wcp"
+fi
+
+echo "== H. VECTOR — the amelioration router: pinned rules, derived queue =="
+# Doc-data plane of VECTOR-1 (engine arms live in the crew suite beside TEI-1). The load-bearing
+# arm is queue-equals-derivation: the committed queue is proven a pure function of
+# (register, rules) every run — a hand edit, an unrouted register change, or an ungated rules
+# tweak reds the same run.
+VQ="docs/research/VECTOR-QUEUE.md"
+if [ ! -f "$VQ" ]; then
+  fail "queue missing: $VQ"
+else
+  vqt=$(awk '/^# VECTOR-QUEUE v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$VQ")
+  vqn=$(printf '%s\n' "$vqt" | grep -c .); case "$vqn" in ''|*[!0-9]*) vqn=0 ;; esac
+  [ "$vqn" -ge 35 ] && pass "queue vacuity: $vqn routed rows" || fail "queue vacuous: $vqn"
+  vqb=$(printf '%s\n' "$vqt" | awk -F'\t' 'NF!=4{c++} END{print c+0}')
+  [ "$vqb" = 0 ] && pass "queue rows are 4 fields (id, resolution, priority, rule_id)" || fail "$vqb malformed queue row(s)"
+  vqv=$(printf '%s\n' "$vqt" | cut -f2 | grep -vcE '^(research-dive|web-verify|operator-word|build-gate|named-wake|accepted-limit|ESCALATE)$')
+  case "$vqv" in ''|*[!0-9]*) vqv=0 ;; esac
+  [ "$vqv" = 0 ] && pass "resolution vocabulary legal (six ratified + engine ESCALATE)" || fail "$vqv off-vocabulary resolution(s)"
+  vqd=$(mktemp)
+  bash scripts/route-vector.sh --all > "$vqd" 2>/dev/null
+  if cmp -s "$vqd" "$VQ"; then
+    pass "queue-equals-derivation: committed queue byte-identical to a fresh derivation (pure function held)"
+  else
+    fail "queue DRIFTED from its derivation — recovery: scripts/route-vector.sh --all > $VQ (never hand-edit)"
+  fi
+  rm -f "$vqd"
+  gropen=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | awk -F'\t' '$5=="OPEN"{print $1}' | sort)
+  vqids=$(printf '%s\n' "$vqt" | cut -f1 | sort)
+  [ "$gropen" = "$vqids" ] && pass "coverage both ways: every OPEN register row exactly once in the queue; no phantom queue id; no non-OPEN row routed" \
+    || fail "queue/register divergence: $(comm -3 <(printf '%s\n' "$gropen") <(printf '%s\n' "$vqids") | head -3 | tr '\n' ' ')"
+  vqsha=$(grep -oE 'sha256 `[a-f0-9]{64}`' "$VQ" | grep -oE '[a-f0-9]{64}')
+  vlive=$(_sha256 config/vector-rules.json)
+  { [ -n "$vlive" ] && [ "$vqsha" = "$vlive" ]; } \
+    && pass "rules provenance in the queue header matches the live rules hash" \
+    || fail "queue header rules-hash stale or empty: '$vqsha' vs '$vlive'"
+  vqp=$(mktemp)
+  printf 'GR-001\tbogus-resolution\t9\tV-NONE\n' > "$vqp"
+  vqpc=$(cut -f2 "$vqp" | grep -vcE '^(research-dive|web-verify|operator-word|build-gate|named-wake|accepted-limit|ESCALATE)$')
+  case "$vqpc" in ''|*[!0-9]*) vqpc=0 ;; esac
+  [ "$vqpc" -ge 1 ] && pass "control fires: a planted off-vocabulary queue row is seen by the legality scan" \
+    || fail "queue control DID NOT fire"
+  rm -f "$vqp"
 fi
 
 printf '\n== check-decision-matrices: %s PASS / %s FAIL / %s NOTED (notes are dated divergences, kept per CR-033) ==\n' "$P" "$F" "$N"

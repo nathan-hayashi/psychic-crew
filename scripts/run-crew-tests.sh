@@ -1861,6 +1861,55 @@ AQ2EOF
   [ "$t1net" -eq 0 ] && ok "TEI-1 the engine calls no model and no network (fragment-needle scan; the behavioral control carries the weight)" \
     || no "TEI-1 model/network shape in the engine: $t1net hit(s)"
 
+  # VECTOR-1 — route-vector: the amelioration router. Engine arms live HERE beside TEI-1 (the
+  # precedent home, reaching the crew total and CR-027's README binding); the queue's doc-data
+  # arms live in check-decision-matrices section H. Divergences from route-tier are deliberate
+  # and stated in the engine header: batch, equality-match, no ts/trail (pure function).
+  echo "== VECTOR-1 — route-vector: deterministic vectors, fail-toward-the-operator, rules byte-pinned =="
+  vr_golden="3716d1b9d0dfbba81d3acc20644b6847cd3c4f4e66d4a296892f36f4c0556f30"
+  vr_live=$(_sha256 config/vector-rules.json)
+  { [ -n "$vr_live" ] && [ "$vr_live" = "$vr_golden" ]; } \
+    && ok "VECTOR-1 rules byte-pinned (an empty hash is a failure, never a match)" \
+    || no "VECTOR-1 rules hash mismatch or empty: '$vr_live'"
+  vr_n=$(jq 'length' config/vector-rules.json 2>/dev/null); case "$vr_n" in ''|*[!0-9]*) vr_n=0 ;; esac
+  [ "$vr_n" = 10 ] && ok "VECTOR-1 rules row count 10 (a rules change requires a gate)" \
+    || no "VECTOR-1 rules count $vr_n != 10"
+  vfx () { printf 'GR-900\t%s\ts\te:1\tOPEN\t%s\t%s\tCENSUS\tX' "$1" "$2" "$3" | bash scripts/route-vector.sh | cut -f1; }
+  v1=$(vfx chronicle no accepted-limit)
+  [ "$v1" = "accepted-limit" ] && ok "VECTOR-1 accepted-limit routes accepted-limit (V-ACCEPTED)" || no "VECTOR-1 fixture 1 wrong ('$v1')"
+  v2=$(vfx open-question no unread-source)
+  [ "$v2" = "research-dive" ] && ok "VECTOR-1 unread-source routes research-dive (V-UNREAD)" || no "VECTOR-1 fixture 2 wrong ('$v2')"
+  v3=$(vfx open-question no external-drift)
+  [ "$v3" = "web-verify" ] && ok "VECTOR-1 external-drift routes web-verify (V-DRIFT)" || no "VECTOR-1 fixture 3 wrong ('$v3')"
+  v4=$(vfx parked-wake no operator-blocked)
+  [ "$v4" = "named-wake" ] && ok "VECTOR-1 parked-wake routes named-wake (V-WAKE)" || no "VECTOR-1 fixture 4 wrong ('$v4')"
+  v5=$(vfx operator-blocked no operator-blocked)
+  [ "$v5" = "operator-word" ] && ok "VECTOR-1 operator-blocked routes operator-word (V-OPWORD)" || no "VECTOR-1 fixture 5 wrong ('$v5')"
+  v6=$(vfx security-residual no unverified-claim)
+  [ "$v6" = "build-gate" ] && ok "VECTOR-1 unverified+no-check routes build-gate P1 (V-UNVER-NONE)" || no "VECTOR-1 fixture 6 wrong ('$v6')"
+  v7=$(vfx parked-wake no unread-source)
+  [ "$v7" = "research-dive" ] && ok "VECTOR-1 first-match control: a parked row blocked on unread material takes V-UNREAD, not V-WAKE — order IS the policy" \
+    || no "VECTOR-1 first-match control wrong ('$v7')"
+  vtmp=$(mktemp -d)
+  jq '[.[] | select(.id != "V-CATCHALL")]' config/vector-rules.json > "$vtmp/rules.json"
+  mkdir -p "$vtmp/config" "$vtmp/docs/research" "$vtmp/scripts"
+  cp scripts/route-vector.sh "$vtmp/scripts/"; cp "$vtmp/rules.json" "$vtmp/config/vector-rules.json"
+  printf '# GAP-REGISTER v1 placeholder\n' > "$vtmp/docs/research/GAP-REGISTER.md"
+  v8=$(printf 'GR-901\tzz\ts\te:1\tOPEN\tno\tzz-bogus\tCENSUS\tX' | ( cd "$vtmp" && bash scripts/route-vector.sh ) | cut -f3)
+  [ "$v8" = "ENGINE-ESCALATE" ] && ok "VECTOR-1 engine-default control: catch-all deleted, unmatched row still ESCALATEs to the operator (two layers, both human-ward)" \
+    || no "VECTOR-1 engine-default control wrong ('$v8')"
+  rm -rf "$vtmp"
+  va=$(bash scripts/route-vector.sh --all); vb=$(bash scripts/route-vector.sh --all)
+  [ "$va" = "$vb" ] && ok "VECTOR-1 determinism: two derivations byte-identical (LC_ALL=C, no timestamp, no trail)" \
+    || no "VECTOR-1 non-deterministic output"
+  grep -q 'export LC_ALL=C' scripts/route-vector.sh \
+    && ok "VECTOR-1 collation pinned in the engine (BSD/locale-proof sort)" \
+    || no "VECTOR-1 LC_ALL pin missing"
+  vnet=$(sed 's/#.*//' scripts/route-vector.sh | grep -cE "$t1pat")
+  case "$vnet" in ''|*[!0-9]*) vnet=1 ;; esac
+  [ "$vnet" -eq 0 ] && ok "VECTOR-1 the engine calls no model and no network (the TEI-1 fragment needles, reused)" \
+    || no "VECTOR-1 model/network shape: $vnet hit(s)"
+
 
   # ARB-ORCA-1 — four TAKEs bound as data. Docs-as-data arms are legitimate here because the
   # protocol file IS the deliverable (the ORCA-MATRIX precedent); the snapshot arm is what

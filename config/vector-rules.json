@@ -1,0 +1,91 @@
+[
+  {
+    "id": "V-ACCEPTED",
+    "if": {
+      "uncertainty_class": "accepted-limit"
+    },
+    "resolution": "accepted-limit",
+    "priority": 3,
+    "why": "recorded so nobody re-derives; SYNTH-1 re-affirms it, no process spends on it"
+  },
+  {
+    "id": "V-UNREAD",
+    "if": {
+      "uncertainty_class": "unread-source"
+    },
+    "resolution": "research-dive",
+    "priority": 1,
+    "why": "material exists unread - the highest-yield vector; a parked row blocked on unread material is research demand first (order beats V-WAKE deliberately)"
+  },
+  {
+    "id": "V-DRIFT",
+    "if": {
+      "uncertainty_class": "external-drift"
+    },
+    "resolution": "web-verify",
+    "priority": 2,
+    "why": "a dated web fact that can rot re-verifies on the fenced dated lane before anything promotes on it"
+  },
+  {
+    "id": "V-AMBIG",
+    "if": {
+      "uncertainty_class": "ambiguous-record"
+    },
+    "resolution": "build-gate",
+    "priority": 2,
+    "why": "two records disagree; only a gated dated correction reconciles them - reported here, repaired there"
+  },
+  {
+    "id": "V-WAKE",
+    "if": {
+      "class": "parked-wake"
+    },
+    "resolution": "named-wake",
+    "priority": 3,
+    "why": "the row sleeps until its own named condition; waking it early is scope the operator did not order"
+  },
+  {
+    "id": "V-OPWORD",
+    "if": {
+      "uncertainty_class": "operator-blocked"
+    },
+    "resolution": "operator-word",
+    "priority": 2,
+    "why": "needs the operator's word, credential, or hardware; presented at STOPs, never self-served"
+  },
+  {
+    "id": "V-UNVER-NONE",
+    "if": {
+      "uncertainty_class": "unverified-claim",
+      "mechanical": "no"
+    },
+    "resolution": "build-gate",
+    "priority": 1,
+    "why": "the green-while-checking-nothing class with zero coverage - the successor program's highest-value builds"
+  },
+  {
+    "id": "V-UNVER-PART",
+    "if": {
+      "uncertainty_class": "unverified-claim"
+    },
+    "resolution": "build-gate",
+    "priority": 2,
+    "why": "a check exists but covers a narrower property than the claim; widen under a gate"
+  },
+  {
+    "id": "V-UNEXER",
+    "if": {
+      "uncertainty_class": "unexercised-path"
+    },
+    "resolution": "build-gate",
+    "priority": 2,
+    "why": "built but never fired; promotions and probes are build work under the successor's gates"
+  },
+  {
+    "id": "V-CATCHALL",
+    "if": {},
+    "resolution": "ESCALATE",
+    "priority": 1,
+    "why": "no policy row covers this; the operator words it before any bin swallows it"
+  }
+]
