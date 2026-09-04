@@ -157,7 +157,7 @@ GR-082	open-question	STRESS-1 zero-challenge round means nine findings survived 
 GR-083	open-question	HARNESS-SPEC limits: mktemp-root interaction designed not demonstrated; 18-dir walk-up snapshot rots silently; nothing proves a model produces good findings under the machinery	docs/research/HARNESS-SPEC.md:182-190	OPEN	no	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-084	open-question	INDEX-1 push rejection cause unexplained; recorded	Plan.md:548	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
 GR-085	open-question	oh-my-claudecode platform fact V?: agent-teams flag vs the dispatch law; registered for whoever next touches EX-05	docs/research/S6-oh-my-claudecode.md:14	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
-GR-086	open-question	gastown NDI nondeterministic idempotence: a philosophy this build has no name for; recorded	docs/research/S6-gastown.md:11	OPEN	no	unread-source	CENSUS	GAP-REGISTER-1
+GR-086	open-question	gastown NDI nondeterministic idempotence: a philosophy this build has no name for; recorded	docs/research/S6-gastown.md:11	RESOLVED:DIVE-W1-GA-1	no	unread-source	CENSUS	GAP-REGISTER-1
 GR-087	open-question	MATRIX-AI 22 of 51 items BLOCKED-HC by law; builds only under future gates	docs/research/MATRIX-AI-1.md:7-11	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-088	portability	early-exit consumer needles (second PORTABILITY bullet) remain prose-covered pending an instance	docs/PORTABILITY.md:55-65	OPEN	no	unverified-claim	CENSUS	GAP-REGISTER-1
 GR-089	portability	operator BSD run on the lite suite named not claimed; the one step only the Mac completes	docs/PORTABILITY.md:62-63	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
@@ -216,6 +216,7 @@ GR-135	verification-gap	no dated suite-run attestation exists - when a control l
 GR-129	2026-09-03	OPEN>RESOLVED:GAP-REGISTER-1	GAP-REGISTER-1
 GR-130	2026-09-03	OPEN>RESOLVED:GAP-REGISTER-1	GAP-REGISTER-1
 GR-077	2026-09-03	OPEN>RESOLVED:DIVE-W1-OR-1	DIVE-W1-OR-1
+GR-086	2026-09-03	OPEN>RESOLVED:DIVE-W1-GA-1	DIVE-W1-GA-1
 ```
 
 ## Weakest claims, flagged

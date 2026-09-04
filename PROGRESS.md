@@ -1380,3 +1380,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T03:13:49Z] DIVE-W1-RU-1 executed — wave 2/16+, outcome 2 (prediction held)
 - **State:** convergent landing SUITE-ATTEST-1 (orca+ruflo takes); signature-theater REJECT recorded; queue unchanged.
 - **Next action:** record commit (floor 91); then `APPROVE DIVE-W1-GA-1`.
+
+## [VP|2026-09-04T03:21:15Z] DIVE-W1-GA-1 executed — wave 3/16+, outcome 2 (prediction held, 3-for-3)
+- **State:** corpus-redive lane complete (3,2,2); STALL-VOCAB landing queued; NDI declined a name by decision.
+- **Next action:** record commit (floor 92); then `APPROVE DIVE-W1-EK-1` opens the web lane.

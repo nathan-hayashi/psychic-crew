@@ -70,7 +70,7 @@ id): `APPROVE DIVE-W1-<id>` — e.g. `APPROVE DIVE-W1-OR-1`.
 # SOURCE-MAP v1
 OR-1	corpus-redive	orca	What does orca reliability-gate VALIDATOR reject that our registry accepts - and what do its lockfile-declared transitive dependencies reveal that the survey could not?	GR-066,GR-077	TAKE-MANY	L	DIVED	3	DIVE-W1-OR-1
 RU-1	corpus-redive	ruflo	What exactly would a parent-side temporal-bisect layer need from ruflo verification history design - and what does their implementation get wrong that ours must not?	GR-042	TAKE-FEW	M	DIVED	2	DIVE-W1-RU-1
-GA-1	corpus-redive	gastown	What is the minimal liveness/stall vocabulary this estate could adopt from gastown three-store design without adopting propulsion - and does NDI deserve a name here?	GR-041,GR-086	TAKE-FEW	M	QUEUED	-	-
+GA-1	corpus-redive	gastown	What is the minimal liveness/stall vocabulary this estate could adopt from gastown three-store design without adopting propulsion - and does NDI deserve a name here?	GR-041,GR-086	TAKE-FEW	M	DIVED	2	DIVE-W1-GA-1
 EK-1	web	rsch2-ekn-sweep	Which of the roughly thirty Ekn-flagged ecosystem rows and six PARK revisit conditions have materially changed since 2026-08-26 - dated re-verification, promotion-eligibility only?	GR-058,GR-078,GR-113	TAKE-ZERO	M	QUEUED	-	-
 AT-1	web	agent-teams-flag	Does the agent-teams environment flag exist in current Claude Code documentation, and does its semantics touch the EX-05 dispatch law?	GR-085	TAKE-ZERO	S	QUEUED	-	-
 HC-1	web	platform-currency	Have the platform facts this estate depends on drifted: hook-event set, PreCompact/PostCompact semantics (WORKAROUND-01 removal condition), model fallback behavior, the 1M-context variant (OQ-2), Team-plan content-endpoint coverage (SIDE-5)?	GR-062,GR-080,GR-093,GR-095	TAKE-FEW	M	QUEUED	-	-
