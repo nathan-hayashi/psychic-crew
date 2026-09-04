@@ -62,3 +62,9 @@ law, this queues as a proposal, not a build.
 - **Rejected:** nothing — the SDK vocabulary is a superset, not a disagreement.
 
 **Question discharged.** (Census flips QUEUED → DIVED; this document is the standing record.)
+
+## TM-FENCE-1 currency note (2026-09-04, dated append)
+
+The awaiting-an-operator-declared-gate language above is DISCHARGED history: the three hook events priced here (SubagentStop, UserPromptSubmit, PermissionRequest) shipped
+at HOOK-1 (2026-09-02, the register program). The prose above stays as the dated record of
+the dive that priced it; this note is the pointer forward.

@@ -2277,6 +2277,36 @@ RGEOF
     || no "PROMOTE-1 cut leaked history"
   rm -rf "$pm_t"
 
+
+  # TM-FENCE-1 — the threat model's machine mirror bound three ways; the corrections needled.
+  echo "== TM-FENCE-1 — the residual record as data, corrections dated in place =="
+  tmf=$(awk '/^# THREAT-RESIDUALS v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/security/threat-model.md)
+  tmfn=$(printf '%s\n' "$tmf" | grep -c .); case "$tmfn" in ''|*[!0-9]*) tmfn=0 ;; esac
+  [ "$tmfn" = 12 ] && ok "TM-FENCE-1 the mirror holds 12 rows" || no "TM-FENCE-1 mirror rows: $tmfn"
+  tmfb=$(printf '%s\n' "$tmf" | awk -F'\t' 'NF!=2{c++} END{print c+0}')
+  [ "$tmfb" = 0 ] && ok "TM-FENCE-1 mirror rows are 2 fields (number, surface slug)" || no "TM-FENCE-1 $tmfb malformed"
+  tm_tab=$(grep -oE '^\| [0-9]+ \|' docs/security/threat-model.md | tr -dc '0-9\n' | sort -n | tr '\n' ' ')
+  tm_fen=$(printf '%s\n' "$tmf" | cut -f1 | sort -n | tr '\n' ' ')
+  tm_reg=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | cut -f8 | grep '^TM-' | sed 's/^TM-//' | sort -n | tr '\n' ' ')
+  { [ "$tm_tab" = "$tm_fen" ] && [ "$tm_fen" = "$tm_reg" ]; } \
+    && ok "TM-FENCE-1 three-way set-equality: prose table == mirror fence == register TM tags (the consumer became a fence, no prose changed)" \
+    || no "TM-FENCE-1 three-way divergence: table[$tm_tab] fence[$tm_fen] register[$tm_reg]"
+  tmp2=$(mktemp)
+  { printf '%s\n' "$tmf"; printf '13\tphantom-surface\n'; } > "$tmp2"
+  tmpf=$(cut -f1 "$tmp2" | sort -n | tr '\n' ' ')
+  [ "$tmpf" != "$tm_tab" ] && ok "TM-FENCE-1 control fires: a phantom mirror row breaks the equality" \
+    || no "TM-FENCE-1 mirror control DID NOT fire"
+  rm -f "$tmp2"
+  grep -qF 'ADJUDICATED INTENTIONAL' scripts/check-envelope.sh \
+    && ok "TM-FENCE-1 the enum divergence is adjudicated where the checker lives (V? is prose, not an evidence class)" \
+    || no "TM-FENCE-1 adjudication missing"
+  grep -qF "the meter was right, the ledger lied" Plan.md 2>/dev/null || grep -qiF 'the meter was right, the ledger lied' Plan.md \
+    && ok "TM-FENCE-1 the registry-figure correction is appended beside the append-only original" \
+    || no "TM-FENCE-1 Plan correction missing"
+  { grep -qF 'TM-FENCE-1 currency note' docs/research/CORPUS-SDKPY.md && grep -qF 'TM-FENCE-1 currency note' docs/research/CORPUS-LANGGRAPH.md; } \
+    && ok "TM-FENCE-1 both stale awaiting-prose docs carry their dated discharge pointers" \
+    || no "TM-FENCE-1 currency notes missing"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

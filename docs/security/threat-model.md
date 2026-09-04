@@ -76,3 +76,25 @@ any network-reaching lane; or a second operator. Until then the dominant risk st
 evidence says it is: **not exfiltration, but a control that reports green while checking nothing** —
 which is why this build's own registries record eleven instances of that class and this document
 names five more as live residuals.
+
+## Machine mirror (TM-FENCE-1, 2026-09-04 — dated appendix; the prose table above stays canonical)
+
+The twelve surface rows, as data. The suite binds this fence to the table's own row numbers
+and to the gap register's TM tags, three ways — the consumer that arrived at GAP-REGISTER-1
+became a fence without one prose word above changing.
+
+```text
+# THREAT-RESIDUALS v1
+1	gate-ordering
+2	model-policy
+3	secrets-on-disk
+4	log-ledger-redaction
+5	pack-document-intake
+6	untrusted-document-content
+7	map-tree-correlation
+8	diagram-spec-truth
+9	shell-write-path-defects
+10	cross-release-integrity
+11	corpus-reference-material
+12	publication-to-public-remote
+```

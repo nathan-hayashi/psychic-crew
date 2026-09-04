@@ -65,3 +65,9 @@ its own validate-* against shared laws); no arm lands.
   a build whose every phase crosses a human gate.
 
 **Question discharged.** (Census flips QUEUED → DIVED; this document is the standing record.)
+
+## TM-FENCE-1 currency note (2026-09-04, dated append)
+
+The awaiting-an-operator-declared-gate language above is DISCHARGED history: the seen-cursor candidate recorded here shipped
+at HOOK-1 (2026-09-02, the register program). The prose above stays as the dated record of
+the dive that priced it; this note is the pointer forward.

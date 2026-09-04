@@ -2,6 +2,11 @@
 # check-envelope.sh — TEI-0's standalone checker: the envelope schema and the graph pilot,
 # validated with jq alone (no validator dependency — HC-5). Fixtures are embedded and planted
 # into mktemp at run time; controls are proven to fire every run.
+# TM-FENCE-1 adjudication (2026-09-04): the evidence enum here is ["E","I","S"] while the plan
+# grammar adds [V?]. ADJUDICATED INTENTIONAL, not drift: V? is a PROSE staleness marker
+# (verify-before-reliance), never an evidence class an envelope claim may carry — a claim has
+# evidence or it does not. The schema is correct; the grammar governs prose; the ambiguity is
+# resolved by this decision, recorded at the gate.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 P=0; F=0

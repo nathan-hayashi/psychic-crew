@@ -67,3 +67,4 @@ entry for it.
 - [STALL-VOCAB-1](STALL-VOCAB-1.md) — words for a hung agent: two planes, five classes, the operator as watchdog.
 - [COMM-HARDEN-1](COMM-HARDEN-1.md) — four one-liners, one word: the comms surface goes mechanical.
 - [PROMOTE-1](PROMOTE-1.md) — promote what the evidence supports; re-affirm the rest with reasons.
+- [TM-FENCE-1](TM-FENCE-1.md) — the last prose register gets its mirror; three hallucinations get their corrections.
