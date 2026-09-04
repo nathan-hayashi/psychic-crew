@@ -123,3 +123,7 @@ THE REGISTER PROGRAM COMPLETE (10/10) at 2026-09-03T01:44:15Z: parent 09c8574, f
 ## Vector program (2026-09-04T04:38:26Z)
 
 THE VECTOR PROGRAM COMPLETE: 238 tracked, floor 97, crew 348/0, matrices 91/0/18, register 137 rows (queue a proven pure function), wave 6 dives 6-for-6 calibration, closure 131 rows both-ways by arm. Successor program ratified at SYNTH-1 w/ six pre-declared tokens (SUITE-ATTEST-1 the headline). Estate-only comms ruling + COMM-AUDIT F1-F3 + the agent-teams pin await COMM-HARDEN-1's operator word.
+
+## Successor wave (2026-09-04T16:37:05Z)
+
+SUCCESSOR WAVE COMPLETE 6/6 (floor 103, crew 379/0, tracked 238): attest live (6 rows; BSD = one Darwin row), stall vocabulary + announce plane, comms mechanical (zero non-estate remotes; teams pinned), TM mirrored 3-way, calibration standing. Closure 12/12 fulfilled-verified. Menu: 8 drops, TEI-2..4, BSD cert, PACK-2, signing, next wave.
