@@ -33,3 +33,12 @@ enablement-at-the-token shape); an empty fence is legal exactly until then, and 
 announces which state it sees. `[I]` Section identity rides the crew suite's own `== X ==`
 headers (the registry's extraction); a renamed section reads as vanish+birth — the
 regressions query will say so, and the rename's gate owns the explanation.
+
+## Boundary note (2026-09-04, STALL-VOCAB-1)
+
+The regressions query's first live catch — the SUITE-ATTEST section "dropping" 22 to 10
+between rows one and two — is a SECTION-BOUNDARY REATTRIBUTION, not lost arms: before
+STALL-VOCAB-1 existed, the canary/R-SD tail lines had no header of their own and were
+attributed to the attest section; the new section's header now claims them. Total crew GREW
+344 to 357; no assertion vanished. This is the header's own warned class (a structural change
+reads as vanish+birth) and the tool surfacing it is the tool working.

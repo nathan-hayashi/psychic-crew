@@ -101,6 +101,7 @@ case "${1:-run}" in
       prev_secs="$sec"; prev_head="$h1"
     done <<<"$(hist_rows)"
     [ "$found" = 0 ] && echo "regressions: none across $(hist_rows | grep -c .) attestation(s)"
+    exit 0  # a QUERY reports; it never fails on what it finds (the third chain-death taught this)
     ;;
   *)
     echo "usage: attest.sh [run|list|summary|timeline --section S|regressions]" >&2; exit 2 ;;

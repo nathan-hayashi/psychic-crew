@@ -1416,3 +1416,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [SP|2026-09-04T14:33:39Z] STALL-VOCAB-1 built + stamped — successor 2/6
 - **Task:** two-plane law + 5-class fence + announce sweep + 3 fixture controls; golden untouched.
 - **Next action:** gate commit -> record (floor 99) -> attest -> coda w/ flip.
+
+## [SP|2026-09-04T14:52:17Z] STALL-VOCAB-1 coda delivered — flip landed; the query's first catch explained
+- **State:** i_stall resolved-fulfilled · boundary artifact owned · regressions-exits-0 law · floor 99.
+- **Next action:** operator's word — COMM-HARDEN-1 / PROMOTE-1 / TM-FENCE-1 / CALIB-1, or drops.

@@ -112,7 +112,7 @@ GR-037	verification-gap	publication-fence alternation is enumerative not structu
 GR-038	verification-gap	check-plan-corrections executes the metrics generator so verification rewrites a tracked file and stales the CR-006 fence; registered H2a, redesign needs its own gate	GATES.md:27	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-039	verification-gap	the section-4.3 map covers docs/audit/ only; two docs/ files sit outside any mapped path (the C-26 shape)	GATES.md:25	OPEN	no	unverified-claim	CENSUS	GAP-REGISTER-1
 GR-040	verification-gap	CR-033 line-number citations stale by design after each batch; forward-looking vs historical split is the recorded reframing	GATES.md:17	OPEN	no	accepted-limit	CENSUS	GAP-REGISTER-1
-GR-041	verification-gap	M1 stall detection enforced by nothing, zero assertions; no answer for a hung agent	docs/audit/DECISION_MATRICES.md:30	OPEN	no	unverified-claim	CENSUS	GAP-REGISTER-1
+GR-041	verification-gap	M1 stall detection enforced by nothing, zero assertions; no answer for a hung agent	docs/audit/DECISION_MATRICES.md:30	RESOLVED:STALL-VOCAB-1	no	unverified-claim	CENSUS	GAP-REGISTER-1
 GR-042	verification-gap	M1 temporal bisect of controls enforced by nothing; cannot answer when a control stopped working; lite carries layers 2-3, parent does not	docs/audit/DECISION_MATRICES.md:31	RESOLVED:SUITE-ATTEST-1	no	unverified-claim	CENSUS	GAP-REGISTER-1
 GR-043	verification-gap	HC-6 interpretation locks are prose readings with nothing to bind; accepted	docs/audit/DECISION_MATRICES.md:24	OPEN	no	accepted-limit	CENSUS	GAP-REGISTER-1
 GR-044	verification-gap	the 30-line reference cap is flag-only; promotion to deny waits on evidence of abuse	docs/audit/DECISION_MATRICES.md:29	OPEN	partial	unexercised-path	CENSUS	GAP-REGISTER-1
@@ -223,6 +223,7 @@ GR-078	2026-09-03	OPEN>RESOLVED:DIVE-W1-EK-1	DIVE-W1-EK-1
 GR-085	2026-09-03	OPEN>RESOLVED:DIVE-W1-AT-1	DIVE-W1-AT-1
 GR-135	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
 GR-042	2026-09-04	OPEN>RESOLVED:SUITE-ATTEST-1	SUITE-ATTEST-1
+GR-041	2026-09-04	OPEN>RESOLVED:STALL-VOCAB-1	STALL-VOCAB-1
 ```
 
 ## Weakest claims, flagged

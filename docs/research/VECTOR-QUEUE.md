@@ -4,7 +4,7 @@
 It is a pure function of (GAP-REGISTER OPEN rows, config/vector-rules.json) — no timestamp, no
 trail, no model. The suite re-derives it every run and byte-diffs this committed copy; if that
 arm ever reds, run the command above and re-verify — the queue is repaired by derivation, never
-by hand. Rules provenance: sha256 `3716d1b9d0dfbba81d3acc20644b6847cd3c4f4e66d4a296892f36f4c0556f30` (129 OPEN rows routed).
+by hand. Rules provenance: sha256 `3716d1b9d0dfbba81d3acc20644b6847cd3c4f4e66d4a296892f36f4c0556f30` (128 OPEN rows routed).
 
 Routing policy prose lives beside the rules ids in the fence below and in
 config/vector-rules.json's own why fields; the mapping lives ONLY there — this queue never
@@ -19,7 +19,6 @@ GR-005	build-gate	1	V-UNVER-NONE
 GR-008	build-gate	1	V-UNVER-NONE
 GR-009	build-gate	1	V-UNVER-NONE
 GR-039	build-gate	1	V-UNVER-NONE
-GR-041	build-gate	1	V-UNVER-NONE
 GR-066	research-dive	1	V-UNREAD
 GR-068	research-dive	1	V-UNREAD
 GR-081	research-dive	1	V-UNREAD
@@ -150,7 +149,7 @@ GR-128	accepted-limit	3	V-ACCEPTED
 | resolution | rows |
 |---|---|
 | accepted-limit | 48 |
-| build-gate | 46 |
+| build-gate | 45 |
 | named-wake | 8 |
 | operator-word | 15 |
 | research-dive | 5 |
