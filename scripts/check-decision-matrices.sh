@@ -154,6 +154,7 @@ else
     case "${cdis:-}" in
       CORPUS-ZEROSHOT|CORPUS-OPENHANDS|CORPUS-CONDUCTOR|CORPUS-SDKPY|CORPUS-TAKT|CORPUS-LANGGRAPH|CORPUS-AGENTFW|CORPUS-DELTA|CORPUS-0|RSCH-4|F6|PROHIBITED-BY-LAW) : ;;
       CORPUS-BABYSITTER-1+CORPUS-BABYSITTER-2) : ;;
+      DIVE-W1-[A-Za-z0-9-]*) : ;;  # SOURCE-MAP-1: wave-2 rows added at drop arrival discharge against dive gates
       *) covbad="$covbad [$cnm:$cdis]" ;;
     esac
   done <<COVEOF
@@ -514,6 +515,124 @@ else
   [ "$vqpc" -ge 1 ] && pass "control fires: a planted off-vocabulary queue row is seen by the legality scan" \
     || fail "queue control DID NOT fire"
   rm -f "$vqp"
+fi
+
+echo "== I. SOURCE-MAP — the rabbit-hole register and the wave's loop state =="
+# The wave's single home for loop state (the DRY section lands here at close). The generic dive
+# validator below makes every future dive doc cost ZERO new arms.
+SM="docs/research/SOURCE-MAP-1.md"
+if [ ! -f "$SM" ]; then
+  fail "source map missing: $SM"
+else
+  smt=$(awk '/^# SOURCE-MAP v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$SM")
+  smn=$(printf '%s\n' "$smt" | grep -c .); case "$smn" in ''|*[!0-9]*) smn=0 ;; esac
+  [ "$smn" -ge 10 ] && pass "map vacuity: $smn source rows" || fail "map vacuous: $smn"
+  smb=$(printf '%s\n' "$smt" | awk -F'\t' 'NF!=10{c++} END{print c+0}')
+  [ "$smb" = 0 ] && pass "every row is exactly 10 fields (outcome born '-', constant NF)" || fail "$smb malformed row(s)"
+  sml=$(printf '%s\n' "$smt" | cut -f2 | grep -vcE '^(web|corpus-redive|drop-request)$')
+  case "$sml" in ''|*[!0-9]*) sml=0 ;; esac
+  [ "$sml" = 0 ] && pass "lane vocabulary legal" || fail "$sml off-vocabulary lane(s)"
+  sms=$(printf '%s\n' "$smt" | cut -f8 | grep -vcE '^(QUEUED|DIVED|REQUESTED|ABORTED|UNFILLED-AT-DRY|PARKED-DRY|DECLINED)$')
+  case "$sms" in ''|*[!0-9]*) sms=0 ;; esac
+  [ "$sms" = 0 ] && pass "status vocabulary legal (seven wave states)" || fail "$sms off-vocabulary status(es)"
+  smy=$(printf '%s\n' "$smt" | cut -f6 | grep -vcE '^(TAKE-MANY|TAKE-FEW|TAKE-ZERO)$')
+  case "$smy" in ''|*[!0-9]*) smy=0 ;; esac
+  [ "$smy" = 0 ] && pass "yield-prediction vocabulary legal (the calibration column)" || fail "$smy off-vocabulary yield(s)"
+  smq=$(printf '%s\n' "$smt" | awk -F'\t' 'length($4)<20{c++} END{print c+0}')
+  [ "$smq" = 0 ] && pass "every source carries a substantive pre-named question AT BIRTH (M4 before any reading)" \
+    || fail "$smq row(s) with an empty or trivial question"
+  smcen=$(printf '%s\n' "$CENSUS" | cut -f1 | sort)
+  smlb=""
+  while IFS="$(printf '\t')" read -r _i lane src _rest; do
+    [ "$lane" = "corpus-redive" ] || continue
+    grep -qxF "$src" <<<"$smcen" || smlb="$smlb [$src]"
+  done <<SMEOF
+$smt
+SMEOF
+  [ -z "$smlb" ] && pass "lane-b sources are census names, subset held (the lockfile detail lives in the question)" \
+    || fail "lane-b source(s) not in the census:$smlb"
+  smpro=$(printf '%s\n' "$smt" | grep -ci 'automation-ecosystem')
+  case "$smpro" in ''|*[!0-9]*) smpro=0 ;; esac
+  [ "$smpro" = 0 ] && pass "the PROHIBITED name appears in no source row (the bar is machine-visible here too)" \
+    || fail "PROHIBITED name in the map: $smpro row(s)"
+  gropen2=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | awk -F'\t' '$5=="OPEN"{print $1}' | sort)
+  smbadlink=""
+  for rl in $(printf '%s\n' "$smt" | cut -f5 | tr ',' '\n' | sort -u); do
+    [ -n "$rl" ] || continue
+    grep -qxF "$rl" <<<"$gropen2" || smbadlink="$smbadlink [$rl]"
+  done
+  [ -z "$smbadlink" ] && pass "every register link resolves to an OPEN row" || fail "dead register link(s):$smbadlink"
+  smdem=""
+  for did in $(awk '/^# VECTOR-QUEUE v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/VECTOR-QUEUE.md | awk -F'\t' '$2=="research-dive"||$2=="web-verify"{print $1}'); do
+    smhit=$(printf '%s\n' "$smt" | cut -f5 | tr ',' '\n' | grep -cxF "$did")
+    case "$smhit" in ''|*[!0-9]*) smhit=0 ;; esac
+    [ "$smhit" -ge 1 ] || smdem="$smdem [$did]"
+  done
+  [ -z "$smdem" ] && pass "demand coverage: every research-dive and web-verify vector is claimed by at least one source" \
+    || fail "unclaimed demand vector(s):$smdem"
+  smoc=$(printf '%s\n' "$smt" | awk -F'\t' '($8=="QUEUED"||$8=="REQUESTED") && $9!="-"{c++} END{print c+0}')
+  [ "$smoc" = 0 ] && pass "outcome is '-' exactly while a row is QUEUED/REQUESTED (filled only by a dive)" \
+    || fail "$smoc undived row(s) carrying an outcome"
+  smdrop=""
+  while IFS="$(printf '\t')" read -r _i2 lane2 src2 _rest2; do
+    [ "$lane2" = "drop-request" ] || continue
+    case "$src2" in *-main) : ;; *) smdrop="$smdrop [$src2]" ;; esac
+  done <<SMEOF2
+$smt
+SMEOF2
+  [ -z "$smdrop" ] && pass "every drop-request names its required directory form (<name>-main, the .gitignore glob)" \
+    || fail "drop row(s) off the naming law:$smdrop"
+  smunig=""
+  for d in */; do
+    dn="${d%/}"
+    git check-ignore -q "$d" 2>/dev/null && continue
+    git ls-files --error-unmatch "$dn" >/dev/null 2>&1 && continue
+    ls_t=$(git ls-files "$dn" | head -1)
+    [ -n "$ls_t" ] && continue
+    smunig="$smunig [$dn]"
+  done
+  [ -z "$smunig" ] && pass "no unignored, untracked directory at the root (the drop arrival surface is clean)" \
+    || fail "unignored untracked root dir(s):$smunig"
+  dvn=$(ls docs/research/DIVE-W1-*.md 2>/dev/null | grep -vc 'survey' )
+  case "$dvn" in ''|*[!0-9]*) dvn=0 ;; esac
+  smdived=$(printf '%s\n' "$smt" | awk -F'\t' '$8=="DIVED"' | grep -c .)
+  [ "$dvn" = "$smdived" ] && pass "dive docs on disk ($dvn) == DIVED rows ($smdived), both directions (0==0 legal at birth)" \
+    || fail "dive-doc/DIVED divergence: $dvn docs vs $smdived rows"
+  for dvf in docs/research/DIVE-W1-*.md; do
+    [ -e "$dvf" ] || continue
+    case "$dvf" in *survey*) continue ;; esac
+    dvid=$(basename "$dvf" .md | sed 's/^DIVE-W1-//')
+    dvt=$(awk -v id="$dvid" 'index($0, "# DIVE-"id"-VERDICTS v1"){f=1;next} f&&/^```/{exit} f&&NF' "$dvf")
+    dvc=$(printf '%s\n' "$dvt" | grep -c .); case "$dvc" in ''|*[!0-9]*) dvc=0 ;; esac
+    [ "$dvc" -ge 1 ] || { fail "dive $dvid: verdict fence missing or empty"; continue; }
+    dvb=$(printf '%s\n' "$dvt" | awk -F'\t' 'NF!=5{c++} END{print c+0}')
+    [ "$dvb" = 0 ] || fail "dive $dvid: $dvb malformed verdict row(s)"
+    dvv=$(printf '%s\n' "$dvt" | cut -f3 | grep -vcE '^(TAKE-PATTERN|MODULATE-OURS|VALIDATE-AGAINST|REJECT)$')
+    case "$dvv" in ''|*[!0-9]*) dvv=0 ;; esac
+    [ "$dvv" = 0 ] || fail "dive $dvid: $dvv off-vocabulary verdict(s)"
+    dvtc=$(printf '%s\n' "$dvt" | awk -F'\t' '$3=="TAKE-PATTERN"||$3=="MODULATE-OURS"' | grep -c .)
+    grep -q '^## Landing shapes' "$dvf" || [ "$dvtc" = 0 ] || fail "dive $dvid: TAKE-class rows but no landing-shape table"
+    grep -q '^## Weakest claims' "$dvf" || fail "dive $dvid: weakest-claims section missing"
+    dlids=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/research/GAP-REGISTER.md | cut -f1)
+    for dl in $(printf '%s\n' "$dvt" | cut -f4 | tr ',' '\n' | sort -u); do
+      [ -n "$dl" ] && [ "$dl" != "-" ] || continue
+      grep -qxF "$dl" <<<"$dlids" || fail "dive $dvid: register link $dl does not resolve"
+    done
+  done
+  pass "generic dive validator swept every dive doc on disk (per-dive marginal suite cost: zero arms)"
+  smfix=$(mktemp -d)
+  { echo '# fixture dive (planted)'; echo '```text'; echo '# DIVE-ZZ-VERDICTS v1';
+    printf '1\tbogus-mech\tNOT-A-VERDICT\tGR-001\tx\n'; echo '```'; } > "$smfix/DIVE-W1-ZZ.md"
+  fxt=$(awk 'index($0, "# DIVE-ZZ-VERDICTS v1"){f=1;next} f&&/^```/{exit} f&&NF' "$smfix/DIVE-W1-ZZ.md")
+  fxv=$(printf '%s\n' "$fxt" | cut -f3 | grep -vcE '^(TAKE-PATTERN|MODULATE-OURS|VALIDATE-AGAINST|REJECT)$')
+  case "$fxv" in ''|*[!0-9]*) fxv=0 ;; esac
+  [ "$fxv" -ge 1 ] && pass "control fires: a planted off-vocabulary dive verdict is rejected by the validator logic" \
+    || fail "dive-validator control DID NOT fire"
+  fxw=$(grep -c '^## Weakest claims' "$smfix/DIVE-W1-ZZ.md")
+  case "$fxw" in ''|*[!0-9]*) fxw=0 ;; esac
+  [ "$fxw" = 0 ] && pass "control fires: the planted fixture is also seen missing its weakest-claims section" \
+    || fail "dive-validator section control DID NOT fire"
+  rm -rf "$smfix"
 fi
 
 printf '\n== check-decision-matrices: %s PASS / %s FAIL / %s NOTED (notes are dated divergences, kept per CR-033) ==\n' "$P" "$F" "$N"
