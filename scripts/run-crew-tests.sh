@@ -2250,6 +2250,33 @@ RGEOF
     || no "COMM-HARDEN-1 probe blind (gen=$ch_p1 pin=$ch_p2)"
   rm -f "$ch_t"
 
+
+  # PROMOTE-1 — the promoted C-25b plane proven able to fire (rule 6: the exact construct).
+  echo "== PROMOTE-1 — the integrity plane promoted, the observational planes re-affirmed =="
+  grep -qF 'C25B_PROMO=' scripts/validate-crew.sh \
+    && ok "PROMOTE-1 the hard plane exists with its own cut (zero grandfathers by timing)" \
+    || no "PROMOTE-1 promo constant missing"
+  grep -qF 'C-25b PROMOTED plane' scripts/validate-crew.sh \
+    && ok "PROMOTE-1 the FAIL branch is wired (post-promo uncovered specialist death reds)" \
+    || no "PROMOTE-1 fail branch missing"
+  grep -qF 'announce-only BY OPERATOR READING at PROMOTE-1' scripts/validate-crew.sh \
+    && ok "PROMOTE-1 the pairing plane re-affirmed announce WITH its reason in the arm" \
+    || no "PROMOTE-1 re-affirmation missing"
+  pm_t=$(mktemp -d)
+  printf '{"ts":"2026-09-05T00:00:00Z","agent_id":"fx-dead-spec","agent_type":"fixer"}\n' > "$pm_t/stops.jsonl"
+  pm_promo='2026-09-04T15:20:00Z'
+  pm_spec='security-reviewer|quality-reviewer|fixer|test-runner|integration-runner'
+  pm_stops=$(jq -r --arg s "$pm_spec" --arg p "$pm_promo" 'select((.ts // "") > $p)
+    | select((.agent_id // "") != "") | select((.agent_type // "") | test($s)) | .agent_id' "$pm_t/stops.jsonl" | sort -u)
+  pm_bad=$(comm -23 <(printf '%s\n' "$pm_stops") <(printf '%s\n' "") | sed '/^$/d' | tr '\n' ' ')
+  [ -n "${pm_bad// }" ] && ok "PROMOTE-1 control fires: a planted post-promo specialist death with empty coverage is flagged ($pm_bad)" \
+    || no "PROMOTE-1 promoted-plane control DID NOT fire"
+  pm_pre=$(jq -r --arg s "$pm_spec" --arg p "2026-09-06T00:00:00Z" 'select((.ts // "") > $p) | .agent_id' "$pm_t/stops.jsonl" | grep -c .)
+  case "$pm_pre" in ''|*[!0-9]*) pm_pre=0 ;; esac
+  [ "$pm_pre" = 0 ] && ok "PROMOTE-1 the cut holds: the same death BEFORE a later cut is not in the hard set (history stays announced)" \
+    || no "PROMOTE-1 cut leaked history"
+  rm -rf "$pm_t"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.

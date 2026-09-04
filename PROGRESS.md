@@ -1427,3 +1427,6 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [SP|2026-09-04T15:10:03Z] COMM-HARDEN-1 CLOSED — successor 3/6; comms mechanical
 - **State:** 4 flips fulfilled · attest 3 rows · floor 100 · zero non-estate remotes on the machine.
 - **Next action:** operator's word — PROMOTE-1 (43 candidates of evidence wait) / TM-FENCE-1 / CALIB-1, or drops.
+
+## [SP|2026-09-04T16:04:38Z] PROMOTE-1 executed + stamped — successor 4/6; promoted exactly what the evidence supports
+- **Next action:** gate commit -> record (floor 101) -> attest -> coda (flip i_c25b).

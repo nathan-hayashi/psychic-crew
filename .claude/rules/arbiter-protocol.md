@@ -103,3 +103,10 @@ channel-stale	the trail itself is unwritable or unreadable	observation-plane out
 the five classes here are detection REASONS an observer may record about a live dispatch.
 The announce-plane freshness check in validate-crew is this section's first mechanical form —
 born announcing, promoted only at PROMOTE-1 on the operator's reading of its evidence.
+
+PROMOTE-1 (2026-09-04) read the announce planes' first live evidence and ruled: the
+OBSERVATIONAL classes (pairing, stall candidates — 43 historical, largely pre-stop-trail
+asymmetry) stay announce-forever, because killed or long-running agents are legal and an
+integrity plane must never punish liveness; only the INTEGRITY plane promoted (C-25b: a
+post-promo specialist death without arbiter coverage is a hard FAIL, armed with zero
+grandfathers).

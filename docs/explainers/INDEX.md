@@ -66,3 +66,4 @@ entry for it.
 - [SUITE-ATTEST-1](SUITE-ATTEST-1.md) — dated proof-of-run: who proved what, when, on which userland.
 - [STALL-VOCAB-1](STALL-VOCAB-1.md) — words for a hung agent: two planes, five classes, the operator as watchdog.
 - [COMM-HARDEN-1](COMM-HARDEN-1.md) — four one-liners, one word: the comms surface goes mechanical.
+- [PROMOTE-1](PROMOTE-1.md) — promote what the evidence supports; re-affirm the rest with reasons.

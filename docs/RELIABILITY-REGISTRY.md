@@ -15,6 +15,12 @@ implicated in a real defect, that section's rows split to per-assertion at the f
 STANDING COST, stated: every later gate that adds a suite section adds its registry row in the
 same gate — the reverse arm forces it mechanically.
 
+DEMOTION SEMANTICS, stated as policy (PROMOTE-1, 2026-09-04, the orca modulate landing):
+maturity is RE-DERIVED from the section span every run — a `proven` row whose firing-control
+line vanishes auto-demotes to `experimental` on the next run, mechanically, with no ceremony
+and no grandfathering. Ours demotes by re-measurement where orca's demotes by rule; the
+policy was always true and is now written.
+
 ```text
 # RELIABILITY-REGISTRY v1
 f0-scaffold-integrity	the checks this section prints hold as asserted: F0 — scaffold integrity	the section's own ok/no assertions in scripts/run-crew-tests.sh	scripts/run-crew-tests.sh:== F0 — scaffold integrity ==	experimental
@@ -73,4 +79,5 @@ suite-attest-deliberate-proof-of-run-bisect	the checks this section prints hold 
 stall-vocab-two-plane-liveness-vocabulary-bound	the checks this section prints hold as asserted: STALL-VOCAB-1 — two-plane liveness: vocabulary bound, announce logic fixture-proven	the section's own ok/no assertions in scripts/run-crew-tests.sh	scripts/run-crew-tests.sh:== STALL-VOCAB-1 — two-plane liveness: vocabulary bound, announce logic fixture-proven ==	proven
 stall-vocab-announce-plane-freshness-sweep	the checks this section prints hold as asserted: STALL-VOCAB-1 — announce-plane freshness over the dispatch trails (never a FAIL; PROMOTE-1 owns promotion)	the section's own pass/note lines in scripts/validate-crew.sh	scripts/validate-crew.sh:== STALL-VOCAB-1 — announce-plane freshness over the dispatch trails (never a FAIL; PROMOTE-1 owns promotion) ==	proven
 comm-harden-narrowed-grants-and-teams-pin	the checks this section prints hold as asserted: COMM-HARDEN-1 — narrowed gh grants and the teams pin, bound with probes	the section's own ok/no assertions in scripts/run-crew-tests.sh	scripts/run-crew-tests.sh:== COMM-HARDEN-1 — narrowed gh grants and the teams pin, bound with probes ==	proven
+promote-1-integrity-plane-promoted-observational-reaffirmed	the checks this section prints hold as asserted: PROMOTE-1 — the integrity plane promoted, the observational planes re-affirmed	the section's own ok/no assertions in scripts/run-crew-tests.sh	scripts/run-crew-tests.sh:== PROMOTE-1 — the integrity plane promoted, the observational planes re-affirmed ==	proven
 ```

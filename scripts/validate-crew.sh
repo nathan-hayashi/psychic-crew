@@ -380,20 +380,33 @@ if [ -f logs/subagent-starts.jsonl ]; then
 ' "$hkst") <(printf '%s
 ' "$hksp") | sed '/^$/d' | grep -c . || true)
     case "$hkor" in ''|*[!0-9]*) hkor=0 ;; esac
-    pass "HOOK-1 paired lifecycle (announce-only, cutover $HK1_CUT): $hkor post-cut start(s) without a stop"
+    pass "HOOK-1 paired lifecycle (announce-only BY OPERATOR READING at PROMOTE-1: pairing is liveness- and delivery-dependent — killed or backgrounded agents legitimately never stop — so a hard plane would punish normal operation; the count stays evidence): $hkor post-cut start(s) without a stop"
   else
     pass "HOOK-1 paired lifecycle: no stops trail yet — announce-only, nothing to pair (delivery unproven)"
   fi
   hkss=$(jq -r --arg s "$SPEC25" --arg c "$HK1_CUT" 'select((.ts // "") > $c)
            | select((.agent_id // "") != "") | select((.agent_type // "") | test($s)) | .agent_id'          logs/subagent-stops.jsonl 2>/dev/null | sort -u)
+  C25B_PROMO='2026-09-04T15:20:00Z'  # PROMOTE-1: the operator read the evidence (34 stops delivered, 0
+  # post-cut specialist stops = zero grandfathers) and promoted THIS plane. Stops after the promo
+  # timestamp: a specialist death without arbiter coverage is a hard FAIL. History stays announced.
   if [ -z "$hkss" ]; then
-    pass "C-25b (announce-only): no post-cutover specialist stop yet — deaths-side coverage pending delivery"
+    pass "C-25b: no post-cutover specialist stop yet (hard plane armed at $C25B_PROMO with zero grandfathers)"
   else
     hksu=$(comm -23 <(printf '%s
 ' "$hkss") <(printf '%s
 ' "$scov") | sed '/^$/d' | tr '
 ' ' ')
-    pass "C-25b (announce-only, promotion is a named wake): specialist stop(s) without arbiter coverage: ${hksu:-none}"
+    hksp2=$(jq -r --arg s "$SPEC25" --arg p "$C25B_PROMO" 'select((.ts // "") > $p)
+             | select((.agent_id // "") != "") | select((.agent_type // "") | test($s)) | .agent_id' logs/subagent-stops.jsonl 2>/dev/null | sort -u)
+    hkbad=$(comm -23 <(printf '%s
+' "$hksp2") <(printf '%s
+' "$scov") | sed '/^$/d' | tr '
+' ' ')
+    if [ -n "${hkbad// }" ]; then
+      fail "C-25b PROMOTED plane: post-promo specialist stop(s) WITHOUT arbiter coverage: $hkbad"
+    else
+      pass "C-25b promoted plane holds: every post-promo specialist death has arbiter coverage (pre-promo announced: ${hksu:-none})"
+    fi
   fi
 else
   skip "HOOK-1 lifecycle arms: no starts trail (bare clone) — announced"
