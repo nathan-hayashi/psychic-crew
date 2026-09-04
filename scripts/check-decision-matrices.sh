@@ -9,6 +9,8 @@
 #   NOTE  — a dated figure that today's artifacts no longer match. Dated records legitimately
 #           diverge; the reader's hazard is not knowing WHICH rows still describe the present.
 #           Notes are the product, not a defect.
+#   Since GAP-REGISTER-1 (the vector program) the same two planes govern the LIVING registers
+#   this suite hosts (section G onward): FAIL stays structural-only, NOTE stays dated-divergence.
 #
 # Why it exists (H3b, queued since S6, re-homed by R-CH-1): the matrices exist so "a reader can
 # act from them" — their own stated purpose. M6 already answers every one of its rows differently
@@ -178,6 +180,39 @@ COVEOF
   [ "$covp2" != "$cenpair" ] && pass "control fires: a phantom coverage row breaks census agreement" \
     || fail "coverage control DID NOT fire"
   rm -f "$covp"
+  tierbad=$(printf '%s\n' "$cov" | awk -F'\t' '{print $3}' | grep -vE '^(full|full-split|delta|promoted|done|exempt)$' | grep -c .)
+  case "$tierbad" in ''|*[!0-9]*) tierbad=0 ;; esac
+  [ "$tierbad" = 0 ] && pass "tier column vocabulary legal, all rows (GAP-REGISTER-1 closed the unvalidated column)" \
+    || fail "off-vocabulary tier value(s): $tierbad row(s)"
+  arl=$(grep -A1 -E '[0-9]+ full \+' "$COVDOC" | head -2 | tr '\n' ' ')
+  if [ -z "$arl" ]; then
+    fail "the coverage arithmetic line is gone — the tier re-derivation has nothing to bind"
+  else
+    a_f=$(printf '%s' "$arl" | sed -E 's/.*: ([0-9]+) full \+.*/\1/')
+    a_s=$(printf '%s' "$arl" | sed -E 's/.* ([0-9]+) full-split.*/\1/')
+    a_d=$(printf '%s' "$arl" | sed -E 's/.* ([0-9]+) delta.*/\1/')
+    a_p=$(printf '%s' "$arl" | sed -E 's/.* ([0-9]+) promoted.*/\1/')
+    a_n=$(printf '%s' "$arl" | sed -E 's/.* ([0-9]+) done.*/\1/')
+    a_x=$(printf '%s' "$arl" | sed -E 's/.* ([0-9]+) prohibited-exempt.*/\1/')
+    t_f=$(printf '%s\n' "$cov" | awk -F'\t' '$3=="full"' | grep -c .)
+    t_s=$(printf '%s\n' "$cov" | awk -F'\t' '$3=="full-split"' | grep -c .)
+    t_d=$(printf '%s\n' "$cov" | awk -F'\t' '$3=="delta"' | grep -c .)
+    t_p=$(printf '%s\n' "$cov" | awk -F'\t' '$3=="promoted"' | grep -c .)
+    t_n=$(printf '%s\n' "$cov" | awk -F'\t' '$3=="done"' | grep -c .)
+    t_x=$(printf '%s\n' "$cov" | awk -F'\t' '$3=="exempt"' | grep -c .)
+    if [ "$t_f" = "$a_f" ] && [ "$t_s" = "$a_s" ] && [ "$t_d" = "$a_d" ] && [ "$t_p" = "$a_p" ] && [ "$t_n" = "$a_n" ] && [ "$t_x" = "$a_x" ]; then
+      pass "tier arithmetic re-derived: fence counts ($t_f/$t_s/$t_d/$t_p/$t_n/$t_x) == the doc's own roll-up line"
+    else
+      fail "tier arithmetic divergence: fence $t_f/$t_s/$t_d/$t_p/$t_n/$t_x vs prose $a_f/$a_s/$a_d/$a_p/$a_n/$a_x"
+    fi
+  fi
+  tp=$(mktemp)
+  { printf '%s\n' "$cov"; printf 'phantom-tier\tQUEUED\tbogus\tCORPUS-PHANTOM\n'; } > "$tp"
+  tpc=$(awk -F'\t' '{print $3}' "$tp" | grep -vcE '^(full|full-split|delta|promoted|done|exempt)$')
+  case "$tpc" in ''|*[!0-9]*) tpc=0 ;; esac
+  [ "$tpc" -ge 1 ] && pass "control fires: a planted off-vocabulary tier is seen by the legality scan" \
+    || fail "tier control DID NOT fire"
+  rm -f "$tp"
 fi
 
 
@@ -277,6 +312,165 @@ d2c=$(sed 's/#.*//' scripts/run-crew-tests.sh 2>/dev/null | grep -c 'd2cfg')
 case "$d2c" in ''|*[!0-9]*) d2c=0 ;; esac
 [ "$d2c" -ge 2 ] && note "M3's 'well-formed, never true' diagram row is narrower than written: the d2 topology has been bound to settings.json both directions since CR-003 landed — every OTHER diagram still passes on structure alone, exactly as M3 warns" \
                  || fail "the d2 binding logic is gone from the suite — M3's diagram risk row has fully reopened"
+
+
+echo "== G. GAP-REGISTER — the open-items register, both directions =="
+# The living successor of M6's open-items matrix (E above answers a dated record; G binds the
+# register that replaced the scatter). Two planes as declared in the header: FAIL is structural,
+# NOTE is a dated or advisory figure. The register's own header states its honest bound: ~85% of
+# rows are census-authored and unbound by this FAIL plane — the declared-source manifest below is
+# the bound minority, re-extracted live each run.
+GR="docs/research/GAP-REGISTER.md"
+if [ ! -f "$GR" ]; then
+  fail "register missing: $GR — nothing in G can run"
+else
+  grt=$(awk '/^# GAP-REGISTER v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$GR")
+  grn=$(printf '%s\n' "$grt" | grep -c .); case "$grn" in ''|*[!0-9]*) grn=0 ;; esac
+  [ "$grn" -ge 35 ] && pass "vacuity floor: $grn register rows (>=35; completeness is the dated header claim, not this floor)" \
+    || fail "register vacuous: $grn rows"
+  grbad=$(printf '%s\n' "$grt" | awk -F'\t' 'NF!=9{c++} END{print c+0}')
+  [ "$grbad" = 0 ] && pass "every row is exactly 9 tab-separated fields (tab-free prose by construction)" \
+    || fail "$grbad row(s) with wrong field count"
+  grdup=$(printf '%s\n' "$grt" | cut -f1 | sort | uniq -d | tr '\n' ' ')
+  [ -z "$grdup" ] && pass "ids unique" || fail "duplicate id(s): $grdup"
+  gridb=$(printf '%s\n' "$grt" | cut -f1 | grep -vcE '^GR-[0-9]{3}$')
+  case "$gridb" in ''|*[!0-9]*) gridb=0 ;; esac
+  [ "$gridb" = 0 ] && pass "id format GR-nnn holds" || fail "$gridb malformed id(s)"
+  grcb=$(printf '%s\n' "$grt" | cut -f2 | grep -vcE '^(security-residual|dispatch-residual|verification-gap|parked-wake|operator-blocked|open-question|portability|uncertainty-marker|unrecoverable|declined-disclosed|ruling|chronicle|lite|sidekick)$')
+  case "$grcb" in ''|*[!0-9]*) grcb=0 ;; esac
+  [ "$grcb" = 0 ] && pass "class vocabulary legal (14 ratified values)" || fail "$grcb off-vocabulary class value(s)"
+  grdb=$(printf '%s\n' "$grt" | cut -f5 | grep -vcE '^(OPEN|RESOLVED:[A-Za-z0-9-]+|SUPERSEDED:[A-Za-z0-9-]+)$')
+  case "$grdb" in ''|*[!0-9]*) grdb=0 ;; esac
+  [ "$grdb" = 0 ] && pass "disposition shapes legal (current value only; history is the flip log's)" \
+    || fail "$grdb illegal disposition(s)"
+  grmb=$(printf '%s\n' "$grt" | cut -f6 | grep -vcE '^(no|partial|yes)$')
+  case "$grmb" in ''|*[!0-9]*) grmb=0 ;; esac
+  [ "$grmb" = 0 ] && pass "mechanical vocabulary legal" || fail "$grmb off-vocabulary mechanical value(s)"
+  grub=$(printf '%s\n' "$grt" | cut -f7 | grep -vcE '^(unverified-claim|unexercised-path|unread-source|external-drift|operator-blocked|ambiguous-record|accepted-limit)$')
+  case "$grub" in ''|*[!0-9]*) grub=0 ;; esac
+  [ "$grub" = 0 ] && pass "uncertainty-class vocabulary legal (the seven ratified kinds of not-knowing)" \
+    || fail "$grub off-vocabulary uncertainty class(es)"
+  grtb=$(printf '%s\n' "$grt" | cut -f8 | grep -vcE '^(TM-[0-9]+|COMM-F[0-9]|REG-EXP|CORR-PEND|CR-AUD|CENSUS)$')
+  case "$grtb" in ''|*[!0-9]*) grtb=0 ;; esac
+  [ "$grtb" = 0 ] && pass "source-tag vocabulary legal" || fail "$grtb off-vocabulary source tag(s)"
+  grf=$(awk '/^# GAP-FLIPS v1$/{f=1;next} f&&/^```/{exit} f&&NF' "$GR")
+  grfm=""
+  while IFS="$(printf '\t')" read -r gid _rest; do
+    [ -n "${gid:-}" ] || continue
+    fh=$(printf '%s\n' "$grf" | cut -f1 | grep -cxF "$gid")
+    case "$fh" in ''|*[!0-9]*) fh=0 ;; esac
+    [ "$fh" -ge 1 ] || grfm="$grfm [$gid]"
+  done <<GFEOF
+$(printf '%s\n' "$grt" | awk -F'\t' '$5!="OPEN"')
+GFEOF
+  [ -z "$grfm" ] && pass "every non-OPEN row owns at least one flip line (history append-only, never overwritten)" \
+    || fail "non-OPEN row(s) without a flip:$grfm"
+  grfo=""
+  while IFS="$(printf '\t')" read -r fid _r2; do
+    [ -n "${fid:-}" ] || continue
+    rh=$(printf '%s\n' "$grt" | cut -f1 | grep -cxF "$fid")
+    case "$rh" in ''|*[!0-9]*) rh=0 ;; esac
+    [ "$rh" = 1 ] || grfo="$grfo [$fid]"
+  done <<GFEOF2
+$grf
+GFEOF2
+  [ -z "$grfo" ] && pass "every flip line's id resolves to exactly one register row" \
+    || fail "orphaned flip id(s):$grfo"
+  grem=""; grcross=0
+  while IFS="$(printf '\t')" read -r gid _c _s gev _rest3; do
+    [ -n "${gid:-}" ] || continue
+    case "$gev" in
+      lite:*|side:*) grcross=$((grcross+1)) ;;
+      *) gp="${gev%%:*}"
+         [ -e "$gp" ] || grem="$grem [$gid:$gp]" ;;
+    esac
+  done <<GREOF
+$grt
+GREOF
+  [ -z "$grem" ] && pass "forward evidence resolves: every parent-repo evidence path exists on disk ($grcross cross-repo rows announced as prose, never asserted)" \
+    || fail "evidence path(s) missing:$grem"
+  tmn=$(grep -c '^| [0-9]* |' docs/security/threat-model.md 2>/dev/null)
+  case "$tmn" in ''|*[!0-9]*) tmn=0 ;; esac
+  tmset=$(grep -oE '^\| [0-9]+ \|' docs/security/threat-model.md 2>/dev/null | tr -dc '0-9\n' | sort -n | tr '\n' ' ')
+  grtm=$(printf '%s\n' "$grt" | cut -f8 | grep '^TM-' | sed 's/^TM-//' | sort -n | tr '\n' ' ')
+  if [ "$tmn" = 12 ] && [ "$tmset" = "$grtm" ]; then
+    pass "threat-model binding: 12 numbered surface rows extracted live, number-set == register TM tags (the frozen record's first mechanical consumer)"
+  else
+    fail "threat-model binding broken: doc rows $tmn, doc set [$tmset] vs register [$grtm]"
+  fi
+  cml=$(grep '^\[COMM-AUDIT-1|' Plan.md | head -1)
+  cmlab=$(printf '%s' "$cml" | grep -oE 'F[1-9]' | sort -u | tr '\n' ' ')
+  grcm=$(printf '%s\n' "$grt" | cut -f8 | grep '^COMM-F' | sed 's/^COMM-//' | sort -u | tr '\n' ' ')
+  if [ "$cmlab" = "F1 F2 F3 F4 " ] && [ "$cmlab" = "$grcm" ]; then
+    pass "COMM-AUDIT binding: the frozen ledger line carries F1-F4 and the register carries all four (F4 accepted-limit, not dropped)"
+  else
+    fail "COMM-AUDIT binding broken: line [$cmlab] vs register [$grcm]"
+  fi
+  rexp=$(awk '/^# RELIABILITY-REGISTRY v1$/{f=1;next} f&&/^```/{exit} f&&NF' docs/RELIABILITY-REGISTRY.md 2>/dev/null | awk -F'\t' '$5=="experimental"' | grep -c .)
+  case "$rexp" in ''|*[!0-9]*) rexp=0 ;; esac
+  gragg1=$(printf '%s\n' "$grt" | cut -f8 | grep -cxF 'REG-EXP')
+  [ "$rexp" -ge 1 ] && [ "$gragg1" = 1 ] \
+    && { pass "REG-EXP aggregate bound: exactly one row, live subject re-counted"; note "live experimental-maturity sections today: $rexp (the aggregate row's subject, dated by this run)"; } \
+    || fail "REG-EXP aggregate broken: subject count $rexp, rows $gragg1"
+  cpend=$(grep -c 'PENDING' context/plan-corrections.md 2>/dev/null)
+  case "$cpend" in ''|*[!0-9]*) cpend=0 ;; esac
+  gragg2=$(printf '%s\n' "$grt" | cut -f8 | grep -cxF 'CORR-PEND')
+  [ "$gragg2" = 1 ] \
+    && { pass "CORR-PEND aggregate bound: exactly one row"; note "live PENDING mentions today: $cpend (the aggregate row's subject, dated by this run)"; } \
+    || fail "CORR-PEND aggregate rows: $gragg2 (want exactly 1)"
+  gr06=""
+  for f6 in .claude/rules/fallback-protocol.md .claude/agents/arbiter.md .claude/agents/fixer.md .claude/agents/lead-executor.md .claude/agents/lead-planner.md .claude/agents/quality-reviewer.md .claude/agents/security-reviewer.md; do
+    grep -q '0\.6' "$f6" 2>/dev/null || gr06="$gr06 [$f6]"
+  done
+  [ -z "$gr06" ] && pass "0.6 confidence threshold bound: present in all seven ratified sites (the first motivating hole, measured; the calibration ledger stays successor work)" \
+    || fail "0.6 threshold missing from:$gr06"
+  grnh=0
+  for nf in docs/security/threat-model.md docs/security/redteam-1.md docs/PORTABILITY.md; do
+    ev_has=$(printf '%s\n' "$grt" | cut -f4 | grep -cF "$nf")
+    case "$ev_has" in ''|*[!0-9]*) ev_has=0 ;; esac
+    if [ "$ev_has" = 0 ]; then
+      nh=$(grep -ciE 'procedural(,| rather than| not) mechanical|no scanner|recorded, not hidden' "$nf" 2>/dev/null)
+      case "$nh" in ''|*[!0-9]*) nh=0 ;; esac
+      grnh=$((grnh+nh))
+    fi
+  done
+  [ "$grnh" = 0 ] && pass "NOTE-plane scan: every scanned marker file is cited by at least one row's evidence" \
+    || note "NOTE-plane: $grnh marker hit(s) in files no register row cites — advisory, the register may be incomplete there"
+  grp2=$(mktemp)
+  printf 'GR-999\tchronicle\tphantom row for the control\tdocs/NO-SUCH-FILE-gr-probe.md:1\tOPEN\tno\taccepted-limit\tCENSUS\tGAP-REGISTER-1\n' > "$grp2"
+  grpm=""
+  while IFS="$(printf '\t')" read -r gid2 _c2 _s2 gev2 _rest4; do
+    [ -n "${gid2:-}" ] || continue
+    gp2="${gev2%%:*}"
+    [ -e "$gp2" ] || grpm="$grpm [$gid2]"
+  done < "$grp2"
+  [ -n "$grpm" ] && pass "control fires: a planted row with unresolvable evidence is caught by the resolution logic" \
+    || fail "evidence-resolution control DID NOT fire"
+  rm -f "$grp2"
+  wcep=$(git log --diff-filter=A --format=%H -1 -- "$GR" 2>/dev/null)
+  if [ -z "$wcep" ]; then
+    note "WEAKEST-CLAIMS-EPOCH not yet committed (the declared straddle) — the arm arms at the gate commit"
+  else
+    wcm=""; wcn=0
+    for wf in $(git ls-files 'docs/research/*.md'); do
+      wfa=$(git log --diff-filter=A --format=%H -1 -- "$wf" 2>/dev/null)
+      [ -n "$wfa" ] || continue
+      if [ "$wfa" != "$wcep" ] && git merge-base --is-ancestor "$wfa" "$wcep" 2>/dev/null; then
+        continue
+      fi
+      wcn=$((wcn+1))
+      grep -q '^## Weakest claims' "$wf" || wcm="$wcm [$wf]"
+    done
+    [ "$wcn" -ge 1 ] || fail "epoch arm vacuous: zero post-epoch docs (the register itself should be one)"
+    [ -z "$wcm" ] && pass "WEAKEST-CLAIMS-EPOCH holds: all $wcn post-epoch research docs carry the section (pre-epoch docs grandfathered by ancestry)" \
+      || fail "post-epoch doc(s) missing the weakest-claims section:$wcm"
+  fi
+  wcp=$(mktemp)
+  printf '# a post-epoch doc without the section\n\nprose only\n' > "$wcp"
+  grep -q '^## Weakest claims' "$wcp" && fail "epoch control DID NOT fire" \
+    || pass "control fires: a sectionless doc is seen by the epoch grep"
+  rm -f "$wcp"
+fi
 
 printf '\n== check-decision-matrices: %s PASS / %s FAIL / %s NOTED (notes are dated divergences, kept per CR-033) ==\n' "$P" "$F" "$N"
 [ "$F" = 0 ] || exit 1

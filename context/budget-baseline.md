@@ -40,7 +40,7 @@
 | lead-planner       | 2   | 48,935 | 35,550 | 62,320 |
 | test-runner        | 1   | 46,388 | 46,388 | 46,388 |
 
-**verified** — All measured dispatches, all phases: **56 dispatches, 6,862,924 tokens, mean 122,552.**
+**verified** — All measured dispatches, all phases: **60 dispatches, 7,359,839 tokens, mean 122,663.**
 
 ## The baseline a future phase should budget against
 
@@ -92,7 +92,7 @@ using any number: the same source counted by eight agents appears eight times.
 
 ### What it shows
 
-**verified** — 56 dispatches, **6,862,924 tokens** total, mean **122,552** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
+**verified** — 60 dispatches, **7,359,839 tokens** total, mean **122,663** (this sentence is bound to the embedded fence by the suite since CLEANUP-1).
 The red tick is the mean. The spread is the finding: the dearest single dispatch is
 **5.6×** the cheapest, so a per-phase
 budget built on a mean is wrong for both tails.
@@ -115,342 +115,366 @@ the total disagree with `logs/`.
   },
   "data": {
     "values": [
-      {
-        "role": "Explore",
-        "task": "Live-evidence probe dispatch",
-        "tokens": 21373,
-        "duration_ms": 8759
-      },
-      {
-        "role": "lead-planner",
-        "task": "G-F3 demo: lead produces DISPATCH",
-        "tokens": 35550,
-        "duration_ms": 130272
-      },
-      {
-        "role": "arbiter",
-        "task": "F3-D1-dirguide-risk-scan",
-        "tokens": 36568,
-        "duration_ms": 123378
-      },
-      {
-        "role": "test-runner",
-        "task": "F7-B8-tests",
-        "tokens": 46388,
-        "duration_ms": 197102
-      },
-      {
-        "role": "lead-executor",
-        "task": "F7-A5-readme",
-        "tokens": 58187,
-        "duration_ms": 435162
-      },
-      {
-        "role": "general-purpose",
-        "task": "Peer review via /peer-review",
-        "tokens": 61243,
-        "duration_ms": 364965
-      },
-      {
-        "role": "arbiter",
-        "task": "F3-D1-dirguide-risk-scan",
-        "tokens": 62209,
-        "duration_ms": 217105
-      },
-      {
-        "role": "lead-planner",
-        "task": "F7-P1-jml-simulator-plan",
-        "tokens": 62320,
-        "duration_ms": 295737
-      },
-      {
-        "role": "test-runner",
-        "task": "STRESS1-TEST",
-        "tokens": 72701,
-        "duration_ms": 321386
-      },
-      {
-        "role": "Explore",
-        "task": "Survey scaffold/verify patterns",
-        "tokens": 73039,
-        "duration_ms": 124736
-      },
-      {
-        "role": "arbiter",
-        "task": "F3-D1-dirguide-risk-scan",
-        "tokens": 73974,
-        "duration_ms": 464973
-      },
-      {
-        "role": "lead-executor",
-        "task": "STRESS1-EXA",
-        "tokens": 74287,
-        "duration_ms": 583802
-      },
-      {
-        "role": "lead-executor",
-        "task": "F7-A2-fixtures",
-        "tokens": 75089,
-        "duration_ms": 460231
-      },
-      {
-        "role": "lead-executor",
-        "task": "F7-A6-suite",
-        "tokens": 75189,
-        "duration_ms": 548162
-      },
-      {
-        "role": "quality-reviewer",
-        "task": "F3-D1-dirguide-risk-scan",
-        "tokens": 79846,
-        "duration_ms": 397479
-      },
-      {
-        "role": "arbiter",
-        "task": "F7-B4-compile1",
-        "tokens": 82381,
-        "duration_ms": 475110
-      },
-      {
-        "role": "general-purpose",
-        "task": "Internal plan review",
-        "tokens": 90087,
-        "duration_ms": 409618
-      },
-      {
-        "role": "security-reviewer",
-        "task": "STRESS1-R2-sec",
-        "tokens": 90757,
-        "duration_ms": 577245
-      },
-      {
-        "role": "security-reviewer",
-        "task": "STRESS1-R1-sec",
-        "tokens": 90935,
-        "duration_ms": 521864
-      },
-      {
-        "role": "Explore",
-        "task": "Audit hiya-crew deployment state",
-        "tokens": 93245,
-        "duration_ms": 251944
-      },
-      {
-        "role": "security-reviewer",
-        "task": "F3-D1-dirguide-risk-scan",
-        "tokens": 106767,
-        "duration_ms": 654902
-      },
-      {
-        "role": "Explore",
-        "task": "Survey register-item source docs",
-        "tokens": 112443,
-        "duration_ms": 332031
-      },
-      {
-        "role": "lead-executor",
-        "task": "F7-A3-modules",
-        "tokens": 117542,
-        "duration_ms": 954617
-      },
-      {
-        "role": "lead-executor",
-        "task": "F7-A4-tests",
-        "tokens": 118365,
-        "duration_ms": 733011
-      },
-      {
-        "role": "arbiter",
-        "task": "F7-B6-compile2",
-        "tokens": 118842,
-        "duration_ms": 603682
-      },
-      {
-        "role": "general-purpose",
-        "task": "Peer review of plan",
-        "tokens": 118910,
-        "duration_ms": 496319
-      },
-      {
-        "role": "arbiter",
-        "task": "F7-B9-e2e",
-        "tokens": 121025,
-        "duration_ms": 580274
-      },
-      {
-        "role": "arbiter",
-        "task": "F7-P1-jml-simulator-plan",
-        "tokens": 123135,
-        "duration_ms": 428623
-      },
-      {
-        "role": "arbiter",
-        "task": "F7-B7-fix",
-        "tokens": 123381,
-        "duration_ms": 529460
-      },
-      {
-        "role": "security-reviewer",
-        "task": "F7-B3-sec",
-        "tokens": 124800,
-        "duration_ms": 655725
-      },
-      {
-        "role": "lead-executor",
-        "task": "STRESS1-EXB",
-        "tokens": 126579,
-        "duration_ms": 1190269
-      },
-      {
-        "role": "general-purpose",
-        "task": "Internal review of program plan",
-        "tokens": 127182,
-        "duration_ms": 554549
-      },
-      {
-        "role": "lead-planner",
-        "task": "STRESS1-A1",
-        "tokens": 128098,
-        "duration_ms": 354145
-      },
-      {
-        "role": "integration-runner",
-        "task": "STRESS1-E2E",
-        "tokens": 130491,
-        "duration_ms": 1056263
-      },
-      {
-        "role": "quality-reviewer",
-        "task": "F7-B5-qual2",
-        "tokens": 132990,
-        "duration_ms": 692006
-      },
-      {
-        "role": "quality-reviewer",
-        "task": "STRESS1-R2-qual",
-        "tokens": 134953,
-        "duration_ms": 883951
-      },
-      {
-        "role": "arbiter",
-        "task": "STRESS1-ARB1",
-        "tokens": 136427,
-        "duration_ms": 750638
-      },
-      {
-        "role": "general-purpose",
-        "task": "Internal plan review",
-        "tokens": 139483,
-        "duration_ms": 423964
-      },
-      {
-        "role": "security-reviewer",
-        "task": "F7-B5-sec2",
-        "tokens": 140203,
-        "duration_ms": 705809
-      },
-      {
-        "role": "general-purpose",
-        "task": "Peer review of register plan",
-        "tokens": 143260,
-        "duration_ms": 562110
-      },
-      {
-        "role": "arbiter",
-        "task": "STRESS1-ARB-R1",
-        "tokens": 145784,
-        "duration_ms": 920497
-      },
-      {
-        "role": "quality-reviewer",
-        "task": "STRESS1-R1-qual",
-        "tokens": 147631,
-        "duration_ms": 1029253
-      },
-      {
-        "role": "quality-reviewer",
-        "task": "Quality review of prep",
-        "tokens": 152880,
-        "duration_ms": 950840
-      },
-      {
-        "role": "general-purpose",
-        "task": "Internal review of the large plan",
-        "tokens": 154906,
-        "duration_ms": 619581
-      },
-      {
-        "role": "quality-reviewer",
-        "task": "F7-B3-qual",
-        "tokens": 156265,
-        "duration_ms": 875961
-      },
-      {
-        "role": "fixer",
-        "task": "F3-D1-dirguide-risk-scan",
-        "tokens": 167905,
-        "duration_ms": 1225648
-      },
-      {
-        "role": "fixer",
-        "task": "F7-B7-fix",
-        "tokens": 170915,
-        "duration_ms": 781106
-      },
-      {
-        "role": "general-purpose",
-        "task": "Internal review of register plan",
-        "tokens": 172777,
-        "duration_ms": 637722
-      },
-      {
-        "role": "Plan",
-        "task": "Design the three hard pieces",
-        "tokens": 177934,
-        "duration_ms": 615556
-      },
-      {
-        "role": "fixer",
-        "task": "STRESS1-FIX",
-        "tokens": 180913,
-        "duration_ms": 1517615
-      },
-      {
-        "role": "Explore",
-        "task": "Survey reconciliation patterns",
-        "tokens": 181524,
-        "duration_ms": 739356
-      },
-      {
-        "role": "general-purpose",
-        "task": "Peer review of the large plan",
-        "tokens": 184082,
-        "duration_ms": 975834
-      },
-      {
-        "role": "integration-runner",
-        "task": "F7-B9-e2e",
-        "tokens": 198302,
-        "duration_ms": 758461
-      },
-      {
-        "role": "Plan",
-        "task": "before",
-        "tokens": 227860,
-        "duration_ms": 1024536
-      },
-      {
-        "role": "arbiter",
-        "task": "STRESS1-ARB-R2",
-        "tokens": 261965,
-        "duration_ms": 1647698
-      },
-      {
-        "role": "arbiter",
-        "task": "STRESS1-ARB-FIN",
-        "tokens": 301037,
-        "duration_ms": 1920968
-      }
+          {
+                "role": "Explore",
+                "task": "Live-evidence probe dispatch",
+                "tokens": 21373,
+                "duration_ms": 8759
+          },
+          {
+                "role": "lead-planner",
+                "task": "G-F3 demo: lead produces DISPATCH",
+                "tokens": 35550,
+                "duration_ms": 130272
+          },
+          {
+                "role": "arbiter",
+                "task": "F3-D1-dirguide-risk-scan",
+                "tokens": 36568,
+                "duration_ms": 123378
+          },
+          {
+                "role": "test-runner",
+                "task": "F7-B8-tests",
+                "tokens": 46388,
+                "duration_ms": 197102
+          },
+          {
+                "role": "general-purpose",
+                "task": "Review polish-code skill edit",
+                "tokens": 48584,
+                "duration_ms": 108183
+          },
+          {
+                "role": "lead-executor",
+                "task": "F7-A5-readme",
+                "tokens": 58187,
+                "duration_ms": 435162
+          },
+          {
+                "role": "general-purpose",
+                "task": "Peer review via /peer-review",
+                "tokens": 61243,
+                "duration_ms": 364965
+          },
+          {
+                "role": "arbiter",
+                "task": "F3-D1-dirguide-risk-scan",
+                "tokens": 62209,
+                "duration_ms": 217105
+          },
+          {
+                "role": "lead-planner",
+                "task": "F7-P1-jml-simulator-plan",
+                "tokens": 62320,
+                "duration_ms": 295737
+          },
+          {
+                "role": "test-runner",
+                "task": "STRESS1-TEST",
+                "tokens": 72701,
+                "duration_ms": 321386
+          },
+          {
+                "role": "Explore",
+                "task": "Survey scaffold/verify patterns",
+                "tokens": 73039,
+                "duration_ms": 124736
+          },
+          {
+                "role": "arbiter",
+                "task": "F3-D1-dirguide-risk-scan",
+                "tokens": 73974,
+                "duration_ms": 464973
+          },
+          {
+                "role": "lead-executor",
+                "task": "STRESS1-EXA",
+                "tokens": 74287,
+                "duration_ms": 583802
+          },
+          {
+                "role": "lead-executor",
+                "task": "F7-A2-fixtures",
+                "tokens": 75089,
+                "duration_ms": 460231
+          },
+          {
+                "role": "lead-executor",
+                "task": "F7-A6-suite",
+                "tokens": 75189,
+                "duration_ms": 548162
+          },
+          {
+                "role": "quality-reviewer",
+                "task": "F3-D1-dirguide-risk-scan",
+                "tokens": 79846,
+                "duration_ms": 397479
+          },
+          {
+                "role": "arbiter",
+                "task": "F7-B4-compile1",
+                "tokens": 82381,
+                "duration_ms": 475110
+          },
+          {
+                "role": "general-purpose",
+                "task": "Internal plan review",
+                "tokens": 90087,
+                "duration_ms": 409618
+          },
+          {
+                "role": "security-reviewer",
+                "task": "STRESS1-R2-sec",
+                "tokens": 90757,
+                "duration_ms": 577245
+          },
+          {
+                "role": "security-reviewer",
+                "task": "STRESS1-R1-sec",
+                "tokens": 90935,
+                "duration_ms": 521864
+          },
+          {
+                "role": "Explore",
+                "task": "Audit hiya-crew deployment state",
+                "tokens": 93245,
+                "duration_ms": 251944
+          },
+          {
+                "role": "security-reviewer",
+                "task": "F3-D1-dirguide-risk-scan",
+                "tokens": 106767,
+                "duration_ms": 654902
+          },
+          {
+                "role": "Explore",
+                "task": "Survey register-item source docs",
+                "tokens": 112443,
+                "duration_ms": 332031
+          },
+          {
+                "role": "lead-executor",
+                "task": "F7-A3-modules",
+                "tokens": 117542,
+                "duration_ms": 954617
+          },
+          {
+                "role": "lead-executor",
+                "task": "F7-A4-tests",
+                "tokens": 118365,
+                "duration_ms": 733011
+          },
+          {
+                "role": "arbiter",
+                "task": "F7-B6-compile2",
+                "tokens": 118842,
+                "duration_ms": 603682
+          },
+          {
+                "role": "general-purpose",
+                "task": "Peer review of plan",
+                "tokens": 118910,
+                "duration_ms": 496319
+          },
+          {
+                "role": "arbiter",
+                "task": "F7-B9-e2e",
+                "tokens": 121025,
+                "duration_ms": 580274
+          },
+          {
+                "role": "arbiter",
+                "task": "F7-P1-jml-simulator-plan",
+                "tokens": 123135,
+                "duration_ms": 428623
+          },
+          {
+                "role": "arbiter",
+                "task": "F7-B7-fix",
+                "tokens": 123381,
+                "duration_ms": 529460
+          },
+          {
+                "role": "security-reviewer",
+                "task": "F7-B3-sec",
+                "tokens": 124800,
+                "duration_ms": 655725
+          },
+          {
+                "role": "lead-executor",
+                "task": "STRESS1-EXB",
+                "tokens": 126579,
+                "duration_ms": 1190269
+          },
+          {
+                "role": "general-purpose",
+                "task": "Internal review of program plan",
+                "tokens": 127182,
+                "duration_ms": 554549
+          },
+          {
+                "role": "general-purpose",
+                "task": "Peer review of plan",
+                "tokens": 128063,
+                "duration_ms": 512969
+          },
+          {
+                "role": "lead-planner",
+                "task": "STRESS1-A1",
+                "tokens": 128098,
+                "duration_ms": 354145
+          },
+          {
+                "role": "integration-runner",
+                "task": "STRESS1-E2E",
+                "tokens": 130491,
+                "duration_ms": 1056263
+          },
+          {
+                "role": "quality-reviewer",
+                "task": "F7-B5-qual2",
+                "tokens": 132990,
+                "duration_ms": 692006
+          },
+          {
+                "role": "quality-reviewer",
+                "task": "STRESS1-R2-qual",
+                "tokens": 134953,
+                "duration_ms": 883951
+          },
+          {
+                "role": "arbiter",
+                "task": "STRESS1-ARB1",
+                "tokens": 136427,
+                "duration_ms": 750638
+          },
+          {
+                "role": "general-purpose",
+                "task": "Internal plan review",
+                "tokens": 139483,
+                "duration_ms": 423964
+          },
+          {
+                "role": "security-reviewer",
+                "task": "F7-B5-sec2",
+                "tokens": 140203,
+                "duration_ms": 705809
+          },
+          {
+                "role": "general-purpose",
+                "task": "Internal review of plan",
+                "tokens": 140652,
+                "duration_ms": 438444
+          },
+          {
+                "role": "general-purpose",
+                "task": "Peer review of register plan",
+                "tokens": 143260,
+                "duration_ms": 562110
+          },
+          {
+                "role": "arbiter",
+                "task": "STRESS1-ARB-R1",
+                "tokens": 145784,
+                "duration_ms": 920497
+          },
+          {
+                "role": "quality-reviewer",
+                "task": "STRESS1-R1-qual",
+                "tokens": 147631,
+                "duration_ms": 1029253
+          },
+          {
+                "role": "quality-reviewer",
+                "task": "Quality review of prep",
+                "tokens": 152880,
+                "duration_ms": 950840
+          },
+          {
+                "role": "general-purpose",
+                "task": "Internal review of the large plan",
+                "tokens": 154906,
+                "duration_ms": 619581
+          },
+          {
+                "role": "quality-reviewer",
+                "task": "F7-B3-qual",
+                "tokens": 156265,
+                "duration_ms": 875961
+          },
+          {
+                "role": "fixer",
+                "task": "F3-D1-dirguide-risk-scan",
+                "tokens": 167905,
+                "duration_ms": 1225648
+          },
+          {
+                "role": "fixer",
+                "task": "F7-B7-fix",
+                "tokens": 170915,
+                "duration_ms": 781106
+          },
+          {
+                "role": "general-purpose",
+                "task": "Internal review of register plan",
+                "tokens": 172777,
+                "duration_ms": 637722
+          },
+          {
+                "role": "Plan",
+                "task": "Design the three hard pieces",
+                "tokens": 177934,
+                "duration_ms": 615556
+          },
+          {
+                "role": "Plan",
+                "task": "Design the research program",
+                "tokens": 179616,
+                "duration_ms": 708619
+          },
+          {
+                "role": "fixer",
+                "task": "STRESS1-FIX",
+                "tokens": 180913,
+                "duration_ms": 1517615
+          },
+          {
+                "role": "Explore",
+                "task": "Survey reconciliation patterns",
+                "tokens": 181524,
+                "duration_ms": 739356
+          },
+          {
+                "role": "general-purpose",
+                "task": "Peer review of the large plan",
+                "tokens": 184082,
+                "duration_ms": 975834
+          },
+          {
+                "role": "integration-runner",
+                "task": "F7-B9-e2e",
+                "tokens": 198302,
+                "duration_ms": 758461
+          },
+          {
+                "role": "Plan",
+                "task": "before",
+                "tokens": 227860,
+                "duration_ms": 1024536
+          },
+          {
+                "role": "arbiter",
+                "task": "STRESS1-ARB-R2",
+                "tokens": 261965,
+                "duration_ms": 1647698
+          },
+          {
+                "role": "arbiter",
+                "task": "STRESS1-ARB-FIN",
+                "tokens": 301037,
+                "duration_ms": 1920968
+          }
     ]
   },
   "encoding": {
