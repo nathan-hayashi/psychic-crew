@@ -149,7 +149,7 @@ GR-074	operator-blocked	secrets backend Q2 deferred post-build; env plus gitigno
 GR-075	operator-blocked	TEI-2..4 unbuilt; pre-planned only, on the operator's word	docs/CHANGE-PLANE.md:157	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-076	open-question	orca licence anomaly unresolved: org stablyai vs copyright holder Lovecast Inc; no local file explains	docs/research/RSCH-4-orca.md:6-7	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
 GR-077	open-question	orca survey read under 0.1 percent; lockfile unread so transitive deps unknown; 98 of 99 reliability gates known only by aggregate; a thirteenth candidate could exist unread	docs/research/RSCH-4-orca-survey.md:115-120	RESOLVED:DIVE-W1-OR-1	no	unread-source	CENSUS	GAP-REGISTER-1
-GR-078	open-question	RSCH-2 roughly thirty Ekn rows must be web-re-verified before any INCORPORATE promotion	docs/research/RSCH-2-ecosystem.md:144-147	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
+GR-078	open-question	RSCH-2 roughly thirty Ekn rows must be web-re-verified before any INCORPORATE promotion	docs/research/RSCH-2-ecosystem.md:144-147	RESOLVED:DIVE-W1-EK-1	no	external-drift	CENSUS	GAP-REGISTER-1
 GR-079	open-question	SIDE-2 claude.ai zip lane unexercised; wake = one operator upload	GATES.md:40	OPEN	no	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-080	open-question	SIDE-5 weakest claims: Team-plan content-endpoint coverage unverified; memory artifacts not named in fetched scope	docs/research/SIDE-5-compliance-verdict.md:55-62	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
 GR-081	open-question	STRESS-1 CrewAI rubric column documentation-sourced not run-sourced; HC-5 barred an install	docs/research/STRESS-1-report.md:97-98	OPEN	no	unread-source	CENSUS	GAP-REGISTER-1
@@ -217,6 +217,7 @@ GR-129	2026-09-03	OPEN>RESOLVED:GAP-REGISTER-1	GAP-REGISTER-1
 GR-130	2026-09-03	OPEN>RESOLVED:GAP-REGISTER-1	GAP-REGISTER-1
 GR-077	2026-09-03	OPEN>RESOLVED:DIVE-W1-OR-1	DIVE-W1-OR-1
 GR-086	2026-09-03	OPEN>RESOLVED:DIVE-W1-GA-1	DIVE-W1-GA-1
+GR-078	2026-09-03	OPEN>RESOLVED:DIVE-W1-EK-1	DIVE-W1-EK-1
 ```
 
 ## Weakest claims, flagged

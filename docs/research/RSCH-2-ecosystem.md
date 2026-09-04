@@ -152,3 +152,16 @@ Supermemory did (would drop it to reference-only).
 - 50/50 rows present (numbered 1–50). `grep -c '^| [0-9]' docs/research/RSCH-2-ecosystem.md`.
 - Web-verified rows (#19, #23, #25, #41) + the five dives carry the 2026-08-26 retrieval date.
 - No mermaid fence, no absolute path, no upstream conversation URL.
+
+## EK-1 currency addendum (2026-09-03 — dated appends only; the table above stays frozen per CR-033)
+
+The DIVE-W1-EK-1 sweep (vector program, wave 1) performed the [Ekn] re-verification this
+file's own law demands before any promotion. Four rows diverge from reality as recorded:
+**#27 AutoGen** is in maintenance mode, folded into Microsoft Agent Framework 1.0 (GA
+2026-04) — any comparison built on row 27 should target the successor framework (whose
+corpus this estate already dived as CORPUS-AGENTFW); **#30 Open WebUI** is dual-licensed
+(BSD-3 through v0.6.5, a custom branding-clause license after); **#46 LobeChat** left MIT
+(now LobeHub Community License); **#22 Langflow** is IBM-stewarded with DataStax Astra
+hosting shut down (2026-04), MIT intact. Stable-confirmed and presumed-stable rows, with
+sources and the survey's stated limits: `docs/research/DIVE-W1-EK-1-survey.md`. The
+promotion-time re-verify law above stands unchanged.
