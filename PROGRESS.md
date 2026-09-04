@@ -1368,3 +1368,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T02:10:38Z] SOURCE-MAP-1 built — awaiting the token (VECTOR PROGRAM gate 3 of 5+wave)
 - **Task:** 15 sources, 3 lanes, demand-coverage both ways, dry rule + calibration frozen, dive validator probed, DIVE-W1-* allowlist grammar.
 - **Next action:** `APPROVE SOURCE-MAP-1`; then the wave opens (DIVE-W1-OR-1 first, map order).
+
+## [VP|2026-09-04T02:37:56Z] SOURCE-MAP-1 CLOSED + CG-1 appended — the wave opens
+- **State:** parent 2d76436 · floor 89 · map 16 rows (15 + CG-1 operator-append) · matrices 75/0/17.
+- **Next action:** `APPROVE DIVE-W1-OR-1` opens the first dive (reading is gated; the question is already fixed).
