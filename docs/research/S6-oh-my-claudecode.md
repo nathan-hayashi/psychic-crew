@@ -13,3 +13,12 @@ the record moves to where a reader looks, unedited. The ledger remains the origi
 Adopted: nothing directly — the staged loop was already F7's pipeline shape. Registered, still
 open: the [V?] platform fact about agent-teams flags and the dispatch-law question it raises for
 whoever next touches EX-05. Excluded by law: multi-vendor worker types (HC-7).
+
+## AT-1 verification note (2026-09-03, dated append)
+
+The [V?] platform fact above was verified at DIVE-W1-AT-1 against the official page
+(code.claude.com/docs/en/agent-teams, fetched 2026-09-03): CONFIRMED INTACT — TeamCreate and
+TeamDelete no longer exist as of v2.1.178, each session carries one implicit session-named
+team, and teammates spawn via the Agent tool with a name while
+CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 (default OFF). The dispatch-law question it raised is
+answered in that dive's record; the standing threat surface it revealed is GR-carried.

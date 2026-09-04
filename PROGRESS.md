@@ -1388,3 +1388,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 ## [VP|2026-09-04T03:27:51Z] DIVE-W1-EK-1 executed — wave 4/16+, outcome 0 (prediction held, 4-for-4)
 - **State:** 4 divergences corrected in-dive (RSCH-2 addendum); survey persisted; dry tail [...,2,0].
 - **Next action:** record commit (floor 93); then `APPROVE DIVE-W1-AT-1`.
+
+## [VP|2026-09-04T04:13:24Z] DIVE-W1-AT-1 executed — wave 5, outcome 0 (5-for-5) — DRY-ELIGIBLE
+- **State:** tail [0,0], condition met; 11 rows remain; both DRY and HC-1 rows opening.
+- **Next action:** the operator's word — `APPROVE DIVE-W1-DRY` or any dive token.

@@ -71,7 +71,6 @@ GR-079	build-gate	2	V-UNEXER
 GR-080	web-verify	2	V-DRIFT
 GR-083	build-gate	2	V-UNEXER
 GR-084	build-gate	2	V-AMBIG
-GR-085	web-verify	2	V-DRIFT
 GR-087	operator-word	2	V-OPWORD
 GR-089	operator-word	2	V-OPWORD
 GR-093	web-verify	2	V-DRIFT
@@ -88,6 +87,7 @@ GR-127	build-gate	2	V-UNEXER
 GR-131	build-gate	2	V-AMBIG
 GR-132	build-gate	2	V-AMBIG
 GR-133	build-gate	2	V-AMBIG
+GR-136	web-verify	2	V-DRIFT
 GR-007	accepted-limit	3	V-ACCEPTED
 GR-011	accepted-limit	3	V-ACCEPTED
 GR-016	accepted-limit	3	V-ACCEPTED

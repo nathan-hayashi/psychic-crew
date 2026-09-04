@@ -156,7 +156,7 @@ GR-081	open-question	STRESS-1 CrewAI rubric column documentation-sourced not run
 GR-082	open-question	STRESS-1 zero-challenge round means nine findings survived a corroborating read not an independent one	docs/research/STRESS-1-report.md:55-58	OPEN	no	unverified-claim	CENSUS	GAP-REGISTER-1
 GR-083	open-question	HARNESS-SPEC limits: mktemp-root interaction designed not demonstrated; 18-dir walk-up snapshot rots silently; nothing proves a model produces good findings under the machinery	docs/research/HARNESS-SPEC.md:182-190	OPEN	no	unexercised-path	CENSUS	GAP-REGISTER-1
 GR-084	open-question	INDEX-1 push rejection cause unexplained; recorded	Plan.md:548	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
-GR-085	open-question	oh-my-claudecode platform fact V?: agent-teams flag vs the dispatch law; registered for whoever next touches EX-05	docs/research/S6-oh-my-claudecode.md:14	OPEN	no	external-drift	CENSUS	GAP-REGISTER-1
+GR-085	open-question	oh-my-claudecode platform fact V?: agent-teams flag vs the dispatch law; registered for whoever next touches EX-05	docs/research/S6-oh-my-claudecode.md:14	RESOLVED:DIVE-W1-AT-1	no	external-drift	CENSUS	GAP-REGISTER-1
 GR-086	open-question	gastown NDI nondeterministic idempotence: a philosophy this build has no name for; recorded	docs/research/S6-gastown.md:11	RESOLVED:DIVE-W1-GA-1	no	unread-source	CENSUS	GAP-REGISTER-1
 GR-087	open-question	MATRIX-AI 22 of 51 items BLOCKED-HC by law; builds only under future gates	docs/research/MATRIX-AI-1.md:7-11	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-088	portability	early-exit consumer needles (second PORTABILITY bullet) remain prose-covered pending an instance	docs/PORTABILITY.md:55-65	OPEN	no	unverified-claim	CENSUS	GAP-REGISTER-1
@@ -207,6 +207,7 @@ GR-132	open-question	the register-program completion record claims registry 44 t
 GR-133	open-question	CORPUS-SDKPY and CORPUS-LANGGRAPH still read awaiting-an-operator-declared-gate for hook candidates HOOK-1 discharged 2026-09-02; dated research prose lagging the ledger; reported not corrected	docs/research/CORPUS-SDKPY.md:40	OPEN	no	ambiguous-record	CENSUS	GAP-REGISTER-1
 GR-134	open-question	orca application source under 1 percent read; a thirteenth pattern-candidate could exist unread - the residue of the survey row this dive resolved	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unread-source	CENSUS	DIVE-W1-OR-1
 GR-135	verification-gap	no dated suite-run attestation exists - when a control last proved itself and on what platform/userland is unrecorded; BSD certification and temporal claims ride session memory	docs/research/DIVE-W1-OR-1.md:1	OPEN	no	unverified-claim	CENSUS	DIVE-W1-OR-1
+GR-136	dispatch-residual	agent-teams flag if ever enabled in any settings layer routes teammate coordination through user-scope mailboxes outside the dispatch guard and the estate's trails; default-off + headless immunity today; the settings pin to 0 is the available hard line	docs/research/DIVE-W1-AT-1.md:1	OPEN	no	external-drift	CENSUS	DIVE-W1-AT-1
 ```
 
 ## The flip log
@@ -218,6 +219,7 @@ GR-130	2026-09-03	OPEN>RESOLVED:GAP-REGISTER-1	GAP-REGISTER-1
 GR-077	2026-09-03	OPEN>RESOLVED:DIVE-W1-OR-1	DIVE-W1-OR-1
 GR-086	2026-09-03	OPEN>RESOLVED:DIVE-W1-GA-1	DIVE-W1-GA-1
 GR-078	2026-09-03	OPEN>RESOLVED:DIVE-W1-EK-1	DIVE-W1-EK-1
+GR-085	2026-09-03	OPEN>RESOLVED:DIVE-W1-AT-1	DIVE-W1-AT-1
 ```
 
 ## Weakest claims, flagged
