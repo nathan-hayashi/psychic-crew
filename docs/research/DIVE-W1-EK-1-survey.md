@@ -41,7 +41,7 @@ drop-request rows (DR-AIDER) and INCORPORATE row respectively re-verify at any p
 per the standing RSCH-2:145 law. iFix and OpenClaw (low-signal parks) likewise: no signal
 found either way; their parks carry identity-verification conditions already.
 
-## Honest limits (the survey's own)
+## Weakest claims, flagged (the survey's honest limits)
 
 Eight searches, batched by category; a change invisible to general search (a quiet license
 edit with no coverage) would be missed — the promotion-time re-verify law is the backstop.
