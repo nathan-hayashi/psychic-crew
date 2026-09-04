@@ -1443,3 +1443,7 @@ reader plus the PreCompact carry-forward (C-15) both faithfully propagate that s
 
 ## [SP|2026-09-04T16:28:55Z] CALIB-1 executed + stamped — the wave's last gate
 - **Next action:** gate commit -> record (floor 103) -> attest -> coda (GR-137, the final consumed row) -> finalize.
+
+## [SP|2026-09-04T16:32:42Z] CALIB-1 CLOSED — THE SUCCESSOR WAVE COMPLETES (6/6, all predictions fulfilled)
+- **State:** closure consumption 12/12 · floor 103 · crew 379 · attest 6 rows.
+- **Next action:** finalize battery + completion record; then the operator's menu (drops, TEI-2..4, BSD cert on a Darwin row, next research wave).
