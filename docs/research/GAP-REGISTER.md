@@ -141,7 +141,7 @@ GR-066	parked-wake	RSCH-4 non-TAKEs: two MODULATE-OURS (idempotency receipts, CL
 GR-067	parked-wake	SIDE-3 branch-proxy stays descriptive; promotion wake did not trigger at STRESS-1	docs/research/STRESS-1-report.md:148	OPEN	no	accepted-limit	CENSUS	GAP-REGISTER-1
 GR-068	parked-wake	BASE-2 sixteen cells NOT-COMPARABLE-DOCUMENTED-ONLY; each priced snapshot + named question + dive gate	GATES.md:77	OPEN	no	unread-source	CENSUS	GAP-REGISTER-1
 GR-069	parked-wake	next band recalibration on the operator's word not a schedule	docs/AUDIT-RUBRIC.md:35-36	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
-GR-070	operator-blocked	macOS/BSD certification is an operator run, now owed for the lite suite too; scanners prevent regressions, they do not prove BSD green	docs/PORTABILITY.md:40-53	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
+GR-070	operator-blocked	macOS/BSD certification is an operator run, now owed for the lite suite too; scanners prevent regressions, they do not prove BSD green	docs/PORTABILITY.md:40-53	RESOLVED:BSD-CERT	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-071	operator-blocked	signed approvals blocked by R-SEC-1 rule 1; operator-held git-signing recorded as the one compatible route, operator's word only	docs/research/CORPUS-BABYSITTER-2.md:42-45	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-072	operator-blocked	SIDE-5 criteria 2-5 unmet: no consent/jurisdiction model, no classification table, filter named not rowed, no transparency artifact; Enterprise tenant prerequisite unheld	docs/research/SIDE-5-compliance-verdict.md:37-53	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
 GR-073	operator-blocked	jurisdiction unknown and unrecorded — the largest unknown; its answer could add unnamed requirements	docs/research/SIDE-5-compliance-verdict.md:61-62	OPEN	no	operator-blocked	CENSUS	GAP-REGISTER-1
@@ -233,6 +233,7 @@ GR-131	2026-09-04	OPEN>RESOLVED:TM-FENCE-1	TM-FENCE-1
 GR-132	2026-09-04	OPEN>RESOLVED:TM-FENCE-1	TM-FENCE-1
 GR-133	2026-09-04	OPEN>RESOLVED:TM-FENCE-1	TM-FENCE-1
 GR-137	2026-09-04	OPEN>RESOLVED:CALIB-1	CALIB-1
+GR-070	2026-09-05	OPEN>RESOLVED:BSD-CERT	BSD-CERT
 ```
 
 ## Weakest claims, flagged

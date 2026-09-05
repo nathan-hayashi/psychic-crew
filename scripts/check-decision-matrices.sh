@@ -741,7 +741,11 @@ SYEOF
       OPEN) : ;;
       RESOLVED:*)
         zg="${zdisp#RESOLVED:}"
-        { [ "$zst" = "consumed" ] && [ "$zdet" = "$zg" ]; } || syful="$syful [$zid:$zdisp vs $zst/$zdet]" ;;
+        case "$zst" in
+          consumed) [ "$zdet" = "$zg" ] || syful="$syful [$zid:$zdisp vs $zst/$zdet]" ;;
+          parked|accepted) note "closure row $zid was $zst and its wake FIRED ($zdisp) — the parking system working, not a drift" ;;
+          *) syful="$syful [$zid:$zdisp vs $zst]" ;;
+        esac ;;
       *) syful="$syful [$zid:$zdisp]" ;;
     esac
   done <<SYEOF3

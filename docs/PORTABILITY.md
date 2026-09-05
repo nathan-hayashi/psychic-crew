@@ -101,3 +101,15 @@ and C-21 gained a LOCAL status for its genuinely machine-local oracle. Rule 7's 
 this certification: one parser class (3.2 case-in-substitution), one padding class (two-step
 wc), four locality classes, two of my own fallback bugs — every one surfaced by an
 operator run no scanner could substitute for, exactly as the rule always said.
+
+## BSD-CERT COMPLETE (2026-09-05)
+
+Row seven: `2026-09-05T18:54:55Z @ 84d2390 Darwin/BSD crew=379 val=55 sav=33 mat=91 env=11`
+— generated on the operator's Mac, committed by the operator's hand (8c7df24, the estate's
+first Mac-authored commit), the certification artifact this document has named since it was
+written. The Darwin totals differ from Linux by exactly the announced machine-locality
+branches — the documented variance, which is why the history is platform-keyed. Five rounds,
+final ledger: one parser class, one padding class (which produced the promised two-step
+needle, which killed three more latent bugs on its first sweep), four locality classes, one
+starved fixture, three of the orchestrator's own bugs — every one surfaced by the operator
+run, none by a scanner, exactly as rule 7 always said.
