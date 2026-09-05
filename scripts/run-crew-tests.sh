@@ -2364,7 +2364,7 @@ CBEOF
     r2vars=$(sed 's/#.*//' "$r2f" | grep -oE '[A-Za-z_][A-Za-z0-9_]*=\$\([^)]*wc -l[^)]*\)' | cut -d= -f1 | sort -u)
     [ -n "$r2vars" ] || continue
     for r2v in $r2vars; do
-      r2hit=$(sed 's/#.*//' "$r2f" | grep -nE "\[ \"\\\$\{?${r2v}\}?\" (=|!=) " | head -1)
+      r2hit=$(sed 's/#.*//' "$r2f" | grep -nE "\[ \"\\\$\{?${r2v}\}?\" (=|!=) [0-9]+ \]" | head -1)
       [ -z "$r2hit" ] || r2two="$r2two [$r2f:$r2v:$r2hit]"
     done
   done
@@ -2373,7 +2373,7 @@ CBEOF
   r2p=$(mktemp)
   printf 'n=$(ls | %s -l)\n[ "$n" = 0 ] && echo empty\n' 'wc' > "$r2p"
   r2pv=$(grep -oE '[A-Za-z_][A-Za-z0-9_]*=\$\([^)]*wc -l[^)]*\)' "$r2p" | cut -d= -f1)
-  r2ph=$(grep -cE "\[ \"\\\$\{?${r2pv}\}?\" (=|!=) " "$r2p")
+  r2ph=$(grep -cE "\[ \"\\\$\{?${r2pv}\}?\" (=|!=) [0-9]+ \]" "$r2p")
   case "$r2ph" in ''|*[!0-9]*) r2ph=0 ;; esac
   [ "$r2ph" -ge 1 ] && ok "rule-2 two-step control fires: a planted assign-then-string-test pair is seen" \
     || no "rule-2 two-step control DID NOT fire"
@@ -2415,7 +2415,7 @@ if [ "${tb:-0}" = 0 ]; then
   # Announced, not silent: with no trails on disk the canary proves nothing, and a quiet pass here
   # is how it would stop meaning anything in a fresh clone.
   ok "C-14 canary: no live audit trail on disk to protect (fresh checkout)"
-elif [ "$TRAILS_BEFORE" -eq "$TRAILS_AFTER" ] 2>/dev/null; then
+elif [ "$TRAILS_BEFORE" = "$TRAILS_AFTER" ]; then  # composite file:count lists — string equality is CORRECT here (var-vs-var, padding identical both sides); the two-step needle scopes to var-vs-numeric-literal
   ok "C-14 canary: all $tb live audit trail(s) unchanged by this run"
 else
   no "C-14 canary: a fixture wrote to a LIVE audit trail — before[$(printf '%s' "$TRAILS_BEFORE" | tr '\n' ' ')] after[$(printf '%s' "$TRAILS_AFTER" | tr '\n' ' ')]"
