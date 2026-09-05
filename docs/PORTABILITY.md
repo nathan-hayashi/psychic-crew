@@ -75,3 +75,15 @@ function, guards byte-identical. Rule 7 gains the class in prose; a reliable sca
 case-inside-substitution is a multiline parse this suite does not attempt — stated gap,
 needle-on-next-evidence. The certification proceeds: setup green, then `./scripts/attest.sh
 run` writes the Darwin/BSD row that IS the artifact.
+
+## BSD-CERT run 2 findings (2026-09-05)
+
+The second Mac pass separated BSD from MACHINE-LOCALITY — three of four families were the
+latter, a class the certification exists to surface just as much: (1) the corpus census
+demanded 17 gitignored drops that live only on the primary machine — a zero-corpora clone
+now announces the locality skip while any partial presence stays strictly bound; (2) C-13's
+behavioral detector harvested a live round file for its test span — a bare machine now
+synthesizes one, since the detector's threshold is testable with any span; (3) the
+deploy-harness legs assumed the tier-1 user-scope harness — its absence now announces.
+Plus one attest parser bug (announced SKIPs refused as non-green — fixed; green-with-skips
+is the doctrine). One F3 red remains unidentified pending the Mac's per-item output.

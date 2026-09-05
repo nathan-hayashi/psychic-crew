@@ -207,6 +207,9 @@ if [ -x hooks/provenance-flag.sh ] \
    && [ -n "$c13tmp" ]; then
   mkdir -p "$c13tmp/logs"; cp -r logs/rounds "$c13tmp/logs/" 2>/dev/null
   c13span=$(jq -r '.. | strings' logs/rounds/round-1/security-reviewer.json 2>/dev/null | awk 'length>=90{print;exit}')
+  # machine-locality (BSD-CERT run 2): the live round exists only where sessions ran; the
+  # detector's 90-char threshold is testable with ANY span, so a bare machine synthesizes one.
+  [ -n "$c13span" ] || c13span=$(printf 'synthetic-relay-span-%s' "$(printf 'x%.0s' 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25)")
   c13hit=$(CLAUDE_PROJECT_DIR="$c13tmp" sh -c 'cat | ./hooks/provenance-flag.sh' 2>/dev/null \
             <<<"$(jq -cn --arg f "$c13tmp/Plan.md" --arg c "NOTE: $c13span" '{tool_input:{file_path:$f,content:$c}}')" | grep -c provenance)
   c13ok=$(CLAUDE_PROJECT_DIR="$c13tmp" sh -c 'cat | ./hooks/provenance-flag.sh' 2>/dev/null \

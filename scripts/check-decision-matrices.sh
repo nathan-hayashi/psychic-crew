@@ -127,8 +127,14 @@ while IFS="$(printf '\t')" read -r nm st; do
 done <<CENEOF
 $CENSUS
 CENEOF
-[ -z "$gone" ] && pass "every classified directory is on disk — the census describes the corpus that exists" \
-               || fail "classified director(ies) missing from disk:$gone"
+cen_present=$(printf '%s\n' "$CENSUS" | cut -f1 | while IFS= read -r nm; do [ -d "${nm}-main" ] && printf 'x\n'; done | grep -c .)
+case "$cen_present" in ''|*[!0-9]*) cen_present=0 ;; esac
+if [ "$cen_present" = 0 ]; then
+  pass "census direction-2: ZERO corpora on this machine — a bare-corpus clone (the drops live on the primary machine); announced machine-locality skip, and the PROHIBITED absence still holds universally"
+else
+  [ -z "$gone" ] && pass "every classified directory is on disk — the census describes the corpus that exists" \
+                 || fail "classified director(ies) missing from disk:$gone"
+fi
 [ -z "$prohpresent" ] && pass "PROHIBITED corpora are ABSENT from disk — the prohibition is machine-visible and holding" \
                       || fail "PROHIBITED corpus present on disk:$prohpresent — the standing law is breached"
 note "H3b deep-dive closure, SUPERSEDED AT CORPUS-0: that closure held exactly while no question was named. CORPUS-0 NAMED the eight (docs/research/CORPUS-0-coverage.md, CORPUS-QUESTIONS v1) under M4's own law — question first, reading second — so the eight rows are QUEUED for their dive gates, not closed. The three S6 dives are promoted to docs/research/S6-*.md verbatim; the PROHIBITED row is closed by LAW (reads barred estate-wide, absence asserted above), never by absence of questions."
