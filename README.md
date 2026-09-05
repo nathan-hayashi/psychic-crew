@@ -103,7 +103,7 @@ Every claim below is reproducible from a clean checkout:
 
 ```bash
 ./scripts/validate-crew.sh            # 60 structural assertions
-./scripts/run-crew-tests.sh           # 379 crew assertions
+./scripts/run-crew-tests.sh           # 381 crew assertions
 ./scripts/check-plan-corrections.sh   # plan-vs-reality registry, 26 registered ids
 ./scripts/portability-drill.sh        # proves the shipped file set works elsewhere
 cd stress-project && npm test         # 18 cases, the JML simulator
@@ -337,7 +337,7 @@ The in-repo deny-list blocks the clone verb during agent work, which is why the 
 
 ## What is proven, and what is not
 
-**Proven.** 379 crew assertions and 60 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by three mechanisms — archive extract, detached worktree, and a clone-shaped consumer checkout.
+**Proven.** 381 crew assertions and 60 structural assertions green from a clean checkout. The seeded-bug exercise caught 3 of 3, two of which were invisible to all 18 tests and found by reading alone — one of those independently by two blind review branches. Edge cases 3 of 3 exact. The portability drill passes by three mechanisms — archive extract, detached worktree, and a clone-shaped consumer checkout.
 
 **Not proven, stated plainly.**
 

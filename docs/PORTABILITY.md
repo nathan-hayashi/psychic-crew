@@ -87,3 +87,17 @@ synthesizes one, since the detector's threshold is testable with any span; (3) t
 deploy-harness legs assumed the tier-1 user-scope harness — its absence now announces.
 Plus one attest parser bug (announced SKIPs refused as non-green — fixed; green-with-skips
 is the doctrine). One F3 red remains unidentified pending the Mac's per-item output.
+
+## BSD-CERT run 3 findings (2026-09-05)
+
+The Mac's C-11 red was the two-step wc-l-to-string-test class — the exact gap HARNESS-1
+swept by hand and promised a needle "when evidence produces one." Evidence produced one;
+the needle now exists, and its first sweep found two more latent siblings (validate-crew's
+agent-count and hook-count guards) plus the C-14 canary's count compare, all converted to
+numeric tests. The scanner also ate its own probe on first fire (the scanner-contains-prey
+law, honored by fragmenting the planted text). Also fixed: run-2's synthetic span was 46
+chars against a 90-char threshold (my arithmetic — the detector rightly refused to fire),
+and C-21 gained a LOCAL status for its genuinely machine-local oracle. Rule 7's ledger of
+this certification: one parser class (3.2 case-in-substitution), one padding class (two-step
+wc), four locality classes, two of my own fallback bugs — every one surfaced by an
+operator run no scanner could substitute for, exactly as the rule always said.

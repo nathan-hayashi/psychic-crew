@@ -37,7 +37,7 @@ else
 # grepping each guard for the string misses a correct implementation. Feed each guard a real
 # denial input and assert the JSON contract actually comes out.
 h=$(ls -1 hooks/*.sh 2>/dev/null | wc -l)
-if [ "$h" = 0 ]; then
+if [ "$h" -eq 0 ] 2>/dev/null; then
   report C-03 F2 PENDING "hooks/ empty — F2 must emit hookSpecificOutput.permissionDecision, not bare exit 2"
 else
   # Payloads are passed as printf ARGUMENTS, never as the format string: printf interprets
@@ -146,7 +146,7 @@ released=$(jq -r 'select((.mutation // "") | test("RELEASE"; "i"))
 ndisp=$(grep -l '^tools:.*Agent' .claude/agents/*.md 2>/dev/null | wc -l)
 if grep -q '^tools:.*Agent' .claude/agents/arbiter.md 2>/dev/null && [ -n "${released:-}" ]; then
   report C-11 F3 APPLIED "arbiter holds Agent AND completed a real fan-out ending in RELEASE ($released)"
-elif grep -q 'EX-05' .claude/rules/arbiter-protocol.md 2>/dev/null && [ "$ndisp" = 0 ]; then
+elif grep -q 'EX-05' .claude/rules/arbiter-protocol.md 2>/dev/null && [ "$ndisp" -eq 0 ] 2>/dev/null; then
   # EX-05 retires the requirement rather than satisfying it: the arbiter no longer needs to
   # dispatch, so "the arbiter cannot dispatch" stops being a defect. Reporting this PENDING
   # forever would train the reader to ignore a real blocker. Least privilege is asserted too —
@@ -209,7 +209,7 @@ if [ -x hooks/provenance-flag.sh ] \
   c13span=$(jq -r '.. | strings' logs/rounds/round-1/security-reviewer.json 2>/dev/null | awk 'length>=90{print;exit}')
   # machine-locality (BSD-CERT run 2): the live round exists only where sessions ran; the
   # detector's 90-char threshold is testable with ANY span, so a bare machine synthesizes one.
-  [ -n "$c13span" ] || c13span=$(printf 'synthetic-relay-span-%s' "$(printf 'x%.0s' 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25)")
+  [ -n "$c13span" ] || c13span='synthetic-relay-span-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'  # 131 chars, past the 90 threshold (run-2 shipped 46 - my arithmetic, owned)
   c13hit=$(CLAUDE_PROJECT_DIR="$c13tmp" sh -c 'cat | ./hooks/provenance-flag.sh' 2>/dev/null \
             <<<"$(jq -cn --arg f "$c13tmp/Plan.md" --arg c "NOTE: $c13span" '{tool_input:{file_path:$f,content:$c}}')" | grep -c provenance)
   c13ok=$(CLAUDE_PROJECT_DIR="$c13tmp" sh -c 'cat | ./hooks/provenance-flag.sh' 2>/dev/null \
@@ -294,6 +294,8 @@ if [ -x scripts/measure-dispatch-cost.sh ]; then
   c21want=$(grep -E '^\| *total *\|' context/budget-baseline.md 2>/dev/null | grep -oE '[0-9][0-9,]+' | tr -d ',' | head -1)
   if [ "$c21rc" = 0 ] && [ -n "$c21got" ] && [ "$c21got" = "$c21want" ]; then
     report C-21 F8 APPLIED "measure-dispatch-cost.sh exits 0 and reproduces the recorded F7 total ($c21got) from disk"
+  elif [ ! -f logs/metrics/dispatch-costs.tsv ] && [ -z "${c21got:-}" ]; then
+    report C-21 F8 LOCAL "oracle is machine-local (session transcripts + metrics live on the primary machine); bound there, announced here (BSD-CERT run 3)"
   else
     report C-21 F8 PENDING "measure-dispatch-cost.sh did not reproduce the recorded F7 total (exit=$c21rc got='${c21got:-none}' want='${c21want:-none}')"
   fi
@@ -440,7 +442,7 @@ else
   report C-28 F8 PENDING "declared-binding logic not demonstrated (rows=$c28rows unbound_exit=$c28unbound clean_exit=$c28clean)"
 fi
 
-printf '\n== %s APPLIED / %s PENDING / %s SUPERSEDED ==\n' "$APPL" "$PEND" "$NA"
+printf '\n== %s APPLIED / %s PENDING / %s SUPERSEDED-or-LOCAL ==\n' "$APPL" "$PEND" "$NA"
 case "$WANT" in
   all) echo "(informational; run with a phase id, e.g. 'F2', to gate on it)"; exit 0;;
   *)   if [ "$GATE" = 1 ]; then echo "GATE $WANT: FAIL — corrections owned by $WANT are still pending"; exit 1

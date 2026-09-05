@@ -559,6 +559,7 @@ cases_F4 () {
   # artifact it audits is C-14, and this suite exercises a hook whose job is writing records.
   pv=$(mktemp -d); mkdir -p "$pv/logs"; cp -r logs/rounds "$pv/logs/" 2>/dev/null
   pvspan=$(jq -r '.. | strings' logs/rounds/round-1/security-reviewer.json 2>/dev/null | awk 'length>=90{print;exit}')
+  [ -n "$pvspan" ] || pvspan='synthetic-relay-span-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'  # BSD-CERT run 3: bare machines synthesize (131 chars)
   pvrun () { jq -cn --arg f "$pv/$1" --arg c "$2" '{tool_input:{file_path:$f,content:$c}}' \
              | CLAUDE_PROJECT_DIR="$pv" ./hooks/provenance-flag.sh 2>/dev/null | grep -c provenance; }
   [ "$(pvrun Plan.md "NOTE: $pvspan")" -ge 1 ] && ok "C-13 flags an unattributed relay into Plan.md" || no "C-13 missed an unattributed relay"
@@ -2354,6 +2355,30 @@ CBEOF
   [ "$cb06" -ge 2 ] && ok "CALIB-1 the threshold's calibration purpose is stated where the grades live (hole 1 closes whole)" \
     || no "CALIB-1 threshold linkage missing"
 
+
+  # R-SD-1 rule 2, the TWO-STEP needle — promised at HARNESS-1 "when evidence produces one";
+  # BSD-CERT run 3 produced it (C-11: wc-l-assigned var string-compared, red on BSD padding).
+  echo "== R-SD-1 rule 2 two-step — wc-l-assigned vars must never reach a string test =="
+  r2two=""
+  for r2f in $(git ls-files 'scripts/*.sh' 'hooks/*.sh'); do
+    r2vars=$(sed 's/#.*//' "$r2f" | grep -oE '[A-Za-z_][A-Za-z0-9_]*=\$\([^)]*wc -l[^)]*\)' | cut -d= -f1 | sort -u)
+    [ -n "$r2vars" ] || continue
+    for r2v in $r2vars; do
+      r2hit=$(sed 's/#.*//' "$r2f" | grep -nE "\[ \"\\\$\{?${r2v}\}?\" (=|!=) " | head -1)
+      [ -z "$r2hit" ] || r2two="$r2two [$r2f:$r2v:$r2hit]"
+    done
+  done
+  [ -z "$r2two" ] && ok "rule-2 two-step: no wc-l-assigned variable reaches a string test in tracked shell (the HARNESS-1 promise, kept on evidence)" \
+    || no "rule-2 two-step violation(s):$r2two"
+  r2p=$(mktemp)
+  printf 'n=$(ls | %s -l)\n[ "$n" = 0 ] && echo empty\n' 'wc' > "$r2p"
+  r2pv=$(grep -oE '[A-Za-z_][A-Za-z0-9_]*=\$\([^)]*wc -l[^)]*\)' "$r2p" | cut -d= -f1)
+  r2ph=$(grep -cE "\[ \"\\\$\{?${r2pv}\}?\" (=|!=) " "$r2p")
+  case "$r2ph" in ''|*[!0-9]*) r2ph=0 ;; esac
+  [ "$r2ph" -ge 1 ] && ok "rule-2 two-step control fires: a planted assign-then-string-test pair is seen" \
+    || no "rule-2 two-step control DID NOT fire"
+  rm -f "$r2p"
+
   # C-14 canary. cases_F7 has now executed the artifact eight times; the tree must be exactly
   # as it was on entry, and stress-project/tmp must be UNCHANGED — not empty. B9 leaves legitimate
   # e2e evidence there, and "empty" only looked equivalent to "unchanged" because it started empty.
@@ -2390,7 +2415,7 @@ if [ "${tb:-0}" = 0 ]; then
   # Announced, not silent: with no trails on disk the canary proves nothing, and a quiet pass here
   # is how it would stop meaning anything in a fresh clone.
   ok "C-14 canary: no live audit trail on disk to protect (fresh checkout)"
-elif [ "$TRAILS_BEFORE" = "$TRAILS_AFTER" ]; then
+elif [ "$TRAILS_BEFORE" -eq "$TRAILS_AFTER" ] 2>/dev/null; then
   ok "C-14 canary: all $tb live audit trail(s) unchanged by this run"
 else
   no "C-14 canary: a fixture wrote to a LIVE audit trail — before[$(printf '%s' "$TRAILS_BEFORE" | tr '\n' ' ')] after[$(printf '%s' "$TRAILS_AFTER" | tr '\n' ' ')]"

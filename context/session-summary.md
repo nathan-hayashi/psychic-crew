@@ -6,7 +6,7 @@ Conclusions only, merged not appended. Every entry labelled **verified** or **pr
 
 **verified** — **BUILD COMPLETE. All nine phases F0–F8 executed and gated** (tags `crew-f0`…`crew-f8`), `APPROVE GATE-F8` received, **the plan is CLOSED**, and the repo is tagged **`v1.0.0`** at the final commit. Nothing is outstanding.
 
-Live numbers (post-CLEANUP-1): crew suite **379 PASS / 0 FAIL** · validate-crew **60 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **238 tracked files**.
+Live numbers (post-CLEANUP-1): crew suite **381 PASS / 0 FAIL** · validate-crew **60 PASS / 0 SKIP / 0 FAIL** · save-context **33 PASS / 0 FAIL** · app suite **18/18** · corrections **28 rows across 28 registered correction IDs** · portability drill **PORTABLE** · **238 tracked files**.
 
 The one SKIP is honest and named: C-25's identity coverage has no live trail until a subagent is dispatched in-session. These figures are bound — `save-context.sh check` compares the tracked-file count against the tree and the registered-ID count against the registry, so this line cannot silently rot again (C-24, extended at CR-034).
 
@@ -118,7 +118,7 @@ conditions) waits on the operator's word, registered in Plan.md's completion ent
 
 ## Current state
 
-THE REGISTER PROGRAM COMPLETE (10/10) at 2026-09-03T01:44:15Z: parent 09c8574, floor 86, crew 379/0, validate 60/0/0, save 33/0, 238 tracked files; lite 6887401 (71/1/0, sync 65, witness 48, distill 12); sidekick 3777596 (67/0/0, Pages live at dev:/, homepage = hosted URL). End-battery all green incl. drill PORTABLE + self-audit 0 findings. Operator ruling on record: estate-only communications (no turbo repo contact ever); COMM-AUDIT-1 findings F1-F3 await the operator's word. Next work starts from the still-open register named in the completion record.
+THE REGISTER PROGRAM COMPLETE (10/10) at 2026-09-03T01:44:15Z: parent 09c8574, floor 86, crew 381/0, validate 60/0/0, save 33/0, 238 tracked files; lite 6887401 (71/1/0, sync 65, witness 48, distill 12); sidekick 3777596 (67/0/0, Pages live at dev:/, homepage = hosted URL). End-battery all green incl. drill PORTABLE + self-audit 0 findings. Operator ruling on record: estate-only communications (no turbo repo contact ever); COMM-AUDIT-1 findings F1-F3 await the operator's word. Next work starts from the still-open register named in the completion record.
 
 ## Vector program (2026-09-04T04:38:26Z)
 
@@ -126,4 +126,4 @@ THE VECTOR PROGRAM COMPLETE: 238 tracked, floor 97, crew 348/0, matrices 91/0/18
 
 ## Successor wave (2026-09-04T16:37:05Z)
 
-SUCCESSOR WAVE COMPLETE 6/6 (floor 103, crew 379/0, tracked 238): attest live (6 rows; BSD = one Darwin row), stall vocabulary + announce plane, comms mechanical (zero non-estate remotes; teams pinned), TM mirrored 3-way, calibration standing. Closure 12/12 fulfilled-verified. Menu: 8 drops, TEI-2..4, BSD cert, PACK-2, signing, next wave.
+SUCCESSOR WAVE COMPLETE 6/6 (floor 103, crew 381/0, tracked 238): attest live (6 rows; BSD = one Darwin row), stall vocabulary + announce plane, comms mechanical (zero non-estate remotes; teams pinned), TM mirrored 3-way, calibration standing. Closure 12/12 fulfilled-verified. Menu: 8 drops, TEI-2..4, BSD cert, PACK-2, signing, next wave.

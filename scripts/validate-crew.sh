@@ -175,7 +175,7 @@ fi
 
 echo "== agent model stamping (HC-4) =="
 n=$(ls -1 .claude/agents/*.md 2>/dev/null | wc -l)
-if [ "$n" = 0 ]; then
+if [ "$n" -eq 0 ] 2>/dev/null; then
   skip "no agent definitions yet (F3 owns .claude/agents/)"
 else
   MODE=$(jq -r '.mode // "alias"' models.config.json)
@@ -207,7 +207,7 @@ if [ -n "$WIRED" ]; then
   done
 fi
 n=$(ls -1 hooks/*.sh 2>/dev/null | wc -l)
-if [ "$n" = 0 ]; then
+if [ "$n" -eq 0 ] 2>/dev/null; then
   if [ -n "$WIRED" ]; then fail "hooks/ is empty but settings.json wires $(printf '%s' "$WIRED" | wc -w) hooks (kill-switch)"
   else skip "no hook scripts yet (F2 owns hooks/)"; fi
 else
