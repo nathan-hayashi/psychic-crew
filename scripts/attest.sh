@@ -36,7 +36,7 @@ case "${1:-run}" in
     if sed --version >/dev/null 2>&1; then ul="GNU"; else ul="BSD"; fi
     crew_out=$(./scripts/run-crew-tests.sh all 2>&1); crew_rc=$?
     crew=$(printf '%s\n' "$crew_out" | grep -oE 'run-crew-tests: [0-9]+ PASS / 0 FAIL' | grep -oE '^run-crew-tests: [0-9]+' | grep -oE '[0-9]+$')
-    val=$(./scripts/validate-crew.sh 2>&1 | grep -oE 'validate-crew: [0-9]+ PASS / 0 SKIP / 0 FAIL' | grep -oE '[0-9]+' | head -1)
+    val=$(./scripts/validate-crew.sh 2>&1 | grep -oE 'validate-crew: [0-9]+ PASS / [0-9]+ SKIP / 0 FAIL' | grep -oE '[0-9]+' | head -1)
     sav=$(./scripts/save-context.sh check 2>&1 | grep -oE 'save-context: [0-9]+ PASS / 0 FAIL' | grep -oE '[0-9]+' | head -1)
     mat=$(./scripts/check-decision-matrices.sh 2>&1 | grep -oE 'check-decision-matrices: [0-9]+ PASS / 0 FAIL' | grep -oE '[0-9]+' | head -1)
     env_=$(./scripts/check-envelope.sh 2>&1 | grep -oE 'check-envelope: [0-9]+ PASS / 0 FAIL' | grep -oE '[0-9]+' | head -1)
