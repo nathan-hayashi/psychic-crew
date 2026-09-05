@@ -63,3 +63,15 @@ paste its output into a session in the repo and the gate law handles it.
   certification run on the lite suite remains the one step only the Mac can complete.
 - Other early-exit consumers (`head -n`, `grep -m`, `sed q`) remain R-SD-1 rule-5 prose until an
   instance appears.
+
+## BSD-CERT run 1 finding (2026-09-05, the operator's Mac)
+
+The first live certification run caught what the scanners could not: **bash 3.2 (macOS's
+stock /bin/bash) cannot parse `case` inside `$(...)` command substitution** — a parser
+limitation fixed in bash 4, invisible on every Linux run, and fatal to `bash -n` on Darwin.
+`hooks/session-start.sh` carried six such guards inside its context substitution; the fix
+wraps the body in a top-level function (parsed where 3.2 is fine) and substitutes the
+function, guards byte-identical. Rule 7 gains the class in prose; a reliable scanner for
+case-inside-substitution is a multiline parse this suite does not attempt — stated gap,
+needle-on-next-evidence. The certification proceeds: setup green, then `./scripts/attest.sh
+run` writes the Darwin/BSD row that IS the artifact.

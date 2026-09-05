@@ -49,7 +49,9 @@ class assertions in each repo's suite.
    is GNU-only: absent on macOS both captures come back empty and a byte-pin guard
    passes on `"" = ""`, worse than a red — hash through a helper that falls back to
    `shasum -a 256` and treat an EMPTY hash as failure. `paste -sd` needs an explicit
-   stdin operand on BSD and drags in `bc`; `awk '{s+=$1} END{print s+0}'` needs
+   stdin operand on BSD and drags in `bc`; (d) `case` inside `$(...)` breaks bash 3.2's parser
+   (macOS /bin/bash) though every newer bash accepts it — define a top-level function and
+   substitute the function (caught live at BSD-CERT run 1, 2026-09-05); `awk '{s+=$1} END{print s+0}'` needs
    neither. The rule is uniform: prove a construct on both userlands, or do not ship
    it. macOS certification is completed by an operator run on real BSD userland — the
    scanners below prevent regressions, they do not substitute for that run.

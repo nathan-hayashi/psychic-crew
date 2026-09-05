@@ -3,7 +3,12 @@
 # hook-enforced rather than relying only on the CLAUDE.md continuity bullet.
 set -uo pipefail
 . "$(dirname "$0")/_common.sh" 2>/dev/null || true
-CTX=$( {
+# BSD-CERT fix (2026-09-05, operator's word "Fix this"): bash 3.2 — macOS's stock /bin/bash —
+# cannot parse `case` inside $(...) command substitution (fixed in bash 4; Linux never sees
+# it). The body moves into a function, parsed at top level where 3.2 is fine; the six case
+# guards stay byte-for-byte. Caught by setup.sh's own syntax arm on the operator's first
+# certification run — rule 7 working exactly as written.
+_ground () {
   printf 'HC-8 re-grounding. Disk is canonical; this window is a cache.\n'
   printf 'Recorded next action: %s\n' "$(grep -E '^- \*\*Next action:' "$ROOT/PROGRESS.md" 2>/dev/null | tail -1)"
   printf 'Read before acting: PROGRESS.md tail, GATES.md, context/session-summary.md, context/plan-corrections.md.\n'
@@ -40,6 +45,7 @@ CTX=$( {
        '{ts:$ts,plan_lines:$pl,gates_lines:$gl,progress_lines:$rl,plan_sha:$ps,gates_sha:$gs,progress_sha:$rs,head_sha:$h}' \
        >> "$ROOT/logs/grounding-cursor.jsonl" 2>/dev/null
   } 2>/dev/null
-} 2>/dev/null )
+}
+CTX=$(_ground 2>/dev/null)
 jq -cn --arg c "$CTX" '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$c}}'
 exit 0
