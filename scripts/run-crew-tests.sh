@@ -558,8 +558,13 @@ cases_F4 () {
   # C-13 provenance guard. Every probe runs under a mktemp root: a suite that writes to the
   # artifact it audits is C-14, and this suite exercises a hook whose job is writing records.
   pv=$(mktemp -d); mkdir -p "$pv/logs"; cp -r logs/rounds "$pv/logs/" 2>/dev/null
+  # BSD-CERT run 4: the hook matches content COPIED FROM the corpus — a bare machine must plant
+  # the corpus carrying the synthetic span, or the hook is correct to stay silent.
+  [ -f "$pv/logs/rounds/round-1/security-reviewer.json" ] || { mkdir -p "$pv/logs/rounds/round-1"; }
   pvspan=$(jq -r '.. | strings' logs/rounds/round-1/security-reviewer.json 2>/dev/null | awk 'length>=90{print;exit}')
+  [ -f "$pv/logs/rounds/round-1/security-reviewer.json" ] || PLANT_PV=1
   [ -n "$pvspan" ] || pvspan='synthetic-relay-span-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'  # BSD-CERT run 3: bare machines synthesize (131 chars)
+  [ "${PLANT_PV:-0}" = 1 ] && jq -cn --arg s "$pvspan" '{finding:$s}' > "$pv/logs/rounds/round-1/security-reviewer.json"
   pvrun () { jq -cn --arg f "$pv/$1" --arg c "$2" '{tool_input:{file_path:$f,content:$c}}' \
              | CLAUDE_PROJECT_DIR="$pv" ./hooks/provenance-flag.sh 2>/dev/null | grep -c provenance; }
   [ "$(pvrun Plan.md "NOTE: $pvspan")" -ge 1 ] && ok "C-13 flags an unattributed relay into Plan.md" || no "C-13 missed an unattributed relay"
